@@ -1,0 +1,12 @@
+body {
+  background-image: linear-gradient(
+    125deg,
+    #ffffff 0 25%,
+    #76bd55 25% 65%,
+    #3d9144 65% 70%,
+    #1a6e4a 70% 75%,
+    #194834 75% 100%
+  );
+  overflow-y: auto;
+  overflow-x: hidden;
+}
