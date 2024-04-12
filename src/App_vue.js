@@ -1,6 +1,7 @@
 import Snackbar from './components/Snackbar_vue.js';
 import Login from './components/Login_vue.js';
-import Side_panel from './components/Side_panel_vue.js';
+import Sidepanel from './components/Sidepanel_vue.js';
+import Calendar from './components/calendar/Container_vue.js';
 
 export default {
   name: 'App',
@@ -9,12 +10,21 @@ export default {
     <snackbar> </snackbar>
 
     <template v-if="loggedIn === true">
-      <div class="app-grid-container">
+      <div class="app-grid-container" :style="appGridContainer" >
         <div class="app-grid-item1">
-          <side_panel></side_panel>
+          <sidepanel></sidepanel>
         </div>
+
+        <div 
+          v-if="windowWidth > 768" 
+          class="app-grid-resizer" 
+          @mousedown="startResizeGrid" 
+          @mouseup="stopResizeGrid" 
+          v-on:dblclick="resetGrid">
+        </div>
+
         <div class="app-grid-item2">
-          Panel 2
+          <calendar></calendar>
         </div>
       </div>
     </template>
@@ -31,7 +41,8 @@ export default {
   components: {
     Snackbar,
     Login,
-    Side_panel,
+    Sidepanel,
+    Calendar,
   },
 
   computed: {
@@ -44,6 +55,21 @@ export default {
       'userData',
       'endPts',
     ]),
+
+    appGridContainer() {
+      return this.windowWidth > 768
+        ? {
+            'grid-template-columns': `calc(${this.appGridItem1Width}% - 5px) 10px calc(${this.appGridItem2Width}% - 5px)`,
+          }
+        : false;
+    },
+  },
+
+  data() {
+    return {
+      appGridItem1Width: 50,
+      appGridItem2Width: 50,
+    };
   },
 
   methods: {
@@ -70,6 +96,7 @@ export default {
         if (userDataResJSON.success) {
           this.loggedIn = true;
           this.userData = userDataResJSON.data.user;
+          console.log(userDataResJSON);
         } else {
           this.loggedIn = false;
           document.cookie = `_a_t=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${cookiePath};`;
@@ -89,6 +116,29 @@ export default {
       window.addEventListener('resize', () => {
         this.updateScreenWidth();
       });
+    },
+
+    resizeGrid(event) {
+      const newGridSize = Math.round((event.clientX / window.innerWidth) * 100);
+      if (newGridSize > 25 && newGridSize < 65) {
+        this.appGridItem1Width = newGridSize;
+        this.appGridItem2Width = 100 - this.appGridItem1Width;
+      }
+    },
+
+    startResizeGrid() {
+      document.addEventListener('mousemove', this.resizeGrid, true);
+      document.addEventListener('mouseup', this.stopResizeGrid, true);
+    },
+
+    stopResizeGrid() {
+      document.removeEventListener('mousemove', this.resizeGrid, true);
+      document.removeEventListener('mouseup', this.stopResizeGrid, true);
+    },
+
+    resetGrid() {
+      this.appGridItem1Width = 50;
+      this.appGridItem2Width = 50;
     },
   },
 
@@ -118,7 +168,7 @@ export default {
       /*css*/ `
 .app-grid-container {
   display: grid;
-  grid-template-columns: 100vw;
+  grid-template-columns: 100%;
   grid-template-rows: 100vh 100vh; /* auto */
   grid-row-gap: 10px;
   background-color: #c6c6c6;
@@ -129,12 +179,18 @@ export default {
   order: 2;
   height: 100%;
   border-right: none;
-  overflow-y: hidden;
   overflow-x: hidden;
+  overflow-y: hidden;
   background: -webkit-linear-gradient(left, #f1f1f1 49px, #999999 49px);
   background: -moz-linear-gradient(left, #f1f1f1 49px, #999999 49px);
   background: -ms-linear-gradient(left, #f1f1f1 49px, #999999 49px);
   background: linear-gradient(left, #f1f1f1 49px, #999999 49px);
+}
+
+.app-grid-resizer{
+  order: 2;
+  cursor: col-resize;
+  background-color: #999999;
 }
 
 .app-grid-item2 {
@@ -150,7 +206,7 @@ export default {
   }
 
   .app-grid-container {
-    grid-template-columns: 50vw 50vw;
+    /* grid-template-columns: calc(50% - 5px) 10px calc(50% - 5px); */
     grid-template-rows: 100vh;
   }
 
@@ -160,12 +216,7 @@ export default {
   }
 
   .app-grid-item2 {
-    order: 2;
-  }
-
-  .app-grid-item1,
-  .app-grid-item2{
-    overflow-y: scroll;
+    order: 3;
   }
 }
       `

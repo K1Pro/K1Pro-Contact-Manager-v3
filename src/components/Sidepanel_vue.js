@@ -239,14 +239,16 @@ export default {
 .tab-content {
   position: relative;
   float: left;
-  height: 100%;
+  height: 100vh;
   width: calc(100% - 50px);
-  padding: 0px;
+  padding: 10px 10px 10px 10px;
+  background-color: green;
+  background-clip: content-box;
 }
 @media only screen and (min-width: 768px) {
   .tab-content {
-    height: 100vh;
-    padding: 0px 0px 0px 50px;
+    padding: 10px 0px 10px 60px;
+    width: 100%;
   }
   .tab {
     height: 100vh;
