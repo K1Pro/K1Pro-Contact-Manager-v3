@@ -53,6 +53,7 @@ export default {
       'msg',
       'windowWidth',
       'userData',
+      'accountParams',
       'endPts',
     ]),
 
@@ -84,8 +85,7 @@ export default {
 
     async getUserData() {
       try {
-        const response = await fetch(loginURL + this.endPts.userData, {
-          // const response = await fetch(servrURL + this.endPts.userData, {
+        const response = await fetch(servrURL + this.endPts.userData, {
           method: 'GET',
           headers: {
             Authorization: this.accessToken,
@@ -96,7 +96,7 @@ export default {
         if (userDataResJSON.success) {
           this.loggedIn = true;
           this.userData = userDataResJSON.data.user;
-          console.log(userDataResJSON);
+          this.accountParams = userDataResJSON.data.accountParams;
         } else {
           this.loggedIn = false;
           document.cookie = `_a_t=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${cookiePath};`;

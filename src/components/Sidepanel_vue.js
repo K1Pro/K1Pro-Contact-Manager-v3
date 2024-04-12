@@ -23,30 +23,44 @@ export default {
             position: windowWidth > 768 ? 'absolute' : 'relative',
             width: sidePanelOpen ? '200px' : '50px', 
           }">
-          <button
-            title="Home"
-            :class="{ 'tab-active': activeTab == 'home' }"
-            @click="openTab">
-            <i class="fa fa-home"></i>
-            <span v-if="sidePanelOpen">Home</span>
-          </button>
 
           <button
-            title="Sessions"
-            :class="{ 'tab-active': activeTab == 'cookie-bite' }"
+            title="Contact info"
+            :class="{ 'tab-active': activeTab == 'house-chimney-user' }"
             @click="openTab">
-            <i class="fa fa-cookie-bite"></i>
-            <span v-if="sidePanelOpen">Sessions</span>
+            <i class="fa fa-house-chimney-user"></i>
+            <span v-if="sidePanelOpen">Contact info</span>
           </button>
-
+    
           <button
-            title="Analytics"
-            :class="{ 'tab-active': activeTab == 'chart-pie' }"
+            title="Tasks"
+            :class="{ 'tab-active': activeTab == 'list-check' }"
             @click="openTab">
-            <i class="fa fa-chart-pie"></i>
-            <span v-if="sidePanelOpen">Analytics</span>
+            <i class="fa fa-list-check"></i>
+            <span v-if="sidePanelOpen">Tasks</span>
+          </button>
+    
+          <button
+            title="Recurring events"
+            :class="{ 'tab-active': activeTab == 'repeat' }"
+            @click="openTab">
+            <i class="fa fa-repeat"></i>
+            <span v-if="sidePanelOpen">Recurring events</span>
           </button>
 
+          <template v-for="(accountParam, accountParamIndex) in accountParams.tabs">
+            <button 
+              v-for="([paramKey, paramValue], paramIndex) in Object.entries(accountParam)"
+              :title="paramKey"
+              :class="{ 'tab-active': activeTab == paramValue }"
+              @click="openTab">
+              <i :class="'fa fa-' + paramValue"></i>
+              <span v-if="sidePanelOpen">{{paramKey}}</span>
+            </button>
+          </template>
+
+          ${
+            /*
           <form :action="endPts.accountLoginURL" method="post" ref="accountLoginForm" >
             <input type="hidden" name="appName" :value="appName" />
             <input type="hidden" name="referer" :value="endPts.url" />
@@ -54,34 +68,54 @@ export default {
               <i class="fa fa-user-gear"></i>
               <span v-if="sidePanelOpen">Account login</span>
             </button>
-          </form>
-
-          <form :action="endPts.accountResetURL" method="post" ref="accountResetForm" >
-            <input type="hidden" name="appName" :value="appName" />
-            <input type="hidden" name="referer" :value="endPts.url" />
-            <button title="Account reset" @click.prevent="goToURL('accountResetForm')">
-              <i class="fa fa-rotate"></i>
-              <span v-if="sidePanelOpen">Account reset</span>
-            </button>
-          </form>
+          </form>*/ ''
+          }
 
           <button
-            title="K1Pro website"
-            :class="{ 'tab-active': activeTab == 'user-gear' }"
-            @click="goToURL(endPts.k1proURL)">
-            <i class="ba-icons ba-k1pro-regular"></i>
-            <span v-if="sidePanelOpen">K1Pro website</span>
+            title="Email"
+            :class="{ 'tab-active': activeTab == 'envelope' }"
+            @click="openTab">
+            <i class="fa fa-envelope"></i>
+            <span v-if="sidePanelOpen">Emails</span>
+          </button>
+    
+          <button
+            title="Reports"
+            :class="{ 'tab-active': activeTab == 'chart-pie' }"
+            @click="openTab">
+            <i class="fa fa-chart-pie"></i>
+            <span v-if="sidePanelOpen">Reports</span>
+          </button>
+
+          <button
+            title="E-sign"
+            :class="{ 'tab-active': activeTab == 'pen-to-square' }"
+            @click="openTab">
+            <i class="fa fa-pen-to-square"></i>
+            <span v-if="sidePanelOpen">E-sign</span>
+          </button>
+
+          <button
+            title="Upload"
+            :class="{ 'tab-active': activeTab == 'file-arrow-up' }"
+            @click="openTab">
+            <i class="fa fa-file-arrow-up"></i>
+            <span v-if="sidePanelOpen">Upload</span>
           </button>
 
           <logoutbtn :sidePanelOpen="sidePanelOpen" ></logoutbtn>
         </div>
 
-        <div class="tab-content" v-if="activeTab == 'home'">
-          Home
+        <div class="tab-content" v-if="activeTab == 'house-chimney-user'">
+          Contact Info        
         </div>
 
-        <div class="tab-content" v-if="activeTab == 'cookie-bite'">
-          Sessions
+        <div class="tab-content" v-if="activeTab == 'list-check'">
+          Tasks
+        </div>
+
+        <div class="tab-content" v-if="activeTab == 'repeat'">
+          Recurring events
         </div>
 
         <div class="tab-content" v-if="activeTab == 'chart-pie'">
@@ -96,7 +130,7 @@ export default {
 
   data() {
     return {
-      activeTab: 'home',
+      activeTab: 'house-chimney-user',
       active: false,
       sidePanelOpen: false,
       pageClicks: 0,
@@ -108,6 +142,7 @@ export default {
       'accessToken',
       'msg',
       'windowWidth',
+      'accountParams',
       'endPts',
       'appName',
     ]),
@@ -157,6 +192,7 @@ export default {
   },
 
   mounted() {
+    console.log(this.accountParams.tabs);
     document.addEventListener('click', this.onWindowClick);
 
     style(

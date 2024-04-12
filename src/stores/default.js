@@ -9,7 +9,8 @@ const useDefaultStore = Pinia.defineStore('default', {
         login: '',
       },
       windowWidth: 0,
-      userData: [],
+      userData: {},
+      accountParams: {},
       endPts: {
         url: url,
         accountLoginURL: accountlogin_url,
