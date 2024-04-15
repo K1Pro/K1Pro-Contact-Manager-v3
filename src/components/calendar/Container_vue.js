@@ -46,16 +46,16 @@ export default {
   padding: 10px 10px 10px 10px;
 }
 .calendar-container-item1 {
-  background-color: red;
-  height: 5vh;
+  /* background-color: red; */
+  height: 40px;
 }
 .calendar-container-item2 {
   background-color: white;
-  height: calc( 90vh - 20px);
+  height: calc( 100vh - 100px);
 }
 .calendar-container-item3 {
   background-color: blue;
-  height: 5vh;
+  height: 40px;
 }
 @media only screen and (min-width: 768px) {
   .calendar-container { 

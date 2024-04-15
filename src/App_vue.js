@@ -179,8 +179,6 @@ export default {
 
 .app-grid-item1 {
   order: 3;
-  /* height: 100%; */
-  /*overflow-x: hidden; */
   overflow-y: hidden; 
   background: -webkit-linear-gradient(left, #f1f1f1 49px, #999999 49px);
   background: -moz-linear-gradient(left, #f1f1f1 49px, #999999 49px);
