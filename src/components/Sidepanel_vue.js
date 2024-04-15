@@ -9,8 +9,8 @@ export default {
         <div class="tab-title"></div>
       </div>
 
-      <div class="side-panel-toggle">
-        <i v-if="windowWidth > 768" 
+      <div v-if="windowWidth > 768" class="side-panel-toggle">
+        <i  
           :class="{ 'fa-solid fa-chevron-left': sidePanelOpen, 'fa-solid fa-chevron-right': !sidePanelOpen }" 
           :style="{ left: sidePanelOpen ? '189px' : '39px',}"
           @click="toggleSidepanel">
@@ -41,11 +41,11 @@ export default {
           </button>
     
           <button
-            title="Recurring events"
+            title="Recurring tasks"
             :class="{ 'tab-active': activeTab == 'repeat' }"
             @click="openTab">
             <i class="fa fa-repeat"></i>
-            <span v-if="sidePanelOpen">Recurring events</span>
+            <span v-if="sidePanelOpen">Recurring tasks</span>
           </button>
 
           <template v-for="(accountParam, accountParamIndex) in accountParams.tabs">
@@ -58,6 +58,14 @@ export default {
               <span v-if="sidePanelOpen">{{paramKey}}</span>
             </button>
           </template>
+
+          <button
+            title="User Info"
+            :class="{ 'tab-active': activeTab == 'user-tie' }"
+            @click="openTab">
+            <i class="fa fa-user-tie"></i>
+            <span v-if="sidePanelOpen">User Info</span>
+          </button>
 
           ${
             /*
@@ -72,7 +80,7 @@ export default {
           }
 
           <button
-            title="Email"
+            title="Emails"
             :class="{ 'tab-active': activeTab == 'envelope' }"
             @click="openTab">
             <i class="fa fa-envelope"></i>
@@ -87,39 +95,35 @@ export default {
             <span v-if="sidePanelOpen">Reports</span>
           </button>
 
-          <button
-            title="E-sign"
-            :class="{ 'tab-active': activeTab == 'pen-to-square' }"
-            @click="openTab">
-            <i class="fa fa-pen-to-square"></i>
-            <span v-if="sidePanelOpen">E-sign</span>
-          </button>
-
-          <button
-            title="Upload"
-            :class="{ 'tab-active': activeTab == 'file-arrow-up' }"
-            @click="openTab">
-            <i class="fa fa-file-arrow-up"></i>
-            <span v-if="sidePanelOpen">Upload</span>
-          </button>
-
           <logoutbtn :sidePanelOpen="sidePanelOpen" ></logoutbtn>
         </div>
 
         <div class="tab-content" v-if="activeTab == 'house-chimney-user'">
-          Contact Info        
+          <div>Contact Info</div>
         </div>
 
-        <div class="tab-content" v-if="activeTab == 'list-check'">
+        <div class="tab-content" v-else-if="activeTab == 'list-check'">
           Tasks
         </div>
 
-        <div class="tab-content" v-if="activeTab == 'repeat'">
-          Recurring events
+        <div class="tab-content" v-else-if="activeTab == 'repeat'">
+          Recurring tasks
         </div>
 
-        <div class="tab-content" v-if="activeTab == 'chart-pie'">
-          Analytics
+        <div class="tab-content" v-else-if="activeTab == 'user-tie'">
+          User Info
+        </div>
+
+        <div class="tab-content" v-else-if="activeTab == 'envelope'">
+          Emails
+        </div>
+
+        <div class="tab-content" v-else-if="activeTab == 'chart-pie'">
+          Reports
+        </div>
+
+        <div class="tab-content" v-else>
+          {{ activeTab }}
         </div>
 
       </div>
@@ -201,9 +205,9 @@ export default {
 .side-panel-toggle i {
   position: absolute;
   z-index: 4;
-  top: 54px;
-  font-size: 10px;
-  padding: 6px 8px 6px 8px;
+  top: 58px;
+  font-size: 8px;
+  padding: 6px 7.5px 6px 7.5px;
   border-radius: 50%;
   color: white;
   background-color: black;
@@ -233,7 +237,6 @@ export default {
 .tab-title {
 }
 .tab-body-container {
-  height: 100%;
 }
 .tab {
   z-index: 3;
@@ -243,7 +246,8 @@ export default {
   border-right: 1px solid darkgrey;
   transition: all 0.3s ease;
   white-space: nowrap;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .tab button {
   width: 100%;
@@ -275,19 +279,22 @@ export default {
 .tab-content {
   position: relative;
   float: left;
-  height: 100vh;
+  height: auto;
   width: calc(100% - 50px);
-  padding: 10px 10px 10px 10px;
+  border-style: solid;
+  border-width: 10px 10px 10px 10px;
+  border-color: #00000000;
   background-color: green;
   background-clip: content-box;
 }
 @media only screen and (min-width: 768px) {
   .tab-content {
-    padding: 10px 0px 10px 60px;
     width: 100%;
-  }
-  .tab {
     height: 100vh;
+    overflow-y: auto;
+    border-style: solid;
+    border-width: 10px 0px 10px 60px;
+    border-color: #00000000;
   }
 }
       `

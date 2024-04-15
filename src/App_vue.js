@@ -12,6 +12,7 @@ export default {
     <template v-if="loggedIn === true">
       <div class="app-grid-container" :style="appGridContainer" >
         <div class="app-grid-item1">
+          ${/* <sidepanel></sidepanel> */ ''}
           <sidepanel></sidepanel>
         </div>
 
@@ -24,6 +25,7 @@ export default {
         </div>
 
         <div class="app-grid-item2">
+        ${/* <calendar></calendar> */ ''}
           <calendar></calendar>
         </div>
       </div>
@@ -169,50 +171,44 @@ export default {
 .app-grid-container {
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: 100vh 100vh; /* auto */
+  grid-template-rows: 100vh auto; /* auto */
   grid-row-gap: 10px;
   background-color: #c6c6c6;
   /* word-break: break-all; */
 }
 
 .app-grid-item1 {
-  order: 2;
-  height: 100%;
-  border-right: none;
-  overflow-x: hidden;
-  overflow-y: hidden;
+  order: 3;
+  /* height: 100%; */
+  /*overflow-x: hidden; */
+  overflow-y: hidden; 
   background: -webkit-linear-gradient(left, #f1f1f1 49px, #999999 49px);
   background: -moz-linear-gradient(left, #f1f1f1 49px, #999999 49px);
   background: -ms-linear-gradient(left, #f1f1f1 49px, #999999 49px);
   background: linear-gradient(left, #f1f1f1 49px, #999999 49px);
 }
 
-.app-grid-resizer{
-  order: 2;
-  cursor: col-resize;
-  background-color: #999999;
-}
-
 .app-grid-item2 {
   order: 1;
-  border-right: none;
   background-color: #999999;
   overflow-y: hidden;
 }
 
 @media only screen and (min-width: 768px) {
-  body {
-    overflow-y: hidden;
-  }
-
   .app-grid-container {
-    /* grid-template-columns: calc(50% - 5px) 10px calc(50% - 5px); */
+    /* grid-template-columns: calc(50% - 5px) 10px calc(50% - 5px); this is in computed now*/
     grid-template-rows: 100vh;
   }
 
   .app-grid-item1 {
     order: 1;
     background: #999999;
+  }
+
+  .app-grid-resizer{
+    order: 2;
+    cursor: col-resize;
+    background-color: #999999;
   }
 
   .app-grid-item2 {

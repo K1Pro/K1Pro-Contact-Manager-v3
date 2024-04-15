@@ -44,24 +44,22 @@ export default {
       /*css*/ `
 .calendar-container { 
   padding: 10px 10px 10px 10px;
-
 }
 .calendar-container-item1 {
-    background-color: red;
-    height: 5vh;
+  background-color: red;
+  height: 5vh;
 }
 .calendar-container-item2 {
-    background-color: white;
-    height: calc( 90vh - 20px);
+  background-color: white;
+  height: calc( 90vh - 20px);
 }
 .calendar-container-item3 {
-    background-color: blue;
-    height: 5vh;
+  background-color: blue;
+  height: 5vh;
 }
 @media only screen and (min-width: 768px) {
   .calendar-container { 
-    padding: 10px 10px 10px 0px;
-
+  padding: 10px 10px 10px 0px;
   }
 }
 `
