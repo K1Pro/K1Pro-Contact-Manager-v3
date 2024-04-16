@@ -86,6 +86,12 @@ export default {
 .filters{
   text-align: center
 }
+.filters select {
+  padding: 5px;
+}
+.filters input[type='range'] {
+  padding: 5px;
+}
 `
     );
   },

@@ -1,4 +1,5 @@
 import Logoutbtn from './LogOutBtn_vue.js';
+import Contactinfo from './sidepanel/Contactinfo_vue.js';
 
 export default {
   name: 'Side Panel',
@@ -101,7 +102,7 @@ export default {
         <div class="tab-content">
         
           <div v-if="activeTab == 'house-chimney-user'">
-            <input type="search" placeholder="Search for customer" />
+            <contactinfo></contactinfo>
           </div>
 
           <div v-else-if="activeTab == 'list-check'">
@@ -134,7 +135,7 @@ export default {
     </div>
   `,
 
-  components: { Logoutbtn },
+  components: { Logoutbtn, Contactinfo },
 
   data() {
     return {

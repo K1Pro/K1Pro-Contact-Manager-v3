@@ -7,7 +7,7 @@ export default {
     <div class="navigation">
       <div class="navigation-grid-container">
         <div class="navigation-grid-item1">
-          <i class="fa fa-backward-fast" @click="getTime('-1 month')"></i>
+          <i class="fa fa-backward-fast" @click="getTime('-4 weeks')"></i>
         </div>
         <div class="navigation-grid-item2">
           <i class="fa fa-backward-step" @click="getTime('-1 day')"></i>
@@ -19,7 +19,7 @@ export default {
           <i class="fa fa-forward-step" @click="getTime('+1 day')"></i>
         </div>
         <div class="navigation-grid-item5">
-          <i class="fa fa-forward-fast" @click="getTime('+1 month')"></i>
+          <i class="fa fa-forward-fast" @click="getTime('+4 weeks')"></i>
         </div>
       </div>
     </div>

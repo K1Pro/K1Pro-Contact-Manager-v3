@@ -11,6 +11,7 @@
 *.env
 *.db
 *.psd
+*.htaccess
 /index.php
 /src/Template.Vue
 /sync.ffs_db
