@@ -39,14 +39,19 @@ export default {
           </select>
         </div>
         <div class="navigation-item5">
-          <input type="range" min="1" max="6" value="3">
+          <input type="range" min="0" max="5" v-model="userSettings.calendar.filters.days" @change="daysRange">
+          {{ daysRangeArr[userSettings.calendar.filters.days] }}
         </div>
       </div>
     </div>
         `,
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, ['msg']),
+    ...Pinia.mapWritableState(useDefaultStore, [
+      'msg',
+      'userSettings',
+      'patchUserSettings',
+    ]),
   },
 
   //   components: {
@@ -58,10 +63,17 @@ export default {
   //   emits: [''],
 
   data() {
-    return {};
+    return {
+      daysRangeArr: [1, 3, 7, 14, 21, 28],
+    };
   },
 
-  methods: {},
+  methods: {
+    daysRange(event) {
+      this.userSettings.calendar.filters.days = event.target.value;
+      this.patchUserSettings();
+    },
+  },
 
   mounted() {
     style(

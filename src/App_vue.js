@@ -59,15 +59,16 @@ export default {
       'patchUserSettings',
     ]),
 
+    appGridItem2Width() {
+      return 100 - this.userSettings.layout['grid-size'];
+    },
+
     appGridContainer() {
       return this.windowWidth > 768
         ? {
             'grid-template-columns': `calc(${this.userSettings.layout['grid-size']}% - 5px) 10px calc(${this.appGridItem2Width}% - 5px)`,
           }
         : false;
-    },
-    appGridItem2Width() {
-      return 100 - this.userSettings.layout['grid-size'];
     },
   },
 
@@ -123,9 +124,8 @@ export default {
 
     resizeGrid(event) {
       const newGridSize = Math.round((event.clientX / window.innerWidth) * 100);
-      if (newGridSize > 25 && newGridSize < 65) {
+      if (newGridSize > 25 && newGridSize < 65)
         this.userSettings.layout['grid-size'] = newGridSize;
-      }
     },
 
     startResizeGrid() {

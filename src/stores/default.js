@@ -11,7 +11,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       windowWidth: 0,
       userData: {},
       accountSettings: { tabs: {} },
-      userSettings: { layout: { 'grid-size': '' }, calendar: {} },
+      userSettings: { calendar: {}, layout: { 'grid-size': '' } },
       endPts: {
         url: url,
         accountLoginURL: accountlogin_url,
@@ -66,7 +66,7 @@ const useDefaultStore = Pinia.defineStore('default', {
           }),
         });
         const patchUserSettingsResJSON = await response.json();
-        if (patchUserSettingsResJSON.success) {
+        if (!patchUserSettingsResJSON.success) {
           console.log(patchUserSettingsResJSON);
           // this.msg.snackBar = patchUserSettingsResJSON.messages[0];
         }

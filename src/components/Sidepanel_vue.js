@@ -288,7 +288,7 @@ export default {
   border-style: solid;
   border-width: 10px 10px 10px 10px;
   border-color: #00000000;
-  background-color: green;
+  /* background-color: green; */
   background-clip: content-box;
 }
 @media only screen and (min-width: 768px) {
