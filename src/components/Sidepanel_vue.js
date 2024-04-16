@@ -98,32 +98,36 @@ export default {
           <logoutbtn :sidePanelOpen="sidePanelOpen" ></logoutbtn>
         </div>
 
-        <div class="tab-content" v-if="activeTab == 'house-chimney-user'">
-          <div>Contact Info</div>
-        </div>
+        <div class="tab-content">
+        
+          <div v-if="activeTab == 'house-chimney-user'">
+            <input type="search" placeholder="Search for customer" />
+          </div>
 
-        <div class="tab-content" v-else-if="activeTab == 'list-check'">
-          Tasks
-        </div>
+          <div v-else-if="activeTab == 'list-check'">
+            Tasks
+          </div>
 
-        <div class="tab-content" v-else-if="activeTab == 'repeat'">
-          Recurring tasks
-        </div>
+          <div v-else-if="activeTab == 'repeat'">
+            Recurring tasks
+          </div>
+          
+          <div v-else-if="activeTab == 'user-tie'">
+            User Info
+          </div>
 
-        <div class="tab-content" v-else-if="activeTab == 'user-tie'">
-          User Info
-        </div>
+          <div v-else-if="activeTab == 'envelope'">
+            Emails
+          </div>
+          
+          <div v-else-if="activeTab == 'chart-pie'">
+            Reports
+            </div>
+          
+          <div v-else>
+            {{ activeTab }}
+          </div>
 
-        <div class="tab-content" v-else-if="activeTab == 'envelope'">
-          Emails
-        </div>
-
-        <div class="tab-content" v-else-if="activeTab == 'chart-pie'">
-          Reports
-        </div>
-
-        <div class="tab-content" v-else>
-          {{ activeTab }}
         </div>
 
       </div>

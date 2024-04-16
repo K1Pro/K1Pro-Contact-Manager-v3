@@ -125,7 +125,7 @@ export default {
     async postLogin() {
       this.spinLogin = true;
       try {
-        const response = await fetch(loginURL + this.endPts.login, {
+        const response = await fetch(this.endPts.loginURL + this.endPts.login, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -87,7 +87,7 @@ export default {
 
     async getUserData() {
       try {
-        const response = await fetch(servrURL + this.endPts.userData, {
+        const response = await fetch(servr_url + this.endPts.userData, {
           method: 'GET',
           headers: {
             Authorization: this.accessToken,
