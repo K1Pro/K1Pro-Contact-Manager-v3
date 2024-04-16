@@ -71,6 +71,9 @@ export default {
   display: grid;
   grid-template-columns: auto auto auto auto auto;
 }
+.filters{
+  text-align: center
+}
 `
     );
   },

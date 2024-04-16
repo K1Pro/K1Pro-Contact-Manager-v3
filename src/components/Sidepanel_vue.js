@@ -48,7 +48,7 @@ export default {
             <span v-if="sidePanelOpen">Recurring tasks</span>
           </button>
 
-          <template v-for="(accountParam, accountParamIndex) in accountParams.tabs">
+          <template v-for="(accountParam, accountParamIndex) in accountSettings.tabs">
             <button 
               v-for="([paramKey, paramValue], paramIndex) in Object.entries(accountParam)"
               :title="paramKey"
@@ -150,7 +150,7 @@ export default {
       'accessToken',
       'msg',
       'windowWidth',
-      'accountParams',
+      'accountSettings',
       'endPts',
       'appName',
     ]),
@@ -200,7 +200,7 @@ export default {
   },
 
   mounted() {
-    console.log(this.accountParams.tabs);
+    // console.log(this.settings.tabs);
     document.addEventListener('click', this.onWindowClick);
 
     style(

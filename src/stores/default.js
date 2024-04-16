@@ -10,7 +10,8 @@ const useDefaultStore = Pinia.defineStore('default', {
       },
       windowWidth: 0,
       userData: {},
-      accountParams: {},
+      accountSettings: { tabs: {} },
+      userSettings: { layout: { 'grid-size': '' }, calendar: {} },
       endPts: {
         url: url,
         accountLoginURL: accountlogin_url,
@@ -18,11 +19,12 @@ const useDefaultStore = Pinia.defineStore('default', {
         k1proURL: k1pro_url,
         loginURL: login_url,
         userData: 'users',
+        settings: 'settings',
         login: 'sessions',
         logout: 'sessions/',
       },
       times: {
-        Y_m_d: gm_Y_m_d_date,
+        Y_m_d: server_datetime_Y_m_d,
         Y_m_d_H_i_s: '',
       },
       appName: app_name,
@@ -48,6 +50,29 @@ const useDefaultStore = Pinia.defineStore('default', {
         }
       } catch (error) {
         console.log(error.toString());
+      }
+    },
+    async patchUserSettings() {
+      try {
+        const response = await fetch(servr_url + this.endPts.settings, {
+          method: 'PATCH',
+          headers: {
+            Authorization: this.accessToken,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          },
+          body: JSON.stringify({
+            Settings: this.userSettings,
+          }),
+        });
+        const patchUserSettingsResJSON = await response.json();
+        if (patchUserSettingsResJSON.success) {
+          console.log(patchUserSettingsResJSON);
+          // this.msg.snackBar = patchUserSettingsResJSON.messages[0];
+        }
+      } catch (error) {
+        console.log(error.toString());
+        this.msg.snackBar = error.toString();
       }
     },
   },

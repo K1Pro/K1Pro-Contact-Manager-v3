@@ -54,7 +54,7 @@ export default {
   height: calc( 100vh - 100px);
 }
 .calendar-container-item3 {
-  background-color: blue;
+  /* background-color: blue; */
   height: 40px;
 }
 @media only screen and (min-width: 768px) {

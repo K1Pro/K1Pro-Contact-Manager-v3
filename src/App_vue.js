@@ -12,7 +12,6 @@ export default {
     <template v-if="loggedIn === true">
       <div class="app-grid-container" :style="appGridContainer" >
         <div class="app-grid-item1">
-          ${/* <sidepanel></sidepanel> */ ''}
           <sidepanel></sidepanel>
         </div>
 
@@ -25,7 +24,6 @@ export default {
         </div>
 
         <div class="app-grid-item2">
-        ${/* <calendar></calendar> */ ''}
           <calendar></calendar>
         </div>
       </div>
@@ -55,24 +53,26 @@ export default {
       'msg',
       'windowWidth',
       'userData',
-      'accountParams',
+      'accountSettings',
+      'userSettings',
       'endPts',
+      'patchUserSettings',
     ]),
 
     appGridContainer() {
       return this.windowWidth > 768
         ? {
-            'grid-template-columns': `calc(${this.appGridItem1Width}% - 5px) 10px calc(${this.appGridItem2Width}% - 5px)`,
+            'grid-template-columns': `calc(${this.userSettings.layout['grid-size']}% - 5px) 10px calc(${this.appGridItem2Width}% - 5px)`,
           }
         : false;
+    },
+    appGridItem2Width() {
+      return 100 - this.userSettings.layout['grid-size'];
     },
   },
 
   data() {
-    return {
-      appGridItem1Width: 50,
-      appGridItem2Width: 50,
-    };
+    return {};
   },
 
   methods: {
@@ -98,7 +98,8 @@ export default {
         if (userDataResJSON.success) {
           this.loggedIn = true;
           this.userData = userDataResJSON.data.user;
-          this.accountParams = userDataResJSON.data.accountParams;
+          this.accountSettings = userDataResJSON.data.accountSettings;
+          this.userSettings = userDataResJSON.data.userSettings;
         } else {
           this.loggedIn = false;
           document.cookie = `_a_t=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${cookiePath};`;
@@ -123,8 +124,7 @@ export default {
     resizeGrid(event) {
       const newGridSize = Math.round((event.clientX / window.innerWidth) * 100);
       if (newGridSize > 25 && newGridSize < 65) {
-        this.appGridItem1Width = newGridSize;
-        this.appGridItem2Width = 100 - this.appGridItem1Width;
+        this.userSettings.layout['grid-size'] = newGridSize;
       }
     },
 
@@ -134,13 +134,14 @@ export default {
     },
 
     stopResizeGrid() {
+      this.patchUserSettings();
       document.removeEventListener('mousemove', this.resizeGrid, true);
       document.removeEventListener('mouseup', this.stopResizeGrid, true);
     },
 
     resetGrid() {
-      this.appGridItem1Width = 50;
-      this.appGridItem2Width = 50;
+      this.userSettings.layout['grid-size'] = 50;
+      this.patchUserSettings();
     },
   },
 
