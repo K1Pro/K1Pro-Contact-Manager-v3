@@ -6,15 +6,15 @@ export default {
         <div class='calendar-body'>
           <div :class="'calendar-body-grid-container' + userSettings.calendar.filters.days">
             <template v-for="day in daysRangeArr[userSettings.calendar.filters.days]">
-              <div v-if="(day + 1) % 7 && day % 7" class="calendar-body-grid-item">
+              <div v-if="(day + 1) % 7 && day % 7" class="calendar-body-grid-item" :class="{ activeDay: rangeYYYY_MM_DD[day-1] == times.Y_m_d }">
                 {{ firstCalDate ? rangeYYYY_MM_DD[day-1].slice(-5) : '' }}
               </div>
 
               <div v-if="(Number(day) + 1) % 7 === 0" class="calendar-body-grid-item">
-                  <div class="saturday">
+                  <div class="saturday" :class="{ activeDay: rangeYYYY_MM_DD[day-1] == times.Y_m_d }">
                     {{ firstCalDate ? rangeYYYY_MM_DD[day-1].slice(-5) : '' }}
                   </div>
-                  <div class="sunday">
+                  <div class="sunday" :class="{ activeDay: rangeYYYY_MM_DD[day] == times.Y_m_d }">
                     {{ firstCalDate ? rangeYYYY_MM_DD[day].slice(-5) : '' }}
                   </div>
               </div>
@@ -40,14 +40,10 @@ export default {
         this.daysRangeArr[this.userSettings.calendar.filters.days]
       ) {
         dateArray.push(
-          new Date(currentDate).getFullYear() +
-            '-' +
-            (new Date(currentDate).getMonth() + 1).toString().padStart(2, '0') +
-            '-' +
-            new Date(currentDate).getDate().toString().padStart(2, '0')
+          // prettier-ignore
+          new Date(currentDate).getFullYear() + '-' + (new Date(currentDate).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(currentDate).getDate().toString().padStart(2, '0')
         );
-        // Can use UTC date to prevent problems with time zones and DST
-        // currentDate.setUTCDate(currentDate.getUTCDate() + steps);
+        // Can use UTC date to prevent problems with time zones and DST: currentDate.setUTCDate(currentDate.getUTCDate() + steps);
         currentDate.setDate(currentDate.getDate() + 1);
         dateRangeStart++;
       }
@@ -76,11 +72,11 @@ export default {
       'Calendar-body',
       /*css*/ `
 .Calendar body{}
-.calendar-body-grid-container0{
+.calendar-body-grid-container0 {
   display: grid;
   grid-template-columns: auto;
 }
-.calendar-body-grid-container1{
+.calendar-body-grid-container1 {
   display: grid;
   grid-template-columns: auto auto auto;
 }
@@ -96,24 +92,27 @@ export default {
 .calendar-body-grid-container2 {
   grid-template-rows: calc( 100vh - 100px);
 }
-.calendar-body-grid-container3{
+.calendar-body-grid-container3 {
   grid-template-rows: calc( 50vh - 50px) calc( 50vh - 50px);
 }
-.calendar-body-grid-container4{
+.calendar-body-grid-container4 {
   grid-template-rows: calc( 33.33vh - 33.33px) calc( 33.33vh - 33.33px) calc( 33.33vh - 33.33px);
 }
-.calendar-body-grid-container5{
+.calendar-body-grid-container5 {
   grid-template-rows: calc( 25vh - 25px) calc( 25vh - 25px) calc( 25vh - 25px) calc( 25vh - 25px);
 }
-.calendar-body-grid-item{
+.calendar-body-grid-item {
   border: solid black 1px;
 }
-.saturday{
+.saturday {
   height: 50%;
   border-bottom: solid black 1px;
 }
-.sunday{
+.sunday {
   height: 50%;
+}
+.activeDay {
+  background-color: lightgreen
 }
 `
     );
