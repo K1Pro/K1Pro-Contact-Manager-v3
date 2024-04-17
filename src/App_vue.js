@@ -56,6 +56,8 @@ export default {
       'accountSettings',
       'userSettings',
       'endPts',
+      'times',
+      'time',
       'patchUserSettings',
     ]),
 
@@ -163,6 +165,13 @@ export default {
   },
 
   mounted() {
+    this.time(
+      'POST',
+      null,
+      `${this.times.Y_m_d} -2 weeks previous Monday`,
+      'firstCalDate'
+    );
+
     this.updateScreenWidth();
     this.onScreenResize();
 

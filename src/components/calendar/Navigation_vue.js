@@ -43,7 +43,7 @@ export default {
 
   methods: {
     getTime(dateTimeDesc) {
-      this.time('POST', null, `${this.times.Y_m_d} ${dateTimeDesc}`);
+      this.time('POST', null, `${this.times.Y_m_d} ${dateTimeDesc}`, 'time');
     },
   },
 

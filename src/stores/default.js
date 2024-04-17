@@ -27,11 +27,12 @@ const useDefaultStore = Pinia.defineStore('default', {
         Y_m_d: server_datetime_Y_m_d,
         Y_m_d_H_i_s: '',
       },
+      firstCalDate: '',
       appName: app_name,
     };
   },
   actions: {
-    async time(method, timezone, datetime) {
+    async time(method, timezone, datetime, type) {
       try {
         const response = await fetch(time_url, {
           method: method,
@@ -46,7 +47,11 @@ const useDefaultStore = Pinia.defineStore('default', {
         });
         const timeResJSON = await response.json();
         if (timeResJSON.success) {
-          this.times = timeResJSON.data;
+          if (type == 'time') {
+            this.times = timeResJSON.data;
+          } else if (type == 'firstCalDate') {
+            this.firstCalDate = timeResJSON.data.Y_m_d;
+          }
         }
       } catch (error) {
         console.log(error.toString());
