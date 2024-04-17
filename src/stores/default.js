@@ -28,6 +28,7 @@ const useDefaultStore = Pinia.defineStore('default', {
         Y_m_d_H_i_s: '',
       },
       firstCalDate: '',
+      daysRangeArr: [1, 3, 7, 14, 21, 28],
       appName: app_name,
     };
   },
@@ -81,5 +82,36 @@ const useDefaultStore = Pinia.defineStore('default', {
       }
     },
   },
-  getters: {},
+  getters: {
+    rangeYYYY_MM_DD(state) {
+      let dateRangeStart = 1;
+      let dateArray = [];
+      let currentDate = new Date(state.firstCalDate);
+      while (
+        dateRangeStart <=
+        state.daysRangeArr[state.userSettings.calendar.filters.days]
+      ) {
+        dateArray.push(
+          // prettier-ignore
+          new Date(currentDate).getFullYear() + '-' + (new Date(currentDate).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(currentDate).getDate().toString().padStart(2, '0')
+        );
+        // Can use UTC date to prevent problems with time zones and DST: currentDate.setUTCDate(currentDate.getUTCDate() + steps);
+        currentDate.setDate(currentDate.getDate() + 1);
+        dateRangeStart++;
+      }
+      return dateArray;
+    },
+    calDayIndex(state) {
+      return (
+        state.rangeYYYY_MM_DD.findIndex((day) => day == state.times.Y_m_d) + 1
+      );
+    },
+    calRow(state) {
+      return Math.ceil(
+        (state.rangeYYYY_MM_DD.findIndex((day) => day == state.times.Y_m_d) +
+          1) /
+          7
+      );
+    },
+  },
 });

@@ -55,7 +55,8 @@ export default {
 }
 .calendar-container-item3 {
   /* background-color: blue; */
-  height: 40px;
+  padding-top: 10px;
+  height: 50px;
 }
 @media only screen and (min-width: 768px) {
   .calendar-container { 

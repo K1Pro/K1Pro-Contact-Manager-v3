@@ -56,7 +56,6 @@ export default {
   },
 
   mounted() {
-    console.log(this.userSettings.calendar.filters.days);
     style(
       'Navigation',
       /*css*/ `

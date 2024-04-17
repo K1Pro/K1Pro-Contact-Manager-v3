@@ -39,26 +39,9 @@ export default {
       'userSettings',
       'times',
       'firstCalDate',
+      'daysRangeArr',
+      'rangeYYYY_MM_DD',
     ]),
-
-    rangeYYYY_MM_DD() {
-      let dateRangeStart = 1;
-      let dateArray = [];
-      let currentDate = new Date(this.firstCalDate);
-      while (
-        dateRangeStart <=
-        this.daysRangeArr[this.userSettings.calendar.filters.days]
-      ) {
-        dateArray.push(
-          // prettier-ignore
-          new Date(currentDate).getFullYear() + '-' + (new Date(currentDate).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(currentDate).getDate().toString().padStart(2, '0')
-        );
-        // Can use UTC date to prevent problems with time zones and DST: currentDate.setUTCDate(currentDate.getUTCDate() + steps);
-        currentDate.setDate(currentDate.getDate() + 1);
-        dateRangeStart++;
-      }
-      return dateArray;
-    },
   },
 
   //   components: {
@@ -70,15 +53,12 @@ export default {
   //   emits: [''],
 
   data() {
-    return {
-      daysRangeArr: [1, 3, 7, 14, 21, 28],
-    };
+    return {};
   },
 
   methods: {
     changeDate(event) {
       this.times.Y_m_d = event;
-      console.log(event);
     },
   },
 
