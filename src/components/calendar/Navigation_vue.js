@@ -7,26 +7,32 @@ export default {
     <div class="navigation">
       <div class="navigation-grid-container">
         <div class="navigation-grid-item1">
-          <i class="fa fa-backward-fast" @click="getTime('-4 weeks')"></i>
+          <i v-if="userSettings.calendar.filters.days == 5" class="fa fa-backward-fast" @click="getTime('-4 weeks', '-6 weeks previous Monday')">
+          </i>
         </div>
         <div class="navigation-grid-item2">
-          <i class="fa fa-backward-step" @click="getTime('-1 day')"></i>
+          <i class="fa fa-backward-step" @click="getTime('-1 week', '-3 weeks previous Monday')"></i>
         </div>
         <div class="navigation-grid-item3">
           <input v-model="times.Y_m_d" type="date" />
         </div>
         <div class="navigation-grid-item4">
-          <i class="fa fa-forward-step" @click="getTime('+1 day')"></i>
+          <i class="fa fa-forward-step" @click="getTime('+1 week', '-1 week previous Monday')"></i>
         </div>
         <div class="navigation-grid-item5">
-          <i class="fa fa-forward-fast" @click="getTime('+4 weeks')"></i>
+          <i class="fa fa-forward-fast" @click="getTime('+4 weeks', '+2 weeks previous Monday')"></i>
         </div>
       </div>
     </div>
   `,
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, ['msg', 'times', 'time']),
+    ...Pinia.mapWritableState(useDefaultStore, [
+      'msg',
+      'userSettings',
+      'times',
+      'time',
+    ]),
   },
 
   // components: {
@@ -42,12 +48,15 @@ export default {
   },
 
   methods: {
-    getTime(dateTimeDesc) {
+    getTime(dateTimeDesc, firstCalDateTimeDesc) {
       this.time('POST', null, `${this.times.Y_m_d} ${dateTimeDesc}`, 'time');
+      // prettier-ignore
+      this.time('POST', null, `${this.times.Y_m_d} ${firstCalDateTimeDesc}`, 'firstCalDate');
     },
   },
 
   mounted() {
+    console.log(this.userSettings.calendar.filters.days);
     style(
       'Navigation',
       /*css*/ `

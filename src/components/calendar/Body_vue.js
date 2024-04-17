@@ -6,15 +6,25 @@ export default {
         <div class='calendar-body'>
           <div :class="'calendar-body-grid-container' + userSettings.calendar.filters.days">
             <template v-for="day in daysRangeArr[userSettings.calendar.filters.days]">
-              <div v-if="(day + 1) % 7 && day % 7" class="calendar-body-grid-item" :class="{ activeDay: rangeYYYY_MM_DD[day-1] == times.Y_m_d }">
+              <div v-if="(day + 1) % 7 && day % 7" 
+                class="calendar-body-grid-item day" 
+                :class="{ activeDay: rangeYYYY_MM_DD[day-1] == times.Y_m_d }" 
+                @click="changeDate(rangeYYYY_MM_DD[day-1])">
                 {{ firstCalDate ? rangeYYYY_MM_DD[day-1].slice(-5) : '' }}
               </div>
 
-              <div v-if="(Number(day) + 1) % 7 === 0" class="calendar-body-grid-item">
-                  <div class="saturday" :class="{ activeDay: rangeYYYY_MM_DD[day-1] == times.Y_m_d }">
+              <div v-if="(Number(day) + 1) % 7 === 0" 
+                class="calendar-body-grid-item">
+                  <div 
+                    class="day saturday" 
+                    :class="{ activeDay: rangeYYYY_MM_DD[day-1] == times.Y_m_d }"
+                    @click="changeDate(rangeYYYY_MM_DD[day-1])">
                     {{ firstCalDate ? rangeYYYY_MM_DD[day-1].slice(-5) : '' }}
                   </div>
-                  <div class="sunday" :class="{ activeDay: rangeYYYY_MM_DD[day] == times.Y_m_d }">
+                  <div 
+                    class="day sunday" 
+                    :class="{ activeDay: rangeYYYY_MM_DD[day] == times.Y_m_d }"
+                    @click="changeDate(rangeYYYY_MM_DD[day])">
                     {{ firstCalDate ? rangeYYYY_MM_DD[day].slice(-5) : '' }}
                   </div>
               </div>
@@ -65,7 +75,12 @@ export default {
     };
   },
 
-  methods: {},
+  methods: {
+    changeDate(event) {
+      this.times.Y_m_d = event;
+      console.log(event);
+    },
+  },
 
   mounted() {
     style(
@@ -101,8 +116,12 @@ export default {
 .calendar-body-grid-container5 {
   grid-template-rows: calc( 25vh - 25px) calc( 25vh - 25px) calc( 25vh - 25px) calc( 25vh - 25px);
 }
-.calendar-body-grid-item {
+.day {
   border: solid black 1px;
+  cursor: pointer;
+}
+.day:hover:not(.activeDay) {
+  background-color: #EBCCFF;
 }
 .saturday {
   height: 50%;
@@ -112,7 +131,8 @@ export default {
   height: 50%;
 }
 .activeDay {
-  background-color: lightgreen
+  background-color: #ccffff;
+  cursor: default;
 }
 `
     );
