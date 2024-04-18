@@ -57,7 +57,7 @@ export default {
       'daysRangeArr',
       'patchUserSettings',
       'changeCalDaysOrder',
-      'calDayIndex',
+      'dayIndex',
       'calRow',
     ]),
   },

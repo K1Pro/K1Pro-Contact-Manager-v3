@@ -84,7 +84,8 @@ const useDefaultStore = Pinia.defineStore('default', {
       }
     },
     changeCalDaysOrder() {
-      const DaysOrderYesterday = this.calDay == 1 ? '' : 'previous Monday';
+      const DaysOrderYesterday =
+        this.dayOfTheWeek == 1 ? '' : 'previous Monday';
       if (this.userSettings.calendar.filters.days == 0) {
         this.time('POST', null, this.times.Y_m_d, 'firstCalDate');
       } else if (this.userSettings.calendar.filters.days == 1) {
@@ -100,7 +101,7 @@ const useDefaultStore = Pinia.defineStore('default', {
     },
   },
   getters: {
-    rangeYYYY_MM_DD(state) {
+    days(state) {
       let dateRangeStart = 1;
       let dateArray = [];
       let currentDate = new Date(state.firstCalDate);
@@ -118,17 +119,15 @@ const useDefaultStore = Pinia.defineStore('default', {
       }
       return dateArray;
     },
-    calDay(state) {
-      return new Date(state.times.Y_m_d).getDay();
+    dayOfTheWeek(state) {
+      return new Date(state.times.Y_m_d).getDay(); // 1 is Monday, 2 is Tuesday, ..., 0 is Sunday
     },
-    calDayIndex(state) {
-      return state.rangeYYYY_MM_DD.findIndex((day) => day == state.times.Y_m_d);
+    dayIndex(state) {
+      return state.days.findIndex((day) => day == state.times.Y_m_d);
     },
     calRow(state) {
       return Math.ceil(
-        (state.rangeYYYY_MM_DD.findIndex((day) => day == state.times.Y_m_d) +
-          1) /
-          7
+        (state.days.findIndex((day) => day == state.times.Y_m_d) + 1) / 7
       );
     },
   },
