@@ -35,6 +35,7 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
+      'windowWidth',
       'userSettings',
       'times',
       'time',

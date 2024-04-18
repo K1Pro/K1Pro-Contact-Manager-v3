@@ -12,6 +12,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       userData: {},
       accountSettings: { tabs: {} },
       userSettings: { calendar: {}, layout: { 'grid-size': '' } },
+      tempUserSettings: { calendar: { filters: { days: '' } } },
       endPts: {
         url: url,
         accountLoginURL: accountlogin_url,

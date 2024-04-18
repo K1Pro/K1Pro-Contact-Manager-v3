@@ -55,6 +55,7 @@ export default {
       'userData',
       'accountSettings',
       'userSettings',
+      'tempUserSettings',
       'endPts',
       'times',
       'time',
@@ -102,6 +103,14 @@ export default {
           this.loggedIn = true;
           this.userData = userDataResJSON.data.user;
           this.accountSettings = userDataResJSON.data.accountSettings;
+          this.tempUserSettings.calendar.filters.days =
+            userDataResJSON.data.userSettings.calendar.filters.days;
+          if (
+            this.windowWidth < 768 &&
+            userDataResJSON.data.userSettings.calendar.filters.days != 0 &&
+            userDataResJSON.data.userSettings.calendar.filters.days != 1
+          )
+            userDataResJSON.data.userSettings.calendar.filters.days = 1;
           this.userSettings = userDataResJSON.data.userSettings;
         } else {
           this.loggedIn = false;

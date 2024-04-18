@@ -39,7 +39,8 @@ export default {
           </select>
         </div>
         <div class="navigation-item5">
-          <input type="range" min="0" max="5" v-model="userSettings.calendar.filters.days" @change="daysRangeChange" @input="changeCalDaysOrder">
+          <input v-if="windowWidth > 768" type="range" min="0" max="5" v-model="userSettings.calendar.filters.days" @change="daysRangeChange" @input="changeCalDaysOrder">
+          <input v-if="windowWidth < 768" type="range" min="0" max="1" v-model="userSettings.calendar.filters.days" @change="daysRangeChange" @input="changeCalDaysOrder">
           <span>{{ daysRangeArr[userSettings.calendar.filters.days] }}</span>
         </div>
       </div>
@@ -49,7 +50,9 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
+      'windowWidth',
       'userSettings',
+      'tempUserSettings',
       'times',
       'daysRangeArr',
       'patchUserSettings',
@@ -74,7 +77,18 @@ export default {
   methods: {
     daysRangeChange(event) {
       this.userSettings.calendar.filters.days = event.target.value;
+      this.tempUserSettings.calendar.filters.days = event.target.value;
       this.patchUserSettings();
+    },
+  },
+
+  watch: {
+    windowWidth(newWidth, oldWidth) {
+      if (
+        (newWidth < 768 && oldWidth > 768) ||
+        (newWidth > 768 && oldWidth < 768)
+      ) {
+      }
     },
   },
 

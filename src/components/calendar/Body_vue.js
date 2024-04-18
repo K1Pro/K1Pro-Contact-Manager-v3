@@ -36,7 +36,9 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
+      'windowWidth',
       'userSettings',
+      'tempUserSettings',
       'times',
       'firstCalDate',
       'daysRangeArr',
@@ -55,12 +57,35 @@ export default {
   //   emits: [''],
 
   data() {
-    return {};
+    return { tempDaysFilter: '' };
   },
 
   methods: {
     changeDate(selectedY_m_d) {
       this.times.Y_m_d = selectedY_m_d;
+    },
+  },
+
+  watch: {
+    windowWidth(newWidth, oldWidth) {
+      if (
+        newWidth < 768 &&
+        oldWidth > 768 &&
+        this.userSettings.calendar.filters.days != 0 &&
+        this.userSettings.calendar.filters.days != 1
+      ) {
+        this.userSettings.calendar.filters.days = 1;
+        this.changeCalDaysOrder();
+      } else if (
+        newWidth > 768 &&
+        oldWidth < 768 &&
+        this.userSettings.calendar.filters.days !=
+          this.tempUserSettings.calendar.filters.days
+      ) {
+        this.userSettings.calendar.filters.days =
+          this.tempUserSettings.calendar.filters.days;
+        this.changeCalDaysOrder();
+      }
     },
   },
 
