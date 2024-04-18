@@ -2,25 +2,31 @@
 
 export default {
   name: 'Navigation',
-
   template: /*html*/ `
     <div class="navigation">
       <div class="navigation-grid-container">
         <div class="navigation-grid-item1">
-          <i v-if="userSettings.calendar.filters.days == 5" class="fa fa-backward-fast" @click="getTime('-4 weeks', '-6 weeks previous Monday')">
-          </i>
+          <i v-if="userSettings.calendar.filters.days == 0" class="fa fa-backward-fast" @click="getTime('-1 week', '-1 week')"></i>
+          <i v-if="userSettings.calendar.filters.days == 1" class="fa fa-backward-fast" @click="getTime('-1 week', '-'+(calDayIndex+7)+' days')"></i>
+          <i v-if="userSettings.calendar.filters.days > 1" class="fa fa-backward-fast" @click="getTime('-4 weeks', '-'+(calRow+3)+' weeks')"></i>
         </div>
         <div class="navigation-grid-item2">
-          <i class="fa fa-backward-step" @click="getTime('-1 week', '-3 weeks previous Monday')"></i>
+          <i v-if="userSettings.calendar.filters.days == 0" class="fa fa-backward-step" @click="getTime('-1 day', '-1 day')"></i>
+          <i v-if="userSettings.calendar.filters.days == 1" class="fa fa-backward-step" @click="getTime('-3 days', '-'+(calDayIndex+3)+' days')"></i>
+          <i v-if="userSettings.calendar.filters.days > 1" class="fa fa-backward-step" @click="getTime('-1 week', '-'+calRow+' weeks')"></i>
         </div>
         <div class="navigation-grid-item3">
-          <input v-model="times.Y_m_d" type="date" />
+          <input type="date" v-model="times.Y_m_d" @change="changeDate"/>
         </div>
         <div class="navigation-grid-item4">
-          <i class="fa fa-forward-step" @click="getTime('+1 week', '-1 week previous Monday')"></i>
+          <i v-if="userSettings.calendar.filters.days == 0" class="fa fa-forward-step" @click="getTime('+1 day', '+1 day')"></i>
+          <i v-if="userSettings.calendar.filters.days == 1" class="fa fa-forward-step" @click="getTime('+3 days', '+'+(calDayIndex-3)+' days')"></i>
+          <i v-if="userSettings.calendar.filters.days > 1" class="fa fa-forward-step" @click="getTime('+1 week', '-'+(calRow-2)+' weeks')"></i>
         </div>
         <div class="navigation-grid-item5">
-          <i class="fa fa-forward-fast" @click="getTime('+4 weeks', '+2 weeks previous Monday')"></i>
+          <i v-if="userSettings.calendar.filters.days == 0" class="fa fa-forward-fast" @click="getTime('+1 week', '+1 week')"></i>
+          <i v-if="userSettings.calendar.filters.days == 1" class="fa fa-forward-fast" @click="getTime('+1 week', '+'+(calDayIndex-7)+' days')"></i>
+          <i v-if="userSettings.calendar.filters.days > 1" class="fa fa-forward-fast" @click="getTime('+4 weeks', '-'+(calRow-5)+' weeks')"></i>
         </div>
       </div>
     </div>
@@ -32,7 +38,15 @@ export default {
       'userSettings',
       'times',
       'time',
+      'changeCalDaysOrder',
+      'rangeYYYY_MM_DD',
+      'calDayIndex',
+      'calRow',
     ]),
+
+    mondayException() {
+      return ![0, 7, 14, 21].includes(this.calDayIndex);
+    },
   },
 
   // components: {
@@ -48,7 +62,16 @@ export default {
   },
 
   methods: {
+    changeDate(event) {
+      console.log(this.rangeYYYY_MM_DD.includes(event.target.value));
+      if (!this.rangeYYYY_MM_DD.includes(event.target.value))
+        this.changeCalDaysOrder();
+    },
     getTime(dateTimeDesc, firstCalDateTimeDesc) {
+      firstCalDateTimeDesc =
+        this.mondayException && this.userSettings.calendar.filters.days > 1
+          ? firstCalDateTimeDesc.replace('--', '+') + ' previous Monday'
+          : firstCalDateTimeDesc.replace('--', '+');
       this.time('POST', null, `${this.times.Y_m_d} ${dateTimeDesc}`, 'time');
       // prettier-ignore
       this.time('POST', null, `${this.times.Y_m_d} ${firstCalDateTimeDesc}`, 'firstCalDate');
@@ -63,13 +86,15 @@ export default {
   display: grid;
   grid-template-columns: auto auto auto auto auto;
 }
+.navigation i {
+  cursor: pointer;
+}
 .navigation-grid-item1,
 .navigation-grid-item2,
 .navigation-grid-item4,
 .navigation-grid-item5 {
   font-size: 30px;
   color: white;
-  cursor: pointer;
 }
 .navigation-grid-item1,
 .navigation-grid-item4 {

@@ -5,11 +5,11 @@ export default {
   template: /*html*/ `
         <div class='calendar-body'>
           <div :class="'calendar-body-grid-container' + userSettings.calendar.filters.days">
-            <template v-for="day in daysRangeArr[userSettings.calendar.filters.days]">
+            <template v-for="(day, dayIndex) in daysRangeArr[userSettings.calendar.filters.days]">
               <div v-if="(day + 1) % 7 && day % 7" 
                 class="calendar-body-grid-item day" 
-                :class="{ activeDay: rangeYYYY_MM_DD[day-1] == times.Y_m_d }" 
-                @click="changeDate(rangeYYYY_MM_DD[day-1])">
+                :class="{ activeDay: dayIndex == calDayIndex }" 
+                @click="changeDate(rangeYYYY_MM_DD[day-1], dayIndex)">
                 {{ firstCalDate ? rangeYYYY_MM_DD[day-1].slice(-5) : '' }}
               </div>
 
@@ -17,14 +17,14 @@ export default {
                 class="calendar-body-grid-item">
                   <div 
                     class="day saturday" 
-                    :class="{ activeDay: rangeYYYY_MM_DD[day-1] == times.Y_m_d }"
-                    @click="changeDate(rangeYYYY_MM_DD[day-1])">
+                    :class="{ activeDay: dayIndex == calDayIndex }"
+                    @click="changeDate(rangeYYYY_MM_DD[day-1], dayIndex)">
                     {{ firstCalDate ? rangeYYYY_MM_DD[day-1].slice(-5) : '' }}
                   </div>
                   <div 
                     class="day sunday" 
-                    :class="{ activeDay: rangeYYYY_MM_DD[day] == times.Y_m_d }"
-                    @click="changeDate(rangeYYYY_MM_DD[day])">
+                    :class="{ activeDay: dayIndex+1 == calDayIndex }"
+                    @click="changeDate(rangeYYYY_MM_DD[day], dayIndex+1)">
                     {{ firstCalDate ? rangeYYYY_MM_DD[day].slice(-5) : '' }}
                   </div>
               </div>
@@ -40,7 +40,9 @@ export default {
       'times',
       'firstCalDate',
       'daysRangeArr',
+      'changeCalDaysOrder',
       'rangeYYYY_MM_DD',
+      'calDayIndex',
     ]),
   },
 
@@ -57,12 +59,13 @@ export default {
   },
 
   methods: {
-    changeDate(event) {
-      this.times.Y_m_d = event;
+    changeDate(selectedY_m_d) {
+      this.times.Y_m_d = selectedY_m_d;
     },
   },
 
   mounted() {
+    this.changeCalDaysOrder();
     style(
       'Calendar-body',
       /*css*/ `

@@ -165,8 +165,6 @@ export default {
   },
 
   mounted() {
-    // prettier-ignore
-    this.time('POST', null, `${this.times.Y_m_d} -1 week previous Monday`, 'firstCalDate');
     this.updateScreenWidth();
     this.onScreenResize();
 

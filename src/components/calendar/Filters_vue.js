@@ -39,7 +39,7 @@ export default {
           </select>
         </div>
         <div class="navigation-item5">
-          <input type="range" min="0" max="5" v-model="userSettings.calendar.filters.days" @change="daysRange" @input="mousetest">
+          <input type="range" min="0" max="5" v-model="userSettings.calendar.filters.days" @change="daysRangeChange" @input="changeCalDaysOrder">
           <span>{{ daysRangeArr[userSettings.calendar.filters.days] }}</span>
         </div>
       </div>
@@ -50,8 +50,11 @@ export default {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
       'userSettings',
-      'patchUserSettings',
+      'times',
       'daysRangeArr',
+      'patchUserSettings',
+      'changeCalDaysOrder',
+      'calDayIndex',
       'calRow',
     ]),
   },
@@ -69,14 +72,9 @@ export default {
   },
 
   methods: {
-    daysRange(event) {
+    daysRangeChange(event) {
       this.userSettings.calendar.filters.days = event.target.value;
       this.patchUserSettings();
-    },
-    mousetest() {
-      if (this.calRow > 1) {
-        console.log('not in first row');
-      }
     },
   },
 
