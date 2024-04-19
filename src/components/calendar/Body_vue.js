@@ -3,18 +3,6 @@
 export default {
   name: 'Calendar body',
 
-  //   <template v-if="firstCalDate">
-  //   <div v-for="contact in calContactEvents[days[dayIndex]]">{{ contact }}</div>
-  // </template>
-
-  // <template v-if="firstCalDate">
-  // <div v-for="contact in calContactEvents[days[dayIndex-1]]">{{ contact }}</div>
-  // </template>
-
-  // <template v-if="firstCalDate">
-  // <div v-for="contact in calContactEvents[days[dayIndex]]">{{ contact }}</div>
-  // </template>
-
   template: /*html*/ `
         <div class='calendar-body'>
           <div :class="'calendar-body-grid-container' + userSettings.calendar.filters.days">
@@ -25,10 +13,12 @@ export default {
                 @click="changeDate(days[dayIndex])">
                 {{ firstCalDate ? days[dayIndex].slice(-5) : '' }}
                 <template v-if="firstCalDate && calContactEvents[days[dayIndex]]">
-                  <div v-for="([contactKey, contactValue], contactIndex) in Object.entries(calContactEvents[days[dayIndex]])">
-                  {{ contactValue }} {{ contactKey }}
+                <div v-for="([calContactKey, calContactValue], calContactIndex) in Object.entries(calContactEvents[days[dayIndex]])">
+                  <div @click="selectContact(calContactValue.contactIndex)">
+                    {{ calContactValue.Time }} {{ calContactKey }}
                   </div>
-                </template>
+                </div>
+              </template>
               </div>
 
               <div v-if="(dayIndex + 1) % 7 === 0" 
@@ -61,6 +51,7 @@ export default {
       'userSettings',
       'tempUserSettings',
       'contacts',
+      'selectedContactIndex',
       'times',
       'firstCalDate',
       'changeCalDaysOrder',
@@ -68,24 +59,18 @@ export default {
     ]),
 
     calContactEvents() {
-      // let contactArray = {};
-      // this.contacts.forEach((contact) => {
-      //   this.days.forEach((day) => {
-      //     if (!contactArray[day]) contactArray[day] = [];
-      //     if (day in contact.Events) {
-      //       contactArray[day].push(contact.Members[0][0].Last_Name);
-      //     }
-      //   });
-      // });
-      // return contactArray;
-
       let contactArray = {};
-      this.contacts.forEach((contact) => {
+      this.contacts.forEach((contact, contactIndex) => {
+        // contactArray.push(contact.id);
         Object.entries(contact.Events).forEach(([calDay, calEvent]) => {
           if (this.days.includes(calDay)) {
             if (!contactArray[calDay]) contactArray[calDay] = {};
-            contactArray[calDay][contact.Members[0][0].Last_Name] =
-              calEvent.Time;
+            if (!contactArray[calDay][contact.Members[0].Last_Name])
+              contactArray[calDay][contact.Members[0].Last_Name] = {
+                contactIndex: contactIndex,
+                Last_Name: contact.Members[0].Last_Name,
+                Time: calEvent.Time,
+              };
           }
         });
       });
@@ -108,6 +93,10 @@ export default {
   methods: {
     changeDate(selectedY_m_d) {
       this.times.Y_m_d = selectedY_m_d;
+    },
+    selectContact(contactIndex) {
+      console.log(contactIndex);
+      this.selectedContactIndex = contactIndex;
     },
   },
 

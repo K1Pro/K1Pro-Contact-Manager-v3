@@ -6,10 +6,16 @@ export default {
   template: /*html*/ `
     <div class='contact-info'>
         <input type="search" placeholder="Search for customer" />
+        <div>{{ contacts[selectedContactIndex]?.Members[0].First_Name }}</div>
+        
     </div>`,
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, ['msg']),
+    ...Pinia.mapWritableState(useDefaultStore, [
+      'msg',
+      'contacts',
+      'selectedContactIndex',
+    ]),
   },
 
   //   components: {

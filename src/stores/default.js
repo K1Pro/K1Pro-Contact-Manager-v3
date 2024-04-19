@@ -14,6 +14,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       userSettings: { calendar: {}, layout: { 'grid-size': '' } },
       tempUserSettings: { calendar: { filters: { days: '' } } },
       contacts: {},
+      selectedContactIndex: '',
       endPts: {
         url: url,
         accountLoginURL: accountlogin_url,
