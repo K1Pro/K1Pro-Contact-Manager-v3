@@ -139,6 +139,7 @@ export default {
         if (getContactsResJSON.success) {
           // console.log(getContactsResJSON);
           this.contacts = getContactsResJSON.data.contacts;
+          console.log(getContactsResJSON.data.contacts);
         }
       } catch (error) {
         this.msg.snackBar = error.toString();

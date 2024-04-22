@@ -51,7 +51,6 @@ export default {
       'userSettings',
       'tempUserSettings',
       'contacts',
-      'selectedContactIndex',
       'times',
       'firstCalDate',
       'changeCalDaysOrder',
@@ -96,7 +95,7 @@ export default {
     },
     selectContact(contactIndex) {
       console.log(contactIndex);
-      this.selectedContactIndex = contactIndex;
+      this.userSettings.selectedContactIndex = contactIndex;
     },
   },
 

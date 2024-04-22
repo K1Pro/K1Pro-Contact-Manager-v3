@@ -2,19 +2,30 @@
 
 export default {
   name: 'Contact Info',
+  //<input type="text" v-model="contacts[userSettings.selectedContactIndex].Members[0].First_Name"/>
 
   template: /*html*/ `
     <div class='contact-info'>
         <input type="search" placeholder="Search for customer" />
-        <div>{{ contacts[selectedContactIndex]?.Members[0].First_Name }}</div>
+        <br/>
+        <br/>
+        <div>{{ contacts[userSettings.selectedContactIndex]?.Members[0].First_Name }}</div>
+        <br/>
+          <div v-for="(member, memberIndex) in contacts[userSettings.selectedContactIndex].Members">
+            <input type="text" v-model="contacts[userSettings.selectedContactIndex].Members[0].First_Name"/>
+          </div>
+
         
+
+
+         
     </div>`,
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
       'contacts',
-      'selectedContactIndex',
+      'userSettings',
     ]),
   },
 
