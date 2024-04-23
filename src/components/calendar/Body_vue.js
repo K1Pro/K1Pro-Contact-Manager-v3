@@ -160,6 +160,8 @@ export default {
 .day {
   border: solid black 1px;
   cursor: pointer;
+  overflow: hidden scroll;
+  white-space: nowrap;
 }
 .day:hover:not(.activeDay) {
   background-color: #EBCCFF;

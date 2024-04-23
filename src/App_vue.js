@@ -137,9 +137,9 @@ export default {
         });
         const getContactsResJSON = await response.json();
         if (getContactsResJSON.success) {
-          // console.log(getContactsResJSON);
+          console.log(getContactsResJSON);
           this.contacts = getContactsResJSON.data.contacts;
-          console.log(getContactsResJSON.data.contacts);
+          // console.log(getContactsResJSON.data.contacts);
         }
       } catch (error) {
         this.msg.snackBar = error.toString();
