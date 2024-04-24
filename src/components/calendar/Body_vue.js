@@ -158,10 +158,25 @@ export default {
   grid-template-rows: calc( 25vh - 25px) calc( 25vh - 25px) calc( 25vh - 25px) calc( 25vh - 25px);
 }
 .day {
-  border: solid black 1px;
+  border: solid #999999;
+  border-width: 2px;
   cursor: pointer;
   overflow: hidden scroll;
   white-space: nowrap;
+}
+.day::-webkit-scrollbar {
+  width: 5px;
+}
+.day::-webkit-scrollbar-track {
+  background: #888;
+}
+
+.day::-webkit-scrollbar-thumb {
+  background: #f1f1f1;
+}
+
+.day::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 .day:hover:not(.activeDay) {
   background-color: #EBCCFF;
