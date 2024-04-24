@@ -130,18 +130,18 @@ export default {
 .Calendar body{}
 .calendar-body-grid-container0 {
   display: grid;
-  grid-template-columns: auto;
+  grid-template-columns: 100%;
 }
 .calendar-body-grid-container1 {
   display: grid;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: 33.33% 33.34% 33.33%;
 }
 .calendar-body-grid-container2,
 .calendar-body-grid-container3,
 .calendar-body-grid-container4,
 .calendar-body-grid-container5 {
   display: grid;
-  grid-template-columns: auto auto auto auto auto auto;
+  grid-template-columns: 16.67% 16.67% 16.67% 16.67% 16.66% 16.66%;
 }
 .calendar-body-grid-container0,
 .calendar-body-grid-container1,
