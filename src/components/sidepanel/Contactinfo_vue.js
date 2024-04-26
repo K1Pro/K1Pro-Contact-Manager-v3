@@ -148,7 +148,7 @@ export default {
   },
 
   mounted() {
-    console.log(this.accountSettings.contactInfo.keys);
+    // console.log(this.accountSettings.contactInfo.keys);
     style(
       'Contact-Info',
       /*css*/ `

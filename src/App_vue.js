@@ -101,7 +101,7 @@ export default {
         });
         const userDataResJSON = await response.json();
         if (userDataResJSON.success) {
-          // console.log(userDataResJSON);
+          console.log(userDataResJSON);
           this.loggedIn = true;
           this.userData = userDataResJSON.data.user;
           this.accountSettings = userDataResJSON.data.accountSettings;
@@ -114,6 +114,7 @@ export default {
           )
             userDataResJSON.data.userSettings.calendar.filters.days = 1;
           this.userSettings = userDataResJSON.data.userSettings;
+          this.getContacts();
         } else {
           this.loggedIn = false;
           document.cookie = `_a_t=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${cookiePath};`;
@@ -138,11 +139,12 @@ export default {
         const getContactsResJSON = await response.json();
         if (getContactsResJSON.success) {
           console.log(getContactsResJSON);
-          this.contacts = getContactsResJSON.data.contacts;
+          // this.contacts = getContactsResJSON.data.contacts;
           // console.log(getContactsResJSON.data.contacts);
         }
       } catch (error) {
         this.msg.snackBar = error.toString();
+        console.log(error.toString());
       }
     },
 
@@ -182,10 +184,7 @@ export default {
     accessToken(newToken, oldToken) {
       this.userData = '';
       // this.loggedIn = false;
-      if (newToken != undefined) {
-        this.getUserData();
-        this.getContacts();
-      }
+      if (newToken != undefined) this.getUserData();
     },
   },
 
@@ -193,7 +192,6 @@ export default {
     this.getCookie('_a_t', '_s_i');
     if (this.accessToken) {
       this.getUserData();
-      this.getContacts();
     } else {
       this.loggedIn = false;
     }
