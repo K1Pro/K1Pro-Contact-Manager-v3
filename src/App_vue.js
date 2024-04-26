@@ -101,7 +101,7 @@ export default {
         });
         const userDataResJSON = await response.json();
         if (userDataResJSON.success) {
-          console.log(userDataResJSON);
+          // console.log(userDataResJSON);
           this.loggedIn = true;
           this.userData = userDataResJSON.data.user;
           this.accountSettings = userDataResJSON.data.accountSettings;
@@ -137,7 +137,7 @@ export default {
         });
         const getContactsResJSON = await response.json();
         if (getContactsResJSON.success) {
-          // console.log(getContactsResJSON);
+          console.log(getContactsResJSON);
           this.contacts = getContactsResJSON.data.contacts;
         }
       } catch (error) {

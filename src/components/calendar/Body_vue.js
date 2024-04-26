@@ -27,15 +27,27 @@ export default {
                   class="day saturday"
                   :class="{ activeDay: days[dayIndex-1] == times.Y_m_d }"
                   @click="changeDate(days[dayIndex-1])">
-                  {{ firstCalDate ? days[dayIndex-1].slice(-5) : '' }}
-      
+                    {{ firstCalDate ? days[dayIndex-1].slice(-5) : '' }}
+                    <template v-if="firstCalDate && calContactEvents[days[dayIndex-1]]">
+                    <div v-for="([calContactName, calContactValue], calContactIndex) in Object.entries(calContactEvents[days[dayIndex-1]])">
+                      <div @click="selectContact(calContactValue.contactIndex)">
+                        {{ calContactValue.Time }} {{ calContactName }}
+                      </div>
+                    </div>
+                  </template>
                 </div>
                 <div
                   class="day sunday"
                   :class="{ activeDay: days[dayIndex] == times.Y_m_d }"
                   @click="changeDate(days[dayIndex])">
-                  {{ firstCalDate ? days[dayIndex].slice(-5) : '' }}
-      
+                    {{ firstCalDate ? days[dayIndex].slice(-5) : '' }}
+                    <template v-if="firstCalDate && calContactEvents[days[dayIndex]]">
+                    <div v-for="([calContactName, calContactValue], calContactIndex) in Object.entries(calContactEvents[days[dayIndex]])">
+                      <div @click="selectContact(calContactValue.contactIndex)">
+                        {{ calContactValue.Time }} {{ calContactName }}
+                      </div>
+                    </div>
+                  </template>
                 </div>
             </div>
       
@@ -63,6 +75,7 @@ export default {
         Object.entries(contact.Events).forEach(([calDay, calEvent]) => {
           if (this.days.includes(calDay)) {
             if (!contactArray[calDay]) contactArray[calDay] = {};
+            // if (contact.Members[0]) {
             if (
               !contactArray[calDay][Object.values(contact.Members[0])[0].Name]
             )
@@ -71,6 +84,12 @@ export default {
                   contactIndex: contactIndex,
                   Time: calEvent.Time,
                 };
+            // } else {
+            //   contactArray[calDay]['Bad thing'] = {
+            //     contactIndex: contactIndex,
+            //     Time: calEvent.Time,
+            //   };
+            // }
           }
         });
       });
@@ -96,6 +115,7 @@ export default {
     },
     selectContact(contactIndex) {
       console.log(contactIndex);
+      console.log(this.contacts[contactIndex]);
       this.userSettings.selectedContactIndex = contactIndex;
     },
   },
