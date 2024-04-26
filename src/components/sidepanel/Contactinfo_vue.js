@@ -57,6 +57,9 @@ export default {
         <input type="search" placeholder="Search for customer" />
         <br/>
         <br/>
+        <div>
+        {{ selectedContact.First }} {{ selectedContact.Name }}
+        </div>
 
         <br/>
           
@@ -72,6 +75,17 @@ export default {
       'endPts',
       'contacts',
     ]),
+    selectedContact() {
+      let firstMember = false;
+      if (this.contacts && this.userSettings) {
+        if (this.contacts[this.userSettings.selectedContactIndex]?.Members[0]) {
+          firstMember = Object.values(
+            this.contacts[this.userSettings.selectedContactIndex]?.Members[0]
+          )[0];
+        }
+      }
+      return firstMember;
+    },
     Addresses() {
       // add indexes here and this should work, make this easier to read too.
       const addressesArray = [];
