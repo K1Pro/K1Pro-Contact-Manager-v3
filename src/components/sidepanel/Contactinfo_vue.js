@@ -4,60 +4,62 @@ export default {
   name: 'Contact Info',
   //<input type="text" v-model="contacts[userSettings.selectedContactIndex].Members[0].First_Name"/>
 
+  // <div v-for="(member, memberIndex) in contacts[userSettings.selectedContactIndex]?.Members">
+  //           <input
+  //             type="text"
+  //             v-if="contacts[userSettings.selectedContactIndex]?.Members[memberIndex].First_Name"
+  //             v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex].First_Name"
+  //             @change="patchMember($event, 'Members', memberIndex, 'First_Name' )" />
+  //           <input
+  //             type="text"
+  //             v-else />
+  //           <input
+  //             type="text"
+  //             v-if="contacts[userSettings.selectedContactIndex]?.Members[memberIndex].Last_Name"
+  //             v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex].Last_Name"
+  //             @change="patchMember($event, 'Members', memberIndex, 'Last_Name' )" />
+  //           <input
+  //             type="text"
+  //             v-else />
+  //           <input
+  //             type="date"
+  //             v-if="contacts[userSettings.selectedContactIndex]?.Members[memberIndex].DoB"
+  //             v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex].DoB"
+  //             @change="patchMember($event, 'Members', memberIndex, 'DoB' )" />
+  //           <input
+  //             type="date"
+  //             v-else />
+  //         </div>
+
+  //         <div v-for="(property, propertyIndex) in contacts[userSettings.selectedContactIndex]?.Properties">
+  //           <input
+  //             v-if="contacts[userSettings.selectedContactIndex]?.Properties[propertyIndex].Address_1"
+  //             type="text"
+  //             v-model="contacts[userSettings.selectedContactIndex].Properties[propertyIndex].Address_1"
+  //             @change="patchProperty($event, 'Properties', propertyIndex, 'Address_1' )" />
+  //           <input
+  //             type="text"
+  //             v-if="'Address_1' in contacts[userSettings.selectedContactIndex]?.Properties[propertyIndex]"
+  //             placeholder="Address_1" />
+  //           <input
+  //             v-if="contacts[userSettings.selectedContactIndex]?.Properties[propertyIndex].Address_2"
+  //             type="text"
+  //             v-model="contacts[userSettings.selectedContactIndex].Properties[propertyIndex].Address_2"
+  //             @change="patchProperty($event, 'Properties', propertyIndex, 'Address_2' )" />
+  //           <input
+  //             type="text"
+  //             v-if="'Address_2' in contacts[userSettings.selectedContactIndex]?.Properties[propertyIndex]"
+  //             placeholder="Address_2" />
+  //         </div>        <div>{{ Object.values(contacts[userSettings.selectedContactIndex]?.Members[0]) }}</div>
+
   template: /*html*/ `
     <div class='contact-info'>
         <input type="search" placeholder="Search for customer" />
         <br/>
         <br/>
-        <div>{{ contacts[userSettings.selectedContactIndex]?.Members[0].First_Name }}</div>
-        <br/>
-          <div v-for="(member, memberIndex) in contacts[userSettings.selectedContactIndex]?.Members">
-            <input 
-              type="text" 
-              v-if="contacts[userSettings.selectedContactIndex]?.Members[memberIndex].First_Name"
-              v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex].First_Name" 
-              @change="patchMember($event, 'Members', memberIndex, 'First_Name' )" />
-            <input 
-              type="text" 
-              v-else />
-            <input 
-              type="text" 
-              v-if="contacts[userSettings.selectedContactIndex]?.Members[memberIndex].Last_Name" 
-              v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex].Last_Name" 
-              @change="patchMember($event, 'Members', memberIndex, 'Last_Name' )" />
-            <input 
-              type="text" 
-              v-else />
-            <input 
-              type="date" 
-              v-if="contacts[userSettings.selectedContactIndex]?.Members[memberIndex].DoB" 
-              v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex].DoB" 
-              @change="patchMember($event, 'Members', memberIndex, 'DoB' )" />
-            <input 
-              type="date" 
-              v-else />
-          </div>
 
-          <div v-for="(property, propertyIndex) in contacts[userSettings.selectedContactIndex]?.Properties">
-            <input
-              v-if="contacts[userSettings.selectedContactIndex]?.Properties[propertyIndex].Address_1"
-              type="text"
-              v-model="contacts[userSettings.selectedContactIndex].Properties[propertyIndex].Address_1"
-              @change="patchProperty($event, 'Properties', propertyIndex, 'Address_1' )" />
-            <input
-              type="text"
-              v-if="'Address_1' in contacts[userSettings.selectedContactIndex]?.Properties[propertyIndex]"
-              placeholder="Address_1" />
-            <input
-              v-if="contacts[userSettings.selectedContactIndex]?.Properties[propertyIndex].Address_2"
-              type="text"
-              v-model="contacts[userSettings.selectedContactIndex].Properties[propertyIndex].Address_2"
-              @change="patchProperty($event, 'Properties', propertyIndex, 'Address_2' )" />
-            <input
-              type="text"
-              v-if="'Address_2' in contacts[userSettings.selectedContactIndex]?.Properties[propertyIndex]"
-              placeholder="Address_2" />
-          </div>
+        <br/>
+          
 
     </div>`,
 
@@ -73,30 +75,30 @@ export default {
     Addresses() {
       // add indexes here and this should work, make this easier to read too.
       const addressesArray = [];
-      this.contacts[this.userSettings.selectedContactIndex]?.Properties.forEach(
-        (property) => {
-          if (
-            this.accountSettings.contactInfo.keys.Properties.Address.some(
-              (item) => Object.keys(property).includes(item)
-            )
-          )
-            addressesArray.push(property);
-        }
-      );
+      // this.contacts[this.userSettings.selectedContactIndex]?.Properties.forEach(
+      //   (property) => {
+      //     if (
+      //       this.accountSettings.contactInfo.keys.Properties.Address.some(
+      //         (item) => Object.keys(property).includes(item)
+      //       )
+      //     )
+      //       addressesArray.push(property);
+      //   }
+      // );
       return addressesArray;
     },
     Assets() {
       const assetsArray = [];
-      this.contacts[this.userSettings.selectedContactIndex]?.Properties.forEach(
-        (property) => {
-          if (
-            this.accountSettings.contactInfo.keys.Properties.Car.some((item) =>
-              Object.keys(property).includes(item)
-            )
-          )
-            assetsArray.push(property);
-        }
-      );
+      // this.contacts[this.userSettings.selectedContactIndex]?.Properties.forEach(
+      //   (property) => {
+      //     if (
+      //       this.accountSettings.contactInfo.keys.Properties.Car.some((item) =>
+      //         Object.keys(property).includes(item)
+      //       )
+      //     )
+      //       assetsArray.push(property);
+      //   }
+      // );
       return assetsArray;
     },
   },

@@ -6,42 +6,41 @@ export default {
   template: /*html*/ `
         <div class='calendar-body'>
           <div :class="'calendar-body-grid-container' + userSettings.calendar.filters.days">
-            <template v-for="(day, dayIndex) in days">
-              <div v-if="((dayIndex + 1) % 7) && ((dayIndex + 2) % 7)" 
-                class="calendar-body-grid-item day" 
-                :class="{ activeDay: days[dayIndex] == times.Y_m_d }" 
-                @click="changeDate(days[dayIndex])">
+          <template v-for="(day, dayIndex) in days">
+            <div v-if="((dayIndex + 1) % 7) && ((dayIndex + 2) % 7)"
+              class="calendar-body-grid-item day"
+              :class="{ activeDay: days[dayIndex] == times.Y_m_d }"
+              @click="changeDate(days[dayIndex])">
                 {{ firstCalDate ? days[dayIndex].slice(-5) : '' }}
                 <template v-if="firstCalDate && calContactEvents[days[dayIndex]]">
-                <div v-for="([calContactKey, calContactValue], calContactIndex) in Object.entries(calContactEvents[days[dayIndex]])">
+                <div v-for="([calContactName, calContactValue], calContactIndex) in Object.entries(calContactEvents[days[dayIndex]])">
                   <div @click="selectContact(calContactValue.contactIndex)">
-                    {{ calContactValue.Time }} {{ calContactKey }}
+                    {{ calContactValue.Time }} {{ calContactName }}
                   </div>
                 </div>
               </template>
-              </div>
-
-              <div v-if="(dayIndex + 1) % 7 === 0" 
-                class="calendar-body-grid-item">
-                  <div 
-                    class="day saturday" 
-                    :class="{ activeDay: days[dayIndex-1] == times.Y_m_d }"
-                    @click="changeDate(days[dayIndex-1])">
-                    {{ firstCalDate ? days[dayIndex-1].slice(-5) : '' }}
-
-
-                  </div>
-                  <div 
-                    class="day sunday" 
-                    :class="{ activeDay: days[dayIndex] == times.Y_m_d }"
-                    @click="changeDate(days[dayIndex])">
-                    {{ firstCalDate ? days[dayIndex].slice(-5) : '' }}
-
-                  </div>
-              </div>
-
-            </template>
-          </div>
+            </div>
+      
+            <div v-if="(dayIndex + 1) % 7 === 0"
+              class="calendar-body-grid-item">
+                <div
+                  class="day saturday"
+                  :class="{ activeDay: days[dayIndex-1] == times.Y_m_d }"
+                  @click="changeDate(days[dayIndex-1])">
+                  {{ firstCalDate ? days[dayIndex-1].slice(-5) : '' }}
+      
+                </div>
+                <div
+                  class="day sunday"
+                  :class="{ activeDay: days[dayIndex] == times.Y_m_d }"
+                  @click="changeDate(days[dayIndex])">
+                  {{ firstCalDate ? days[dayIndex].slice(-5) : '' }}
+      
+                </div>
+            </div>
+      
+          </template>
+        </div>
         </div>`,
 
   computed: {
@@ -64,12 +63,14 @@ export default {
         Object.entries(contact.Events).forEach(([calDay, calEvent]) => {
           if (this.days.includes(calDay)) {
             if (!contactArray[calDay]) contactArray[calDay] = {};
-            if (!contactArray[calDay][contact.Members[0].Last_Name])
-              contactArray[calDay][contact.Members[0].Last_Name] = {
-                contactIndex: contactIndex,
-                Last_Name: contact.Members[0].Last_Name,
-                Time: calEvent.Time,
-              };
+            if (
+              !contactArray[calDay][Object.values(contact.Members[0])[0].Name]
+            )
+              contactArray[calDay][Object.values(contact.Members[0])[0].Name] =
+                {
+                  contactIndex: contactIndex,
+                  Time: calEvent.Time,
+                };
           }
         });
       });
@@ -113,10 +114,10 @@ export default {
         newWidth > 768 &&
         oldWidth < 768 &&
         this.userSettings.calendar.filters.days !=
-          this.tempUserSettings.calendar.filters.days
+          this.tempUserSettings?.calendar.filters.days
       ) {
         this.userSettings.calendar.filters.days =
-          this.tempUserSettings.calendar.filters.days;
+          this.tempUserSettings?.calendar.filters.days;
         this.changeCalDaysOrder();
       }
     },

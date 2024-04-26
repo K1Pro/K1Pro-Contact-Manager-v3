@@ -49,7 +49,7 @@ export default {
             <span v-if="sidePanelOpen">Recurring tasks</span>
           </button>
 
-          <template v-for="(accountParam, accountParamIndex) in accountSettings.tabs">
+          <template v-for="(accountParam, accountParamIndex) in accountSettings?.tabs">
             <button 
               v-for="([paramKey, paramValue], paramIndex) in Object.entries(accountParam)"
               :title="paramKey"

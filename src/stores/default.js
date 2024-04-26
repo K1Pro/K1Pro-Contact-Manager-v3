@@ -10,28 +10,10 @@ const useDefaultStore = Pinia.defineStore('default', {
       },
       windowWidth: 0,
       userData: {},
-      accountSettings: { tabs: {}, contactInfo: { keys: '' } },
-      userSettings: {
-        selectedContactIndex: 0,
-        calendar: {},
-        layout: { 'grid-size': '' },
-        sidepanel: {},
-      },
-      tempUserSettings: { calendar: { filters: { days: '' } } },
-      contacts: [
-        {
-          Members: [
-            {
-              First_Name: '',
-              Last_Name: '',
-              DoB: '',
-              Type: '',
-            },
-          ],
-          Properties: [],
-          Events: {},
-        },
-      ],
+      accountSettings: {},
+      userSettings: {},
+      tempUserSettings: {},
+      contacts: [],
       endPts: {
         url: url,
         accountLoginURL: accountlogin_url,

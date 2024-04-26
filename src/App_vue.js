@@ -105,8 +105,7 @@ export default {
           this.loggedIn = true;
           this.userData = userDataResJSON.data.user;
           this.accountSettings = userDataResJSON.data.accountSettings;
-          this.tempUserSettings.calendar.filters.days =
-            userDataResJSON.data.userSettings.calendar.filters.days;
+          this.tempUserSettings = userDataResJSON.data.userSettings;
           if (
             this.windowWidth < 768 &&
             userDataResJSON.data.userSettings.calendar.filters.days != 0 &&
@@ -138,9 +137,8 @@ export default {
         });
         const getContactsResJSON = await response.json();
         if (getContactsResJSON.success) {
-          console.log(getContactsResJSON);
-          // this.contacts = getContactsResJSON.data.contacts;
-          // console.log(getContactsResJSON.data.contacts);
+          // console.log(getContactsResJSON);
+          this.contacts = getContactsResJSON.data.contacts;
         }
       } catch (error) {
         this.msg.snackBar = error.toString();
