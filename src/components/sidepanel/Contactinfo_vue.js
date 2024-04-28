@@ -8,10 +8,8 @@ export default {
         <input type="search" placeholder="Search for customer" />
         <br/>
         <br/>
-        <div>
-        </div>
         <div v-for="(member, memberIndex) in contacts[userSettings.selectedContactIndex]?.Members">
-          <div v-for="(memberInfo, memberType) in member">
+          <div class="member" v-for="(memberInfo, memberType) in member">
             {{ memberType }}
             <div v-for="memberInputs in accountSettings.contactInfo.keys.Members[memberType]">
                 <input 
@@ -20,9 +18,15 @@ export default {
                   v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex][memberType][memberInputs.value]" />
             </div>
           </div>
+          <template v-if="memberIndex === contacts[userSettings.selectedContactIndex]?.Members.length - 1">
+            <br />
+            <button>Add member</button>
+            <hr>
+          </template>
         </div>
+
         <div v-for="(property, propertyIndex) in contacts[userSettings.selectedContactIndex]?.Properties">
-          <div v-for="(propertyInfo, propertyType) in property">
+          <div class="property" v-for="(propertyInfo, propertyType) in property">
             {{ propertyType }}
             <div v-for="propertyInputs in accountSettings.contactInfo.keys.Properties[propertyType]">
               <input 
@@ -31,10 +35,15 @@ export default {
                 v-model="contacts[userSettings.selectedContactIndex].Properties[propertyIndex][propertyType][propertyInputs.value]" />
             </div>
           </div>
+          <template v-if="propertyIndex === contacts[userSettings.selectedContactIndex]?.Properties.length - 1">
+            <br />
+            <button>Add property</button>
+            <hr>
+          </template>
         </div>
+
         <div v-for="(asset, assetIndex) in contacts[userSettings.selectedContactIndex]?.Assets">
           <div v-for="(assetInfo, assetType) in asset">
-            {{ assetType }}
             <div v-for="assetInputs in accountSettings.contactInfo.keys.Assets[assetType]">
               <input 
                 :placeholder="assetInfo[assetInputs.placeholder]"
@@ -42,10 +51,15 @@ export default {
                 v-model="contacts[userSettings.selectedContactIndex].Assets[assetIndex][assetType]" />
             </div>
           </div>
+          <template v-if="assetIndex === contacts[userSettings.selectedContactIndex]?.Assets.length - 1">
+            <br />
+            <button>Add asset</button>
+            <hr>
+          </template>
         </div>
+
         <div v-for="(comm, commIndex) in contacts[userSettings.selectedContactIndex]?.Communications">
           <div v-for="(commInfo, commType) in comm">
-            {{ commType }}
             <div v-for="commInputs in accountSettings.contactInfo.keys.Communications[commType]">
               <input 
                 :placeholder="commInfo[commInputs.placeholder]"
@@ -53,6 +67,11 @@ export default {
                 v-model="contacts[userSettings.selectedContactIndex].Communications[commIndex][commType]" />
             </div>
           </div>
+          <template v-if="commIndex === contacts[userSettings.selectedContactIndex]?.Communications.length - 1">
+            <br />
+            <button>Add connection</button>
+            <hr>
+          </template>
         </div>
 
         <br/>
@@ -123,21 +142,37 @@ export default {
     style(
       'Contact-Info',
       /*css*/ `
-.contact-info{}
+.contact-info {
+  text-align: center;
+  font-family: 'Helvetica', sans-serif;
+}
 .contact-info input[type='search'] {
     width: 100%;
     padding: 10px 5px 10px 45px;
-    /* margin-bottom: 10px; */
+    border-left: 0px solid black;
+    border-left-width: 12px;
+    border-top: 1px solid grey;
+    border-right: 1px solid grey;
+    border-bottom: 1px solid grey;
     }
 .contact-info input[type='text'] {
-  margin-bottom: -2px;
+
   }
 .contact-info input[type='date'] {
   width: 100%;
-  border-style: solid;
+  border-width: 0px;
+  font-family: 'Helvetica', sans-serif;
+  padding: 6px
+  /* border-style: solid;
   border-width: 0px 0px 1px 0px;
-  border-color: #000000;
+  border-color: #000000; */
   }
+.member {
+  text-align: left;
+}
+.property{
+  text-align: left;
+}
 `
     );
   },
