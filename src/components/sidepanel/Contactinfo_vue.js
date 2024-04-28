@@ -40,7 +40,18 @@ export default {
                 :placeholder="assetInfo[assetInputs.placeholder]"
                 :type="assetInputs.type" 
                 v-model="contacts[userSettings.selectedContactIndex].Assets[assetIndex][assetType]" />
+            </div>
           </div>
+        </div>
+        <div v-for="(comm, commIndex) in contacts[userSettings.selectedContactIndex]?.Communications">
+          <div v-for="(commInfo, commType) in comm">
+            {{ commType }}
+            <div v-for="commInputs in accountSettings.contactInfo.keys.Communications[commType]">
+              <input 
+                :placeholder="commInfo[commInputs.placeholder]"
+                :type="commInputs.type" 
+                v-model="contacts[userSettings.selectedContactIndex].Communications[commIndex][commType]" />
+            </div>
           </div>
         </div>
 
