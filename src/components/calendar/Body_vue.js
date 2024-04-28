@@ -114,8 +114,6 @@ export default {
       this.times.Y_m_d = selectedY_m_d;
     },
     selectContact(contactIndex) {
-      console.log(contactIndex);
-      console.log(this.contacts[contactIndex]);
       this.userSettings.selectedContactIndex = contactIndex;
     },
   },

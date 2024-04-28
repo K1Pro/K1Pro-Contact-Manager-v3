@@ -58,7 +58,30 @@ export default {
         <br/>
         <br/>
         <div>
-        {{ selectedContact.First }} {{ selectedContact.Name }}
+        </div>
+        <div v-for="(member, memberIndex) in contacts[userSettings.selectedContactIndex]?.Members">
+          <div v-for="(memberInfo, memberType) in member">
+            {{ memberType }}
+            <div v-for="memberInputs in accountSettings.contactInfo.keys.Members[memberType]">
+                <input :type="memberInputs.type" :value="memberInfo[memberInputs.value]" :placeholder="memberInfo[memberInputs.placeholder]" />
+            </div>
+          </div>
+        </div>
+        <div v-for="(property, propertyIndex) in contacts[userSettings.selectedContactIndex]?.Properties">
+          <div v-for="(propertyInfo, propertyType) in property">
+            {{ propertyType }}
+            <div v-for="propertyInputs in accountSettings.contactInfo.keys.Properties[propertyType]">
+              <input :type="propertyInputs.type" :value="propertyInfo[propertyInputs.value]" :placeholder="propertyInfo[propertyInputs.placeholder]" />
+            </div>
+          </div>
+        </div>
+        <div v-for="(asset, assetIndex) in contacts[userSettings.selectedContactIndex]?.Assets">
+          <div v-for="(assetInfo, assetType) in asset">
+            {{ assetType }}
+            <div v-for="assetInputs in accountSettings.contactInfo.keys.Assets[assetType]">
+              <input :type="assetInputs.type" :value="assetInfo" :placeholder="assetInfo[assetInputs.placeholder]" />
+          </div>
+          </div>
         </div>
 
         <br/>
@@ -74,6 +97,7 @@ export default {
       'userSettings',
       'endPts',
       'contacts',
+      'membersSlctdCntctArr',
     ]),
     selectedContact() {
       let firstMember = false;
