@@ -192,67 +192,67 @@ export default {
       'Login',
       /*css*/ `
 .login {
-width: 290px;
+  width: 290px;
 }
 .login-title {
-padding: 20px;
+  padding: 20px;
 }
 .login-body {
-padding: 10px 20px 20px 20px;
-text-align: center;
+  padding: 10px 20px 20px 20px;
+  text-align: center;
 }
 .login-body button,
 .login-body input[type='submit'] {
-width: 100%;
-padding: 5px;
-margin-bottom: 10px;
+  width: 100%;
+  padding: 5px;
+  margin-bottom: 10px;
 }
 .login-username {
-position: relative;
+  position: relative;
 }
 .login-password {
-position: relative;
+  position: relative;
 }
 .login-username i,
 .login-password i {
-position: absolute;
-top: 7px;
-left: 7px;
-color: grey;
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  color: grey;
 }
 .login-password button {
-width: 30px;
-position: absolute;
-top: 2px;
-right: 0px;
-background: none;
-border: none;
+  width: 30px;
+  position: absolute;
+  top: 2px;
+  right: 0px;
+  background: none;
+  border: none;
 }
 .login-body input[type='text'],
 .login-body input[type='password'] {
-width: 100%;
-padding: 5px 0px 5px 30px;
-margin-bottom: 10px;
+  width: 100%;
+  padding: 5px 0px 5px 30px;
+  margin-bottom: 10px;
 }
 .login-remember {
-white-space: nowrap;
-overflow: hidden;
-padding: 6px;
-text-align: left;
-font-size: 12px;
-border-width: 1px;
-border-radius: 2px;
-border-style: solid;
-border-color: light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
-background-color: white;
-margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 6px;
+  text-align: left;
+  font-size: 12px;
+  border-width: 1px;
+  border-radius: 2px;
+  border-style: solid;
+  border-color: light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
+  background-color: white;
+  margin-bottom: 10px;
 }
 .login-remember input {
-margin: 0px 5px 0px 0px;
+  margin: 0px 5px 0px 0px;
 }
 .login-copyright {
-font-size: 12px;
-padding: 15px 0px 0px 0px;
+  font-size: 12px;
+  padding: 15px 0px 0px 0px;
 }
     `
     );

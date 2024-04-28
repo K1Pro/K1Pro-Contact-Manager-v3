@@ -5,78 +5,84 @@ export default {
 
   template: /*html*/ `
     <div class='contact-info'>
+      <div class="search-group">
+        <i class="fa-solid fa-magnifying-glass"></i>
         <input type="search" placeholder="Search for customer" />
-        <br/>
-        <br/>
-        <div v-for="(member, memberIndex) in contacts[userSettings.selectedContactIndex]?.Members">
-          <div class="member" v-for="(memberInfo, memberType) in member">
-            {{ memberType }}
-            <div v-for="memberInputs in accountSettings.contactInfo.keys.Members[memberType]">
-                <input 
-                  :type="memberInputs.type" 
-                  :placeholder="memberInfo[memberInputs.placeholder]"
-                  v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex][memberType][memberInputs.value]" />
-            </div>
-          </div>
-          <template v-if="memberIndex === contacts[userSettings.selectedContactIndex]?.Members.length - 1">
-            <br />
-            <button>Add member</button>
-            <hr>
-          </template>
-        </div>
-
-        <div v-for="(property, propertyIndex) in contacts[userSettings.selectedContactIndex]?.Properties">
-          <div class="property" v-for="(propertyInfo, propertyType) in property">
-            {{ propertyType }}
-            <div v-for="propertyInputs in accountSettings.contactInfo.keys.Properties[propertyType]">
+        <select name="Contact Search">
+          <option value="volvo">Contacts</option>
+          <option value="saab">Saab</option>
+          <option value="mercedes">Mercedes</option>
+          <option value="audi">Audi</option>
+        </select>
+      </div>
+      <br/>
+      <br/>
+      <div v-for="(member, memberIndex) in contacts[userSettings.selectedContactIndex]?.Members">
+        <div class="member" v-for="(memberInfo, memberType) in member">
+          {{ memberType }}
+          <div v-for="memberInputs in accountSettings.contactInfo.keys.Members[memberType]">
               <input 
-                :type="propertyInputs.type" 
-                :placeholder="propertyInfo[propertyInputs.placeholder]"
-                v-model="contacts[userSettings.selectedContactIndex].Properties[propertyIndex][propertyType][propertyInputs.value]" />
-            </div>
+                :type="memberInputs.type" 
+                :placeholder="memberInfo[memberInputs.placeholder]"
+                v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex][memberType][memberInputs.value]" />
           </div>
-          <template v-if="propertyIndex === contacts[userSettings.selectedContactIndex]?.Properties.length - 1">
-            <br />
-            <button>Add property</button>
-            <hr>
-          </template>
         </div>
+        <template v-if="memberIndex === contacts[userSettings.selectedContactIndex]?.Members.length - 1">
+          <br />
+          <button>Add member</button>
+          <hr>
+        </template>
+      </div>
 
-        <div v-for="(asset, assetIndex) in contacts[userSettings.selectedContactIndex]?.Assets">
-          <div v-for="(assetInfo, assetType) in asset">
-            <div v-for="assetInputs in accountSettings.contactInfo.keys.Assets[assetType]">
-              <input 
-                :placeholder="assetInfo[assetInputs.placeholder]"
-                :type="assetInputs.type" 
-                v-model="contacts[userSettings.selectedContactIndex].Assets[assetIndex][assetType]" />
-            </div>
+      <div v-for="(property, propertyIndex) in contacts[userSettings.selectedContactIndex]?.Properties">
+        <div class="property" v-for="(propertyInfo, propertyType) in property">
+          {{ propertyType }}
+          <div v-for="propertyInputs in accountSettings.contactInfo.keys.Properties[propertyType]">
+            <input 
+              :type="propertyInputs.type" 
+              :placeholder="propertyInfo[propertyInputs.placeholder]"
+              v-model="contacts[userSettings.selectedContactIndex].Properties[propertyIndex][propertyType][propertyInputs.value]" />
           </div>
-          <template v-if="assetIndex === contacts[userSettings.selectedContactIndex]?.Assets.length - 1">
-            <br />
-            <button>Add asset</button>
-            <hr>
-          </template>
         </div>
+        <template v-if="propertyIndex === contacts[userSettings.selectedContactIndex]?.Properties.length - 1">
+          <br />
+          <button>Add property</button>
+          <hr>
+        </template>
+      </div>
 
-        <div v-for="(comm, commIndex) in contacts[userSettings.selectedContactIndex]?.Communications">
-          <div v-for="(commInfo, commType) in comm">
-            <div v-for="commInputs in accountSettings.contactInfo.keys.Communications[commType]">
-              <input 
-                :placeholder="commInfo[commInputs.placeholder]"
-                :type="commInputs.type" 
-                v-model="contacts[userSettings.selectedContactIndex].Communications[commIndex][commType]" />
-            </div>
+      <div v-for="(asset, assetIndex) in contacts[userSettings.selectedContactIndex]?.Assets">
+        <div v-for="(assetInfo, assetType) in asset">
+          <div v-for="assetInputs in accountSettings.contactInfo.keys.Assets[assetType]">
+            <input 
+              :placeholder="assetInfo[assetInputs.placeholder]"
+              :type="assetInputs.type" 
+              v-model="contacts[userSettings.selectedContactIndex].Assets[assetIndex][assetType]" />
           </div>
-          <template v-if="commIndex === contacts[userSettings.selectedContactIndex]?.Communications.length - 1">
-            <br />
-            <button>Add connection</button>
-            <hr>
-          </template>
         </div>
+        <template v-if="assetIndex === contacts[userSettings.selectedContactIndex]?.Assets.length - 1">
+          <br />
+          <button>Add asset</button>
+          <hr>
+        </template>
+      </div>
 
-        <br/>
-          
-
+      <div v-for="(comm, commIndex) in contacts[userSettings.selectedContactIndex]?.Communications">
+        <div v-for="(commInfo, commType) in comm">
+          <div v-for="commInputs in accountSettings.contactInfo.keys.Communications[commType]">
+            <input 
+              :placeholder="commInfo[commInputs.placeholder]"
+              :type="commInputs.type" 
+              v-model="contacts[userSettings.selectedContactIndex].Communications[commIndex][commType]" />
+          </div>
+        </div>
+        <template v-if="commIndex === contacts[userSettings.selectedContactIndex]?.Communications.length - 1">
+          <br />
+          <button>Add connection</button>
+          <hr>
+        </template>
+      </div>
+      <br/>
     </div>`,
 
   computed: {
@@ -146,15 +152,34 @@ export default {
   text-align: center;
   font-family: 'Helvetica', sans-serif;
 }
+.search-group {
+  position: relative;
+}
+.search-group i {
+  position: absolute;
+  top: 11px;
+  left: 22.5px;
+  color: grey;
+  z-index: 3;
+}
 .contact-info input[type='search'] {
-    width: 100%;
-    padding: 10px 5px 10px 45px;
-    border-left: 0px solid black;
-    border-left-width: 12px;
-    border-top: 1px solid grey;
-    border-right: 1px solid grey;
-    border-bottom: 1px solid grey;
-    }
+  position: relative;
+  width: 80%;
+  padding: 10px 10px 10px 45px;
+  border-left: 0px solid black;
+  border-left-width: 12px;
+  border-top: 1px solid grey;
+  border-right: 0px;
+  border-bottom: 1px solid grey;
+  margin-right: -80%;
+  z-index: 2;
+}
+.contact-info select {
+  position: relative;
+  width: 100%;
+  padding: 10px;
+  z-index: 1;
+}
 .contact-info input[type='text'] {
 
   }
