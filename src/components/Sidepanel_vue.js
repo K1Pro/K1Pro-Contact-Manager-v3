@@ -220,23 +220,6 @@ export default {
   z-index: 4;
   transition: all 0.3s ease;
 }
-.side-panel input[type='text'] {
-  background: white;
-  width: 100%;
-  padding: 6px;
-  border: 0px;
-}
-.side-panel input[type='datetime-local'] {
-  background: white;
-  width: 100%;
-  border: 0px;
-  padding: 6px;
-}
-.side-panel input[type='checkbox'] {
-  border: 0px;
-  width: 16px;
-  height: 16px;
-}
 .tab-title-container {
 }
 .tab-title {

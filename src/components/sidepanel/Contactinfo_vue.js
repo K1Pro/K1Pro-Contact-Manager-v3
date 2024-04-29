@@ -19,7 +19,7 @@ export default {
       <br/>
       <div v-for="(member, memberIndex) in contacts[userSettings.selectedContactIndex]?.Members">
         <div class="member" v-for="(memberInfo, memberType) in member">
-          {{ memberType }}
+          <div>{{ memberType }}</div>
           <div v-for="memberInputs in accountSettings.contactInfo.keys.Members[memberType]">
               <input 
                 :type="memberInputs.type" 
@@ -36,7 +36,7 @@ export default {
 
       <div v-for="(property, propertyIndex) in contacts[userSettings.selectedContactIndex]?.Properties">
         <div class="property" v-for="(propertyInfo, propertyType) in property">
-          {{ propertyType }}
+          <div>{{ propertyType }}</div>
           <div v-for="propertyInputs in accountSettings.contactInfo.keys.Properties[propertyType]">
             <input 
               :type="propertyInputs.type" 
@@ -54,8 +54,15 @@ export default {
       <div v-for="(asset, assetIndex) in contacts[userSettings.selectedContactIndex]?.Assets">
         <div v-for="(assetInfo, assetType) in asset">
           <div v-for="assetInputs in accountSettings.contactInfo.keys.Assets[assetType]">
-            <input 
-              :placeholder="assetInfo[assetInputs.placeholder]"
+            <div v-if="assetInputs.icon" class="contact-info-group">
+              <i :class="assetInputs.icon"></i>
+              <input
+                :placeholder="assetInputs.placeholder"
+                :type="assetInputs.type" 
+                v-model="contacts[userSettings.selectedContactIndex].Assets[assetIndex][assetType]" />
+            </div>
+            <input v-else 
+              :placeholder="assetInputs.placeholder"
               :type="assetInputs.type" 
               v-model="contacts[userSettings.selectedContactIndex].Assets[assetIndex][assetType]" />
           </div>
@@ -152,6 +159,15 @@ export default {
   text-align: center;
   font-family: 'Helvetica', sans-serif;
 }
+.contact-info input[type='text'] {
+  background: white;
+  width: 100%;
+  padding: 6px;
+  border: 0px;
+}
+.contact-info input[type='text']:focus {
+  outline: none;
+}
 .search-group {
   position: relative;
 }
@@ -164,25 +180,44 @@ export default {
 }
 .contact-info input[type='search'] {
   position: relative;
-  width: 80%;
+  width: calc(100% - 20px);
   padding: 10px 10px 10px 45px;
-  border-left: 0px solid black;
-  border-left-width: 12px;
-  border-top: 1px solid grey;
+  border-left: 12px solid black;
+  border-top: 0px;
   border-right: 0px;
-  border-bottom: 1px solid grey;
-  margin-right: -80%;
+  border-bottom: 0px;
+  margin-right: calc(-1 * (100% - 20px));
   z-index: 2;
 }
-.contact-info select {
+.contact-info input[type='search']:focus {
+  outline: none;
+}
+.search-group select {
   position: relative;
   width: 100%;
   padding: 10px;
   z-index: 1;
+  border-left: 12px solid black;
+  border-top: 1px solid grey;
+  border-right: 1px solid grey;
+  border-bottom: 1px solid grey;
 }
-.contact-info input[type='text'] {
-
-  }
+.search-group select:focus {
+  outline: none;
+}
+.contact-info-group {
+  position: relative;
+}
+.contact-info-group i {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  color: grey;
+  z-index: 3;
+}
+.contact-info-group input[type='text'] {
+  padding-left: 30px;
+}
 .contact-info input[type='date'] {
   width: 100%;
   border-width: 0px;
@@ -192,6 +227,9 @@ export default {
   border-width: 0px 0px 1px 0px;
   border-color: #000000; */
   }
+.contact-info input[type='date']:focus {
+  outline: none;
+}
 .member {
   text-align: left;
 }
