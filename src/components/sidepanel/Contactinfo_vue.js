@@ -132,7 +132,7 @@ export default {
   //   emits: [''],
 
   data() {
-    return { search: '' };
+    return { search: '', pageClicks: 0 };
   },
 
   methods: {
@@ -181,9 +181,22 @@ export default {
       this.search = '';
       this.$refs.searchDropdown.size = 0;
     },
+
+    onWindowClick() {
+      if (this.pageClicks > 0) {
+        this.search = '';
+        this.$refs.searchDropdown.size = 0;
+      }
+      this.pageClicks++;
+    },
+  },
+
+  beforeDestroy() {
+    document.removeEventListener('click', this.onWindowClick);
   },
 
   mounted() {
+    document.addEventListener('click', this.onWindowClick);
     // console.log(this.accountSettings.contactInfo.keys);
     style(
       'Contact-Info',
