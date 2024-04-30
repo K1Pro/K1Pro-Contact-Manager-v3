@@ -8,10 +8,10 @@ export default {
       <div class="search-group">
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="search" placeholder="Search for customer" v-model="search" @keyup="findSearchedContact"/>
-        <select name="Contact Search" ref="searchDropdown" v-if="search.length > 2 && membersArray.length > 1" @change="selectSearchedContact">
+        <select name="Contact Search" ref="searchDropdown" v-if="search.length > 2" @change="selectSearchedContact">
+          <option value="volvo" disabled selected="true">Found {{membersArray.length}} {{ membersArray.length != 1 ? 'contacts' : 'contact' }}</option>
           <option v-for="(member, index) in membersArray" :value="member.split('_')[1]" >{{ member.split('_')[0] }}</option>
         </select>
-        <div class="go-search-button"><button><i class="fa-solid fa-chevron-right"></i></button></div>
       </div>
       <br/>
       <br/>
@@ -107,8 +107,8 @@ export default {
           contact.Members.forEach((member) => {
             Object.entries(member).forEach(([key, val]) => {
               let fullName;
-              if (val.First) fullName = val.First;
-              if (val.Name) fullName = val.Name;
+              if (val.First && !val.Name) fullName = val.First;
+              if (val.Name && !val.First) fullName = val.Name;
               if (val.First && val.Name) fullName = val.First + ' ' + val.Name;
               if (
                 fullName?.toLowerCase().includes(this.search.toLowerCase()) &&
@@ -169,9 +169,10 @@ export default {
     async patchProperty(event, column, columnIndex, property) {},
 
     findSearchedContact() {
-      if (this.search.length > 2 && this.membersArray.length > 1) {
+      if (this.search.length > 2) {
+        // if (this.search.length > 2 && this.membersArray.length > 1) {
         this.$refs.searchDropdown.size =
-          this.membersArray.length < 10 ? this.membersArray.length : 10;
+          this.membersArray.length < 10 ? this.membersArray.length + 1 : 10;
       }
     },
 
@@ -227,7 +228,7 @@ export default {
 
 .contact-info input[type='search'] {
   position: relative;
-  width: calc(100% - 40px);
+  width: 100%;
   padding: 11px 10px 11px 45px;
   border-left: 12px solid black;
   border-top: 1px solid grey;
@@ -240,11 +241,12 @@ export default {
   outline: none;
 }
 .search-group select {
+  appearance: none;
   color-scheme: dark;
   position: absolute;
   left: 0;
   top: 40px;
-  width: calc(100% - 40px);
+  width: 100%;
   padding: 10px;
   z-index: 1;
   border-left: 1px solid grey;
@@ -265,18 +267,6 @@ export default {
   left: 6px;
   color: grey;
   z-index: 3;
-}
-.go-search-button button {
-  background-color: black;
-  border: none;
-}
-.go-search-button i {
-  position: relative;
-  top: 0px;
-  left: 0px;
-  padding: 0px;
-  color: white;
-  font-size: 15px;
 }
 .contact-info-group input[type='text'] {
   padding-left: 30px;
