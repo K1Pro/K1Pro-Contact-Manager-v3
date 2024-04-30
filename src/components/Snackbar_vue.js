@@ -48,7 +48,7 @@ export default {
   text-align: center;
   border-radius: 2px;
   position: fixed;
-  z-index: 5;
+  z-index: 10;
   left: 50vw;
   top: 30px;
   font-size: 17px;

@@ -9,7 +9,7 @@ export default {
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="search" placeholder="Search for customer" v-model="search" @keyup="findSearchedContact"/>
         <select name="Contact Search" ref="searchDropdown" v-if="search.length > 2" @change="selectSearchedContact">
-          <option value="volvo" disabled selected="true">Found {{membersArray.length}} {{ membersArray.length != 1 ? 'contacts' : 'contact' }}</option>
+          <option disabled selected="true">Found {{membersArray.length}} {{ membersArray.length != 1 ? 'contacts' : 'contact' }}</option>
           <option v-for="(member, index) in membersArray" :value="member.split('_')[1]" >{{ member.split('_')[0] }}</option>
         </select>
       </div>
@@ -223,7 +223,7 @@ export default {
   top: 11px;
   left: 22.5px;
   color: grey;
-  z-index: 3;
+  z-index: 1;
 }
 
 .contact-info input[type='search'] {
@@ -235,7 +235,6 @@ export default {
   border-right: 1px solid grey;
   border-bottom: 1px solid grey;
   /* margin-right: calc(-1 * (100% - 20px)); */
-  z-index: 2;
 }
 .contact-info input[type='search']:focus {
   outline: none;
@@ -248,12 +247,10 @@ export default {
   top: 40px;
   width: 100%;
   padding: 10px;
-  z-index: 1;
   border-left: 1px solid grey;
   border-top: 1px solid grey;
   border-right: 1px solid grey;
   border-bottom: 1px solid grey;
-  z-index: 1;
 }
 .search-group select:focus {
   outline: none;
@@ -266,7 +263,7 @@ export default {
   top: 6px;
   left: 6px;
   color: grey;
-  z-index: 3;
+  z-index: 1;
 }
 .contact-info-group input[type='text'] {
   padding-left: 30px;
