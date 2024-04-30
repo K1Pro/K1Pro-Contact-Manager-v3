@@ -7,10 +7,11 @@ export default {
     <div class='contact-info'>
       <div class="search-group">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="search" placeholder="Search for customer" v-model="search" />
-        <select name="Contact Search" @change="selectSearchedContact">
+        <input type="search" placeholder="Search for customer" v-model="search" @keyup="findSearchedContact"/>
+        <select name="Contact Search" ref="searchDropdown" v-if="search.length > 2 && membersArray.length > 1" @change="selectSearchedContact">
           <option v-for="(member, index) in membersArray" :value="member.split('_')[1]" >{{ member.split('_')[0] }}</option>
         </select>
+        <div class="go-search-button"><button><i class="fa-solid fa-chevron-right"></i></button></div>
       </div>
       <br/>
       <br/>
@@ -167,8 +168,17 @@ export default {
     },
     async patchProperty(event, column, columnIndex, property) {},
 
+    findSearchedContact() {
+      if (this.search.length > 2 && this.membersArray.length > 1) {
+        this.$refs.searchDropdown.size =
+          this.membersArray.length < 10 ? this.membersArray.length : 10;
+      }
+    },
+
     selectSearchedContact(event) {
       this.userSettings.selectedContactIndex = event.target.value;
+      this.search = '';
+      this.$refs.searchDropdown.size = 0;
     },
   },
 
@@ -178,7 +188,7 @@ export default {
       'Contact-Info',
       /*css*/ `
 .contact-info {
-  text-align: center;
+  /* text-align: center; */
   font-family: 'Helvetica', sans-serif;
 }
 .contact-info input[type='text'] {
@@ -196,6 +206,17 @@ export default {
 .search-group {
   position: relative;
 }
+
+.search-group button {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  top: 0px;
+  right: 0px;
+  padding: 0px;
+}
+
+
 .search-group i {
   position: absolute;
   top: 11px;
@@ -203,29 +224,34 @@ export default {
   color: grey;
   z-index: 3;
 }
+
 .contact-info input[type='search'] {
   position: relative;
-  width: calc(100% - 20px);
-  padding: 10px 10px 10px 45px;
+  width: calc(100% - 40px);
+  padding: 11px 10px 11px 45px;
   border-left: 12px solid black;
-  border-top: 0px;
-  border-right: 0px;
-  border-bottom: 0px;
-  margin-right: calc(-1 * (100% - 20px));
+  border-top: 1px solid grey;
+  border-right: 1px solid grey;
+  border-bottom: 1px solid grey;
+  /* margin-right: calc(-1 * (100% - 20px)); */
   z-index: 2;
 }
 .contact-info input[type='search']:focus {
   outline: none;
 }
 .search-group select {
-  position: relative;
-  width: 100%;
+  color-scheme: dark;
+  position: absolute;
+  left: 0;
+  top: 40px;
+  width: calc(100% - 40px);
   padding: 10px;
   z-index: 1;
-  border-left: 12px solid black;
+  border-left: 1px solid grey;
   border-top: 1px solid grey;
   border-right: 1px solid grey;
   border-bottom: 1px solid grey;
+  z-index: 1;
 }
 .search-group select:focus {
   outline: none;
@@ -239,6 +265,18 @@ export default {
   left: 6px;
   color: grey;
   z-index: 3;
+}
+.go-search-button button {
+  background-color: black;
+  border: none;
+}
+.go-search-button i {
+  position: relative;
+  top: 0px;
+  left: 0px;
+  padding: 0px;
+  color: white;
+  font-size: 15px;
 }
 .contact-info-group input[type='text'] {
   padding-left: 30px;

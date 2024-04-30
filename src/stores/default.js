@@ -32,7 +32,6 @@ const useDefaultStore = Pinia.defineStore('default', {
       },
       firstCalDate: '',
       daysRangeArr: [1, 3, 7, 14, 21, 28],
-
       appName: app_name,
     };
   },
