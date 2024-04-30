@@ -2,17 +2,14 @@
 
 export default {
   name: 'Contact Info',
-
+  // <option v-for="(member, index) in membersArray" >{{ Object.values(contacts[index].Members[0])[0].Name }}</option>
   template: /*html*/ `
     <div class='contact-info'>
       <div class="search-group">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="search" placeholder="Search for customer" />
-        <select name="Contact Search">
-          <option value="volvo">Contacts</option>
-          <option value="saab">Saab</option>
-          <option value="mercedes">Mercedes</option>
-          <option value="audi">Audi</option>
+        <input type="search" placeholder="Search for customer" v-model="search" />
+        <select name="Contact Search" @change="selectSearchedContact">
+          <option v-for="(member, index) in membersArray" :value="member.split('_')[1]" >{{ member.split('_')[0] }}</option>
         </select>
       </div>
       <br/>
@@ -23,7 +20,7 @@ export default {
           <div v-for="memberInputs in accountSettings.contactInfo.keys.Members[memberType]">
               <input 
                 :type="memberInputs.type" 
-                :placeholder="memberInfo[memberInputs.placeholder]"
+                :placeholder="memberInputs.placeholder"
                 v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex][memberType][memberInputs.value]" />
           </div>
         </div>
@@ -102,6 +99,27 @@ export default {
       'contacts',
       'membersSlctdCntctArr',
     ]),
+    membersArray() {
+      let memberArray = [];
+      if (this.search.length > 2) {
+        this.contacts.forEach((contact, contactIndex) => {
+          contact.Members.forEach((member) => {
+            Object.entries(member).forEach(([key, val]) => {
+              let fullName;
+              if (val.First) fullName = val.First;
+              if (val.Name) fullName = val.Name;
+              if (val.First && val.Name) fullName = val.First + ' ' + val.Name;
+              if (
+                fullName?.toLowerCase().includes(this.search.toLowerCase()) &&
+                !memberArray.includes(`${fullName}_${contactIndex}`)
+              )
+                memberArray.push(`${fullName}_${contactIndex}`);
+            });
+          });
+        });
+      }
+      return memberArray.sort();
+    },
   },
 
   //   components: {
@@ -112,9 +130,9 @@ export default {
 
   //   emits: [''],
 
-  //   data() {
-  //     return {};
-  //   },
+  data() {
+    return { search: '' };
+  },
 
   methods: {
     async patchMember(event, column, columnIndex, property) {
@@ -148,6 +166,10 @@ export default {
       }
     },
     async patchProperty(event, column, columnIndex, property) {},
+
+    selectSearchedContact(event) {
+      this.userSettings.selectedContactIndex = event.target.value;
+    },
   },
 
   mounted() {
@@ -167,6 +189,9 @@ export default {
 }
 .contact-info input[type='text']:focus {
   outline: none;
+}
+.contact-info span{
+  padding: 6px;
 }
 .search-group {
   position: relative;
