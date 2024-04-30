@@ -13,7 +13,7 @@ export default {
       <div v-if="windowWidth > 768" class="side-panel-toggle">
         <i  
           :class="{ 'fa-solid fa-chevron-left': sidePanelOpen, 'fa-solid fa-chevron-right': !sidePanelOpen }" 
-          :style="{ left: sidePanelOpen ? '189px' : '39px',}"
+          :style="{ left: sidePanelOpen ? '189px' : '39px'}"
           @click="toggleSidepanel">
         </i>
       </div>

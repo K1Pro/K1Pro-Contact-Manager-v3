@@ -2,18 +2,17 @@
 
 export default {
   name: 'Contact Info',
-  // <option v-for="(member, index) in membersArray" >{{ Object.values(contacts[index].Members[0])[0].Name }}</option>
+
   template: /*html*/ `
     <div class='contact-info'>
       <div class="search-group">
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="search" placeholder="Search for customer" v-model="search" @keyup="findSearchedContact"/>
-        <select name="Contact Search" ref="searchDropdown" v-if="search.length > 2" @change="selectSearchedContact">
+        <select name="Contact Search" ref="searchDropdown" v-if="search.length > 2" @change="selectSearchedContact" :style="{overflow: membersArray.length < 10 ? 'hidden' : 'auto'}">
           <option disabled selected="true">Found {{membersArray.length}} {{ membersArray.length != 1 ? 'contacts' : 'contact' }}</option>
           <option v-for="(member, index) in membersArray" :value="member.split('_')[1]" >{{ member.split('_')[0] }}</option>
         </select>
       </div>
-      <br/>
       <br/>
       <div v-for="(member, memberIndex) in contacts[userSettings.selectedContactIndex]?.Members">
         <div class="member" v-for="(memberInfo, memberType) in member">
@@ -170,7 +169,6 @@ export default {
 
     findSearchedContact() {
       if (this.search.length > 2) {
-        // if (this.search.length > 2 && this.membersArray.length > 1) {
         this.$refs.searchDropdown.size =
           this.membersArray.length < 10 ? this.membersArray.length + 1 : 10;
       }
@@ -202,7 +200,7 @@ export default {
       'Contact-Info',
       /*css*/ `
 .contact-info {
-  /* text-align: center; */
+  text-align: center;
   font-family: 'Helvetica', sans-serif;
 }
 .contact-info input[type='text'] {
