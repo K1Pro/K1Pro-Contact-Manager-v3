@@ -1,18 +1,11 @@
-// import example from './components/example_vue.js';
+import Searchbar from './contactinfo/Searchbar_vue.js';
 
 export default {
   name: 'Contact Info',
 
   template: /*html*/ `
     <div class='contact-info'>
-      <div class="search-group">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="search" placeholder="Search for customer" v-model="search" @keyup="findSearchedContact"/>
-        <select name="Contact Search" ref="searchDropdown" v-if="search.length > 2" @change="selectSearchedContact" :style="{overflow: membersArray.length < 10 ? 'hidden' : 'auto'}">
-          <option disabled selected="true">Found {{membersArray.length}} {{ membersArray.length != 1 ? 'contacts' : 'contact' }}</option>
-          <option v-for="(member, index) in membersArray" :value="member.split('_')[1]" >{{ member.split('_')[0] }}</option>
-        </select>
-      </div>
+      <searchbar></searchbar>
       <br/>
       <div v-for="(member, memberIndex) in contacts[userSettings.selectedContactIndex]?.Members">
         <div class="member" v-for="(memberInfo, memberType) in member">
@@ -99,40 +92,19 @@ export default {
       'contacts',
       'membersSlctdCntctArr',
     ]),
-    membersArray() {
-      let memberArray = [];
-      if (this.search.length > 2) {
-        this.contacts.forEach((contact, contactIndex) => {
-          contact.Members.forEach((member) => {
-            Object.entries(member).forEach(([key, val]) => {
-              let fullName;
-              if (val.First && !val.Name) fullName = val.First;
-              if (val.Name && !val.First) fullName = val.Name;
-              if (val.First && val.Name) fullName = val.First + ' ' + val.Name;
-              if (
-                fullName?.toLowerCase().includes(this.search.toLowerCase()) &&
-                !memberArray.includes(`${fullName}_${contactIndex}`)
-              )
-                memberArray.push(`${fullName}_${contactIndex}`);
-            });
-          });
-        });
-      }
-      return memberArray.sort();
-    },
   },
 
-  //   components: {
-  //     example,
-  //   },
+  components: {
+    Searchbar,
+  },
 
   //   props: [''],
 
   //   emits: [''],
 
-  data() {
-    return { search: '', pageClicks: 0 };
-  },
+  // data() {
+  //   return {};
+  // },
 
   methods: {
     async patchMember(event, column, columnIndex, property) {
@@ -166,35 +138,9 @@ export default {
       }
     },
     async patchProperty(event, column, columnIndex, property) {},
-
-    findSearchedContact() {
-      if (this.search.length > 2) {
-        this.$refs.searchDropdown.size =
-          this.membersArray.length < 10 ? this.membersArray.length + 1 : 10;
-      }
-    },
-
-    selectSearchedContact(event) {
-      this.userSettings.selectedContactIndex = event.target.value;
-      this.search = '';
-      this.$refs.searchDropdown.size = 0;
-    },
-
-    onWindowClick() {
-      if (this.pageClicks > 0) {
-        this.search = '';
-        this.$refs.searchDropdown.size = 0;
-      }
-      this.pageClicks++;
-    },
-  },
-
-  beforeDestroy() {
-    document.removeEventListener('click', this.onWindowClick);
   },
 
   mounted() {
-    document.addEventListener('click', this.onWindowClick);
     // console.log(this.accountSettings.contactInfo.keys);
     style(
       'Contact-Info',
@@ -212,58 +158,13 @@ export default {
 .contact-info input[type='text']:focus {
   outline: none;
 }
-.contact-info span{
-  padding: 6px;
-}
-.search-group {
-  position: relative;
-}
-
-.search-group button {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  top: 0px;
-  right: 0px;
-  padding: 0px;
-}
-
-
-.search-group i {
-  position: absolute;
-  top: 11px;
-  left: 22.5px;
-  color: grey;
-  z-index: 1;
-}
-
-.contact-info input[type='search'] {
-  position: relative;
+.contact-info input[type='date'] {
   width: 100%;
-  padding: 11px 10px 11px 45px;
-  border-left: 12px solid black;
-  border-top: 1px solid grey;
-  border-right: 1px solid grey;
-  border-bottom: 1px solid grey;
-  /* margin-right: calc(-1 * (100% - 20px)); */
-}
-.contact-info input[type='search']:focus {
-  outline: none;
-}
-.search-group select {
-  appearance: none;
-  color-scheme: dark;
-  position: absolute;
-  left: 0;
-  top: 40px;
-  width: 100%;
-  padding: 10px;
-  border-left: 1px solid grey;
-  border-top: 1px solid grey;
-  border-right: 1px solid grey;
-  border-bottom: 1px solid grey;
-}
-.search-group select:focus {
+  border-width: 0px;
+  font-family: 'Helvetica', sans-serif;
+  padding: 6px
+  }
+.contact-info input[type='date']:focus {
   outline: none;
 }
 .contact-info-group {
@@ -278,18 +179,6 @@ export default {
 }
 .contact-info-group input[type='text'] {
   padding-left: 30px;
-}
-.contact-info input[type='date'] {
-  width: 100%;
-  border-width: 0px;
-  font-family: 'Helvetica', sans-serif;
-  padding: 6px
-  /* border-style: solid;
-  border-width: 0px 0px 1px 0px;
-  border-color: #000000; */
-  }
-.contact-info input[type='date']:focus {
-  outline: none;
 }
 .member {
   text-align: left;
