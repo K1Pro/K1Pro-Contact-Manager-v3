@@ -9,21 +9,23 @@ export default {
             <div v-for="(assetInfo, assetType) in asset">
                 <div v-for="assetInputs in accountSettings.contactInfo.keys.Assets[assetType]">
                     <div v-if="assetInputs.icon" style="position: relative">
-                      <i :class="assetInputs.icon"></i>
+                      <i class="asset-icon" :class="assetInputs.icon"></i>
                       <input
                           :placeholder="assetInputs.placeholder"
                           :type="assetInputs.type" 
                           v-model="contacts[userSettings.selectedContactIndex].Assets[assetIndex][assetType]" />
+                      <button class="asset-button"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
-                    <input v-else 
+                    <div v-else >
+                      <input 
                         :placeholder="assetInputs.placeholder"
                         :type="assetInputs.type" 
                         v-model="contacts[userSettings.selectedContactIndex].Assets[assetIndex][assetType]" />
+                      <button class="asset-button"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
                 </div>
             </div>
             <template v-if="assetIndex === contacts[userSettings.selectedContactIndex]?.Assets.length - 1">
-                <br />
-                <button>Add asset</button>
                 <hr>
             </template>
         </div>
@@ -58,7 +60,7 @@ export default {
       'assets',
       /*css*/ `
 .assets{}
-.assets i {
+.asset-icon {
   position: absolute;
   top: 6px;
   left: 6px;
@@ -66,8 +68,12 @@ export default {
   z-index: 1;
 }
 .assets input[type='text'] {
-  width: 100%;
+  width: calc(100% - 32px);
   padding: 6px 6px 6px 30px;
+}
+.asset-button{
+  padding: 6px;
+  width: 32px;
 }
 `
     );

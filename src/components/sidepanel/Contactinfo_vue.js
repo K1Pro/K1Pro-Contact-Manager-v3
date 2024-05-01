@@ -45,7 +45,7 @@ export default {
       'Contact-Info',
       /*css*/ `
 .contact-info {
-  text-align: center;
+  /* text-align: center; */
   font-family: 'Helvetica', sans-serif;
 }
 /*.contact-info input[type='text'] {

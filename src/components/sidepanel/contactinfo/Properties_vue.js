@@ -16,8 +16,6 @@ export default {
                     </div>
                 </div>
                 <template v-if="propertyIndex === contacts[userSettings.selectedContactIndex]?.Properties.length - 1">
-                    <br />
-                    <button>Add property</button>
                     <hr>
                 </template>
             </div>

@@ -6,19 +6,17 @@ export default {
   template: /*html*/ `
         <div class='members'>
             <div v-for="(member, memberIndex) in contacts[userSettings.selectedContactIndex]?.Members">
-                <div class="member" v-for="(memberInfo, memberType) in member">
-                <div>{{ memberType }}</div>
-                <div v-for="memberInputs in accountSettings.contactInfo.keys.Members[memberType]">
-                    <input 
-                        :type="memberInputs.type" 
-                        :placeholder="memberInputs.placeholder"
-                        v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex][memberType][memberInputs.value]" />
-                </div>
+                <div>{{ Object.keys(member)[0] }}</div>
+                <div class="member-grid-container" v-for="(memberInfo, memberType) in member">
+                  <div class="member-grid-item" v-for="memberInputs in accountSettings.contactInfo.keys.Members[memberType]">
+                      <input 
+                          :type="memberInputs.type" 
+                          :placeholder="memberInputs.placeholder"
+                          v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex][memberType][memberInputs.value]" />
+                  </div>
                 </div>
                 <template v-if="memberIndex === contacts[userSettings.selectedContactIndex]?.Members.length - 1">
-                <br />
-                <button>Add member</button>
-                <hr>
+                  <hr>
                 </template>
             </div>
         </div>`,
@@ -85,8 +83,29 @@ export default {
       'members',
       /*css*/ `
 .members{}
-.member {
-    text-align: left;
+.member-grid-container {
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+}
+.member-grid-item {
+
+}
+.member-grid-item input[type='text'] {
+  border-top: 1px;
+  border-right: 0px;
+  border-bottom: 1px;
+  border-left: 0px;
+  padding: 6px;
+  width: 100%
+}
+.member-grid-item input[type='date'] {
+  font-family: 'Helvetica', sans-serif;
+  border-top: 1px;
+  border-right: 0px;
+  border-bottom: 1px;
+  border-left: 0px;
+  padding: 5px;
+  width: 100%
 }
 `
     );

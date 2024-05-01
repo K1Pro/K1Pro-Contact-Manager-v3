@@ -13,11 +13,10 @@ export default {
                             :placeholder="commInputs.placeholder"
                             :type="commInputs.type" 
                             v-model="contacts[userSettings.selectedContactIndex].Communications[commIndex][commType]" />
+                        <button><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 </div>
                 <template v-if="commIndex === contacts[userSettings.selectedContactIndex]?.Communications.length - 1">
-                    <br />
-                    <button style="width: auto" >Add connection</button>
                     <hr>
                 </template>
             </div>
@@ -57,7 +56,7 @@ export default {
   width: 32px;
 }
 .communications input[type='text']{
-  width: calc(100% - 32px);
+  width: calc(100% - 64px);
   padding: 6px;
 }
 .communications input[type='text']:focus {
