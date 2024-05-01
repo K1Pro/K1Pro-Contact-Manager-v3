@@ -14,7 +14,7 @@ export default {
                 {{ firstCalDate ? days[dayIndex].slice(-5) : '' }}
                 <template v-if="firstCalDate && calContactEvents[days[dayIndex]]">
                 <div v-for="([calContactName, calContactValue], calContactIndex) in Object.entries(calContactEvents[days[dayIndex]])">
-                  <div @click="selectContact(calContactValue.contactIndex)">
+                  <div class="task" :class="{compltd: calContactValue.Status == 1, 'not-compltd': calContactValue.Status == 0}" @click="selectContact(calContactValue.contactIndex)" >
                     {{ calContactValue.Time }} {{ calContactName }}
                   </div>
                 </div>
@@ -83,6 +83,7 @@ export default {
                 {
                   contactIndex: contactIndex,
                   Time: calEvent.Time,
+                  Status: calEvent.Status,
                 };
             // } else {
             //   contactArray[calDay]['Bad thing'] = {
@@ -211,6 +212,23 @@ export default {
   background-color: #ccffff;
   cursor: default;
 }
+.compltd {
+  background-color: #D9414E;
+}
+.not-compltd {
+  background-color: #52A375;
+}
+.task {
+  cursor: pointer;
+  border-bottom: 1px solid white;
+  padding-left: 2px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+.task:hover {
+  background-color: #DB66FF;
+}
+
 `
     );
   },

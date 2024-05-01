@@ -8,12 +8,12 @@ export default {
             <div v-for="(comm, commIndex) in contacts[userSettings.selectedContactIndex]?.Communications">
                 <div v-for="(commInfo, commType) in comm">
                     <div v-for="commInputs in accountSettings.contactInfo.keys.Communications[commType]">
-                        <button><i :class="commInputs.icon"></i></button>
+                        <button class="comm-icon" ><i :class="commInputs.icon"></i></button>
                         <input 
                             :placeholder="commInputs.placeholder"
                             :type="commInputs.type" 
                             v-model="contacts[userSettings.selectedContactIndex].Communications[commIndex][commType]" />
-                        <button><i class="fa-solid fa-trash-can"></i></button>
+                        <button class="comm-delete-icon" ><i class="fa-solid fa-x"></i></button>
                     </div>
                 </div>
                 <template v-if="commIndex === contacts[userSettings.selectedContactIndex]?.Communications.length - 1">
@@ -51,9 +51,15 @@ export default {
       'communications',
       /*css*/ `
 .communications{}
-.communications button{
+.comm-icon{
   padding: 6px;
   width: 32px;
+}
+.comm-delete-icon{
+  padding: 6px;
+  width: 32px;
+  background-color: transparent;
+  border: 0px;
 }
 .communications input[type='text']{
   width: calc(100% - 64px);
