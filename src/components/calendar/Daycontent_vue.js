@@ -8,7 +8,10 @@ export default {
         {{ firstCalDate ? days[dayIndex].slice(-5) : '' }}
         <template v-if="firstCalDate && calContactEvents[days[dayIndex]]">
             <div v-for="([calContactName, calContactValue], calContactIndex) in Object.entries(calContactEvents[days[dayIndex]])">
-                <div class="task-grid-container" :class="{compltd: calContactValue.Status == 1, 'not-compltd': calContactValue.Status == 0}" @click="selectContact(calContactValue.contactIndex)" >
+                <div 
+                    class="task-grid-container" 
+                    :class="{compltd: calContactValue.Status == 1, 'not-compltd': calContactValue.Status == 0, 'active': calContactValue.contactIndex == userSettings.selectedContactIndex}" 
+                    @click="selectContact(calContactValue.contactIndex)" >
                     <div>{{ calContactValue.Time }}</div>
                     <div style="overflow: hidden">{{ calContactName }}</div>
                     <div><input type="checkbox" :checked="calContactValue.Status == 1"></div>
@@ -88,7 +91,7 @@ export default {
     padding-top: 2px;
     padding-bottom: 2px;
 }
-.task-grid-container:hover {
+.task-grid-container:hover:not(.active) {
     background-color: #DB66FF;
 }
 .task-grid-container input[type="checkbox"] {
@@ -99,6 +102,10 @@ export default {
 }
 .not-compltd {
     background-color: #52A375;
+}
+.active {
+    background-color: blue;
+    cursor: default;
 }
 `
     );
