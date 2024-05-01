@@ -6,7 +6,7 @@ export default {
   template: /*html*/ `
         <div class='search-bar'>
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="search" placeholder="Search for customer" v-model="search" @keyup="findSearchedContact"/>
+            <input type="search" placeholder="Search for contact" v-model="search" @keyup="findSearchedContact"/>
             <select name="Contact Search" ref="searchDropdown" v-if="search.length > 2" @change="selectSearchedContact" :style="{overflow: searchArray.length < 10 ? 'hidden' : 'auto'}">
                 <option disabled selected="true">Found {{searchArray.length}} {{ searchArray.length != 1 ? 'contacts' : 'contact' }}</option>
                 <option v-for="(searchResult, index) in searchArray" :value="searchResult.split('_')[1]" >{{ searchResult.split('_')[0] }}</option>

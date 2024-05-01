@@ -1,4 +1,4 @@
-// import example from './components/example_vue.js';
+import Daycontent from './Daycontent_vue.js';
 
 export default {
   name: 'Calendar body',
@@ -6,55 +6,32 @@ export default {
   template: /*html*/ `
         <div class='calendar-body'>
           <div :class="'calendar-body-grid-container' + userSettings.calendar.filters.days">
-          <template v-for="(day, dayIndex) in days">
-            <div v-if="((dayIndex + 1) % 7) && ((dayIndex + 2) % 7)"
-              class="calendar-body-grid-item day"
-              :class="{ activeDay: days[dayIndex] == times.Y_m_d }"
-              @click="changeDate(days[dayIndex])">
-                {{ firstCalDate ? days[dayIndex].slice(-5) : '' }}
-                <template v-if="firstCalDate && calContactEvents[days[dayIndex]]">
-                <div v-for="([calContactName, calContactValue], calContactIndex) in Object.entries(calContactEvents[days[dayIndex]])">
-                  <div class="task-grid-container" :class="{compltd: calContactValue.Status == 1, 'not-compltd': calContactValue.Status == 0}" @click="selectContact(calContactValue.contactIndex)" >
-                    <div>{{ calContactValue.Time }}</div>
-                    <div style="overflow: hidden">{{ calContactName }}</div>
-                    <div><input type="checkbox" :checked="calContactValue.Status == 1"></div>
+            <template v-for="(day, dayIndex) in days">
+              <div v-if="((dayIndex + 1) % 7) && ((dayIndex + 2) % 7)"
+                class="calendar-body-grid-item day"
+                :class="{ activeDay: days[dayIndex] == times.Y_m_d }"
+                @click="changeDate(days[dayIndex])">
+                  <daycontent :dayIndex="dayIndex" ></daycontent>
+              </div>
+        
+              <div v-if="(dayIndex + 1) % 7 === 0"
+                class="calendar-body-grid-item">
+                  <div
+                    class="day saturday"
+                    :class="{ activeDay: days[dayIndex-1] == times.Y_m_d }"
+                    @click="changeDate(days[dayIndex-1])">
+                      <daycontent :dayIndex="dayIndex-1" ></daycontent>
                   </div>
-                </div>
-              </template>
-            </div>
-      
-            <div v-if="(dayIndex + 1) % 7 === 0"
-              class="calendar-body-grid-item">
-                <div
-                  class="day saturday"
-                  :class="{ activeDay: days[dayIndex-1] == times.Y_m_d }"
-                  @click="changeDate(days[dayIndex-1])">
-                    {{ firstCalDate ? days[dayIndex-1].slice(-5) : '' }}
-                    <template v-if="firstCalDate && calContactEvents[days[dayIndex-1]]">
-                    <div v-for="([calContactName, calContactValue], calContactIndex) in Object.entries(calContactEvents[days[dayIndex-1]])">
-                      <div @click="selectContact(calContactValue.contactIndex)">
-                        {{ calContactValue.Time }} {{ calContactName }}
-                      </div>
-                    </div>
-                  </template>
-                </div>
-                <div
-                  class="day sunday"
-                  :class="{ activeDay: days[dayIndex] == times.Y_m_d }"
-                  @click="changeDate(days[dayIndex])">
-                    {{ firstCalDate ? days[dayIndex].slice(-5) : '' }}
-                    <template v-if="firstCalDate && calContactEvents[days[dayIndex]]">
-                    <div v-for="([calContactName, calContactValue], calContactIndex) in Object.entries(calContactEvents[days[dayIndex]])">
-                      <div @click="selectContact(calContactValue.contactIndex)">
-                        {{ calContactValue.Time }} {{ calContactName }}
-                      </div>
-                    </div>
-                  </template>
-                </div>
-            </div>
-      
-          </template>
-        </div>
+                  <div
+                    class="day sunday"
+                    :class="{ activeDay: days[dayIndex] == times.Y_m_d }"
+                    @click="changeDate(days[dayIndex])">
+                      <daycontent :dayIndex="dayIndex" ></daycontent>
+                  </div>
+              </div>
+        
+            </template>
+          </div>
         </div>`,
 
   computed: {
@@ -63,61 +40,27 @@ export default {
       'windowWidth',
       'userSettings',
       'tempUserSettings',
-      'contacts',
       'times',
-      'firstCalDate',
       'changeCalDaysOrder',
       'days',
     ]),
-
-    calContactEvents() {
-      let contactArray = {};
-      this.contacts.forEach((contact, contactIndex) => {
-        // contactArray.push(contact.id);
-        Object.entries(contact.Events).forEach(([calDay, calEvent]) => {
-          if (this.days.includes(calDay)) {
-            if (!contactArray[calDay]) contactArray[calDay] = {};
-            // if (contact.Members[0]) {
-            if (
-              !contactArray[calDay][Object.values(contact.Members[0])[0].Name]
-            )
-              contactArray[calDay][Object.values(contact.Members[0])[0].Name] =
-                {
-                  contactIndex: contactIndex,
-                  Time: calEvent.Time,
-                  Status: calEvent.Status,
-                };
-            // } else {
-            //   contactArray[calDay]['Bad thing'] = {
-            //     contactIndex: contactIndex,
-            //     Time: calEvent.Time,
-            //   };
-            // }
-          }
-        });
-      });
-      return contactArray;
-    },
   },
 
-  //   components: {
-  //     example,
-  //   },
+  components: {
+    Daycontent,
+  },
 
   //   props: [''],
 
   //   emits: [''],
 
-  data() {
-    return { tempDaysFilter: '' };
-  },
+  // data() {
+  //   return {};
+  // },
 
   methods: {
     changeDate(selectedY_m_d) {
       this.times.Y_m_d = selectedY_m_d;
-    },
-    selectContact(contactIndex) {
-      this.userSettings.selectedContactIndex = contactIndex;
     },
   },
 
@@ -213,25 +156,6 @@ export default {
 .activeDay {
   background-color: #ccffff;
   cursor: default;
-}
-.compltd {
-  background-color: #D9414E;
-}
-.not-compltd {
-  background-color: #52A375;
-}
-.task-grid-container {
-  color: white;
-  display: grid;
-  grid-template-columns: 45px calc(100% - 65px) 20px;
-  cursor: pointer;
-  border-bottom: 1px solid white;
-  padding-left: 2px;
-  padding-top: 2px;
-  padding-bottom: 2px;
-}
-.task-grid-container:hover {
-  background-color: #DB66FF;
 }
 
 `
