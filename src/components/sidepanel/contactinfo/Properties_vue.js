@@ -11,7 +11,7 @@ export default {
                     <div v-for="propertyInputs in accountSettings.contactInfo.keys.Properties[propertyType]">
                         <input 
                             :type="propertyInputs.type" 
-                            :placeholder="propertyInfo[propertyInputs.placeholder]"
+                            :placeholder="propertyInputs.placeholder"
                             v-model="contacts[userSettings.selectedContactIndex].Properties[propertyIndex][propertyType][propertyInputs.value]" />
                     </div>
                 </div>

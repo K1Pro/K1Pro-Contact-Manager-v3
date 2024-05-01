@@ -8,15 +8,16 @@ export default {
             <div v-for="(comm, commIndex) in contacts[userSettings.selectedContactIndex]?.Communications">
                 <div v-for="(commInfo, commType) in comm">
                     <div v-for="commInputs in accountSettings.contactInfo.keys.Communications[commType]">
+                        <button><i :class="commInputs.icon"></i></button>
                         <input 
-                            :placeholder="commInfo[commInputs.placeholder]"
+                            :placeholder="commInputs.placeholder"
                             :type="commInputs.type" 
                             v-model="contacts[userSettings.selectedContactIndex].Communications[commIndex][commType]" />
                     </div>
                 </div>
                 <template v-if="commIndex === contacts[userSettings.selectedContactIndex]?.Communications.length - 1">
                     <br />
-                    <button>Add connection</button>
+                    <button style="width: auto" >Add connection</button>
                     <hr>
                 </template>
             </div>
@@ -50,7 +51,19 @@ export default {
     style(
       'communications',
       /*css*/ `
-.communications{}`
+.communications{}
+.communications button{
+  padding: 6px;
+  width: 32px;
+}
+.communications input[type='text']{
+  width: calc(100% - 32px);
+  padding: 6px;
+}
+.communications input[type='text']:focus {
+  outline: none;
+}
+`
     );
   },
 };

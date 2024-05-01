@@ -19,14 +19,7 @@ export default {
     </div>`,
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'msg',
-      'accountSettings',
-      'userSettings',
-      'endPts',
-      'contacts',
-      'membersSlctdCntctArr',
-    ]),
+    ...Pinia.mapWritableState(useDefaultStore, ['membersSlctdCntctArr']),
   },
 
   components: {
@@ -48,7 +41,6 @@ export default {
   // methods: {},
 
   mounted() {
-    // console.log(this.accountSettings.contactInfo.keys);
     style(
       'Contact-Info',
       /*css*/ `
@@ -56,9 +48,8 @@ export default {
   text-align: center;
   font-family: 'Helvetica', sans-serif;
 }
-.contact-info input[type='text'] {
+/*.contact-info input[type='text'] {
   background: white;
-  width: 100%;
   padding: 6px;
   border: 0px;
 }
@@ -66,14 +57,13 @@ export default {
   outline: none;
 }
 .contact-info input[type='date'] {
-  width: 100%;
   border-width: 0px;
   font-family: 'Helvetica', sans-serif;
   padding: 6px
   }
 .contact-info input[type='date']:focus {
   outline: none;
-}
+} 
 .contact-info-group {
   position: relative;
 }
@@ -86,7 +76,7 @@ export default {
 }
 .contact-info-group input[type='text'] {
   padding-left: 30px;
-}
+}*/
 `
     );
   },
