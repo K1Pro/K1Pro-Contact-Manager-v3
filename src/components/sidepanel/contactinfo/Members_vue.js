@@ -6,7 +6,11 @@ export default {
   template: /*html*/ `
         <div class='members'>
             <div v-for="(member, memberIndex) in contacts[userSettings.selectedContactIndex]?.Members">
-                <div>{{ Object.keys(member)[0] }}</div>
+                <template v-if="memberIndex === 0">
+                  <hr>
+                </template>
+                <div class="member-title">{{ Object.keys(member)[0] }}</div>
+                <button class="member-grid-item member-button"><i class="fa-solid fa-trash-can"></i></button>
                 <div class="member-grid-container" v-for="(memberInfo, memberType) in member">
                   <div class="member-grid-item" v-for="memberInputs in accountSettings.contactInfo.keys.Members[memberType]">
                       <input 
@@ -83,13 +87,18 @@ export default {
       'members',
       /*css*/ `
 .members{}
+.member-title {
+  padding-top: 6px;
+  padding-right: 6px;
+  height: 32px;
+  float: left;
+}
 .member-grid-container {
+  margin-top: 2px;
   display: grid;
   grid-template-columns: 33% 33% 33%;
 }
-.member-grid-item {
-
-}
+.member-grid-item {}
 .member-grid-item input[type='text'] {
   border-top: 1px;
   border-right: 0px;
@@ -106,6 +115,12 @@ export default {
   border-left: 0px;
   padding: 5px;
   width: 100%
+}
+.member-button{
+  padding: 7px;
+  width: 32px;
+  background-color: transparent;
+  border: 0px;
 }
 `
     );
