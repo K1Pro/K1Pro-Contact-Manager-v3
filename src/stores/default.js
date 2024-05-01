@@ -53,8 +53,14 @@ const useDefaultStore = Pinia.defineStore('default', {
         if (timeResJSON.success) {
           if (type == 'time') {
             this.times = timeResJSON.data;
+            // console.log('times');
+            // console.log(timeResJSON.data);
+            // console.log('=================');
           } else if (type == 'firstCalDate') {
             this.firstCalDate = timeResJSON.data.Y_m_d;
+            // console.log('firstCalDate');
+            // console.log(timeResJSON.data.Y_m_d);
+            // console.log('=================');
           }
         }
       } catch (error) {
@@ -105,14 +111,19 @@ const useDefaultStore = Pinia.defineStore('default', {
     days(state) {
       let dateRangeStart = 1;
       let dateArray = [];
-      let currentDate = new Date(state.firstCalDate);
+      let timezone = new Date(state.firstCalDate).getTimezoneOffset() / 60;
+      let currentDate = new Date(
+        new Date(state.firstCalDate).setHours(
+          new Date(state.firstCalDate).getHours() + timezone
+        )
+      );
       while (
         dateRangeStart <=
         state.daysRangeArr[state.userSettings.calendar.filters.days]
       ) {
         dateArray.push(
           // prettier-ignore
-          new Date(currentDate).getFullYear() + '-' + (new Date(currentDate).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(currentDate).getDate().toString().padStart(2, '0')
+          currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' + currentDate.getDate().toString().padStart(2, '0')
         );
         // Can use UTC date to prevent problems with time zones and DST: currentDate.setUTCDate(currentDate.getUTCDate() + steps);
         currentDate.setDate(currentDate.getDate() + 1);

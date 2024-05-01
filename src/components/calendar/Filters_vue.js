@@ -53,7 +53,7 @@ export default {
       'windowWidth',
       'userSettings',
       'tempUserSettings',
-      'times',
+
       'daysRangeArr',
       'patchUserSettings',
       'changeCalDaysOrder',

@@ -58,8 +58,6 @@ export default {
       'tempUserSettings',
       'contacts',
       'endPts',
-      'times',
-      'time',
       'patchUserSettings',
     ]),
 
