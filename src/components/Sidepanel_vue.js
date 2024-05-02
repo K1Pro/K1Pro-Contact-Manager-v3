@@ -1,5 +1,6 @@
 import Logoutbtn from './LogOutBtn_vue.js';
 import Contactinfo from './sidepanel/Contactinfo_vue.js';
+import Tasks from './sidepanel/Tasks_vue.js';
 
 export default {
   name: 'Side Panel',
@@ -106,7 +107,7 @@ export default {
           </div>
 
           <div v-else-if="activeTab == 'list-check'">
-            Tasks for {{Object.values(membersSlctdCntctArr[0])[0].Name}}
+            <tasks></tasks>
           </div>
 
           <div v-else-if="activeTab == 'repeat'">
@@ -135,7 +136,7 @@ export default {
     </div>
   `,
 
-  components: { Logoutbtn, Contactinfo },
+  components: { Logoutbtn, Contactinfo, Tasks },
 
   data() {
     return {
