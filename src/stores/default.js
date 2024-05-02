@@ -9,6 +9,7 @@ const useDefaultStore = Pinia.defineStore('default', {
         login: '',
       },
       windowWidth: 0,
+      activeTab: 'house-chimney-user',
       userData: {},
       accountSettings: {},
       userSettings: {},

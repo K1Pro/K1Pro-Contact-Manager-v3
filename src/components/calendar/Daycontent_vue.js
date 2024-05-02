@@ -10,10 +10,9 @@ export default {
             <div v-for="([calContactName, calContactValue], calContactIndex) in Object.entries(calContactEvents[days[dayIndex]])">
                 <div 
                     class="task-grid-container" 
-                    :class="{compltd: calContactValue.Status == 1, 'not-compltd': calContactValue.Status == 0, 'active': calContactValue.contactIndex == userSettings.selectedContactIndex}" 
-                    @click="selectContact(calContactValue.contactIndex)" >
-                    <div>{{ calContactValue.Time }}</div>
-                    <div style="overflow: hidden">{{ calContactName }}</div>
+                    :class="{compltd: calContactValue.Status == 1, 'not-compltd': calContactValue.Status == 0, 'active': calContactValue.contactIndex == userSettings.selectedContactIndex}" >
+                    <div @click="selectContact(calContactValue.contactIndex, 'list-check')">{{ calContactValue.Time }}</div>
+                    <div @click="selectContact(calContactValue.contactIndex, 'list-check')" style="overflow: hidden">{{ calContactName }}</div>
                     <div><input type="checkbox" :checked="calContactValue.Status == 1"></div>
                 </div>
             </div>
@@ -23,6 +22,7 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
+      'activeTab',
       'userSettings',
       'contacts',
       'firstCalDate',
@@ -71,7 +71,8 @@ export default {
   //   },
 
   methods: {
-    selectContact(contactIndex) {
+    selectContact(contactIndex, tab) {
+      this.activeTab = tab;
       this.userSettings.selectedContactIndex = contactIndex;
     },
   },
@@ -95,7 +96,10 @@ export default {
     background-color: #DB66FF;
 }
 .task-grid-container input[type="checkbox"] {
-    accent-color: black;
+    accent-color: #D9414E;
+}
+.active input[type="checkbox"] {
+  accent-color: #417CD9;
 }
 .compltd {
     background-color: #D9414E;
@@ -104,7 +108,7 @@ export default {
     background-color: #52A375;
 }
 .active {
-    background-color: blue;
+    background-color: #417CD9;
     cursor: default;
 }
 `

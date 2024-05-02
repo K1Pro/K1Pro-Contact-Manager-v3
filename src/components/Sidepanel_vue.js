@@ -106,7 +106,7 @@ export default {
           </div>
 
           <div v-else-if="activeTab == 'list-check'">
-            Tasks
+            Tasks for {{Object.values(membersSlctdCntctArr[0])[0].Name}}
           </div>
 
           <div v-else-if="activeTab == 'repeat'">
@@ -139,7 +139,6 @@ export default {
 
   data() {
     return {
-      activeTab: 'house-chimney-user',
       active: false,
       sidePanelOpen: false,
       pageClicks: 0,
@@ -151,9 +150,11 @@ export default {
       'accessToken',
       'msg',
       'windowWidth',
+      'activeTab',
       'accountSettings',
       'endPts',
       'appName',
+      'membersSlctdCntctArr',
     ]),
   },
 
