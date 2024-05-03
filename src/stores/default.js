@@ -30,7 +30,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       },
       times: {
         Y_m_d: server_datetime_Y_m_d,
-        Y_m_d_H_i_s: '',
+        Y_m_d_H_i: server_datetime_Y_m_d_H_i,
       },
       firstCalDate: '',
       daysRangeArr: [1, 3, 7, 14, 21, 28],

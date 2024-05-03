@@ -7,11 +7,18 @@ export default {
     <div class='tasks'>
         <template v-if="slctdCntct">
           <div class="tasks-title">
-            Tasks for
-            {{Object.values(slctdCntct.Members[0])[0].First ? Object.values(slctdCntct.Members[0])[0].First : ''}} 
-            {{Object.values(slctdCntct.Members[0])[0].Name}}
+            <div class="tasks-title-grid-container">
+              <div class="tasks-title-grid-item1">
+                Tasks for
+                {{Object.values(slctdCntct.Members[0])[0].First ? Object.values(slctdCntct.Members[0])[0].First : ''}} 
+                {{Object.values(slctdCntct.Members[0])[0].Name}}
+              </div>
+              <div class="tasks-title-grid-item2">
+                <button @click="newTask" ><i class="fa-solid fa-square-plus"></i></button>
+              </div>
+            </div>
+
           </div>
-          <hr />
           <div v-for="([taskDate, task], taskIndex) in Object.entries(slctdCntct?.Events).sort().reverse()" class="tasks-grid-container">
             <div class="tasks-grid-item1" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
               <input type="datetime-local" :value="taskDate" @change="changeTask($event, taskDate)">
@@ -34,6 +41,7 @@ export default {
       'msg',
       'userSettings',
       'contacts',
+      'times',
       'slctdCntct',
     ]),
   },
@@ -51,7 +59,7 @@ export default {
   //   },
 
   methods: {
-    async changeTask(event, taskDate) {
+    changeTask(event, taskDate) {
       if (event.target.type == 'datetime-local') {
         this.contacts[this.userSettings.selectedContactIndex].Events[
           event.target.value
@@ -84,6 +92,18 @@ export default {
         }
       }
     },
+    newTask() {
+      console.log('creating a new task');
+      this.contacts[this.userSettings.selectedContactIndex].Events[
+        this.times.Y_m_d_H_i
+      ] = {
+        Desc: 'Just a test',
+        Status: '0',
+        Create: 'Bartosz',
+        Assign: 'Bartosz',
+        Update: 'Bartosz',
+      };
+    },
   },
 
   mounted() {
@@ -92,11 +112,10 @@ export default {
       /*css*/ `
 .tasks{}
 .tasks-title{
-  border-radius: 5px;
   font-weight: bold;
   padding: 5px;
-  background-color: black;
-  color: white;
+  background-color: lightblue;
+  color: black;
 }
 .tasks-grid-container{
   display: grid;
@@ -104,6 +123,8 @@ export default {
   grid-template-rows: auto auto;
 }
 .tasks input[type='datetime-local'] {
+  /* color-scheme: dark;
+  color: black;*/
   background-color: #99999900;
   border: none;
   /* padding: 5px;*/
@@ -111,6 +132,10 @@ export default {
   font-family: 'Helvetica', sans-serif;
   /* font-size: 14px; */
 }
+/*input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.6;
+  filter: invert(1);
+}*/
 .tasks input[type='datetime-local']:focus {
   outline: none; 
 }
@@ -134,6 +159,26 @@ export default {
   border-bottom: 1px solid black;
   background-color: white; */
 }
+.tasks-title-grid-container{
+  display: grid;
+  grid-template-columns: calc(100% - 30px) 30px;
+}
+.tasks-title-grid-item1 {
+  height: 20px;
+  overflow: hidden;
+}
+.tasks-title-grid-item2 button {
+  background-color: transparent;
+  border: 0px;
+  cursor: pointer;
+  color: #417CD9
+}
+
+
+.tasks-title-grid-item2 button:hover {
+  color: #DB66FF;
+}
+
 `
     );
   },
