@@ -5,7 +5,7 @@ export default {
 
   template: /*html*/ `
         <div class='communications'>
-            <div v-for="(comm, commIndex) in contacts[userSettings.selectedContactIndex]?.Communications">
+            <div v-for="(comm, commIndex) in slctdCntct?.Communications">
                 <div v-for="(commInfo, commType) in comm">
                     <div v-for="commInputs in accountSettings.contactInfo.keys.Communications[commType]">
                         <button class="comm-icon" ><i :class="commInputs.icon"></i></button>
@@ -16,7 +16,7 @@ export default {
                         <button class="comm-delete-icon" ><i class="fa-solid fa-x"></i></button>
                     </div>
                 </div>
-                <template v-if="commIndex === contacts[userSettings.selectedContactIndex]?.Communications.length - 1">
+                <template v-if="commIndex === slctdCntct.Communications.length - 1">
                     <hr>
                 </template>
             </div>
@@ -29,6 +29,7 @@ export default {
       'userSettings',
       'endPts',
       'contacts',
+      'slctdCntct',
     ]),
   },
 

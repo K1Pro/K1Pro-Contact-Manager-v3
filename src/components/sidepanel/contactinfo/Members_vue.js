@@ -5,7 +5,7 @@ export default {
 
   template: /*html*/ `
         <div class='members'>
-            <div v-for="(member, memberIndex) in contacts[userSettings.selectedContactIndex]?.Members">
+            <div v-for="(member, memberIndex) in slctdCntct?.Members">
                 <template v-if="memberIndex === 0">
                   <hr>
                 </template>
@@ -21,7 +21,7 @@ export default {
                           v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex][memberType][memberInputs.value]" />
                   </div>
                 </div>
-                <template v-if="memberIndex === contacts[userSettings.selectedContactIndex]?.Members.length - 1">
+                <template v-if="memberIndex === slctdCntct.Members.length - 1">
                   <hr>
                 </template>
             </div>
@@ -35,6 +35,7 @@ export default {
       'userSettings',
       'endPts',
       'contacts',
+      'slctdCntct',
     ]),
   },
 

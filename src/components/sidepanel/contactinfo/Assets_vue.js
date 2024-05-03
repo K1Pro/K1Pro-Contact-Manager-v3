@@ -5,7 +5,7 @@ export default {
 
   template: /*html*/ `
     <div class='assets'>
-        <div v-for="(asset, assetIndex) in contacts[userSettings.selectedContactIndex]?.Assets">
+        <div v-for="(asset, assetIndex) in slctdCntct?.Assets">
             <div v-for="(assetInfo, assetType) in asset">
                 <div v-for="assetInputs in accountSettings.contactInfo.keys.Assets[assetType]">
                     <div v-if="assetInputs.icon" style="position: relative">
@@ -25,7 +25,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <template v-if="assetIndex === contacts[userSettings.selectedContactIndex]?.Assets.length - 1">
+            <template v-if="assetIndex === slctdCntct.Assets.length - 1">
                 <hr>
             </template>
         </div>
@@ -38,6 +38,7 @@ export default {
       'userSettings',
       'endPts',
       'contacts',
+      'slctdCntct',
     ]),
   },
 

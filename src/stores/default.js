@@ -143,16 +143,8 @@ const useDefaultStore = Pinia.defineStore('default', {
         (state.days.findIndex((day) => day == state.times.Y_m_d) + 1) / 7
       );
     },
-    membersSlctdCntctArr(state) {
-      let members = [];
-      if (state.contacts && state.userSettings) {
-        if (state.contacts[state.userSettings.selectedContactIndex]?.Members) {
-          members = Object.values(
-            state.contacts[state.userSettings.selectedContactIndex]?.Members
-          );
-        }
-      }
-      return members;
+    slctdCntct(state) {
+      return state.contacts[state.userSettings.selectedContactIndex];
     },
   },
 });

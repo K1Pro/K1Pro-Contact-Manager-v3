@@ -155,7 +155,6 @@ export default {
       'accountSettings',
       'endPts',
       'appName',
-      'membersSlctdCntctArr',
     ]),
   },
 

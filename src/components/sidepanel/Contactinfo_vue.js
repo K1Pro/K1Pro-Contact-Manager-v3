@@ -19,7 +19,7 @@ export default {
     </div>`,
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, ['membersSlctdCntctArr']),
+    ...Pinia.mapWritableState(useDefaultStore, ['msg']),
   },
 
   components: {

@@ -105,7 +105,7 @@ export default {
   text-align: center;
 }
 .navigation input[type='date'] {
-  font-family: arial;
+  font-family: 'Helvetica', sans-serif;
   font-size: 25px;
   background-color: #999999;
   color-scheme: dark;

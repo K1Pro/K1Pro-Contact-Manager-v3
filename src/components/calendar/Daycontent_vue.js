@@ -32,7 +32,8 @@ export default {
       let contactArray = {};
       this.contacts.forEach((contact, contactIndex) => {
         // contactArray.push(contact.id);
-        Object.entries(contact.Events).forEach(([calDay, calEvent]) => {
+        Object.entries(contact.Events).forEach(([calDate, calEvent]) => {
+          let calDay = calDate.split('T')[0];
           if (this.days.includes(calDay)) {
             if (!contactArray[calDay]) contactArray[calDay] = {};
             // if (contact.Members[0]) {
@@ -42,7 +43,7 @@ export default {
               contactArray[calDay][Object.values(contact.Members[0])[0].Name] =
                 {
                   contactIndex: contactIndex,
-                  Time: calEvent.Time,
+                  Time: calDate.split('T')[1],
                   Status: calEvent.Status,
                 };
             // } else {
