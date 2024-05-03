@@ -7,13 +7,14 @@ export default {
     <div class='day-content'>
         {{ firstCalDate ? days[dayIndex].slice(-5) : '' }}
         <template v-if="firstCalDate && calContactEvents[days[dayIndex]]">
-            <div v-for="([calContactName, calContactValue], calContactIndex) in Object.entries(calContactEvents[days[dayIndex]])">
+            <div v-for="([calContactName, calContactValue], calContactIndex) in Object.entries(calContactEvents[days[dayIndex]])" @mouseleave="dayContentHover = ''">
                 <div 
                     class="task-grid-container" 
-                    :class="{compltd: calContactValue.Status == 1, 'not-compltd': calContactValue.Status == 0, 'active': calContactValue.contactIndex == userSettings.selectedContactIndex}" >
+                    :class="{compltd: calContactValue.Status == 1, 'not-compltd': calContactValue.Status == 0, 'active': calContactValue.contactIndex == userSettings.selectedContactIndex}" 
+                    @mouseover="dayContentHover = dayIndex + '' + calContactIndex" >
                     <div @click="selectContact(calContactValue.contactIndex, 'list-check')">{{ calContactValue.Time }}</div>
                     <div @click="selectContact(calContactValue.contactIndex, 'list-check')" style="overflow: hidden">{{ calContactName }}</div>
-                    <div><input type="checkbox" :checked="calContactValue.Status == 1"></div>
+                    <div :class="{highlight: dayContentHover == dayIndex + '' + calContactIndex}" ><input type="checkbox" :checked="calContactValue.Status == 1"></div>
                 </div>
             </div>
         </template>
@@ -25,6 +26,7 @@ export default {
       'activeTab',
       'userSettings',
       'contacts',
+      'dayContentHover',
       'firstCalDate',
       'days',
     ]),
@@ -67,14 +69,23 @@ export default {
 
   //   emits: [''],
 
-  //   data() {
-  //     return {};
-  //   },
+  // data() {
+  //   return {};
+  // },
 
   methods: {
     selectContact(contactIndex, tab) {
       this.activeTab = tab;
       this.userSettings.selectedContactIndex = contactIndex;
+    },
+    highlightContact(event) {
+      // console.log('mouse over' + event.target.innerHTML);
+      console.log(event);
+      event.target.classList.add('highlight');
+    },
+    nohighlightContact(event) {
+      // console.log('mouse out' + event.target.innerHTML);
+      event.target.classList.remove('highlight');
     },
   },
 
@@ -84,33 +95,39 @@ export default {
       /*css*/ `
 .day-content{}
 .task-grid-container {
-    color: white;
-    display: grid;
-    grid-template-columns: 45px calc(100% - 65px) 20px;
-    cursor: pointer;
-    border: 1px solid white;
-    padding-left: 2px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+  color: white;
+  display: grid;
+  grid-template-columns: 45px calc(100% - 65px) 20px;
+  cursor: pointer;
+  border: 1px solid white;
+  padding-left: 2px;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 .task-grid-container:hover:not(.active) {
-    background-color: #DB66FF;
+  background-color: #DB66FF; 
 }
 .task-grid-container input[type="checkbox"] {
-    accent-color: #D9414E;
+  accent-color: inherit;
 }
 .active input[type="checkbox"] {
   accent-color: #417CD9;
 }
 .compltd {
-    background-color: #D9414E;
+  background-color: #D9414E;
+  accent-color: #D9414E;
 }
 .not-compltd {
-    background-color: #52A375;
+  background-color: #52A375;
+  accent-color: #52A375;
 }
 .active {
-    background-color: #417CD9;
-    cursor: default;
+  background-color: #417CD9;
+  accent-color: #417CD9;
+  cursor: default;
+}
+.highlight {
+  accent-color: #DB66FF;
 }
 `
     );

@@ -15,6 +15,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       userSettings: {},
       tempUserSettings: {},
       contacts: [],
+      dayContentHover: '',
       endPts: {
         url: url,
         accountLoginURL: accountlogin_url,

@@ -154,7 +154,7 @@ export default {
   height: 50%;
 }
 .activeDay {
-  background-color: #ccffff;
+  background-color: lightblue;
   cursor: default;
 }
 
