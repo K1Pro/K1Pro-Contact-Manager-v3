@@ -5,23 +5,28 @@ export default {
 
   template: /*html*/ `
     <div class='tasks'>
-        Tasks  
         <template v-if="slctdCntct">
-          for
-          {{Object.values(slctdCntct.Members[0])[0].First ? Object.values(slctdCntct.Members[0])[0].First : ''}} 
-          {{Object.values(slctdCntct.Members[0])[0].Name}}
+          <div class="tasks-title">
+            Tasks for
+            {{Object.values(slctdCntct.Members[0])[0].First ? Object.values(slctdCntct.Members[0])[0].First : ''}} 
+            {{Object.values(slctdCntct.Members[0])[0].Name}}
+          </div>
           <hr />
           <div v-for="([taskDate, task], taskIndex) in Object.entries(slctdCntct?.Events).sort().reverse()" class="tasks-grid-container">
             <div class="tasks-grid-item1" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-              <input type="datetime-local" :value="taskDate" @change="patchTask($event, taskDate)">
-              <input type="checkbox" :checked="task.Status == 1"/>
+              <input type="datetime-local" :value="taskDate" @change="changeTask($event, taskDate)">
+              <input type="checkbox" :checked="task.Status == 1" @change="changeTask($event, taskDate)"/>
             </div>
             <div class="tasks-grid-item2" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-              <span contenteditable>{{task.Desc}}</span>
+              <span contenteditable v-on:blur="changeTask($event, taskDate)">{{task.Desc}}</span>
             </div>
             
           </div>
         </template>
+        <template v-else>
+          <div class="tasks-title">Tasks</div>
+        </template>
+
     </div>`,
 
   computed: {
@@ -46,14 +51,38 @@ export default {
   //   },
 
   methods: {
-    async patchTask(event, taskDate) {
-      this.contacts[this.userSettings.selectedContactIndex].Events[
-        event.target.value
-      ] =
-        this.contacts[this.userSettings.selectedContactIndex].Events[taskDate];
-      delete this.contacts[this.userSettings.selectedContactIndex].Events[
-        taskDate
-      ];
+    async changeTask(event, taskDate) {
+      if (event.target.type == 'datetime-local') {
+        this.contacts[this.userSettings.selectedContactIndex].Events[
+          event.target.value
+        ] =
+          this.contacts[this.userSettings.selectedContactIndex].Events[
+            taskDate
+          ];
+        delete this.contacts[this.userSettings.selectedContactIndex].Events[
+          taskDate
+        ];
+      } else if (event.target.type == 'checkbox') {
+        if (event.target.checked) {
+          this.contacts[this.userSettings.selectedContactIndex].Events[
+            taskDate
+          ].Status = '1';
+        } else {
+          this.contacts[this.userSettings.selectedContactIndex].Events[
+            taskDate
+          ].Status = '0';
+        }
+      } else if (event.srcElement.nodeName == 'SPAN') {
+        if (
+          event.target.innerHTML !=
+          this.contacts[this.userSettings.selectedContactIndex].Events[taskDate]
+            .Desc
+        ) {
+          this.contacts[this.userSettings.selectedContactIndex].Events[
+            taskDate
+          ].Desc = event.target.innerHTML;
+        }
+      }
     },
   },
 
@@ -62,6 +91,13 @@ export default {
       'tasks',
       /*css*/ `
 .tasks{}
+.tasks-title{
+  border-radius: 5px;
+  font-weight: bold;
+  padding: 5px;
+  background-color: black;
+  color: white;
+}
 .tasks-grid-container{
   display: grid;
   grid-template-columns: auto;
