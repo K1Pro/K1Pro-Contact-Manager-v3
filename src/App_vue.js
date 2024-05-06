@@ -160,6 +160,7 @@ export default {
     },
 
     startResizeGrid() {
+      document.querySelector('body').classList.add('prevent-select');
       document.addEventListener('mousemove', this.resizeGrid, true);
       document.addEventListener('mouseup', this.stopResizeGrid, true);
     },
@@ -168,6 +169,7 @@ export default {
       this.patchUserSettings();
       document.removeEventListener('mousemove', this.resizeGrid, true);
       document.removeEventListener('mouseup', this.stopResizeGrid, true);
+      document.querySelector('body').classList.remove('prevent-select');
     },
 
     resetGrid() {

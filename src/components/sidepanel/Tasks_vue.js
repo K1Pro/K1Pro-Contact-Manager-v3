@@ -19,13 +19,23 @@ export default {
             </div>
 
           </div>
-          <div v-for="([taskDate, task], taskIndex) in Object.entries(slctdCntct?.Events).sort().reverse()" class="tasks-grid-container">
+          <div v-for="([taskDate, task], taskIndex) in Object.entries(slctdCntct?.Tasks).sort().reverse()" class="tasks-grid-container">
             <div class="tasks-grid-item1" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-              <input type="datetime-local" :value="taskDate" @change="changeTask($event, taskDate)">
-              <input type="checkbox" :checked="task.Status == 1" @change="changeTask($event, taskDate)"/>
+              <div class="item1-grid-container">
+                <div><input type="checkbox" :checked="task.Status == 1" @change="changeTask($event, taskDate)"/></div>
+                <div><input type="datetime-local" :value="taskDate" @change="changeTask($event, taskDate)"></div>
+                <div><button class="member-button"><i class="fa-solid fa-x"></i></button></div>
+              </div>
             </div>
             <div class="tasks-grid-item2" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-              <span contenteditable v-on:blur="changeTask($event, taskDate)">{{task.Desc}}</span>
+              <span spellcheck="false" contenteditable v-on:blur="changeTask($event, taskDate)">{{task.Desc}}</span>
+            </div>
+            <div class="tasks-grid-item3" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
+              <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
+                <option>Assigned to: {{task.Assign}}</option>
+                <option disabled>Last updated by: {{task.Update}}</option>
+                <option disabled>Created by: {{task.Create}}</option>
+              </select>
             </div>
             
           </div>
@@ -61,32 +71,30 @@ export default {
   methods: {
     changeTask(event, taskDate) {
       if (event.target.type == 'datetime-local') {
-        this.contacts[this.userSettings.selectedContactIndex].Events[
+        this.contacts[this.userSettings.selectedContactIndex].Tasks[
           event.target.value
         ] =
-          this.contacts[this.userSettings.selectedContactIndex].Events[
-            taskDate
-          ];
-        delete this.contacts[this.userSettings.selectedContactIndex].Events[
+          this.contacts[this.userSettings.selectedContactIndex].Tasks[taskDate];
+        delete this.contacts[this.userSettings.selectedContactIndex].Tasks[
           taskDate
         ];
       } else if (event.target.type == 'checkbox') {
         if (event.target.checked) {
-          this.contacts[this.userSettings.selectedContactIndex].Events[
+          this.contacts[this.userSettings.selectedContactIndex].Tasks[
             taskDate
           ].Status = '1';
         } else {
-          this.contacts[this.userSettings.selectedContactIndex].Events[
+          this.contacts[this.userSettings.selectedContactIndex].Tasks[
             taskDate
           ].Status = '0';
         }
       } else if (event.srcElement.nodeName == 'SPAN') {
         if (
           event.target.innerHTML !=
-          this.contacts[this.userSettings.selectedContactIndex].Events[taskDate]
+          this.contacts[this.userSettings.selectedContactIndex].Tasks[taskDate]
             .Desc
         ) {
-          this.contacts[this.userSettings.selectedContactIndex].Events[
+          this.contacts[this.userSettings.selectedContactIndex].Tasks[
             taskDate
           ].Desc = event.target.innerHTML;
         }
@@ -94,7 +102,7 @@ export default {
     },
     newTask() {
       console.log('creating a new task');
-      this.contacts[this.userSettings.selectedContactIndex].Events[
+      this.contacts[this.userSettings.selectedContactIndex].Tasks[
         this.times.Y_m_d_H_i
       ] = {
         Desc: 'Just a test',
@@ -120,17 +128,16 @@ export default {
 .tasks-grid-container{
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
 }
 .tasks input[type='datetime-local'] {
   /* color-scheme: dark;
-  color: black;*/
+  color: black;
+  padding: 5px;*/
   background-color: #99999900;
   border: none;
-  /* padding: 5px;*/
-  border-bottom: 1px solid black; 
   font-family: 'Helvetica', sans-serif;
-  /* font-size: 14px; */
+  font-size: 14px;
 }
 /*input[type="date"]::-webkit-calendar-picker-indicator {
   opacity: 0.6;
@@ -141,23 +148,25 @@ export default {
 }
 .tasks span {
   word-break: break-word;
+  font-size: 14px;
 }
 .tasks span:focus {
   outline: none; 
 }
 .tasks-grid-item1 {
   padding: 15px 5px 5px 5px;
-  /* border-top: 1px solid black;
-  border-left: 1px solid black;
-  border-right: 1px solid black;
-  background-color: white; */
 }
 .tasks-grid-item2 {
+  padding: 5px 5px 5px 10px;
+  /* border-top: 1px dashed grey;
+  border-bottom: 1px dashed grey; */
+}
+.tasks-grid-item3 {
   padding: 5px 5px 15px 5px;
-  /* border-left: 1px solid black;
-  border-right: 1px solid black;
-  border-bottom: 1px solid black;
-  background-color: white; */
+}
+.tasks-grid-item3 select {
+  border: none;
+  font-size: 14px;
 }
 .tasks-title-grid-container{
   display: grid;
@@ -173,11 +182,15 @@ export default {
   cursor: pointer;
   color: #417CD9
 }
-
-
+.item1-grid-container {
+  display: grid;
+  grid-template-columns: 20px calc(100% - 50px) 30px;
+  align-items: center;
+}
 .tasks-title-grid-item2 button:hover {
   color: #DB66FF;
 }
+
 
 `
     );

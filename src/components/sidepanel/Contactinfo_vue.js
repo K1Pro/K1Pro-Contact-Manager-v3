@@ -2,7 +2,7 @@ import Searchbar from './contactinfo/Searchbar_vue.js';
 import Members from './contactinfo/Members_vue.js';
 import Properties from './contactinfo/Properties_vue.js';
 import Assets from './contactinfo/Assets_vue.js';
-import Communications from './contactinfo/Communications_vue.js';
+import Connections from './contactinfo/Connections_vue.js';
 
 export default {
   name: 'Contact Info',
@@ -14,7 +14,7 @@ export default {
       <members></members>
       <properties></properties>
       <assets></assets>
-      <communications></communications>
+      <connections></connections>
       <br/>
     </div>`,
 
@@ -27,7 +27,7 @@ export default {
     Members,
     Properties,
     Assets,
-    Communications,
+    Connections,
   },
 
   //   props: [''],

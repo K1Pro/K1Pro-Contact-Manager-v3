@@ -1,6 +1,8 @@
 import Logoutbtn from './LogOutBtn_vue.js';
 import Contactinfo from './sidepanel/Contactinfo_vue.js';
 import Tasks from './sidepanel/Tasks_vue.js';
+import Recurtasks from './sidepanel/RecurTasks_vue.js';
+import Notes from './sidepanel/Notes_vue.js';
 
 export default {
   name: 'Side Panel',
@@ -48,6 +50,14 @@ export default {
             @click="openTab">
             <i class="fa fa-repeat"></i>
             <span v-if="sidePanelOpen">Recurring tasks</span>
+          </button>
+
+          <button
+            title="Notes"
+            :class="{ 'tab-active': activeTab == 'file-pen' }"
+            @click="openTab">
+            <i class="fa fa-file-pen"></i>
+            <span v-if="sidePanelOpen">Notes</span>
           </button>
 
           <template v-for="(accountParam, accountParamIndex) in accountSettings?.tabs">
@@ -111,7 +121,11 @@ export default {
           </div>
 
           <div v-else-if="activeTab == 'repeat'">
-            Recurring tasks
+            <recurtasks></recurtasks>
+          </div>
+
+          <div v-else-if="activeTab == 'file-pen'">
+            <notes></notes>
           </div>
           
           <div v-else-if="activeTab == 'user-tie'">
@@ -136,7 +150,7 @@ export default {
     </div>
   `,
 
-  components: { Logoutbtn, Contactinfo, Tasks },
+  components: { Logoutbtn, Contactinfo, Tasks, Recurtasks, Notes },
 
   data() {
     return {

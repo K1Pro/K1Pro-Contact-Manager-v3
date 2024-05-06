@@ -8,7 +8,7 @@ export default {
       <div class="filters-grid-container">
         <div class="navigation-item1">
           <select name="cars">
-            <option value="volvo">Events (All)</option>
+            <option value="volvo">Tasks (All)</option>
             <option value="saab">Saab</option>
             <option value="mercedes">Mercedes</option>
             <option value="audi">Audi</option>

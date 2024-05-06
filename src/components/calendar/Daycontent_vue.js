@@ -6,17 +6,16 @@ export default {
   template: /*html*/ `
     <div class='day-content'>
         {{ firstCalDate ? days[dayIndex].slice(-5) : '' }}
-        <template v-if="firstCalDate && calContactEvents[days[dayIndex]]">
-            <div v-for="([calContactName, calContactValue], calContactIndex) in Object.entries(calContactEvents[days[dayIndex]])" @mouseleave="dayContentHover = ''">
-                <div 
-                    class="task-grid-container" 
-                    :class="{compltd: calContactValue.Status == 1, 'not-compltd': calContactValue.Status == 0, 'active': calContactValue.contactIndex == userSettings.selectedContactIndex}" 
-                    @mouseover="dayContentHover = dayIndex + '' + calContactIndex" >
-                    <div @click="selectContact(calContactValue.contactIndex, 'list-check')">{{ calContactValue.Time }}</div>
-                    <div @click="selectContact(calContactValue.contactIndex, 'list-check')" style="overflow: hidden">{{ calContactName }}</div>
-                    <div :class="{highlight: dayContentHover == dayIndex + '' + calContactIndex}" ><input type="checkbox" :checked="calContactValue.Status == 1"></div>
-                </div>
+        <template v-if="firstCalDate && calContactTasks">
+          <div v-for="calContactTask in calContactTasks" @mouseleave="dayContentHover = ''">
+            <div
+                class="task-grid-container"
+                :class="[calContactTask.Status, {'active': calContactTask.ContactIndex == userSettings.selectedContactIndex}]" >
+                <div @click="selectContact(calContactTask.ContactIndex, calContactTask.Type)">{{ calContactTask.Time }}</div>
+                <div @click="selectContact(calContactTask.ContactIndex, calContactTask.Type)" style="overflow: hidden">{{ calContactTask.Name }}</div>
+                <div></div>
             </div>
+          </div>
         </template>
     </div>`,
 
@@ -30,34 +29,43 @@ export default {
       'firstCalDate',
       'days',
     ]),
-    calContactEvents() {
+    calContactTasks() {
       let contactArray = {};
+      let calDay;
       this.contacts.forEach((contact, contactIndex) => {
-        // contactArray.push(contact.id);
-        Object.entries(contact.Events).forEach(([calDate, calEvent]) => {
-          let calDay = calDate.split('T')[0];
-          if (this.days.includes(calDay)) {
-            if (!contactArray[calDay]) contactArray[calDay] = {};
-            // if (contact.Members[0]) {
-            if (
-              !contactArray[calDay][Object.values(contact.Members[0])[0].Name]
-            )
-              contactArray[calDay][Object.values(contact.Members[0])[0].Name] =
-                {
-                  contactIndex: contactIndex,
-                  Time: calDate.split('T')[1],
-                  Status: calEvent.Status,
-                };
-            // } else {
-            //   contactArray[calDay]['Bad thing'] = {
-            //     contactIndex: contactIndex,
-            //     Time: calEvent.Time,
-            //   };
-            // }
+        Object.entries(contact.Tasks).forEach(([calDate, calEvent]) => {
+          calDay = calDate.split('T')[0];
+          if (
+            this.days[this.dayIndex] == calDay &&
+            !contactArray[contactIndex]
+          ) {
+            contactArray[contactIndex] = {
+              Name: Object.values(contact.Members[0])[0].Name,
+              Time: calDate.split('T')[1],
+              Status: calEvent.Status == 1 ? 'not-compltd' : 'compltd',
+              Type: 'list-check',
+              ContactIndex: contactIndex,
+            };
           }
         });
+        // contact.RecurTasks.forEach((task) => {
+        //   if (
+        //     task.Date &&
+        //     task?.Recur.includes(this.days[this.dayIndex].slice(5))
+        //   ) {
+        //     calDay = task.Date.split('T')[0];
+        //     // if (!contactArray[calDay]) contactArray[calDay] = {};
+        //     if (!contactArray[task.Date.split('T')[1] + '_' + contactIndex])
+        //       contactArray[task.Date.split('T')[1] + '_' + contactIndex] = {
+        //         Name: Object.values(contact.Members[0])[0].Name,
+        //         Status: 1,
+        //       };
+        //   }
+        // });
       });
-      return contactArray;
+      return Object.values(contactArray).sort((a, b) =>
+        a.Time.localeCompare(b.Time)
+      );
     },
   },
 

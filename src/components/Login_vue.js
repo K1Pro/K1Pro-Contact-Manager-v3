@@ -15,8 +15,8 @@ export default {
             type="text"
             placeholder="Username"
             class="loginInpts"
-            autocomplete="email"
-            v-model="email"
+            autocomplete="username"
+            v-model="username"
             @keyup="validate"
             @keyup.enter="loginFn"
           />
@@ -81,7 +81,7 @@ export default {
 
   data() {
     return {
-      email: '',
+      username: '',
       password: '',
       spinLogin: false,
       loginPasswordInputType: 'password',
@@ -101,7 +101,7 @@ export default {
   methods: {
     async loginFn() {
       if (
-        this.email != '' &&
+        this.username != '' &&
         this.password != '' &&
         this.password.length < 20
       ) {
@@ -132,7 +132,7 @@ export default {
             'Cache-Control': 'no-store',
           },
           body: JSON.stringify({
-            Email: this.email,
+            Username: this.username,
             Password: this.password,
             Referer: url,
             AppName: app_name,
@@ -156,7 +156,7 @@ export default {
           this.msg.login = logInResJSON.messages[0];
           this.msg.snackBar = logInResJSON.messages[0];
           if (logInResJSON.messages[0].toLowerCase().includes('incorrect')) {
-            this.email = '';
+            this.username = '';
             this.password = '';
           }
         }
