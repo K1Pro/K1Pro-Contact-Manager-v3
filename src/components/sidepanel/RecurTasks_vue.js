@@ -2,26 +2,6 @@
 
 export default {
   name: 'Recur Tasks',
-  //   <div v-for="([taskDate, task], taskIndex) in Object.entries(slctdCntct?.Tasks).sort().reverse()" class="recur-tasks-grid-container">
-  //               <div class="recur-tasks-grid-item1" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-  //                 <div class="item1-grid-container">
-  //                   <div><input type="checkbox" :checked="task.Status == 1" @change="changeTask($event, taskDate)"/></div>
-  //                   <div><input type="datetime-local" :value="taskDate" @change="changeTask($event, taskDate)"></div>
-  //                   <div><button class="member-button"><i class="fa-solid fa-trash-can"></i></button></div>
-  //                 </div>
-  //               </div>
-  //               <div class="recur-tasks-grid-item2" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-  //                 <span spellcheck="false" contenteditable v-on:blur="changeTask($event, taskDate)">{{task.Desc}}</span>
-  //               </div>
-  //               <div class="recur-tasks-grid-item3" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-  //                 <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-  //                   <option>Assigned to: {{task.Assign}}</option>
-  //                   <option disabled>Last updated by: {{task.Update}}</option>
-  //                   <option disabled>Created by: {{task.Create}}</option>
-  //                 </select>
-  //               </div>
-
-  //             </div>
 
   template: /*html*/ `
       <div class='recur-tasks'>
@@ -39,9 +19,34 @@ export default {
               </div>
             </div>
             <div v-for="recurTask in slctdCntct.RecurTasks" class="recur-tasks-grid-container">
-                <div>
-                {{recurTask}}
+              <div class="recur-tasks-grid-item1" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
+                <div class="recur-tasks-item1-grid-container">
+                  <div><input type="checkbox" /></div>
+                  <div><input type="datetime-local" :value="recurTask.Date"></div>
+                  <div><button class="member-button"><i class="fa-solid fa-trash"></i></button></div>
                 </div>
+              </div> 
+              <div class="recur-tasks-grid-item2" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
+                  <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
+                    <option>{{recurTask.Type}}</option>
+                  </select>
+                  <div><input type="checkbox" />Remind</div>
+                  <div><input type="range" /></div>
+                  <div><input type="text" :value="recurTask.Policy_Number" /></div>
+                  <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
+                    <option>{{recurTask.Policy_Type}}</option>
+                  </select>
+                  <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
+                    <option>{{recurTask.Policy_Status}}</option>
+                  </select>
+              </div>
+              <div class="recur-tasks-grid-item3" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
+                <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
+                  <option>Assigned to: {{recurTask.Assign}}</option>
+                  <option disabled>Last updated by: {{recurTask.Update}}</option>
+                  <option disabled>Created by: {{recurTask.Create}}</option>
+                </select>
+              </div>
             </div>
             
           </template>
@@ -162,7 +167,7 @@ export default {
     padding: 15px 5px 5px 5px;
   }
   .recur-tasks-grid-item2 {
-    padding: 5px 5px 5px 10px;
+    padding: 5px 5px 5px 5px;
     /* border-top: 1px dashed grey;
     border-bottom: 1px dashed grey; */
   }
@@ -187,7 +192,12 @@ export default {
     cursor: pointer;
     color: #417CD9
   }
-  .item1-grid-container {
+  .recur-tasks-item1-grid-container {
+    display: grid;
+    grid-template-columns: 20px calc(100% - 50px) 30px;
+    align-items: center;
+  }
+  .recur-tasks-item2-grid-container {
     display: grid;
     grid-template-columns: 20px calc(100% - 50px) 30px;
     align-items: center;

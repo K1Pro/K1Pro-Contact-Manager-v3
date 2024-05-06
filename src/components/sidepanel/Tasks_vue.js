@@ -21,10 +21,10 @@ export default {
           </div>
           <div v-for="([taskDate, task], taskIndex) in Object.entries(slctdCntct?.Tasks).sort().reverse()" class="tasks-grid-container">
             <div class="tasks-grid-item1" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-              <div class="item1-grid-container">
+              <div class="tasks-item1-grid-container">
                 <div><input type="checkbox" :checked="task.Status == 1" @change="changeTask($event, taskDate)"/></div>
                 <div><input type="datetime-local" :value="taskDate" @change="changeTask($event, taskDate)"></div>
-                <div><button class="member-button"><i class="fa-solid fa-trash-can"></i></button></div>
+                <div><button class="member-button"><i class="fa-solid fa-trash"></i></button></div>
               </div>
             </div>
             <div class="tasks-grid-item2" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
@@ -182,7 +182,7 @@ export default {
   cursor: pointer;
   color: #417CD9
 }
-.item1-grid-container {
+.tasks-item1-grid-container {
   display: grid;
   grid-template-columns: 20px calc(100% - 50px) 30px;
   align-items: center;

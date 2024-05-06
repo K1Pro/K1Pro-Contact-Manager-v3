@@ -14,14 +14,14 @@ export default {
                           :placeholder="assetInputs.placeholder"
                           :type="assetInputs.type" 
                           v-model="contacts[userSettings.selectedContactIndex].Assets[assetIndex][assetType]" />
-                      <button class="asset-button"><i class="fa-solid fa-trash-can"></i></button>
+                      <button class="asset-button"><i class="fa-solid fa-trash"></i></button>
                     </div>
                     <div v-else >
                       <input 
                         :placeholder="assetInputs.placeholder"
                         :type="assetInputs.type" 
                         v-model="contacts[userSettings.selectedContactIndex].Assets[assetIndex][assetType]" />
-                      <button class="asset-button"><i class="fa-solid fa-trash-can"></i></button>
+                      <button class="asset-button"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             </div>

@@ -13,7 +13,7 @@ export default {
                             :placeholder="connInputs.placeholder"
                             :type="connInputs.type" 
                             v-model="contacts[userSettings.selectedContactIndex].Connections[connIndex][connType]" />
-                        <button class="conn-delete-icon" ><i class="fa-solid fa-trash-can"></i></button>
+                        <button class="conn-delete-icon" ><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
                 <template v-if="connIndex === slctdCntct.Connections.length - 1">
