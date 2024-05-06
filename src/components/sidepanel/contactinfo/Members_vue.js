@@ -11,7 +11,7 @@ export default {
                 </template>
                 <div class="member-title-grid-container">
                   <div class="member-title"><i class="fa-solid fa-user">&nbsp;</i>{{ Object.keys(member)[0] }}</div>
-                  <div><button class="member-button"><i class="fa-solid fa-x"></i></button></div>
+                  <div><button class="member-button"><i class="fa-solid fa-trash-can"></i></button></div>
                 </div>
                 <div class="member-grid-container" v-for="(memberInfo, memberType) in member">
                   <div class="member-grid-item" v-for="memberInputs in accountSettings.contactInfo.keys.Members[memberType]">

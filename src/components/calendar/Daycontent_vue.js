@@ -13,7 +13,7 @@ export default {
                 :class="[calContactTask.Status, {'active': calContactTask.ContactIndex == userSettings.selectedContactIndex}]" >
                 <div @click="selectContact(calContactTask.ContactIndex, calContactTask.Type)">{{ calContactTask.Time }}</div>
                 <div @click="selectContact(calContactTask.ContactIndex, calContactTask.Type)" style="overflow: hidden">{{ calContactTask.Name }}</div>
-                <div style="text-align: center"><i :class="calContactTask.Icon"></i></div>
+                <div style="text-align: center"><i v-if="calContactTask.Icon" :class="calContactTask.Icon"></i></div>
             </div>
           </div>
         </template>
@@ -33,18 +33,18 @@ export default {
       let contactArray = {};
       let calDay;
       this.contacts.forEach((contact, contactIndex) => {
-        Object.entries(contact.Tasks).forEach(([calDate, calEvent]) => {
-          calDay = calDate.split('T')[0];
+        Object.entries(contact.Tasks).forEach(([taskDate, taskEvent]) => {
+          calDay = taskDate.split('T')[0];
           if (
             this.days[this.dayIndex] == calDay &&
             !contactArray[contactIndex]
           ) {
             contactArray[contactIndex] = {
               Name: Object.values(contact.Members[0])[0].Name,
-              Time: calDate.split('T')[1],
+              Time: taskDate.split('T')[1],
               Type: 'list-check',
-              Status: calEvent.Status == 1 ? 'compltd' : 'not-compltd',
-              Icon: calEvent.Status == 1 ? 'fa fa-check' : 'fa fa-list-check',
+              Status: taskEvent.Status == 1 ? 'compltd' : 'not-compltd',
+              Icon: taskEvent.Status == 1 ? 'fa fa-check' : false,
               ContactIndex: contactIndex,
             };
           }
@@ -119,10 +119,11 @@ export default {
   font-size: 10px;
 }
 .compltd {
-  background-color: #D9414E;
+  
+  background-color: #52A375;
 }
 .not-compltd {
-  background-color: #52A375;
+  background-color: #D9414E;
 }
 .renewal {
   background-color: #F09030;

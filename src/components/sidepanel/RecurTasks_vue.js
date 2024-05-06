@@ -7,7 +7,7 @@ export default {
   //                 <div class="item1-grid-container">
   //                   <div><input type="checkbox" :checked="task.Status == 1" @change="changeTask($event, taskDate)"/></div>
   //                   <div><input type="datetime-local" :value="taskDate" @change="changeTask($event, taskDate)"></div>
-  //                   <div><button class="member-button"><i class="fa-solid fa-x"></i></button></div>
+  //                   <div><button class="member-button"><i class="fa-solid fa-trash-can"></i></button></div>
   //                 </div>
   //               </div>
   //               <div class="recur-tasks-grid-item2" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
