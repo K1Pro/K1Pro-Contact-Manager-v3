@@ -17,8 +17,8 @@ export default {
                 <button @click="newTask" ><i class="fa-solid fa-square-plus"></i></button>
               </div>
             </div>
-
           </div>
+          
           <div v-for="([taskDate, task], taskIndex) in Object.entries(slctdCntct?.Tasks).sort().reverse()" class="tasks-grid-container">
             <div class="tasks-grid-item1" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
               <div class="tasks-item1-grid-container">

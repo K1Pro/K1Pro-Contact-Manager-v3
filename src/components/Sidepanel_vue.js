@@ -3,7 +3,7 @@ import Contactinfo from './sidepanel/Contactinfo_vue.js';
 import Tasks from './sidepanel/Tasks_vue.js';
 import Recurtasks from './sidepanel/RecurTasks_vue.js';
 import Notes from './sidepanel/Notes_vue.js';
-import Custom0 from './sidepanel/custom/0_vue.js';
+import Custom1 from './sidepanel/custom/1_vue.js';
 
 export default {
   name: 'Side Panel',
@@ -142,7 +142,7 @@ export default {
             </div>
           
           <div v-else>
-            <custom0 v-if="customTab === 0"></custom0>
+            <custom1 v-if="customTab === 0"></custom1>
             <template v-else>{{ activeTab }}</template>
           </div>
 
@@ -152,7 +152,7 @@ export default {
     </div>
   `,
 
-  components: { Logoutbtn, Contactinfo, Tasks, Recurtasks, Notes, Custom0 },
+  components: { Logoutbtn, Contactinfo, Tasks, Recurtasks, Notes, Custom1 },
 
   data() {
     return {

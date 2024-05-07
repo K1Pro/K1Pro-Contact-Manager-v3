@@ -3,17 +3,17 @@ export default {
 
   template: /*html*/ `
     <div class='notes'>
-        <template v-if="slctdCntct && contacts && userSettings">
-          <div class="notes-title">
-            Notes for
-            {{Object.values(slctdCntct.Members[0])[0].First ? Object.values(slctdCntct.Members[0])[0].First : ''}} 
-            {{Object.values(slctdCntct.Members[0])[0].Name}}
-          </div>
-          <textarea placeholder="Notes" v-model="contacts[userSettings.selectedContactIndex].Notes"></textarea>
-        </template>
-        <template v-else>
-          Notes
-        </template>
+      <template v-if="slctdCntct && contacts && userSettings">
+        <div class="notes-title">
+          Notes for
+          {{Object.values(slctdCntct.Members[0])[0].First ? Object.values(slctdCntct.Members[0])[0].First : ''}} 
+          {{Object.values(slctdCntct.Members[0])[0].Name}}
+        </div>
+        <textarea placeholder="Notes" v-model="contacts[userSettings.selectedContactIndex].Notes"></textarea>
+      </template>
+      <template v-else>
+        Notes
+      </template>
     </div>`,
 
   computed: {
