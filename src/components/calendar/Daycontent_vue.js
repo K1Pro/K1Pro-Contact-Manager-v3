@@ -11,7 +11,7 @@ export default {
             <div
                 class="task-grid-container"
                 :class="[calContactTask.Status, {'active': calContactTask.ContactIndex == userSettings.selectedContactIndex}]" >
-                <div @click="selectContact(calContactTask.ContactIndex, calContactTask.Type)">{{ calContactTask.Time }}</div>
+                <div @click="selectContact(calContactTask.ContactIndex, calContactTask.Type)">{{ calContactTask.Time != '25:00' ? calContactTask.Time : '' }}</div>
                 <div @click="selectContact(calContactTask.ContactIndex, calContactTask.Type)" style="overflow: hidden">{{ calContactTask.Name }}</div>
                 <div style="text-align: center"><i v-if="calContactTask.Icon" :class="calContactTask.Icon"></i></div>
             </div>
@@ -50,13 +50,13 @@ export default {
         });
         contact.RecurTasks.forEach((task) => {
           if (
-            task.Date &&
+            task.Start &&
             task?.Recur.includes(this.days[this.dayIndex].slice(-5)) &&
             !contactArray[contactIndex]
           ) {
             contactArray[contactIndex] = {
               Name: Object.values(contact.Members[0])[0].Name,
-              Time: task.Date.split('T')[1],
+              Time: task.Time ? task.Time : '25:00',
               Type: 'repeat',
               Status:
                 task.Reviewed > this.days[this.dayIndex]

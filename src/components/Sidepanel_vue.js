@@ -142,12 +142,8 @@ export default {
             </div>
           
           <div v-else>
-            <template v-if="customTab === 0">
-              <custom0></custom0>
-            </template>
-            <template v-else>
-              {{ activeTab }} 
-            </template>
+            <custom0 v-if="customTab === 0"></custom0>
+            <template v-else>{{ activeTab }}</template>
           </div>
 
         </div>
