@@ -25,7 +25,6 @@ export default {
       'activeTab',
       'userSettings',
       'contacts',
-      'times',
       'firstCalDate',
       'days',
     ]),
@@ -119,7 +118,6 @@ export default {
   font-size: 10px;
 }
 .compltd {
-  
   background-color: #52A375;
 }
 .not-compltd {
@@ -130,7 +128,6 @@ export default {
 }
 .active {
   background-color: #417CD9;
-  cursor: default;
 }
 `
     );

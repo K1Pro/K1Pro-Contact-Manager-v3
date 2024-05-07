@@ -15,7 +15,8 @@ export default {
                         <input 
                             :type="propertyInputs.type" 
                             :placeholder="propertyInputs.placeholder"
-                            v-model="contacts[userSettings.selectedContactIndex].Properties[propertyIndex][propertyType][propertyInputs.value]" />
+                            v-model="contacts[userSettings.selectedContactIndex].Properties[propertyIndex][propertyType][propertyInputs.value]" 
+                            @change="patchProperty($event, propertyIndex, Object.keys(property)[0], propertyInputs.value)" />
                     </div>
                 </div>
                 <template v-if="propertyIndex === contacts[userSettings.selectedContactIndex]?.Properties.length - 1">
@@ -26,6 +27,7 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
+      'accessToken',
       'msg',
       'accountSettings',
       'userSettings',
@@ -46,7 +48,34 @@ export default {
   //     return {};
   //   },
 
-  //   methods: {},
+  methods: {
+    async patchProperty(event, columnIndex, key, property) {
+      try {
+        const response = await fetch(servr_url + this.endPts.contactinfo, {
+          method: 'PATCH',
+          headers: {
+            Authorization: this.accessToken,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          },
+          body: JSON.stringify({
+            ID: +this.userSettings.selectedContactIndex + 1,
+            Column: 'Properties',
+            ColumnIndex: columnIndex,
+            Key: key,
+            Property: property,
+            Value: event.target.value,
+          }),
+        });
+        const patchPropertyResJSON = await response.json();
+        if (patchPropertyResJSON.success) {
+          console.log(patchPropertyResJSON);
+        }
+      } catch (error) {
+        this.msg.snackBar = error.toString();
+      }
+    },
+  },
 
   mounted() {
     style(

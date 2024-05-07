@@ -3,6 +3,7 @@ import Contactinfo from './sidepanel/Contactinfo_vue.js';
 import Tasks from './sidepanel/Tasks_vue.js';
 import Recurtasks from './sidepanel/RecurTasks_vue.js';
 import Notes from './sidepanel/Notes_vue.js';
+import Custom0 from './sidepanel/custom/0_vue.js';
 
 export default {
   name: 'Side Panel',
@@ -31,7 +32,7 @@ export default {
           <button
             title="Contact info"
             :class="{ 'tab-active': activeTab == 'house-chimney-user' }"
-            @click="openTab">
+            @click="openTab($event)">
             <i class="fa fa-house-chimney-user"></i>
             <span v-if="sidePanelOpen">Contact info</span>
           </button>
@@ -39,7 +40,7 @@ export default {
           <button
             title="Tasks"
             :class="{ 'tab-active': activeTab == 'list-check' }"
-            @click="openTab">
+            @click="openTab($event)">
             <i class="fa fa-list-check"></i>
             <span v-if="sidePanelOpen">Tasks</span>
           </button>
@@ -47,7 +48,7 @@ export default {
           <button
             title="Recurring tasks"
             :class="{ 'tab-active': activeTab == 'repeat' }"
-            @click="openTab">
+            @click="openTab($event)">
             <i class="fa fa-repeat"></i>
             <span v-if="sidePanelOpen">Recurring tasks</span>
           </button>
@@ -55,7 +56,7 @@ export default {
           <button
             title="Notes"
             :class="{ 'tab-active': activeTab == 'file-pen' }"
-            @click="openTab">
+            @click="openTab($event)">
             <i class="fa fa-file-pen"></i>
             <span v-if="sidePanelOpen">Notes</span>
           </button>
@@ -65,7 +66,7 @@ export default {
               v-for="([paramKey, paramValue], paramIndex) in Object.entries(accountParam)"
               :title="paramKey"
               :class="{ 'tab-active': activeTab == paramValue }"
-              @click="openTab">
+              @click="openTab($event, accountParamIndex)">
               <i :class="'fa fa-' + paramValue"></i>
               <span v-if="sidePanelOpen">{{paramKey}}</span>
             </button>
@@ -74,7 +75,7 @@ export default {
           <button
             title="User Info"
             :class="{ 'tab-active': activeTab == 'user-tie' }"
-            @click="openTab">
+            @click="openTab($event)">
             <i class="fa fa-user-tie"></i>
             <span v-if="sidePanelOpen">User Info</span>
           </button>
@@ -94,7 +95,7 @@ export default {
           <button
             title="Emails"
             :class="{ 'tab-active': activeTab == 'envelope' }"
-            @click="openTab">
+            @click="openTab($event)">
             <i class="fa fa-envelope"></i>
             <span v-if="sidePanelOpen">Emails</span>
           </button>
@@ -102,7 +103,7 @@ export default {
           <button
             title="Reports"
             :class="{ 'tab-active': activeTab == 'chart-pie' }"
-            @click="openTab">
+            @click="openTab($event)">
             <i class="fa fa-chart-pie"></i>
             <span v-if="sidePanelOpen">Reports</span>
           </button>
@@ -141,7 +142,12 @@ export default {
             </div>
           
           <div v-else>
-            {{ activeTab }}
+            <template v-if="customTab === 0">
+              <custom0></custom0>
+            </template>
+            <template v-else>
+              {{ activeTab }} 
+            </template>
           </div>
 
         </div>
@@ -150,13 +156,14 @@ export default {
     </div>
   `,
 
-  components: { Logoutbtn, Contactinfo, Tasks, Recurtasks, Notes },
+  components: { Logoutbtn, Contactinfo, Tasks, Recurtasks, Notes, Custom0 },
 
   data() {
     return {
       active: false,
       sidePanelOpen: false,
       pageClicks: 0,
+      customTab: null,
     };
   },
 
@@ -166,6 +173,7 @@ export default {
       'msg',
       'windowWidth',
       'activeTab',
+      'userData',
       'accountSettings',
       'endPts',
       'appName',
@@ -173,7 +181,7 @@ export default {
   },
 
   methods: {
-    openTab(event) {
+    openTab(event, customTab) {
       const selectedTab =
         event.srcElement.localName == 'button'
           ? event.srcElement.firstChild.className.split('fa-')[1].trim()
@@ -183,6 +191,9 @@ export default {
       if (selectedTab != this.activeTab) {
         this.sidePanelOpen = false;
         this.activeTab = selectedTab;
+      }
+      if (customTab !== null) {
+        this.customTab = customTab;
       }
     },
 

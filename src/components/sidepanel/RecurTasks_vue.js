@@ -34,6 +34,9 @@ export default {
                   <div><input type="range" /></div>
                   <div><input type="text" :value="recurTask.Policy_Number" /></div>
                   <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
+                    <option>{{recurTask.Source}}</option>
+                  </select>
+                  <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
                     <option>{{recurTask.Policy_Type}}</option>
                   </select>
                   <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">

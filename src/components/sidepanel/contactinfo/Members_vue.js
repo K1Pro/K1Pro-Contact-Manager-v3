@@ -11,14 +11,15 @@ export default {
                 </template>
                 <div class="member-title-grid-container">
                   <div class="member-title"><i class="fa-solid fa-user">&nbsp;</i>{{ Object.keys(member)[0] }}</div>
-                  <div><button class="member-button"><i class="fa-solid fa-trash"></i></button></div>
+                  <div><button v-if="memberIndex !== 0" class="member-button"><i class="fa-solid fa-trash"></i></button></div>
                 </div>
                 <div class="member-grid-container" v-for="(memberInfo, memberType) in member">
                   <div class="member-grid-item" v-for="memberInputs in accountSettings.contactInfo.keys.Members[memberType]">
                       <input 
                           :type="memberInputs.type" 
                           :placeholder="memberInputs.placeholder"
-                          v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex][memberType][memberInputs.value]" />
+                          v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex][memberType][memberInputs.value]" 
+                          @change="patchMember($event, memberIndex, Object.keys(member)[0], memberInputs.value)" />
                   </div>
                 </div>
                 <template v-if="memberIndex === slctdCntct.Members.length - 1">
@@ -52,14 +53,15 @@ export default {
   //   },
 
   methods: {
-    async patchMember(event, column, columnIndex, property) {
-      console.log(this.userSettings.selectedContactIndex + 1);
-      console.log(column);
-      console.log(columnIndex);
-      console.log(property);
-      console.log(event.target.value);
+    async patchMember(event, columnIndex, key, property) {
+      // console.log(this.userSettings.selectedContactIndex + 1);
+      // console.log('Members');
+      // console.log(column);
+      // console.log(key);
+      // console.log(property);
+      // console.log(event.target.value);
       try {
-        const response = await fetch(servr_url + this.endPts.contacts, {
+        const response = await fetch(servr_url + this.endPts.contactinfo, {
           method: 'PATCH',
           headers: {
             Authorization: this.accessToken,
@@ -67,9 +69,10 @@ export default {
             'Cache-Control': 'no-store',
           },
           body: JSON.stringify({
-            ID: this.userSettings.selectedContactIndex + 1,
-            Column: column,
+            ID: +this.userSettings.selectedContactIndex + 1,
+            Column: 'Members',
             ColumnIndex: columnIndex,
+            Key: key,
             Property: property,
             Value: event.target.value,
           }),
@@ -82,7 +85,6 @@ export default {
         this.msg.snackBar = error.toString();
       }
     },
-    async patchProperty(event, column, columnIndex, property) {},
   },
 
   mounted() {
