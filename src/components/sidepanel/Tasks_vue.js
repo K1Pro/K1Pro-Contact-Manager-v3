@@ -39,7 +39,7 @@ export default {
               </div>
             </div>
             <div v-if="eventIndex && Object.entries(slctdCntct?.Tasks).length > 1" class="tasks-body" style="backgroundColor: lightblue; textAlign: right">
-              <div><b @click="showAll">Show all tasks</b></div>
+              <div><b @click="showAll">Show {{Object.entries(slctdCntct?.Tasks).length - 1}} more {{(Object.entries(slctdCntct?.Tasks).length - 1) > 1 ? 'tasks' : 'task'}} </b></div>
             </div>
           </template>
         </template>

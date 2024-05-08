@@ -18,40 +18,48 @@ export default {
             </div>
           </div>
         </div>
-          <div v-for="(recurTask, recurTaskIndex) in slctdCntct.RecurTasks" class="recur-tasks-body" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}">
-            <i class="fa-solid fa-trash"></i>
-            <div>Start: <input type="date" :value="recurTask.Start" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 ? '1px solid gray' : '1px solid lightgray' }"></div>
-            <div>End: <input type="date" :value="recurTask.End" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 ? '1px solid gray' : '1px solid lightgray' }"></div>
-            <div>Time: <input type="time" :value="recurTask.Time" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 ? '1px solid gray' : '1px solid lightgray' }"></div>
-            <div>Recur:
-              <select :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 ? '1px solid gray' : '1px solid lightgray' }">
-                <option :selected="recurTask.Freq == 'Daily'">Daily</option>
-                <option :selected="recurTask.Freq == 'Weekly'">Weekly</option>  
-                <option :selected="recurTask.Freq == 'Monthly'">Monthly</option>
-                <option :selected="recurTask.Freq == 'Semiannually'">Semiannually</option>
-                <option :selected="recurTask.Freq == 'Annually'">Annually</option>
-              </select>
+        <template v-for="(recurTask, recurTaskIndex) in slctdCntct.RecurTasks">
+          <template v-if="eventIndex === recurTaskIndex || eventIndex === null">
+            <div class="recur-tasks-body" :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white'}">
+              <i class="fa-solid fa-trash"></i>
+              <div>Start: <input type="date" :value="recurTask.Start" :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }"></div>
+              <div>End: <input type="date" :value="recurTask.End" :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }"></div>
+              <div>Time: <input type="time" :value="recurTask.Time" :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }"></div>
+              <div>Recur:
+                <select :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
+                  <option :selected="recurTask.Freq == 'Daily'">Daily</option>
+                  <option :selected="recurTask.Freq == 'Weekly'">Weekly</option>  
+                  <option :selected="recurTask.Freq == 'Monthly'">Monthly</option>
+                  <option :selected="recurTask.Freq == 'Semiannually'">Semiannually</option>
+                  <option :selected="recurTask.Freq == 'Annually'">Annually</option>
+                </select>
+              </div>
+              <div>Owner:
+                <select :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
+                  <option>{{recurTask.Assign}}</option>
+                  <option disabled>Last updated by: {{recurTask.Update}}</option>
+                  <option disabled>Created by: {{recurTask.Create}}</option>
+                </select>
+              </div>
+              <div class="recur-tasks-span" :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
+                <span spellcheck="false" contenteditable >{{recurTask.Desc}}</span>
+              </div>
+              <div>
+                <button>Reviewed</button> {{ recurTask.Review }}
+              </div>
             </div>
-            <div>Owner:
-              <select :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 ? '1px solid gray' : '1px solid lightgray' }">
-                <option>{{recurTask.Assign}}</option>
-                <option disabled>Last updated by: {{recurTask.Update}}</option>
-                <option disabled>Created by: {{recurTask.Create}}</option>
-              </select>
+            <div v-if="eventIndex && slctdCntct.RecurTasks.length > 1" class="recur-tasks-body" style="backgroundColor: lightblue; textAlign: right">
+              <div><b @click="showAll">Show {{slctdCntct.RecurTasks.length - 1}} more {{(slctdCntct.RecurTasks.length - 1) > 1 ? 'tasks' : 'task'}} </b></div>
             </div>
-            <div class="recur-tasks-span" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 ? '1px solid gray' : '1px solid lightgray' }">
-              <span spellcheck="false" contenteditable >{{recurTask.Desc}}</span>
-            </div>
-            <div>
-              <button>Reviewed</button> {{ recurTask.Review }}
-            </div>
-          </div>
+          </template>
+        </template>
       </template>
     </div>`,
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
+      'eventIndex',
       'userSettings',
       'contacts',
       'times',
@@ -115,6 +123,9 @@ export default {
       //     Update: 'Bartosz',
       //   };
     },
+    showAll() {
+      this.eventIndex = null;
+    },
   },
 
   mounted() {
@@ -175,6 +186,9 @@ export default {
 }
 .recur-tasks-body span:focus {
   outline: none; 
+}
+.recur-tasks b {
+  cursor: pointer;
 }`
     );
   },
