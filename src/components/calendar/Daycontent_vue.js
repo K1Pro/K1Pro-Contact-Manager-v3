@@ -97,7 +97,6 @@ export default {
       this.activeTab = tab;
       this.userSettings.selectedContactIndex = contactIndex;
       this.eventIndex = eventIndex;
-      console.log(eventIndex);
     },
   },
 

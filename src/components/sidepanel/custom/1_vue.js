@@ -11,7 +11,7 @@ export default {
         </div>
         <div v-for="policyInfo, policyInfoIndex in slctdCntct.Custom1" class="policy-info-policy" :style="{ 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white'}">
           <i class="fa-solid fa-trash"></i>
-          <div v-for="policyInfoInputs in accountSettings.contactInfo.keys.Custom1">
+          <div v-for="policyInfoInputs in accountSettings.Custom1">
           {{ policyInfoInputs.value.replaceAll('_', ' ') }}:
             <template v-if="policyInfoInputs.type == 'select'">
               <select :style="{ 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white', 'border': policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray' }">

@@ -16,10 +16,30 @@ export default {
       <assets></assets>
       <connections></connections>
       <br/>
+      <select v-if="slctdCntct">
+      <option disabled selected>Add contact info</option>
+        <option v-for="cntctInfo in addCntctInfoDropDown">Add {{cntctInfo.toLowerCase()}}</option>
+        <option>Add new contact</option>
+      </select>
     </div>`,
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, ['msg']),
+    ...Pinia.mapWritableState(useDefaultStore, [
+      'msg',
+      'accountSettings',
+      'slctdCntct',
+    ]),
+    addCntctInfoDropDown() {
+      const cntctInfoDropDown = [];
+      Object.values(this.accountSettings.contactInfo.keys).forEach(
+        (contactInfoKeys) => {
+          Object.keys(contactInfoKeys).forEach((contactInfoKey) => {
+            cntctInfoDropDown.push(contactInfoKey);
+          });
+        }
+      );
+      return cntctInfoDropDown;
+    },
   },
 
   components: {
@@ -47,6 +67,9 @@ export default {
 .contact-info {
   /* text-align: center; */
   font-family: 'Helvetica', sans-serif;
+}
+.contact-info select {
+  padding: 5px;
 }
 /*.contact-info input[type='text'] {
   background: white;
