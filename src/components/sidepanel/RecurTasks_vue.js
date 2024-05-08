@@ -4,60 +4,50 @@ export default {
   name: 'Recur Tasks',
 
   template: /*html*/ `
-      <div class='recur-tasks'>
-          <template v-if="slctdCntct">
-            <div class="recur-tasks-title">
-              <div class="recur-tasks-title-grid-container">
-                <div class="recur-tasks-title-grid-item1">
-                  Recurring tasks for
-                  {{Object.values(slctdCntct.Members[0])[0].First ? Object.values(slctdCntct.Members[0])[0].First : ''}} 
-                  {{Object.values(slctdCntct.Members[0])[0].Name}}
-                </div>
-                <div class="recur-tasks-title-grid-item2">
-                  <button @click="newTask" ><i class="fa-solid fa-square-plus"></i></button>
-                </div>
-              </div>
+    <div class='recur-tasks'>
+      <template v-if="slctdCntct">
+        <div class="recur-tasks-title">
+          <div class="recur-tasks-title-grid-container">
+            <div class="recur-tasks-title-grid-item1">
+              Recurring tasks for
+              {{Object.values(slctdCntct.Members[0])[0].First ? Object.values(slctdCntct.Members[0])[0].First : ''}} 
+              {{Object.values(slctdCntct.Members[0])[0].Name}}
             </div>
-            <div v-for="recurTask in slctdCntct.RecurTasks" class="recur-tasks-grid-container">
-              <div class="recur-tasks-grid-item1" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-                <div class="recur-tasks-item1-grid-container">
-                  <div><input type="checkbox" /></div>
-                  <div><input type="datetime-local" :value="recurTask.Date"></div>
-                  <div><button class="member-button"><i class="fa-solid fa-trash"></i></button></div>
-                </div>
-              </div> 
-              <div class="recur-tasks-grid-item2" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-                  <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-                    <option>{{recurTask.Type}}</option>
-                  </select>
-                  <div><input type="checkbox" />Remind</div>
-                  <div><input type="range" /></div>
-                  <div><input type="text" :value="recurTask.Policy_Number" /></div>
-                  <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-                    <option>{{recurTask.Source}}</option>
-                  </select>
-                  <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-                    <option>{{recurTask.Policy_Type}}</option>
-                  </select>
-                  <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-                    <option>{{recurTask.Policy_Status}}</option>
-                  </select>
-              </div>
-              <div class="recur-tasks-grid-item3" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-                <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-                  <option>Assigned to: {{recurTask.Assign}}</option>
-                  <option disabled>Last updated by: {{recurTask.Update}}</option>
-                  <option disabled>Created by: {{recurTask.Create}}</option>
-                </select>
-              </div>
+            <div class="recur-tasks-title-grid-item2">
+              <button @click="newTask" ><i class="fa-solid fa-square-plus"></i></button>
             </div>
-            
-          </template>
-          <template v-else>
-            <div class="recur-tasks-title">Tasks</div>
-          </template>
-  
-      </div>`,
+          </div>
+        </div>
+          <div v-for="(recurTask, recurTaskIndex) in slctdCntct.RecurTasks" class="recur-tasks-body" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}">
+            <i class="fa-solid fa-trash"></i>
+            <div>Start: <input type="date" :value="recurTask.Start"></div>
+            <div>End: <input type="date" :value="recurTask.End"></div>
+            <div>Time: <input type="time" :value="recurTask.Time"></div>
+            <div>Recur:
+              <select>
+                <option :selected="recurTask.Freq == 'Daily'">Daily</option>
+                <option :selected="recurTask.Freq == 'Weekly'">Weekly</option>  
+                <option :selected="recurTask.Freq == 'Monthly'">Monthly</option>
+                <option :selected="recurTask.Freq == 'Semiannually'">Semiannually</option>
+                <option :selected="recurTask.Freq == 'Annually'">Annually</option>
+              </select>
+            </div>
+            <div>Owner:
+              <select>
+                <option>{{recurTask.Assign}}</option>
+                <option disabled>Last updated by: {{recurTask.Update}}</option>
+                <option disabled>Created by: {{recurTask.Create}}</option>
+              </select>
+            </div>
+            <div class="recur-tasks-span">
+              <span spellcheck="false" contenteditable >{{recurTask.Desc}}</span>
+            </div>
+            <div>
+              <button>Reviewed</button> {{ recurTask.Review }}
+            </div>
+          </div>
+      </template>
+    </div>`,
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
@@ -131,86 +121,62 @@ export default {
     style(
       'recur-tasks',
       /*css*/ `
-  .recur-tasks{}
-  .recur-tasks-title{
-    font-weight: bold;
-    padding: 5px;
-    background-color: lightblue;
-    color: black;
-  }
-  .recur-tasks-grid-container{
-    display: grid;
-    grid-template-columns: auto;
-    grid-template-rows: auto auto auto;
-  }
-  .recur-tasks input[type='datetime-local'] {
-    /* color-scheme: dark;
-    color: black;
-    padding: 5px;*/
-    background-color: #99999900;
-    border: none;
-    font-family: 'Helvetica', sans-serif;
-    font-size: 14px;
-  }
-  /*input[type="date"]::-webkit-calendar-picker-indicator {
-    opacity: 0.6;
-    filter: invert(1);
-  }*/
-  .recur-tasks input[type='datetime-local']:focus {
-    outline: none; 
-  }
-  .recur-tasks span {
-    word-break: break-word;
-    font-size: 14px;
-  }
-  .recur-tasks span:focus {
-    outline: none; 
-  }
-  .recur-tasks-grid-item1 {
-    padding: 15px 5px 5px 5px;
-  }
-  .recur-tasks-grid-item2 {
-    padding: 5px 5px 5px 5px;
-    /* border-top: 1px dashed grey;
-    border-bottom: 1px dashed grey; */
-  }
-  .recur-tasks-grid-item3 {
-    padding: 5px 5px 15px 5px;
-  }
-  .recur-tasks-grid-item3 select {
-    border: none;
-    font-size: 14px;
-  }
-  .recur-tasks-title-grid-container{
-    display: grid;
-    grid-template-columns: calc(100% - 30px) 30px;
-  }
-  .recur-tasks-title-grid-item1 {
-    height: 20px;
-    overflow: hidden;
-  }
-  .recur-tasks-title-grid-item2 button {
-    background-color: transparent;
-    border: 0px;
-    cursor: pointer;
-    color: #417CD9
-  }
-  .recur-tasks-item1-grid-container {
-    display: grid;
-    grid-template-columns: 20px calc(100% - 50px) 30px;
-    align-items: center;
-  }
-  .recur-tasks-item2-grid-container {
-    display: grid;
-    grid-template-columns: 20px calc(100% - 50px) 30px;
-    align-items: center;
-  }
-  .recur-tasks-title-grid-item2 button:hover {
-    color: #DB66FF;
-  }
-  
-  
-  `
+.recur-tasks-title{
+  font-weight: bold;
+  padding: 5px;
+  background-color: lightblue;
+  color: black;
+}
+.recur-tasks-body{
+  padding: 10px 10px 0px 10px;
+}
+.recur-tasks-body i{
+  float: right;
+  font-size: 14px;
+}
+.recur-tasks-body div {
+  padding-bottom: 10px;
+}
+.recur-tasks input, .recur-tasks select {
+  position: absolute;
+  left: 60px;
+  width: 50%;
+  height: 20px;
+  border: 1px solid grey;
+  font-family: 'Helvetica', sans-serif;
+  font-size: 14px;
+}
+.recur-tasks button {
+  margin: 10px 10px 0px 0px;
+}
+.recur-tasks-span {
+  border-radius: 1px;
+  border: 1px solid grey;
+  background-color: white;
+  padding: 5px;
+  word-break: break-word;
+  font-size: 14px;
+}
+.recur-tasks span:focus {
+  outline: none; 
+}
+.recur-tasks-title-grid-container{
+  display: grid;
+  grid-template-columns: calc(100% - 30px) 30px;
+}
+.recur-tasks-title-grid-item1 {
+  height: 20px;
+  overflow: hidden;
+}
+.recur-tasks-title-grid-item2 button {
+  background-color: transparent;
+  border: 0px;
+  cursor: pointer;
+  color: #417CD9
+}  
+.recur-tasks-title-grid-item2 button:hover {
+  color: #DB66FF;
+}`
     );
   },
 };

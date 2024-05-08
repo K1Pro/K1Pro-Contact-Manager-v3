@@ -10,10 +10,10 @@ export default {
           <div v-for="calContactTask in calContactTasks">
             <div
                 class="task-grid-container"
-                :class="[calContactTask.Status, {'active': calContactTask.ContactIndex == userSettings.selectedContactIndex}]" >
-                <div @click="selectContact(calContactTask.ContactIndex, calContactTask.Type)">{{ calContactTask.Time != '25:00' ? calContactTask.Time : '' }}</div>
-                <div @click="selectContact(calContactTask.ContactIndex, calContactTask.Type)" style="overflow: hidden">{{ calContactTask.Name }}</div>
-                <div style="text-align: center"><i v-if="calContactTask.Icon" :class="calContactTask.Icon"></i></div>
+                :class="[calContactTask.Status, {'active': calContactTask.ContactIndex == userSettings.selectedContactIndex}]" 
+                :style="{'grid-template-columns': calContactTask.Icon ? 'calc(100% - 20px) 20px' : '100%'}" >
+                <div @click="selectContact(calContactTask.ContactIndex, calContactTask.Type)" style="overflow: hidden">{{ calContactTask.Time != '25:00' ? calContactTask.Time : '' }} {{ calContactTask.Name }}</div>
+                <div style="text-align: center" v-if="calContactTask.Icon"><i :class="calContactTask.Icon"></i></div>
             </div>
           </div>
         </template>
@@ -104,7 +104,6 @@ export default {
 .task-grid-container {
   color: white;
   display: grid;
-  grid-template-columns: 45px calc(100% - 65px) 20px;
   cursor: pointer;
   border: 1px solid white;
   padding-left: 2px;
