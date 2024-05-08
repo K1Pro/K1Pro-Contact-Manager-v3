@@ -20,11 +20,11 @@ export default {
         </div>
           <div v-for="(recurTask, recurTaskIndex) in slctdCntct.RecurTasks" class="recur-tasks-body" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}">
             <i class="fa-solid fa-trash"></i>
-            <div>Start: <input type="date" :value="recurTask.Start"></div>
-            <div>End: <input type="date" :value="recurTask.End"></div>
-            <div>Time: <input type="time" :value="recurTask.Time"></div>
+            <div>Start: <input type="date" :value="recurTask.Start" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}"></div>
+            <div>End: <input type="date" :value="recurTask.End" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}"></div>
+            <div>Time: <input type="time" :value="recurTask.Time" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}"></div>
             <div>Recur:
-              <select>
+              <select :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}">
                 <option :selected="recurTask.Freq == 'Daily'">Daily</option>
                 <option :selected="recurTask.Freq == 'Weekly'">Weekly</option>  
                 <option :selected="recurTask.Freq == 'Monthly'">Monthly</option>
@@ -33,13 +33,13 @@ export default {
               </select>
             </div>
             <div>Owner:
-              <select>
+              <select :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}">
                 <option>{{recurTask.Assign}}</option>
                 <option disabled>Last updated by: {{recurTask.Update}}</option>
                 <option disabled>Created by: {{recurTask.Create}}</option>
               </select>
             </div>
-            <div class="recur-tasks-span">
+            <div class="recur-tasks-span" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}">
               <span spellcheck="false" contenteditable >{{recurTask.Desc}}</span>
             </div>
             <div>
@@ -127,39 +127,6 @@ export default {
   background-color: lightblue;
   color: black;
 }
-.recur-tasks-body{
-  padding: 10px 10px 0px 10px;
-}
-.recur-tasks-body i{
-  float: right;
-  font-size: 14px;
-}
-.recur-tasks-body div {
-  padding-bottom: 10px;
-}
-.recur-tasks input, .recur-tasks select {
-  position: absolute;
-  left: 60px;
-  width: 50%;
-  height: 20px;
-  border: 1px solid grey;
-  font-family: 'Helvetica', sans-serif;
-  font-size: 14px;
-}
-.recur-tasks button {
-  margin: 10px 10px 0px 0px;
-}
-.recur-tasks-span {
-  border-radius: 1px;
-  border: 1px solid grey;
-  background-color: white;
-  padding: 5px;
-  word-break: break-word;
-  font-size: 14px;
-}
-.recur-tasks span:focus {
-  outline: none; 
-}
 .recur-tasks-title-grid-container{
   display: grid;
   grid-template-columns: calc(100% - 30px) 30px;
@@ -176,6 +143,39 @@ export default {
 }  
 .recur-tasks-title-grid-item2 button:hover {
   color: #DB66FF;
+}
+.recur-tasks-body{
+  padding: 10px 10px 0px 10px;
+}
+.recur-tasks-body i{
+  float: right;
+  font-size: 14px;
+}
+.recur-tasks-body div {
+  padding-bottom: 10px;
+}
+.recur-tasks-body input, .recur-tasks-body select {
+  position: absolute;
+  left: 60px;
+  width: 50%;
+  height: 20px;
+  border: 1px solid lightgray;
+  font-family: 'Helvetica', sans-serif;
+  font-size: 14px;
+}
+.recur-tasks-body button {
+  margin: 10px 10px 0px 0px;
+}
+.recur-tasks-span {
+  border-radius: 1px;
+  border: 1px solid lightgray;
+  background-color: white;
+  padding: 5px;
+  word-break: break-word;
+  font-size: 14px;
+}
+.recur-tasks-body span:focus {
+  outline: none; 
 }`
     );
   },
