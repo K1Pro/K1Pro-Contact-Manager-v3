@@ -20,11 +20,11 @@ export default {
         </div>
           <div v-for="(recurTask, recurTaskIndex) in slctdCntct.RecurTasks" class="recur-tasks-body" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}">
             <i class="fa-solid fa-trash"></i>
-            <div>Start: <input type="date" :value="recurTask.Start" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}"></div>
-            <div>End: <input type="date" :value="recurTask.End" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}"></div>
-            <div>Time: <input type="time" :value="recurTask.Time" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}"></div>
+            <div>Start: <input type="date" :value="recurTask.Start" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 ? '1px solid gray' : '1px solid lightgray' }"></div>
+            <div>End: <input type="date" :value="recurTask.End" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 ? '1px solid gray' : '1px solid lightgray' }"></div>
+            <div>Time: <input type="time" :value="recurTask.Time" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 ? '1px solid gray' : '1px solid lightgray' }"></div>
             <div>Recur:
-              <select :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}">
+              <select :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 ? '1px solid gray' : '1px solid lightgray' }">
                 <option :selected="recurTask.Freq == 'Daily'">Daily</option>
                 <option :selected="recurTask.Freq == 'Weekly'">Weekly</option>  
                 <option :selected="recurTask.Freq == 'Monthly'">Monthly</option>
@@ -33,13 +33,13 @@ export default {
               </select>
             </div>
             <div>Owner:
-              <select :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}">
+              <select :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 ? '1px solid gray' : '1px solid lightgray' }">
                 <option>{{recurTask.Assign}}</option>
                 <option disabled>Last updated by: {{recurTask.Update}}</option>
                 <option disabled>Created by: {{recurTask.Create}}</option>
               </select>
             </div>
-            <div class="recur-tasks-span" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}">
+            <div class="recur-tasks-span" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 ? '1px solid gray' : '1px solid lightgray' }">
               <span spellcheck="false" contenteditable >{{recurTask.Desc}}</span>
             </div>
             <div>
@@ -157,7 +157,7 @@ export default {
 .recur-tasks-body input, .recur-tasks-body select {
   position: absolute;
   left: 60px;
-  width: 50%;
+  width: calc(100% - 100px);
   height: 20px;
   border: 1px solid lightgray;
   font-family: 'Helvetica', sans-serif;
@@ -169,7 +169,6 @@ export default {
 .recur-tasks-span {
   border-radius: 1px;
   border: 1px solid lightgray;
-  background-color: white;
   padding: 5px;
   word-break: break-word;
   font-size: 14px;

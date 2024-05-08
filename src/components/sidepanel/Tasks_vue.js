@@ -156,7 +156,6 @@ export default {
 .tasks-span {
   border-radius: 1px;
   border: 1px solid lightgray;
-  background-color: white;
   padding: 5px;
   word-break: break-word;
   font-size: 14px;

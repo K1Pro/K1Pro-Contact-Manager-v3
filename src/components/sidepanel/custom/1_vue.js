@@ -10,19 +10,22 @@ export default {
           {{Object.values(slctdCntct.Members[0])[0].Name}}
         </div>
         <div v-for="policyInfo, policyInfoIndex in slctdCntct.Custom1" class="policy-info-policy" :style="{ 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white'}">
-          <template v-for="policyInfoInputs in accountSettings.contactInfo.keys.Custom1">
+          <i class="fa-solid fa-trash"></i>
+          <div v-for="policyInfoInputs in accountSettings.contactInfo.keys.Custom1">
+          {{ policyInfoInputs.value.replaceAll('_', ' ') }}:
             <template v-if="policyInfoInputs.type == 'select'">
-              <select>
+              <select :style="{ 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white', 'border': policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray' }">
                 <option v-for="option in policyInfoInputs.options" :selected="option == policyInfo[policyInfoInputs.value]">{{option}}</option>
               </select>
             </template>
             <template v-else>
               <input 
-              :type="policyInfoInputs.type" 
-              :placeholder="policyInfoInputs.placeholder"
-              :value="policyInfo[policyInfoInputs.value]" />
+                :style="{ 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white', 'border': policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray' }"
+                :type="policyInfoInputs.type" 
+                :placeholder="policyInfoInputs.placeholder"
+                :value="policyInfo[policyInfoInputs.value]" />
             </template>
-          </template>
+          </div>
         </div>
       </div>
     </template>
@@ -43,36 +46,30 @@ export default {
     style(
       'custom-1',
       /*css*/ `
-  .policy-info {background-color: lightblue;}
-  .policy-info-title{
-    font-weight: bold;
-    padding: 5px;
-    color: black;
-  }
-  .policy-info-policy{
-    padding: 5px;
-  }
-  .policy-info-policy input{
-    width: 100%;
-    font-family: 'Helvetica', sans-serif;
-    padding: 5px;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
-    border-width: 1px;
-    background: transparent;
-  }
-  .policy-info-policy select{
-    width: 100%;
-    font-family: 'Helvetica', sans-serif;
-    padding: 5px 0px 5px 0px;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
-    border-width: 1px;
-    background: transparent;
-  }
-        `
+.policy-info {background-color: lightblue;}
+.policy-info-title{
+  font-weight: bold;
+  padding: 5px;
+  color: black;
+}
+.policy-info-policy{
+  padding: 10px 10px 0px 10px;
+}
+.policy-info-policy i {
+  float: right;
+  font-size: 14px;
+}
+.policy-info-policy div{
+  padding-bottom: 10px;
+}
+.policy-info-policy input, .policy-info-policy select{
+  position: absolute;
+  left: 120px;
+  width: calc(100% - 160px);
+  height: 20px;
+  font-family: 'Helvetica', sans-serif;
+  border-radius: 1px;
+}`
     );
   },
 };
