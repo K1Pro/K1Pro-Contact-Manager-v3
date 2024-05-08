@@ -169,6 +169,7 @@ export default {
       'msg',
       'windowWidth',
       'activeTab',
+      'eventIndex',
       'userData',
       'accountSettings',
       'endPts',
@@ -178,6 +179,7 @@ export default {
 
   methods: {
     openTab(event, customTab) {
+      this.eventIndex = null;
       const selectedTab =
         event.srcElement.localName == 'button'
           ? event.srcElement.firstChild.className.split('fa-')[1].trim()

@@ -12,7 +12,7 @@ export default {
                 class="task-grid-container"
                 :class="[calContactTask.Status, {'active': calContactTask.ContactIndex == userSettings.selectedContactIndex}]" 
                 :style="{'grid-template-columns': calContactTask.Icon ? 'calc(100% - 20px) 20px' : '100%'}" >
-                <div @click="selectContact(calContactTask.ContactIndex, calContactTask.Type)" style="overflow: hidden">{{ calContactTask.Time != '25:00' ? calContactTask.Time : '' }} {{ calContactTask.Name }}</div>
+                <div @click="selectContact(calContactTask.ContactIndex, calContactTask.Type, calContactTask.EventIndex)" style="overflow: hidden">{{ calContactTask.Time != '25:00' ? calContactTask.Time : '' }} {{ calContactTask.Name }}</div>
                 <div style="text-align: center" v-if="calContactTask.Icon"><i :class="calContactTask.Icon"></i></div>
             </div>
           </div>
@@ -23,6 +23,7 @@ export default {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
       'activeTab',
+      'eventIndex',
       'userSettings',
       'contacts',
       'firstCalDate',
@@ -45,10 +46,11 @@ export default {
               Status: taskEvent.Status == 1 ? 'compltd' : 'not-compltd',
               Icon: taskEvent.Status == 1 ? 'fa fa-check' : false,
               ContactIndex: contactIndex,
+              EventIndex: taskDate,
             };
           }
         });
-        contact.RecurTasks.forEach((task) => {
+        contact.RecurTasks.forEach((task, taskIndex) => {
           if (
             task.Start &&
             task?.Recur.includes(this.days[this.dayIndex].slice(-5)) &&
@@ -67,6 +69,7 @@ export default {
                   ? 'fa fa-check'
                   : 'fa fa-repeat',
               ContactIndex: contactIndex,
+              EventIndex: taskIndex,
             };
           }
         });
@@ -90,9 +93,11 @@ export default {
   // },
 
   methods: {
-    selectContact(contactIndex, tab) {
+    selectContact(contactIndex, tab, eventIndex) {
       this.activeTab = tab;
       this.userSettings.selectedContactIndex = contactIndex;
+      this.eventIndex = eventIndex;
+      console.log(eventIndex);
     },
   },
 

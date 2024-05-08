@@ -19,29 +19,37 @@ export default {
           </div>
         </div>
         
-        <div v-for="([taskDate, task], taskIndex) in Object.entries(slctdCntct?.Tasks).sort().reverse()" class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-          <i class="fa-solid fa-trash"></i>
-          <div>
-            <input type="checkbox" :checked="task.Status == 1" @change="changeTask($event, taskDate)"/>
-            <input type="datetime-local" :value="taskDate" @change="changeTask($event, taskDate)" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-          </div>
-          <div class="tasks-span" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-            <span spellcheck="false" contenteditable v-on:blur="changeTask($event, taskDate)">{{task.Desc}}</span>
-          </div>
-          <div>
-            <select :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-              <option>Assigned to: {{task.Assign}}</option>
-              <option disabled>Last updated by: {{task.Update}}</option>
-              <option disabled>Created by: {{task.Create}}</option>
-            </select>
-          </div>
-        </div>
+        <template v-for="([taskDate, task], taskIndex) in Object.entries(slctdCntct?.Tasks).sort().reverse()">
+          <template v-if="eventIndex == taskDate || eventIndex === null">
+            <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 && !eventIndex ? 'lightblue' : 'white'}">
+              <i class="fa-solid fa-trash"></i>
+              <div>
+                <input type="checkbox" :checked="task.Status == 1" @change="changeTask($event, taskDate)"/>
+                <input type="datetime-local" :value="taskDate" @change="changeTask($event, taskDate)" :style="{ 'background-color': taskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': taskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
+              </div>
+              <div class="tasks-span" :style="{ 'background-color': taskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': taskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
+                <span spellcheck="false" contenteditable v-on:blur="changeTask($event, taskDate)">{{task.Desc}}</span>
+              </div>
+              <div>
+                <select :style="{ 'background-color': taskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': taskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
+                  <option>Assigned to: {{task.Assign}}</option>
+                  <option disabled>Last updated by: {{task.Update}}</option>
+                  <option disabled>Created by: {{task.Create}}</option>
+                </select>
+              </div>
+            </div>
+            <div v-if="eventIndex && Object.entries(slctdCntct?.Tasks).length > 1" class="tasks-body" style="backgroundColor: lightblue; textAlign: right">
+              <div><b @click="showAll">Show all tasks</b></div>
+            </div>
+          </template>
+        </template>
       </template>
     </div>`,
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
+      'eventIndex',
       'userSettings',
       'contacts',
       'times',
@@ -105,6 +113,9 @@ export default {
         Update: 'Bartosz',
       };
     },
+    showAll() {
+      this.eventIndex = null;
+    },
   },
 
   mounted() {
@@ -112,13 +123,13 @@ export default {
       'tasks',
       /*css*/ `
 .tasks{}
-.tasks-title{
+.tasks-title {
   font-weight: bold;
   padding: 5px;
   background-color: lightblue;
   color: black;
 }
-.tasks-title-grid-container{
+.tasks-title-grid-container {
   display: grid;
   grid-template-columns: calc(100% - 30px) 30px;
 }
@@ -162,6 +173,9 @@ export default {
 }
 .tasks-body span:focus {
   outline: none; 
+}
+.tasks b {
+  cursor: pointer;
 }
 `
     );
