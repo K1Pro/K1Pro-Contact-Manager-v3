@@ -11,7 +11,7 @@ export default {
                 </template>
                 <div class="member-title-grid-container">
                   <div class="member-title"><i class="fa-solid fa-user">&nbsp;</i>{{ Object.keys(member)[0] }}</div>
-                  <div><button v-if="memberIndex !== 0" class="member-button"><i class="fa-solid fa-trash"></i></button></div>
+                  <div><button v-if="memberIndex !== 0" class="member-button" @click="deleteMember(memberIndex)"><i class="fa-solid fa-trash"></i></button></div>
                 </div>
                 <div class="member-grid-container" v-for="(memberInfo, memberType) in member">
                   <div class="member-grid-item" v-for="memberInputs in accountSettings.contactInfo.keys.Members[memberType]">
@@ -84,6 +84,12 @@ export default {
       } catch (error) {
         this.msg.snackBar = error.toString();
       }
+    },
+    deleteMember(memberIndex) {
+      this.contacts[this.userSettings.selectedContactIndex].Members.splice(
+        memberIndex,
+        1
+      );
     },
   },
 

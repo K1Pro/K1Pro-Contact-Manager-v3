@@ -80,6 +80,7 @@ export default {
       this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push(
         newValue
       );
+      event.srcElement.selectedIndex = 0;
     },
   },
 
