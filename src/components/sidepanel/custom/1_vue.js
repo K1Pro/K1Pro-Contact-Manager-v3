@@ -12,7 +12,7 @@ export default {
         <div v-for="policyInfo, policyInfoIndex in slctdCntct.Custom1" class="policy-info-policy" :style="{ 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white'}">
           <i class="fa-solid fa-trash"></i>
           <div v-for="policyInfoInputs in accountSettings.Custom1">
-          {{ policyInfoInputs.value.replaceAll('_', ' ') }}:
+            <span class="policy-info-label">{{ policyInfoInputs.placeholder }}:</span>
             <template v-if="policyInfoInputs.type == 'select'">
               <select :style="{ 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white', 'border': policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray' }">
                 <option v-for="option in policyInfoInputs.options" :selected="option == policyInfo[policyInfoInputs.value]">{{option}}</option>
@@ -27,7 +27,6 @@ export default {
               <input 
                 :style="{ 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white', 'border': policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray' }"
                 :type="policyInfoInputs.type" 
-                :placeholder="policyInfoInputs.placeholder"
                 :value="policyInfo[policyInfoInputs.value]" />
             </template>
           </div>
@@ -67,17 +66,17 @@ export default {
 .policy-info-policy div{
   padding-bottom: 10px;
 }
+.policy-info-label {
+  font-size: 14px;
+  display: inline-block;
+  width: 100px;
+  text-align: right;
+}
 .policy-info-policy input:not([type=checkbox]), .policy-info-policy select{
-  position: absolute;
-  left: 120px;
-  width: calc(100% - 160px);
+  width: calc(100% - 140px);
   height: 20px;
   font-family: 'Helvetica', sans-serif;
   border-radius: 1px;
-}
-.policy-info-policy input[type=checkbox] {
-  position: absolute;
-  left: 120px;
 }
 `
     );

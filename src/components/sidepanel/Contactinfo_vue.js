@@ -15,26 +15,36 @@ export default {
       <properties></properties>
       <assets></assets>
       <connections></connections>
-      <br/>
-      <select v-if="slctdCntct">
-      <option disabled selected>Add contact info</option>
-        <option v-for="cntctInfo in addCntctInfoDropDown">Add {{cntctInfo.toLowerCase()}}</option>
-        <option>Add new contact</option>
-      </select>
+      <template  v-if="slctdCntct">
+        Add: 
+        <select @change='addContactInfo'>
+          <option selected disabled>contact info</option>
+          <option v-for="cntctInfo in addCntctInfoDropDown" :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey" >{{cntctInfo.InfoKey.toLowerCase() + cntctInfo.InfoPlaceholder}}</option>
+          <option disabled>new contact</option>
+        </select>
+      </template>
     </div>`,
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
       'accountSettings',
+      'userSettings',
+      'contacts',
       'slctdCntct',
     ]),
     addCntctInfoDropDown() {
       const cntctInfoDropDown = [];
-      Object.values(this.accountSettings.contactInfo.keys).forEach(
-        (contactInfoKeys) => {
+      Object.entries(this.accountSettings.contactInfo.keys).forEach(
+        ([contactInfoGroup, contactInfoKeys]) => {
           Object.keys(contactInfoKeys).forEach((contactInfoKey) => {
-            cntctInfoDropDown.push(contactInfoKey);
+            const test = {
+              InfoGroup: contactInfoGroup,
+              InfoKey: contactInfoKey,
+              InfoPlaceholder:
+                contactInfoGroup == 'Properties' ? ' address' : '',
+            };
+            cntctInfoDropDown.push(test);
           });
         }
       );
@@ -58,7 +68,20 @@ export default {
   //   return {};
   // },
 
-  // methods: {},
+  methods: {
+    addContactInfo(event) {
+      const InfoGroup = event.target.value.split('_')[0];
+      const InfoKey = event.target.value.split('_')[1];
+      const InfoValue =
+        InfoGroup == 'Members' || InfoGroup == 'Properties' ? {} : '';
+      const newValue = {
+        [InfoKey]: InfoValue,
+      };
+      this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push(
+        newValue
+      );
+    },
+  },
 
   mounted() {
     style(
