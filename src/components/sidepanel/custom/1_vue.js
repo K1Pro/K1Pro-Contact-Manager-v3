@@ -18,6 +18,11 @@ export default {
                 <option v-for="option in policyInfoInputs.options" :selected="option == policyInfo[policyInfoInputs.value]">{{option}}</option>
               </select>
             </template>
+            <template v-else-if="policyInfoInputs.type == 'checkbox'">
+              <input 
+                :type="policyInfoInputs.type" 
+                :checked="policyInfo[policyInfoInputs.value] == 1" />
+            </template>
             <template v-else>
               <input 
                 :style="{ 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white', 'border': policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray' }"
@@ -62,14 +67,19 @@ export default {
 .policy-info-policy div{
   padding-bottom: 10px;
 }
-.policy-info-policy input, .policy-info-policy select{
+.policy-info-policy input:not([type=checkbox]), .policy-info-policy select{
   position: absolute;
   left: 120px;
   width: calc(100% - 160px);
   height: 20px;
   font-family: 'Helvetica', sans-serif;
   border-radius: 1px;
-}`
+}
+.policy-info-policy input[type=checkbox] {
+  position: absolute;
+  left: 120px;
+}
+`
     );
   },
 };

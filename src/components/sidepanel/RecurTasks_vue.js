@@ -37,8 +37,8 @@ export default {
               <div>Owner:
                 <select v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTaskIndex].Assign" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
                   <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">{{userInfo[0]}}</option>
-                  <option disabled>Last updated by: {{recurTask.Update}}</option>
-                  <option disabled>Created by: {{recurTask.Create}}</option>
+                  <option disabled>Last updated by: {{userList[recurTask.Update][0]}}</option>
+                  <option disabled>Created by: {{userList[recurTask.Create][0]}}</option>
                 </select>
               </div>
               <div class="recur-tasks-span" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
