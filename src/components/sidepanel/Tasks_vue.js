@@ -25,13 +25,13 @@ export default {
               <i class="fa-solid fa-trash"></i>
               <div>
                 <input type="checkbox" :checked="task.Status == 1" @change="changeTask($event, taskDate)"/>
-                <input type="datetime-local" :value="taskDate" @change="changeTask($event, taskDate)" :style="{ 'background-color': taskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': taskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
+                <input type="datetime-local" :value="taskDate" @change="changeTask($event, taskDate)" :class="[taskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
               </div>
-              <div class="tasks-span" :style="{ 'background-color': taskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': taskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
+              <div class="tasks-span" :class="[taskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
                 <span spellcheck="false" contenteditable v-on:blur="changeTask($event, taskDate)">{{task.Desc}}</span>
               </div>
               <div>
-                <select v-model="contacts[userSettings.selectedContactIndex].Tasks[taskDate].Assign" @change="selectFirst" :style="{ 'background-color': taskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': taskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
+                <select v-model="contacts[userSettings.selectedContactIndex].Tasks[taskDate].Assign" @change="selectFirst" :class="[taskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
                   <option disabled selected :value="task.Assign">Assigned to: {{userList[task.Assign][0]}}</option>
                   <template v-for="([userNo, userInfo], userIndex) in Object.entries(userList)">
                     <option v-if="userNo != task.Assign" :value="userNo">Assign to {{userInfo[0]}}</option>
@@ -164,7 +164,6 @@ export default {
   padding-bottom: 10px;
 }
 .tasks-body input, .tasks-body select {
-  border: 1px solid lightgray;
   font-family: 'Helvetica', sans-serif;
   font-size: 14px;
 }
@@ -183,6 +182,14 @@ export default {
 }
 .tasks b {
   cursor: pointer;
+}
+.odd-task {
+  background-color: white;
+  border: 1px solid lightgray;
+}
+.even-task {
+  background-color: lightblue;
+  border: 1px solid gray;
 }
 `
     );
