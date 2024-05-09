@@ -35,11 +35,8 @@ export default {
                 </select>
               </div>
               <div>Owner:
-                <select v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTaskIndex].Assign" @change="selectFirst" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
-                  <option disabled selected :value="recurTask.Assign">{{userList[recurTask.Assign][0]}}</option>
-                  <template v-for="([userNo, userInfo], userIndex) in Object.entries(userList)">
-                    <option v-if="userNo != recurTask.Assign" :value="userNo">{{userInfo[0]}}</option>
-                  </template>
+                <select v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTaskIndex].Assign" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
+                  <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">{{userInfo[0]}}</option>
                   <option disabled>Last updated by: {{recurTask.Update}}</option>
                   <option disabled>Created by: {{recurTask.Create}}</option>
                 </select>
@@ -129,9 +126,6 @@ export default {
     },
     showAll() {
       this.eventIndex = null;
-    },
-    selectFirst(event) {
-      event.srcElement.selectedIndex = 0;
     },
   },
 

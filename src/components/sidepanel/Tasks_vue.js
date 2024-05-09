@@ -31,11 +31,8 @@ export default {
                 <span spellcheck="false" contenteditable v-on:blur="changeTask($event, taskDate)">{{task.Desc}}</span>
               </div>
               <div>Owner: 
-                <select v-model="contacts[userSettings.selectedContactIndex].Tasks[taskDate].Assign" @change="selectFirst" :class="[taskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
-                  <option disabled selected :value="task.Assign">{{userList[task.Assign][0]}}</option>
-                  <template v-for="([userNo, userInfo], userIndex) in Object.entries(userList)">
-                    <option v-if="userNo != task.Assign" :value="userNo">{{userInfo[0]}}</option>
-                  </template>
+                <select v-model="contacts[userSettings.selectedContactIndex].Tasks[taskDate].Assign" :class="[taskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
+                  <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">{{userInfo[0]}}</option>
                   <option disabled>Last updated by: {{userList[task.Update][0]}}</option>
                   <option disabled>Created by: {{userList[task.Create][0]}}</option>
                 </select>
@@ -120,9 +117,6 @@ export default {
     showAll() {
       this.eventIndex = null;
     },
-    selectFirst(event) {
-      event.srcElement.selectedIndex = 0;
-    },
   },
 
   mounted() {
@@ -169,6 +163,7 @@ export default {
 }
 .tasks-body select {
   margin-top: 10px;
+  width: 50%
 }
 .tasks-span {
   border-radius: 1px;
