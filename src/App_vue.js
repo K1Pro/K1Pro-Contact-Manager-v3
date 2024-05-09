@@ -53,6 +53,7 @@ export default {
       'msg',
       'windowWidth',
       'userData',
+      'activeUserList',
       'accountSettings',
       'userSettings',
       'tempUserSettings',
@@ -104,6 +105,7 @@ export default {
           this.userData = userDataResJSON.data.user;
           this.accountSettings = userDataResJSON.data.accountSettings;
           this.tempUserSettings = userDataResJSON.data.userSettings;
+          this.activeUserList = userDataResJSON.data.activeUserList;
           if (
             this.windowWidth < 768 &&
             userDataResJSON.data.userSettings.calendar.filters.days != 0 &&

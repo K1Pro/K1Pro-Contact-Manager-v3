@@ -13,6 +13,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       eventIndex: null,
       userData: {},
       accountSettings: {},
+      activeUserList: {},
       userSettings: {},
       tempUserSettings: {},
       contacts: [],
@@ -147,6 +148,9 @@ const useDefaultStore = Pinia.defineStore('default', {
     },
     slctdCntct(state) {
       return state.contacts[state.userSettings.selectedContactIndex];
+    },
+    userList(state) {
+      return { ...state.activeUserList, ...state.accountSettings.userList };
     },
   },
 });

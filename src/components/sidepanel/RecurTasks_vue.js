@@ -22,26 +22,26 @@ export default {
           <template v-if="eventIndex === recurTaskIndex || eventIndex === null">
             <div class="recur-tasks-body" :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white'}">
               <i class="fa-solid fa-trash"></i>
-              <div>Start: <input type="date" :value="recurTask.Start" :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }"></div>
-              <div>End: <input type="date" :value="recurTask.End" :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }"></div>
-              <div>Time: <input type="time" :value="recurTask.Time" :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }"></div>
+              <div>Start: <input type="date" v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTaskIndex].Start" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']"></div>
+              <div>End: <input type="date" v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTaskIndex].End" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']"></div>
+              <div>Time: <input type="time" v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTaskIndex].Time" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']"></div>
               <div>Recur:
-                <select :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
-                  <option :selected="recurTask.Freq == 'Daily'">Daily</option>
-                  <option :selected="recurTask.Freq == 'Weekly'">Weekly</option>  
-                  <option :selected="recurTask.Freq == 'Monthly'">Monthly</option>
-                  <option :selected="recurTask.Freq == 'Semiannually'">Semiannually</option>
-                  <option :selected="recurTask.Freq == 'Annually'">Annually</option>
+                <select v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTaskIndex].Freq" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
+                  <option>Daily</option>
+                  <option>Weekly</option>  
+                  <option>Monthly</option>
+                  <option>Semiannually</option>
+                  <option>Annually</option>
                 </select>
               </div>
               <div>Owner:
-                <select :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
+                <select :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
                   <option>{{recurTask.Assign}}</option>
                   <option disabled>Last updated by: {{recurTask.Update}}</option>
                   <option disabled>Created by: {{recurTask.Create}}</option>
                 </select>
               </div>
-              <div class="recur-tasks-span" :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': recurTaskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
+              <div class="recur-tasks-span" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
                 <span spellcheck="false" contenteditable >{{recurTask.Desc}}</span>
               </div>
               <div>
@@ -170,7 +170,6 @@ export default {
   left: 60px;
   width: calc(100% - 100px);
   height: 20px;
-  border: 1px solid lightgray;
   font-family: 'Helvetica', sans-serif;
   font-size: 14px;
 }
@@ -189,7 +188,16 @@ export default {
 }
 .recur-tasks b {
   cursor: pointer;
-}`
+}
+.odd-task {
+  background-color: white;
+  border: 1px solid lightgray;
+}
+.even-task {
+  background-color: lightblue;
+  border: 1px solid gray;
+}
+`
     );
   },
 };
