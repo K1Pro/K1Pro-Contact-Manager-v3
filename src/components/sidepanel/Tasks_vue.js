@@ -32,12 +32,12 @@ export default {
               </div>
               <div>
                 <select :style="{ 'background-color': taskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': taskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
-                  <option disabled selected>Assigned to: {{task.Assign}}</option>
+                  <option disabled selected>Assigned to: {{userList[task.Assign][0]}}</option>
                   <template v-for="([userNo, userInfo], userIndex) in Object.entries(userList)">
-                    <option v-if="userInfo[0] != task.Assign" :value="userNo">Assign to {{userInfo[0]}}</option>
+                    <option v-if="userNo != task.Assign" :value="userInfo[1]">Assign to {{userInfo[0]}}</option>
                   </template>
-                  <option disabled>Last updated by: {{task.Update}}</option>
-                  <option disabled>Created by: {{task.Create}}</option>
+                  <option disabled>Last updated by: {{userList[task.Update][0]}}</option>
+                  <option disabled>Created by: {{userList[task.Create][0]}}</option>
                 </select>
               </div>
             </div>
