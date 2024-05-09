@@ -31,10 +31,10 @@ export default {
                 <span spellcheck="false" contenteditable v-on:blur="changeTask($event, taskDate)">{{task.Desc}}</span>
               </div>
               <div>
-                <select :style="{ 'background-color': taskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': taskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
-                  <option disabled selected>Assigned to: {{userList[task.Assign][0]}}</option>
+                <select v-model="contacts[userSettings.selectedContactIndex].Tasks[taskDate].Assign" @change="selectFirst" :style="{ 'background-color': taskIndex % 2 && !eventIndex ? 'lightblue' : 'white', 'border': taskIndex % 2 && !eventIndex ? '1px solid gray' : '1px solid lightgray' }">
+                  <option disabled selected :value="task.Assign">Assigned to: {{userList[task.Assign][0]}}</option>
                   <template v-for="([userNo, userInfo], userIndex) in Object.entries(userList)">
-                    <option v-if="userNo != task.Assign" :value="userInfo[1]">Assign to {{userInfo[0]}}</option>
+                    <option v-if="userNo != task.Assign" :value="userNo">Assign to {{userInfo[0]}}</option>
                   </template>
                   <option disabled>Last updated by: {{userList[task.Update][0]}}</option>
                   <option disabled>Created by: {{userList[task.Create][0]}}</option>
@@ -119,6 +119,9 @@ export default {
     },
     showAll() {
       this.eventIndex = null;
+    },
+    selectFirst(event) {
+      event.srcElement.selectedIndex = 0;
     },
   },
 
