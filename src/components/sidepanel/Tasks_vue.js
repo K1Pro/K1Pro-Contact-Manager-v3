@@ -30,11 +30,11 @@ export default {
               <div class="tasks-span" :class="[taskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
                 <span spellcheck="false" contenteditable v-on:blur="changeTask($event, taskDate)">{{task.Desc}}</span>
               </div>
-              <div>
+              <div>Owner: 
                 <select v-model="contacts[userSettings.selectedContactIndex].Tasks[taskDate].Assign" @change="selectFirst" :class="[taskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
-                  <option disabled selected :value="task.Assign">Assigned to: {{userList[task.Assign][0]}}</option>
+                  <option disabled selected :value="task.Assign">{{userList[task.Assign][0]}}</option>
                   <template v-for="([userNo, userInfo], userIndex) in Object.entries(userList)">
-                    <option v-if="userNo != task.Assign" :value="userNo">Assign to {{userInfo[0]}}</option>
+                    <option v-if="userNo != task.Assign" :value="userNo">{{userInfo[0]}}</option>
                   </template>
                   <option disabled>Last updated by: {{userList[task.Update][0]}}</option>
                   <option disabled>Created by: {{userList[task.Create][0]}}</option>
