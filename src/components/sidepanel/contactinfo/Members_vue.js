@@ -110,6 +110,7 @@ export default {
   width: 32px;
   background-color: transparent;
   border: 0px;
+  cursor: pointer;
 }
 .member-grid-container {
   display: grid;

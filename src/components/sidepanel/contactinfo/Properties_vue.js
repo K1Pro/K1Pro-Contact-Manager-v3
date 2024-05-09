@@ -8,7 +8,7 @@ export default {
             <div v-for="(property, propertyIndex) in contacts[userSettings.selectedContactIndex]?.Properties">
                 <div class="property-title-grid-container">
                   <div class="property-title"><i class="fa-solid fa-house"></i>&nbsp;{{ Object.keys(property)[0] }}</div>
-                  <button class="property-button"><i class="fa-solid fa-trash"></i></button>
+                  <button class="property-button" @click="deleteProperty(propertyIndex)"><i class="fa-solid fa-trash"></i></button>
                 </div>
                 <div class="property-grid-container" v-for="(propertyInfo, propertyType) in property">
                     <div :class="'property-grid-item' + propertyInputIndex" v-for="(propertyInputs, propertyInputIndex) in accountSettings.contactInfo.keys.Properties[propertyType]">
@@ -75,6 +75,12 @@ export default {
         this.msg.snackBar = error.toString();
       }
     },
+    deleteProperty(propertyIndex) {
+      this.contacts[this.userSettings.selectedContactIndex].Properties.splice(
+        propertyIndex,
+        1
+      );
+    },
   },
 
   mounted() {
@@ -94,6 +100,7 @@ export default {
   width: 32px;
   background-color: transparent;
   border: 0px;
+  cursor: pointer;
 }
 .property-grid-container {
   margin-top: 2px;

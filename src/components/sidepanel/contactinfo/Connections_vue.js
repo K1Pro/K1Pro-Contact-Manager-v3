@@ -8,12 +8,12 @@ export default {
             <div v-for="(conn, connIndex) in slctdCntct?.Connections">
                 <div v-for="(connInfo, connType) in conn">
                     <div v-for="connInputs in accountSettings.contactInfo.keys.Connections[connType]">
-                        <button class="conn-icon" ><i :class="connInputs.icon"></i></button>
+                        <button class="conn-icon"><i :class="connInputs.icon"></i></button>
                         <input 
                             :placeholder="connInputs.placeholder"
                             :type="connInputs.type" 
                             v-model="contacts[userSettings.selectedContactIndex].Connections[connIndex][connType]" />
-                        <button class="conn-delete-icon" ><i class="fa-solid fa-trash"></i></button>
+                        <button class="conn-delete-icon" @click="deleteConn(connIndex)"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
                 <template v-if="connIndex === slctdCntct.Connections.length - 1">
@@ -45,7 +45,14 @@ export default {
   //     return {};
   //   },
 
-  //   methods: {},
+  methods: {
+    deleteConn(connIndex) {
+      this.contacts[this.userSettings.selectedContactIndex].Connections.splice(
+        connIndex,
+        1
+      );
+    },
+  },
 
   mounted() {
     style(
@@ -61,6 +68,7 @@ export default {
   width: 32px;
   background-color: transparent;
   border: 0px;
+  cursor: pointer;
 }
 .connections input[type='text']{
   width: calc(100% - 64px);
