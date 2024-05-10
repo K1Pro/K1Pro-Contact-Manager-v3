@@ -59,7 +59,7 @@ export default {
             'Cache-Control': 'no-store',
           },
           body: JSON.stringify({
-            ID: +this.userSettings.selectedContactIndex + 1,
+            ID: this.contacts[this.userSettings.selectedContactIndex].id,
             Column: 'Properties',
             ColumnIndex: columnIndex,
             Key: key,

@@ -39,8 +39,8 @@ export default {
           </select>
         </div>
         <div class="navigation-item5">
-          <input v-if="windowWidth > 768" type="range" min="0" max="5" v-model="userSettings.calendar.filters.days" @change="daysRangeChange" @input="changeCalDaysOrder">
-          <input v-if="windowWidth < 768" type="range" min="0" max="1" v-model="userSettings.calendar.filters.days" @change="daysRangeChange" @input="changeCalDaysOrder">
+          <input v-if="windowWidth > 768" type="range" min="0" max="5" v-model="userSettings.calendar.filters.days" @change="daysRangeChange" @input="getFirstCalDate">
+          <input v-if="windowWidth < 768" type="range" min="0" max="1" v-model="userSettings.calendar.filters.days" @change="daysRangeChange" @input="getFirstCalDate">
           <span>{{ daysRangeArr[userSettings.calendar.filters.days] }}</span>
         </div>
       </div>
@@ -52,11 +52,10 @@ export default {
       'msg',
       'windowWidth',
       'userSettings',
-      'tempUserSettings',
-
+      'tempFiltersDays',
       'daysRangeArr',
       'patchUserSettings',
-      'changeCalDaysOrder',
+      'getFirstCalDate',
       'dayIndex',
       'calRow',
     ]),
@@ -76,8 +75,9 @@ export default {
 
   methods: {
     daysRangeChange(event) {
+      console.log('this should not be triggering');
       this.userSettings.calendar.filters.days = event.target.value;
-      this.tempUserSettings.calendar.filters.days = event.target.value;
+      this.tempFiltersDays = event.target.value;
       this.patchUserSettings();
     },
   },

@@ -56,9 +56,11 @@ export default {
       'activeUserList',
       'accountSettings',
       'userSettings',
-      'tempUserSettings',
+      'tempFiltersDays',
       'contacts',
       'endPts',
+      'times',
+      'time',
       'patchUserSettings',
     ]),
 
@@ -100,11 +102,12 @@ export default {
         });
         const userDataResJSON = await response.json();
         if (userDataResJSON.success) {
-          // console.log(userDataResJSON);
+          this.times.Y_m_d = userDataResJSON.data.date_Y_m_d;
           this.loggedIn = true;
           this.userData = userDataResJSON.data.user;
           this.accountSettings = userDataResJSON.data.accountSettings;
-          this.tempUserSettings = userDataResJSON.data.userSettings;
+          this.tempFiltersDays =
+            userDataResJSON.data.userSettings.calendar.filters.days;
           this.activeUserList = userDataResJSON.data.activeUserList;
           if (
             this.windowWidth < 768 &&

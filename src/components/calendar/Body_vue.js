@@ -39,9 +39,9 @@ export default {
       'msg',
       'windowWidth',
       'userSettings',
-      'tempUserSettings',
+      'tempFiltersDays',
       'times',
-      'changeCalDaysOrder',
+      'getFirstCalDate',
       'days',
     ]),
   },
@@ -73,22 +73,21 @@ export default {
         this.userSettings.calendar.filters.days != 1
       ) {
         this.userSettings.calendar.filters.days = 1;
-        this.changeCalDaysOrder();
+        this.getFirstCalDate();
       } else if (
         newWidth > 768 &&
         oldWidth < 768 &&
-        this.userSettings.calendar.filters.days !=
-          this.tempUserSettings?.calendar.filters.days
+        this.userSettings.calendar.filters.days != this.tempFiltersDays
       ) {
-        this.userSettings.calendar.filters.days =
-          this.tempUserSettings?.calendar.filters.days;
-        this.changeCalDaysOrder();
+        this.userSettings.calendar.filters.days = this.tempFiltersDays;
+        this.getFirstCalDate();
       }
     },
   },
 
   mounted() {
-    this.changeCalDaysOrder();
+    this.getFirstCalDate();
+    this.tempFiltersDays = this.userSettings.calendar.filters.days;
     style(
       'Calendar-body',
       /*css*/ `

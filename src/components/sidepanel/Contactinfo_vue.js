@@ -10,7 +10,6 @@ export default {
   template: /*html*/ `
     <div class='contact-info'>
       <searchbar></searchbar>
-      <br/>
       <members></members>
       <properties></properties>
       <assets></assets>
@@ -20,7 +19,7 @@ export default {
         <select @change='addContactInfo'>
           <option selected disabled>contact info</option>
           <option v-for="cntctInfo in addCntctInfoDropDown" :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey" >{{cntctInfo.InfoKey.toLowerCase() + cntctInfo.InfoPlaceholder}}</option>
-          <option disabled>new contact</option>
+          <option value="newContact" >new contact</option>
         </select>
       </template>
     </div>`,
@@ -28,6 +27,7 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
+      'userData',
       'accountSettings',
       'userSettings',
       'contacts',
@@ -71,15 +71,39 @@ export default {
   methods: {
     addContactInfo(event) {
       const InfoGroup = event.target.value.split('_')[0];
-      const InfoKey = event.target.value.split('_')[1];
-      const InfoValue =
-        InfoGroup == 'Members' || InfoGroup == 'Properties' ? {} : '';
-      const newValue = {
-        [InfoKey]: InfoValue,
-      };
-      this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push(
-        newValue
-      );
+      if (InfoGroup != 'newContact') {
+        const InfoKey = event.target.value.split('_')[1];
+        const InfoValue =
+          InfoGroup == 'Members' || InfoGroup == 'Properties' ? {} : '';
+        const newValue = {
+          [InfoKey]: InfoValue,
+        };
+        this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push(
+          newValue
+        );
+      } else {
+        const newMember = {
+          Assets: [],
+          Assigned: this.userData.id,
+          Categ: 'Former customer',
+          Connections: [],
+          Create: { [this.userData.id]: '2018-05-01' },
+          Custom1: [],
+          Custom2: '',
+          Custom3: '',
+          Custom4: '',
+          Custom5: '',
+          DNC: 0,
+          Members: [{ Primary: { Name: '' } }],
+          Properties: [],
+          RecurTasks: [],
+          Tasks: {},
+          Updated: { [this.userData.id]: '2024-05-01T15:00' },
+        };
+        this.userSettings.selectedContactIndex = this.contacts.length;
+        this.contacts.push(newMember);
+      }
+
       event.srcElement.selectedIndex = 0;
     },
   },

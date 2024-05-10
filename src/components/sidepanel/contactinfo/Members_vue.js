@@ -6,9 +6,6 @@ export default {
   template: /*html*/ `
         <div class='members'>
             <div v-for="(member, memberIndex) in slctdCntct?.Members">
-                <template v-if="memberIndex === 0">
-                  <hr>
-                </template>
                 <div class="member-title-grid-container">
                   <div class="member-title"><i class="fa-solid fa-user">&nbsp;</i>{{ Object.keys(member)[0] }}</div>
                   <div><button v-if="memberIndex !== 0" class="member-button" @click="deleteMember(memberIndex)"><i class="fa-solid fa-trash"></i></button></div>
@@ -54,9 +51,9 @@ export default {
 
   methods: {
     async patchMember(event, columnIndex, key, property) {
-      // console.log(this.userSettings.selectedContactIndex + 1);
+      // console.log(this.contacts[this.userSettings.selectedContactIndex].id);
       // console.log('Members');
-      // console.log(column);
+      // console.log(columnIndex);
       // console.log(key);
       // console.log(property);
       // console.log(event.target.value);
@@ -69,7 +66,7 @@ export default {
             'Cache-Control': 'no-store',
           },
           body: JSON.stringify({
-            ID: +this.userSettings.selectedContactIndex + 1,
+            ID: this.contacts[this.userSettings.selectedContactIndex].id,
             Column: 'Members',
             ColumnIndex: columnIndex,
             Key: key,
@@ -103,10 +100,10 @@ export default {
   grid-template-columns: calc(100% - 34px) 34px;
 }
 .member-title {
-  padding-top: 6px;
+  padding: 7px 0px 7px 0px;
 }
 .member-button{
-  padding: 7px;
+  padding: 7px 0px 7px 0px;
   width: 32px;
   background-color: transparent;
   border: 0px;

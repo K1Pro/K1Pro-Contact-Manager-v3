@@ -15,7 +15,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       accountSettings: {},
       activeUserList: {},
       userSettings: {},
-      tempUserSettings: {},
+      tempFiltersDays: null,
       contacts: [],
       endPts: {
         url: url,
@@ -31,7 +31,7 @@ const useDefaultStore = Pinia.defineStore('default', {
         logout: 'sessions/',
       },
       times: {
-        Y_m_d: server_datetime_Y_m_d,
+        Y_m_d: null,
         Y_m_d_H_i: server_datetime_Y_m_d_H_i,
       },
       firstCalDate: '',
@@ -40,7 +40,7 @@ const useDefaultStore = Pinia.defineStore('default', {
     };
   },
   actions: {
-    async time(method, timezone, datetime, type) {
+    async time(method, timezone, datetimeDescription, type) {
       try {
         const response = await fetch(time_url, {
           method: method,
@@ -50,7 +50,7 @@ const useDefaultStore = Pinia.defineStore('default', {
           },
           body: JSON.stringify({
             Timezone: timezone,
-            Datetime: datetime,
+            DatetimeDescription: datetimeDescription,
           }),
         });
         const timeResJSON = await response.json();
@@ -94,7 +94,7 @@ const useDefaultStore = Pinia.defineStore('default', {
         this.msg.snackBar = error.toString();
       }
     },
-    changeCalDaysOrder() {
+    getFirstCalDate() {
       const DaysOrderYesterday =
         this.dayOfTheWeek == 1 ? '' : 'previous Monday';
       if (this.userSettings.calendar.filters.days == 0) {
@@ -115,21 +115,11 @@ const useDefaultStore = Pinia.defineStore('default', {
     days(state) {
       let dateRangeStart = 1;
       let dateArray = [];
-      let timezone = new Date(state.firstCalDate).getTimezoneOffset() / 60;
-      let currentDate = new Date(
-        new Date(state.firstCalDate).setHours(
-          new Date(state.firstCalDate).getHours() + timezone
-        )
-      );
-      while (
-        dateRangeStart <=
-        state.daysRangeArr[state.userSettings.calendar.filters.days]
-      ) {
-        dateArray.push(
-          // prettier-ignore
-          currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' + currentDate.getDate().toString().padStart(2, '0')
-        );
-        // Can use UTC date to prevent problems with time zones and DST: currentDate.setUTCDate(currentDate.getUTCDate() + steps);
+      let currentDate = new Date(state.firstCalDate);
+      // prettier-ignore
+      while (dateRangeStart <= state.daysRangeArr[state.userSettings.calendar.filters.days]) {
+        // prettier-ignore
+        dateArray.push(currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' + currentDate.getDate().toString().padStart(2, '0'));
         currentDate.setDate(currentDate.getDate() + 1);
         dateRangeStart++;
       }

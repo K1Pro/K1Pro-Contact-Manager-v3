@@ -12,7 +12,8 @@ export default {
                         <input 
                             :placeholder="connInputs.placeholder"
                             :type="connInputs.type" 
-                            v-model="contacts[userSettings.selectedContactIndex].Connections[connIndex][connType]" />
+                            v-model="contacts[userSettings.selectedContactIndex].Connections[connIndex][connType]" 
+                            @change="patchConn($event, connIndex, connType, null)" />
                         <button class="conn-delete-icon" @click="deleteConn(connIndex)"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
@@ -24,6 +25,7 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
+      'accessToken',
       'msg',
       'accountSettings',
       'userSettings',
@@ -46,6 +48,32 @@ export default {
   //   },
 
   methods: {
+    async patchConn(event, columnIndex, key, property) {
+      try {
+        const response = await fetch(servr_url + this.endPts.contactinfo, {
+          method: 'PATCH',
+          headers: {
+            Authorization: this.accessToken,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          },
+          body: JSON.stringify({
+            ID: this.contacts[this.userSettings.selectedContactIndex].id,
+            Column: 'Connections',
+            ColumnIndex: columnIndex,
+            Key: key,
+            Property: property,
+            Value: event.target.value,
+          }),
+        });
+        const patchConnResJSON = await response.json();
+        if (patchConnResJSON.success) {
+          console.log(patchConnResJSON);
+        }
+      } catch (error) {
+        this.msg.snackBar = error.toString();
+      }
+    },
     deleteConn(connIndex) {
       this.contacts[this.userSettings.selectedContactIndex].Connections.splice(
         connIndex,

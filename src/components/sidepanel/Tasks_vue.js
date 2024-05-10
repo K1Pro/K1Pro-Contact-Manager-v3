@@ -180,11 +180,11 @@ export default {
 }
 .odd-task {
   background-color: white;
-  border: 1px inset lightgray;
+  border: 1px solid lightgray;
 }
 .even-task {
   background-color: lightblue;
-  border: 1px inset gray;
+  border: 1px solid gray;
 }
 `
     );
