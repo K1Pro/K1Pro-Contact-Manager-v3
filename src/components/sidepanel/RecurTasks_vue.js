@@ -18,6 +18,7 @@ export default {
             </div>
           </div>
         </div>
+        
         <template v-for="(recurTask, recurTaskIndex) in slctdCntct.RecurTasks">
           <template v-if="eventIndex === recurTaskIndex || eventIndex === null">
             <div class="recur-tasks-body" :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white'}">

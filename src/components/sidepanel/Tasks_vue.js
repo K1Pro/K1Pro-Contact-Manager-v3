@@ -2,7 +2,7 @@
 
 export default {
   name: 'Tasks',
-
+  // ([taskDate, task], taskIndex)
   template: /*html*/ `
     <div class='tasks'>
       <template v-if="slctdCntct">
@@ -19,29 +19,28 @@ export default {
           </div>
         </div>
         
-        <template v-for="([taskDate, task], taskIndex) in Object.entries(slctdCntct?.Tasks).sort().reverse()">
-          <template v-if="eventIndex == taskDate || eventIndex === null">
-            <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 && !eventIndex ? 'lightblue' : 'white'}">
-              <i class="fa-solid fa-trash"></i>
-              <div>
-                <input type="checkbox" :checked="task.Status == 1" @change="changeTask($event, taskDate)"/>
-                <input type="datetime-local" :value="taskDate" @change="changeTask($event, taskDate)" :class="[taskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
-              </div>
-              <div class="tasks-span" :class="[taskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
-                <span spellcheck="false" contenteditable v-on:blur="changeTask($event, taskDate)">{{task.Desc}}</span>
-              </div>
-              <div>Owner: 
-                <select v-model="contacts[userSettings.selectedContactIndex].Tasks[taskDate].Assign" :class="[taskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
-                  <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">{{userInfo[0]}}</option>
-                  <option disabled>Last updated by: {{userList[task.Update][0]}}</option>
-                  <option disabled>Created by: {{userList[task.Create][0]}}</option>
-                </select>
-              </div>
+        <template v-for="(task, taskIndex) in tasks">
+          <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
+            <i class="fa-solid fa-trash"></i>
+            <div>
+              <input type="checkbox" :checked="task.Status == 1" @change="changeTask($event, taskIndex)"/>
+              <input type="datetime-local" :value="task.Date" @change="changeTask($event, taskIndex)" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
             </div>
-            <div v-if="eventIndex && Object.entries(slctdCntct?.Tasks).length > 1" class="tasks-body" style="backgroundColor: lightblue; textAlign: right">
-              <div><b @click="showAll">Show {{Object.entries(slctdCntct?.Tasks).length - 1}} more {{(Object.entries(slctdCntct?.Tasks).length - 1) > 1 ? 'tasks' : 'task'}} </b></div>
+            <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
+              <span spellcheck="false" contenteditable v-on:blur="changeTask($event, taskIndex)">{{task.Desc}}</span>
             </div>
-          </template>
+            <div>Owner: 
+              <select :value="task.Assign" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
+                <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">{{userInfo[0]}}</option>
+                <option disabled>Last updated by: {{userList[task.Update][0]}}</option>
+                <option disabled>Created by: {{userList[task.Create][0]}}</option>
+              </select>
+              {{taskIndex}}
+            </div>
+          </div>
+          <div v-if="eventIndex !== null && slctdCntct.Tasks.length > 1" class="tasks-body" style="backgroundColor: lightblue; textAlign: right">
+            <div><b @click="showAll">Show {{slctdCntct.Tasks.length - 1}} more {{(slctdCntct.Tasks.length - 1) > 1 ? 'tasks' : 'task'}} </b></div>
+          </div>
         </template>
       </template>
     </div>`,
@@ -56,6 +55,11 @@ export default {
       'slctdCntct',
       'userList',
     ]),
+    tasks() {
+      return this.eventIndex === null
+        ? this.slctdCntct.Tasks.sort((a, b) => b.Date.localeCompare(a.Date))
+        : Array(this.slctdCntct.Tasks[this.eventIndex]);
+    },
   },
 
   //   components: {
@@ -72,35 +76,35 @@ export default {
 
   methods: {
     changeTask(event, taskDate) {
-      if (event.target.type == 'datetime-local') {
-        this.contacts[this.userSettings.selectedContactIndex].Tasks[
-          event.target.value
-        ] =
-          this.contacts[this.userSettings.selectedContactIndex].Tasks[taskDate];
-        delete this.contacts[this.userSettings.selectedContactIndex].Tasks[
-          taskDate
-        ];
-      } else if (event.target.type == 'checkbox') {
-        if (event.target.checked) {
-          this.contacts[this.userSettings.selectedContactIndex].Tasks[
-            taskDate
-          ].Status = '1';
-        } else {
-          this.contacts[this.userSettings.selectedContactIndex].Tasks[
-            taskDate
-          ].Status = '0';
-        }
-      } else if (event.srcElement.nodeName == 'SPAN') {
-        if (
-          event.target.innerHTML !=
-          this.contacts[this.userSettings.selectedContactIndex].Tasks[taskDate]
-            .Desc
-        ) {
-          this.contacts[this.userSettings.selectedContactIndex].Tasks[
-            taskDate
-          ].Desc = event.target.innerHTML;
-        }
-      }
+      // if (event.target.type == 'datetime-local') {
+      //   this.contacts[this.userSettings.selectedContactIndex].Tasks[
+      //     event.target.value
+      //   ] =
+      //     this.contacts[this.userSettings.selectedContactIndex].Tasks[taskDate];
+      //   delete this.contacts[this.userSettings.selectedContactIndex].Tasks[
+      //     taskDate
+      //   ];
+      // } else if (event.target.type == 'checkbox') {
+      //   if (event.target.checked) {
+      //     this.contacts[this.userSettings.selectedContactIndex].Tasks[
+      //       taskDate
+      //     ].Status = '1';
+      //   } else {
+      //     this.contacts[this.userSettings.selectedContactIndex].Tasks[
+      //       taskDate
+      //     ].Status = '0';
+      //   }
+      // } else if (event.srcElement.nodeName == 'SPAN') {
+      //   if (
+      //     event.target.innerHTML !=
+      //     this.contacts[this.userSettings.selectedContactIndex].Tasks[taskDate]
+      //       .Desc
+      //   ) {
+      //     this.contacts[this.userSettings.selectedContactIndex].Tasks[
+      //       taskDate
+      //     ].Desc = event.target.innerHTML;
+      //   }
+      // }
     },
     newTask() {
       console.log('creating a new task');
