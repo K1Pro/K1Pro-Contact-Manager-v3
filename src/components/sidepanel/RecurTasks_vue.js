@@ -42,7 +42,7 @@ export default {
                 </select>
               </div>
               <div class="recur-tasks-span" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
-                <span spellcheck="false" contenteditable >{{recurTask.Desc}}</span>
+                <span spellcheck="false" contenteditable v-on:blur="patchRecurTasks($event, recurTaskIndex, 'Desc', null)">{{recurTask.Desc}}</span>
               </div>
               <div>
                 <button>Reviewed</button> {{ recurTask.Review }}
@@ -58,10 +58,12 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
+      'accessToken',
       'msg',
       'eventIndex',
       'userSettings',
       'contacts',
+      'endPts',
       'times',
       'slctdCntct',
       'userList',
@@ -81,6 +83,38 @@ export default {
   //   },
 
   methods: {
+    async patchRecurTasks(event, columnIndex, key, property) {
+      // console.log(this.contacts[this.userSettings.selectedContactIndex].id);
+      // console.log('RecurTasks');
+      // console.log(columnIndex);
+      // console.log(key);
+      // console.log(property);
+      // console.log(event.target.innerHTML);
+      try {
+        const response = await fetch(servr_url + this.endPts.contacts, {
+          method: 'PATCH',
+          headers: {
+            Authorization: this.accessToken,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          },
+          body: JSON.stringify({
+            ID: this.contacts[this.userSettings.selectedContactIndex].id,
+            Column: 'RecurTasks',
+            ColumnIndex: columnIndex,
+            Key: key,
+            Property: property,
+            Value: event.target.innerHTML,
+          }),
+        });
+        const patchRecurTasksResJSON = await response.json();
+        if (patchRecurTasksResJSON.success) {
+          console.log(patchRecurTasksResJSON);
+        }
+      } catch (error) {
+        this.msg.snackBar = error.toString();
+      }
+    },
     changeTask(event, taskDate) {
       //   if (event.target.type == 'datetime-local') {
       //     this.contacts[this.userSettings.selectedContactIndex].Tasks[

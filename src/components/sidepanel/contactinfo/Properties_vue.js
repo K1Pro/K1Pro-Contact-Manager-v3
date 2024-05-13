@@ -15,8 +15,8 @@ export default {
                         <input 
                             :type="propertyInputs.type" 
                             :placeholder="propertyInputs.placeholder"
-                            v-model="contacts[userSettings.selectedContactIndex].Properties[propertyIndex][propertyType][propertyInputs.value]" 
-                            @change="patchProperty($event, propertyIndex, Object.keys(property)[0], propertyInputs.value)" />
+                            :value="propertyInfo[propertyInputs.value]"
+                            @change="patchContact($event, 'Properties', propertyIndex, Object.keys(property)[0], propertyInputs.value)" />
                     </div>
                 </div>
                 <template v-if="propertyIndex === contacts[userSettings.selectedContactIndex]?.Properties.length - 1">
@@ -33,6 +33,7 @@ export default {
       'userSettings',
       'endPts',
       'contacts',
+      'patchContact',
     ]),
   },
 
@@ -49,32 +50,6 @@ export default {
   //   },
 
   methods: {
-    async patchProperty(event, columnIndex, key, property) {
-      try {
-        const response = await fetch(servr_url + this.endPts.contactinfo, {
-          method: 'PATCH',
-          headers: {
-            Authorization: this.accessToken,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-          },
-          body: JSON.stringify({
-            ID: this.contacts[this.userSettings.selectedContactIndex].id,
-            Column: 'Properties',
-            ColumnIndex: columnIndex,
-            Key: key,
-            Property: property,
-            Value: event.target.value,
-          }),
-        });
-        const patchPropertyResJSON = await response.json();
-        if (patchPropertyResJSON.success) {
-          console.log(patchPropertyResJSON);
-        }
-      } catch (error) {
-        this.msg.snackBar = error.toString();
-      }
-    },
     deleteProperty(propertyIndex) {
       this.contacts[this.userSettings.selectedContactIndex].Properties.splice(
         propertyIndex,

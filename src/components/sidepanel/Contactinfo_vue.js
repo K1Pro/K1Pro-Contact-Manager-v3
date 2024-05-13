@@ -6,7 +6,8 @@ import Connections from './contactinfo/Connections_vue.js';
 
 export default {
   name: 'Contact Info',
-
+  // <option disabled>Created by: {{userList[task.Create][0]}}</option>
+  // <option disabled>Last updated by: {{userList[Object.keys(contacts[userSettings.selectedContactIndex].Created)]}}</option>
   template: /*html*/ `
     <div class='contact-info'>
       <searchbar></searchbar>
@@ -15,12 +16,25 @@ export default {
       <assets></assets>
       <connections></connections>
       <template  v-if="slctdCntct">
-        Add: 
-        <select @change='addContactInfo'>
-          <option selected disabled>contact info</option>
-          <option v-for="cntctInfo in addCntctInfoDropDown" :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey" >{{cntctInfo.InfoKey.toLowerCase() + cntctInfo.InfoPlaceholder}}</option>
-          <option value="newContact" >new contact</option>
-        </select>
+        <div style="text-align: right">Add: 
+          <select @change='addContactInfo' style="width: calc(100% - 80px)">
+            <option selected disabled>contact info</option>
+            <option v-for="cntctInfo in addCntctInfoDropDown" :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey" >{{cntctInfo.InfoKey.toLowerCase() + cntctInfo.InfoPlaceholder}}</option>
+            <option value="newContact" >new contact</option>
+          </select>
+        </div>
+        <div style="text-align: right">Owner: 
+          <select style="width: calc(100% - 80px)">
+            <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">{{userInfo[0]}}</option>
+            <option disabled>Last updated by: {{userList[Object.keys(contacts[userSettings.selectedContactIndex].Updated)][0]}} on {{Object.values(contacts[userSettings.selectedContactIndex].Updated)[0].replace('T', ' ')}}</option>
+            <option disabled>Created by: {{userList[Object.keys(contacts[userSettings.selectedContactIndex].Created)][0]}} on {{Object.values(contacts[userSettings.selectedContactIndex].Created)[0]}}</option>
+          </select>
+        </div>
+        <div style="text-align: right">Category: 
+          <select style="width: calc(100% - 80px)">
+            <option>{{contacts[userSettings.selectedContactIndex].Categ}}</option>
+          </select>
+        </div>
       </template>
     </div>`,
 
@@ -31,7 +45,9 @@ export default {
       'accountSettings',
       'userSettings',
       'contacts',
+      'patchContact',
       'slctdCntct',
+      'userList',
     ]),
     addCntctInfoDropDown() {
       const cntctInfoDropDown = [];
@@ -71,8 +87,11 @@ export default {
   methods: {
     addContactInfo(event) {
       const InfoGroup = event.target.value.split('_')[0];
+      console.log(event.target.value);
+
       if (InfoGroup != 'newContact') {
         const InfoKey = event.target.value.split('_')[1];
+        // this.patchContact(event, InfoGroup, 3, InfoKey, 'unknown');
         const InfoValue =
           InfoGroup == 'Members' || InfoGroup == 'Properties' ? {} : '';
         const newValue = {

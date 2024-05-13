@@ -26,7 +26,6 @@ const useDefaultStore = Pinia.defineStore('default', {
         userData: 'users',
         settings: 'settings',
         contacts: 'contacts',
-        contactinfo: 'contactinfo',
         login: 'sessions',
         logout: 'sessions/',
       },
@@ -69,6 +68,41 @@ const useDefaultStore = Pinia.defineStore('default', {
         }
       } catch (error) {
         console.log(error.toString());
+      }
+    },
+    async patchContact(event, column, columnIndex, key, property) {
+      console.log(this.contacts[this.userSettings.selectedContactIndex].id);
+      console.log(column);
+      console.log(columnIndex);
+      console.log(key);
+      console.log(property);
+      console.log(event.target.value);
+      try {
+        const response = await fetch(servr_url + this.endPts.contacts, {
+          method: 'PATCH',
+          headers: {
+            Authorization: this.accessToken,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          },
+          body: JSON.stringify({
+            ID: this.contacts[this.userSettings.selectedContactIndex].id,
+            Column: column,
+            ColumnIndex: columnIndex,
+            Key: key,
+            Property: property,
+            Value: event.target.value,
+          }),
+        });
+        const patchContactResJSON = await response.json();
+        if (patchContactResJSON.success) {
+          this.msg.snackBar = 'Updated ';
+          console.log(patchContactResJSON);
+          this.contacts[+patchContactResJSON.data.updated.ID - 1] =
+            patchContactResJSON.data.contact[0];
+        }
+      } catch (error) {
+        this.msg.snackBar = error.toString();
       }
     },
     async patchUserSettings() {

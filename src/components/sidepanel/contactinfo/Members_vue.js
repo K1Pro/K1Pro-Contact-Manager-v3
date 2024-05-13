@@ -15,8 +15,8 @@ export default {
                       <input 
                           :type="memberInputs.type" 
                           :placeholder="memberInputs.placeholder"
-                          v-model="contacts[userSettings.selectedContactIndex].Members[memberIndex][memberType][memberInputs.value]" 
-                          @change="patchMember($event, memberIndex, Object.keys(member)[0], memberInputs.value)" />
+                          :value="memberInfo[memberInputs.value]"
+                          @change="patchContact($event, 'Members', memberIndex, Object.keys(member)[0], memberInputs.value)" />
                   </div>
                 </div>
                 <template v-if="memberIndex === slctdCntct.Members.length - 1">
@@ -33,6 +33,7 @@ export default {
       'userSettings',
       'endPts',
       'contacts',
+      'patchContact',
       'slctdCntct',
     ]),
   },
@@ -50,38 +51,6 @@ export default {
   //   },
 
   methods: {
-    async patchMember(event, columnIndex, key, property) {
-      // console.log(this.contacts[this.userSettings.selectedContactIndex].id);
-      // console.log('Members');
-      // console.log(columnIndex);
-      // console.log(key);
-      // console.log(property);
-      // console.log(event.target.value);
-      try {
-        const response = await fetch(servr_url + this.endPts.contactinfo, {
-          method: 'PATCH',
-          headers: {
-            Authorization: this.accessToken,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-          },
-          body: JSON.stringify({
-            ID: this.contacts[this.userSettings.selectedContactIndex].id,
-            Column: 'Members',
-            ColumnIndex: columnIndex,
-            Key: key,
-            Property: property,
-            Value: event.target.value,
-          }),
-        });
-        const patchMemberResJSON = await response.json();
-        if (patchMemberResJSON.success) {
-          console.log(patchMemberResJSON);
-        }
-      } catch (error) {
-        this.msg.snackBar = error.toString();
-      }
-    },
     deleteMember(memberIndex) {
       this.contacts[this.userSettings.selectedContactIndex].Members.splice(
         memberIndex,

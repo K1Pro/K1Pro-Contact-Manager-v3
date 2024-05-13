@@ -8,16 +8,19 @@ export default {
             <div v-for="(conn, connIndex) in slctdCntct?.Connections">
                 <div v-for="(connInfo, connType) in conn">
                     <div v-for="connInputs in accountSettings.contactInfo.keys.Connections[connType]">
-                        <button class="conn-icon"><i :class="connInputs.icon"></i></button>
+                        <button class="conn-icon" @click="connect(connIndex, connType)" >
+                          <i :class="connInputs.icon"></i>
+                        </button>
                         <input 
                             :placeholder="connInputs.placeholder"
                             :type="connInputs.type" 
-                            v-model="contacts[userSettings.selectedContactIndex].Connections[connIndex][connType]" 
-                            @change="patchConn($event, connIndex, connType, null)" />
+                            :value="connInfo"
+                            @change="patchContact($event, 'Connections', connIndex, connType, null)" />
                         <button class="conn-delete-icon" @click="deleteConn(connIndex)"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
                 <template v-if="connIndex === slctdCntct.Connections.length - 1">
+                    <input type="checkbox" :checked="contacts[userSettings.selectedContactIndex].DNC == 1" /> Do not contact
                     <hr>
                 </template>
             </div>
@@ -27,10 +30,12 @@ export default {
     ...Pinia.mapWritableState(useDefaultStore, [
       'accessToken',
       'msg',
+      'activeTab',
       'accountSettings',
       'userSettings',
       'endPts',
       'contacts',
+      'patchContact',
       'slctdCntct',
     ]),
   },
@@ -48,30 +53,24 @@ export default {
   //   },
 
   methods: {
-    async patchConn(event, columnIndex, key, property) {
-      try {
-        const response = await fetch(servr_url + this.endPts.contactinfo, {
-          method: 'PATCH',
-          headers: {
-            Authorization: this.accessToken,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-          },
-          body: JSON.stringify({
-            ID: this.contacts[this.userSettings.selectedContactIndex].id,
-            Column: 'Connections',
-            ColumnIndex: columnIndex,
-            Key: key,
-            Property: property,
-            Value: event.target.value,
-          }),
-        });
-        const patchConnResJSON = await response.json();
-        if (patchConnResJSON.success) {
-          console.log(patchConnResJSON);
+    connect(connIndex, connType) {
+      let checkDNC = true;
+      if (this.contacts[this.userSettings.selectedContactIndex].DNC == 1) {
+        checkDNC = confirm('Contact is listed as "Do not contact", proceed?')
+          ? true
+          : false;
+      }
+      if (checkDNC) {
+        if (connType == 'Phone') {
+          window.location.href =
+            'tel:' +
+            this.contacts[this.userSettings.selectedContactIndex].Connections[
+              connIndex
+            ][connType];
         }
-      } catch (error) {
-        this.msg.snackBar = error.toString();
+        if (connType == 'Email') {
+          this.activeTab = 'envelope';
+        }
       }
     },
     deleteConn(connIndex) {
@@ -86,7 +85,9 @@ export default {
     style(
       'connections',
       /*css*/ `
-.connections{}
+.connections{
+
+}
 .conn-icon{
   padding: 6px;
   width: 32px;
@@ -104,6 +105,12 @@ export default {
 }
 .connections input[type='text']:focus {
   outline: none;
+}
+.connections input[type='checkbox']{
+  margin: 0px;
+  margin-top: 5px;
+  margin-right: 5px;
+  width: 32px;
 }
 `
     );

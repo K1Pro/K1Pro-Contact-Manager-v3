@@ -18,6 +18,7 @@ export default {
       'msg',
       'userSettings',
       'contacts',
+      'patchUserSettings',
     ]),
     searchArray() {
       let searchResultArray = [];
@@ -66,6 +67,7 @@ export default {
       this.userSettings.selectedContactIndex = event.target.value;
       this.search = '';
       this.$refs.searchDropdown.size = 0;
+      this.patchUserSettings();
     },
 
     onWindowClick() {

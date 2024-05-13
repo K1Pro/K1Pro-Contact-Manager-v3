@@ -12,7 +12,7 @@ export default {
         <div v-for="policyInfo, policyInfoIndex in slctdCntct.Custom1" class="policy-info-policy" :style="{ 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white'}">
           <i class="fa-solid fa-trash"></i>
           <div v-for="policyInfoInputs in accountSettings.Custom1">
-            <span class="policy-info-label">{{ policyInfoInputs.placeholder }}:</span>
+            <span class="policy-info-label" v-if="!(policyInfo.Policy_Type != 'Home' && policyInfoInputs.value == 'EHV')">{{ policyInfoInputs.placeholder }}:</span>
             <template v-if="policyInfoInputs.type == 'select'">
               <select :style="{ 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white', 'border': policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray' }">
                 <option v-for="option in policyInfoInputs.options" :selected="option == policyInfo[policyInfoInputs.value]">{{option}}</option>
@@ -23,8 +23,15 @@ export default {
                 :type="policyInfoInputs.type" 
                 :checked="policyInfo[policyInfoInputs.value] == 1" />
             </template>
+            <template v-else-if="policyInfoInputs.type == 'number' && !(policyInfo.Policy_Type != 'Home' && policyInfoInputs.value == 'EHV')">
+              <input 
+                :style="{ 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white', 'border': policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray' }"
+                :type="policyInfoInputs.type" 
+                :value="policyInfo[policyInfoInputs.value]" />
+            </template>
             <template v-else>
               <input 
+                v-if="policyInfoInputs.type != 'number'"
                 :style="{ 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white', 'border': policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray' }"
                 :type="policyInfoInputs.type" 
                 :value="policyInfo[policyInfoInputs.value]" />
@@ -63,10 +70,9 @@ export default {
   float: right;
   font-size: 14px;
 }
-.policy-info-policy div{
-  padding-bottom: 10px;
-}
+.policy-info-policy div{}
 .policy-info-label {
+  padding-bottom: 10px;
   font-size: 14px;
   display: inline-block;
   width: 100px;

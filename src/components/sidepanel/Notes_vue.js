@@ -1,6 +1,6 @@
 export default {
   name: 'Notes',
-
+  // v-model="contacts[userSettings.selectedContactIndex].Notes"
   template: /*html*/ `
     <div class='notes'>
       <template v-if="slctdCntct && contacts && userSettings">
@@ -9,7 +9,7 @@ export default {
           {{Object.values(slctdCntct.Members[0])[0].First ? Object.values(slctdCntct.Members[0])[0].First : ''}} 
           {{Object.values(slctdCntct.Members[0])[0].Name}}
         </div>
-        <textarea placeholder="Notes" v-model="contacts[userSettings.selectedContactIndex].Notes"></textarea>
+        <textarea placeholder="Notes" :value="slctdCntct.Notes" @change="patchContact($event, 'Notes')"></textarea>
       </template>
       <template v-else>
         Notes
@@ -21,6 +21,7 @@ export default {
       'msg',
       'userSettings',
       'contacts',
+      'patchContact',
       'slctdCntct',
     ]),
   },

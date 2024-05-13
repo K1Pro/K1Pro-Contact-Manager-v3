@@ -26,6 +26,7 @@ export default {
       'eventIndex',
       'userSettings',
       'contacts',
+      'patchUserSettings',
       'firstCalDate',
       'days',
     ]),
@@ -33,20 +34,37 @@ export default {
       let contactArray = {};
       let calDay;
       this.contacts.forEach((contact, contactIndex) => {
-        Object.entries(contact.Tasks).forEach(([taskDate, taskEvent]) => {
-          calDay = taskDate.split('T')[0];
+        // Object.entries(contact.Tasks).forEach(([taskDate, taskEvent]) => {
+        //   calDay = taskDate.split('T')[0];
+        //   if (
+        //     this.days[this.dayIndex] == calDay &&
+        //     !contactArray[contactIndex]
+        //   ) {
+        //     contactArray[contactIndex] = {
+        //       Name: Object.values(contact.Members[0])[0].Name,
+        //       Time: taskDate.split('T')[1],
+        //       Type: 'list-check',
+        //       Status: taskEvent.Status == 1 ? 'compltd' : 'not-compltd',
+        //       Icon: taskEvent.Status == 1 ? 'fa fa-check' : false,
+        //       ContactIndex: contactIndex,
+        //       EventIndex: taskDate,
+        //     };
+        //   }
+        // });
+        contact.Tasks.forEach((task, taskIndex) => {
+          calDay = task.Date.split('T')[0];
           if (
             this.days[this.dayIndex] == calDay &&
             !contactArray[contactIndex]
           ) {
             contactArray[contactIndex] = {
               Name: Object.values(contact.Members[0])[0].Name,
-              Time: taskDate.split('T')[1],
+              Time: task.Date.split('T')[1],
               Type: 'list-check',
-              Status: taskEvent.Status == 1 ? 'compltd' : 'not-compltd',
-              Icon: taskEvent.Status == 1 ? 'fa fa-check' : false,
+              Status: task.Status == 1 ? 'compltd' : 'not-compltd',
+              Icon: task.Status == 1 ? 'fa fa-check' : false,
               ContactIndex: contactIndex,
-              EventIndex: taskDate,
+              EventIndex: taskIndex,
             };
           }
         });
@@ -97,6 +115,7 @@ export default {
       this.activeTab = tab;
       this.userSettings.selectedContactIndex = contactIndex;
       this.eventIndex = eventIndex;
+      this.patchUserSettings();
     },
   },
 

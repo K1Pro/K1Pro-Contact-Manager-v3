@@ -13,16 +13,16 @@ export default {
                       <input
                           :placeholder="assetInputs.placeholder"
                           :type="assetInputs.type" 
-                          v-model="contacts[userSettings.selectedContactIndex].Assets[assetIndex][assetType]" 
-                          @change="patchAsset($event, assetIndex, assetType, null)" />
+                          :value="assetInfo"
+                          @change="patchContact($event, 'Assets', assetIndex, assetType, null)" />
                       <button class="asset-button" @click="deleteAsset(assetIndex)"><i class="fa-solid fa-trash"></i></button>
                     </div>
                     <div v-else >
                       <input 
                         :placeholder="assetInputs.placeholder"
                         :type="assetInputs.type" 
-                        v-model="contacts[userSettings.selectedContactIndex].Assets[assetIndex][assetType]" 
-                        @change="patchAsset($event, assetIndex, assetType, null)" />
+                        :value="assetInfo"
+                        @change="patchContact($event, 'Assets', assetIndex, assetType, null)" />
                       <button class="asset-button" @click="deleteAsset(assetIndex)"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
@@ -41,6 +41,7 @@ export default {
       'userSettings',
       'endPts',
       'contacts',
+      'patchContact',
       'slctdCntct',
     ]),
   },
@@ -58,32 +59,6 @@ export default {
   //   },
 
   methods: {
-    async patchAsset(event, columnIndex, key, property) {
-      try {
-        const response = await fetch(servr_url + this.endPts.contactinfo, {
-          method: 'PATCH',
-          headers: {
-            Authorization: this.accessToken,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-          },
-          body: JSON.stringify({
-            ID: this.contacts[this.userSettings.selectedContactIndex].id,
-            Column: 'Assets',
-            ColumnIndex: columnIndex,
-            Key: key,
-            Property: property,
-            Value: event.target.value,
-          }),
-        });
-        const patchAssetResJSON = await response.json();
-        if (patchAssetResJSON.success) {
-          console.log(patchAssetResJSON);
-        }
-      } catch (error) {
-        this.msg.snackBar = error.toString();
-      }
-    },
     deleteAsset(assetIndex) {
       this.contacts[this.userSettings.selectedContactIndex].Assets.splice(
         assetIndex,
