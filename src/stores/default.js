@@ -70,13 +70,34 @@ const useDefaultStore = Pinia.defineStore('default', {
         console.log(error.toString());
       }
     },
-    async patchContact(event, column, columnIndex, key, property) {
-      console.log(this.contacts[this.userSettings.selectedContactIndex].id);
-      console.log(column);
-      console.log(columnIndex);
-      console.log(key);
-      console.log(property);
-      console.log(event.target.value);
+    async patchContactInfo(event, column, columnIndex, key) {
+      console.log(
+        'id: ' + this.contacts[this.userSettings.selectedContactIndex].id
+      );
+      console.log('column: ' + column);
+      console.log('columnIndex: ' + columnIndex);
+      console.log('key: ' + key);
+      console.log(
+        'value: ' + (event?.target?.value ? event.target.value : event)
+      );
+      console.log('================');
+      const value = event?.target?.value ? event.target.value : event;
+      // prettier-ignore
+      if (this.contacts[this.userSettings.selectedContactIndex][column][columnIndex]) {
+        // prettier-ignore
+        this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = value;
+      } else if (column == 'Notes') {
+        // possibly also DNC, Categ, and Assigned here
+        this.contacts[this.userSettings.selectedContactIndex][column] = value
+      } 
+      // else if (column == 'Tasks') {
+      //   console.log('creating a new task')
+      // } 
+      else {
+        // prettier-ignore
+        this.contacts[this.userSettings.selectedContactIndex][column].push({[key]: value,});
+      }
+
       try {
         const response = await fetch(servr_url + this.endPts.contacts, {
           method: 'PATCH',
@@ -90,16 +111,43 @@ const useDefaultStore = Pinia.defineStore('default', {
             Column: column,
             ColumnIndex: columnIndex,
             Key: key,
-            Property: property,
-            Value: event.target.value,
+            Value: value,
           }),
         });
-        const patchContactResJSON = await response.json();
-        if (patchContactResJSON.success) {
+        const patchContactInfoResJSON = await response.json();
+        if (patchContactInfoResJSON.success) {
           this.msg.snackBar = 'Updated ';
-          console.log(patchContactResJSON);
-          this.contacts[+patchContactResJSON.data.updated.ID - 1] =
-            patchContactResJSON.data.contact[0];
+          console.log(patchContactInfoResJSON);
+        }
+      } catch (error) {
+        this.msg.snackBar = error.toString();
+      }
+    },
+    async deleteContactInfo(column, columnIndex) {
+      // console.log('column: ' + column);
+      // console.log('columnIndex: ' + columnIndex);
+      this.contacts[this.userSettings.selectedContactIndex][column].splice(
+        columnIndex,
+        1
+      );
+      try {
+        const response = await fetch(servr_url + this.endPts.contacts, {
+          method: 'DELETE',
+          headers: {
+            Authorization: this.accessToken,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          },
+          body: JSON.stringify({
+            ID: this.contacts[this.userSettings.selectedContactIndex].id,
+            Column: column,
+            ColumnIndex: columnIndex,
+          }),
+        });
+        const patchContactInfoResJSON = await response.json();
+        if (patchContactInfoResJSON.success) {
+          this.msg.snackBar = 'Updated ';
+          console.log(patchContactInfoResJSON);
         }
       } catch (error) {
         this.msg.snackBar = error.toString();

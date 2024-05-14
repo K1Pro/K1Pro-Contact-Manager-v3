@@ -7,16 +7,18 @@ export default {
         <div class='members'>
             <div v-for="(member, memberIndex) in slctdCntct?.Members">
                 <div class="member-title-grid-container">
-                  <div class="member-title"><i class="fa-solid fa-user">&nbsp;</i>{{ Object.keys(member)[0] }}</div>
-                  <div><button v-if="memberIndex !== 0" class="member-button" @click="deleteMember(memberIndex)"><i class="fa-solid fa-trash"></i></button></div>
+                  <div class="member-title"><i class="fa-solid fa-user">&nbsp;</i>{{ member.Type }}</div>
+                  <button v-if="memberIndex !== 0" class="member-button" @click="deleteContactInfo('Members', memberIndex)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
                 </div>
-                <div class="member-grid-container" v-for="(memberInfo, memberType) in member">
-                  <div class="member-grid-item" v-for="memberInputs in accountSettings.contactInfo.keys.Members[memberType]">
-                      <input 
-                          :type="memberInputs.type" 
-                          :placeholder="memberInputs.placeholder"
-                          :value="memberInfo[memberInputs.value]"
-                          @change="patchContact($event, 'Members', memberIndex, Object.keys(member)[0], memberInputs.value)" />
+                <div class="member-grid-container">
+                  <div class="member-grid-item" v-for="memberInputs in accountSettings.contactInfo.keys.Members[member.Type]">
+                    <input
+                    :type="memberInputs.type"
+                    :placeholder="memberInputs.placeholder"
+                    :value="member[memberInputs.value]"
+                    @change="patchContactInfo($event, 'Members', memberIndex, memberInputs.value)" />
                   </div>
                 </div>
                 <template v-if="memberIndex === slctdCntct.Members.length - 1">
@@ -27,13 +29,9 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'accessToken',
-      'msg',
       'accountSettings',
-      'userSettings',
-      'endPts',
-      'contacts',
-      'patchContact',
+      'patchContactInfo',
+      'deleteContactInfo',
       'slctdCntct',
     ]),
   },
@@ -50,14 +48,7 @@ export default {
   //     return {};
   //   },
 
-  methods: {
-    deleteMember(memberIndex) {
-      this.contacts[this.userSettings.selectedContactIndex].Members.splice(
-        memberIndex,
-        1
-      );
-    },
-  },
+  // methods: {},
 
   mounted() {
     style(

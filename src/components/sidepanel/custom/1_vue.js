@@ -6,8 +6,8 @@ export default {
       <div class='policy-info'>
         <div class="policy-info-title">
           Policy info for
-          {{Object.values(slctdCntct.Members[0])[0].First ? Object.values(slctdCntct.Members[0])[0].First : ''}} 
-          {{Object.values(slctdCntct.Members[0])[0].Name}}
+          {{slctdCntct.Members[0].First ? slctdCntct.Members[0].First : ''}} 
+          {{slctdCntct.Members[0].Name}}
         </div>
         <div v-for="policyInfo, policyInfoIndex in slctdCntct.Custom1" class="policy-info-policy" :style="{ 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white'}">
           <i class="fa-solid fa-trash"></i>

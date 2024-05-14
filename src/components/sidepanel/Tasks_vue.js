@@ -2,7 +2,7 @@
 
 export default {
   name: 'Tasks',
-  // ([taskDate, task], taskIndex)
+
   template: /*html*/ `
     <div class='tasks'>
       <template v-if="slctdCntct">
@@ -10,8 +10,8 @@ export default {
           <div class="tasks-title-grid-container">
             <div class="tasks-title-grid-item1">
               Tasks for
-              {{Object.values(slctdCntct.Members[0])[0].First ? Object.values(slctdCntct.Members[0])[0].First : ''}} 
-              {{Object.values(slctdCntct.Members[0])[0].Name}}
+              {{slctdCntct.Members[0].First ? slctdCntct.Members[0].First : ''}} 
+              {{slctdCntct.Members[0].Name}}
             </div>
             <div class="tasks-title-grid-item2">
               <button @click="newTask" ><i class="fa-solid fa-square-plus"></i></button>
@@ -21,13 +21,13 @@ export default {
         
         <template v-for="(task, taskIndex) in tasks">
           <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
-            <i class="fa-solid fa-trash"></i>
+            <i class="fa-solid fa-trash" @click="deleteContactInfo('Tasks', task.RealIndex)"></i>
             <div>
-              <input type="checkbox" :checked="task.Status == 1" @change="changeTask($event, taskIndex)"/>
-              <input type="datetime-local" :value="task.Date" @change="changeTask($event, taskIndex)" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
+              <input type="checkbox" :checked="task.Status == 1" @change="changeTask($event, 'Tasks', task.RealIndex, 'Status')"/>
+              <input type="datetime-local" :value="task.Date" @change="changeTask($event, 'Tasks', task.RealIndex, 'Date')" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
             </div>
             <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
-              <span spellcheck="false" contenteditable v-on:blur="changeTask($event, taskIndex)">{{task.Desc}}</span>
+              <span spellcheck="false" contenteditable v-on:blur="changeTask($event, 'Tasks', task.RealIndex, 'Desc')">{{task.Desc}}</span>
             </div>
             <div>Owner: 
               <select :value="task.Assign" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
@@ -35,7 +35,7 @@ export default {
                 <option disabled>Last updated by: {{userList[task.Update][0]}}</option>
                 <option disabled>Created by: {{userList[task.Create][0]}}</option>
               </select>
-              {{taskIndex}}
+              {{task.RealIndex}}
             </div>
           </div>
           <div v-if="eventIndex !== null && slctdCntct.Tasks.length > 1" class="tasks-body" style="backgroundColor: lightblue; textAlign: right">
@@ -47,18 +47,24 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'msg',
       'eventIndex',
-      'userSettings',
-      'contacts',
       'times',
+      'patchContactInfo',
+      'deleteContactInfo',
       'slctdCntct',
       'userList',
     ]),
     tasks() {
       return this.eventIndex === null
-        ? this.slctdCntct.Tasks.sort((a, b) => b.Date.localeCompare(a.Date))
-        : Array(this.slctdCntct.Tasks[this.eventIndex]);
+        ? this.slctdCntct.Tasks.map((val, index) => {
+            return { ...val, RealIndex: index };
+          }).sort((a, b) => b.Date.localeCompare(a.Date))
+        : [
+            {
+              ...this.slctdCntct.Tasks[this.eventIndex],
+              RealIndex: this.eventIndex,
+            },
+          ];
     },
   },
 
@@ -75,48 +81,33 @@ export default {
   //   },
 
   methods: {
-    changeTask(event, taskDate) {
-      // if (event.target.type == 'datetime-local') {
-      //   this.contacts[this.userSettings.selectedContactIndex].Tasks[
-      //     event.target.value
-      //   ] =
-      //     this.contacts[this.userSettings.selectedContactIndex].Tasks[taskDate];
-      //   delete this.contacts[this.userSettings.selectedContactIndex].Tasks[
-      //     taskDate
-      //   ];
-      // } else if (event.target.type == 'checkbox') {
-      //   if (event.target.checked) {
-      //     this.contacts[this.userSettings.selectedContactIndex].Tasks[
-      //       taskDate
-      //     ].Status = '1';
-      //   } else {
-      //     this.contacts[this.userSettings.selectedContactIndex].Tasks[
-      //       taskDate
-      //     ].Status = '0';
-      //   }
-      // } else if (event.srcElement.nodeName == 'SPAN') {
-      //   if (
-      //     event.target.innerHTML !=
-      //     this.contacts[this.userSettings.selectedContactIndex].Tasks[taskDate]
-      //       .Desc
-      //   ) {
-      //     this.contacts[this.userSettings.selectedContactIndex].Tasks[
-      //       taskDate
-      //     ].Desc = event.target.innerHTML;
-      //   }
-      // }
+    changeTask(event, column, columnIndex, key) {
+      let taskValue =
+        event.target.type == 'datetime-local'
+          ? event.target.value
+          : event.target.type == 'checkbox'
+          ? event.target.checked
+          : event.target.innerHTML;
+      // console.log('column: ' + column);
+      // console.log('columnIndex: ' + columnIndex);
+      // console.log('key: ' + key);
+      // console.log('value: ' + taskValue);
+      // console.log(event);
+      // console.log('================');
+      this.patchContactInfo(taskValue, column, columnIndex, key);
     },
-    newTask() {
+    newTask(event, column, columnIndex, key) {
       console.log('creating a new task');
-      this.contacts[this.userSettings.selectedContactIndex].Tasks[
-        this.times.Y_m_d_H_i
-      ] = {
+      console.log(this.times.Y_m_d_H_i);
+      let taskValue = {
+        Date: this.times.Y_m_d_H_i,
         Desc: 'Just a test',
         Status: '0',
-        Create: 'Bartosz',
-        Assign: 'Bartosz',
-        Update: 'Bartosz',
+        Create: '5',
+        Assign: '5',
+        Update: '5',
       };
+      this.patchContactInfo(taskValue, 'Tasks', null, null);
     },
     showAll() {
       this.eventIndex = null;
@@ -157,6 +148,7 @@ export default {
 .tasks-body i{
   float: right;
   font-size: 14px;
+  cursor: pointer;
 }
 .tasks-body div {
   padding-bottom: 10px;

@@ -45,7 +45,7 @@ export default {
       'accountSettings',
       'userSettings',
       'contacts',
-      'patchContact',
+      'patchContactInfo',
       'slctdCntct',
       'userList',
     ]),
@@ -87,19 +87,13 @@ export default {
   methods: {
     addContactInfo(event) {
       const InfoGroup = event.target.value.split('_')[0];
-      console.log(event.target.value);
-
+      const InfoKey = event.target.value.split('_')[1];
+      const columnIndex =
+        this.contacts[this.userSettings.selectedContactIndex][InfoGroup].length;
       if (InfoGroup != 'newContact') {
-        const InfoKey = event.target.value.split('_')[1];
-        // this.patchContact(event, InfoGroup, 3, InfoKey, 'unknown');
-        const InfoValue =
-          InfoGroup == 'Members' || InfoGroup == 'Properties' ? {} : '';
-        const newValue = {
-          [InfoKey]: InfoValue,
-        };
-        this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push(
-          newValue
-        );
+        InfoGroup == 'Members' || InfoGroup == 'Properties'
+          ? this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type')
+          : this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
       } else {
         const newMember = {
           Assets: [],
@@ -113,7 +107,7 @@ export default {
           Custom4: '',
           Custom5: '',
           DNC: 0,
-          Members: [{ Primary: { Name: '' } }],
+          Members: [{ Type: 'Primary', Name: '' }],
           Properties: [],
           RecurTasks: [],
           Tasks: {},

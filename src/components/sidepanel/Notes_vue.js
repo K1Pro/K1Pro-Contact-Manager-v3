@@ -6,10 +6,10 @@ export default {
       <template v-if="slctdCntct && contacts && userSettings">
         <div class="notes-title">
           Notes for
-          {{Object.values(slctdCntct.Members[0])[0].First ? Object.values(slctdCntct.Members[0])[0].First : ''}} 
-          {{Object.values(slctdCntct.Members[0])[0].Name}}
+          {{slctdCntct.Members[0].First ? slctdCntct.Members[0].First : ''}} 
+          {{slctdCntct.Members[0].Name}}
         </div>
-        <textarea placeholder="Notes" :value="slctdCntct.Notes" @change="patchContact($event, 'Notes')"></textarea>
+        <textarea placeholder="Notes" :value="slctdCntct.Notes" @change="patchContactInfo($event, 'Notes')"></textarea>
       </template>
       <template v-else>
         Notes
@@ -21,7 +21,7 @@ export default {
       'msg',
       'userSettings',
       'contacts',
-      'patchContact',
+      'patchContactInfo',
       'slctdCntct',
     ]),
   },
@@ -36,7 +36,7 @@ export default {
     return {};
   },
 
-  methods: {},
+  // methods: {},
 
   mounted() {
     style(

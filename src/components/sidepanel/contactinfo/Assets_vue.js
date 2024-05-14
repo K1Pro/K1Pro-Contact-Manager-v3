@@ -14,16 +14,16 @@ export default {
                           :placeholder="assetInputs.placeholder"
                           :type="assetInputs.type" 
                           :value="assetInfo"
-                          @change="patchContact($event, 'Assets', assetIndex, assetType, null)" />
-                      <button class="asset-button" @click="deleteAsset(assetIndex)"><i class="fa-solid fa-trash"></i></button>
+                          @change="patchContactInfo($event, 'Assets', assetIndex, assetType)" />
+                      <button class="asset-button" @click="deleteContactInfo('Assets', assetIndex)"><i class="fa-solid fa-trash"></i></button>
                     </div>
                     <div v-else >
                       <input 
                         :placeholder="assetInputs.placeholder"
                         :type="assetInputs.type" 
                         :value="assetInfo"
-                        @change="patchContact($event, 'Assets', assetIndex, assetType, null)" />
-                      <button class="asset-button" @click="deleteAsset(assetIndex)"><i class="fa-solid fa-trash"></i></button>
+                        @change="patchContactInfo($event, 'Assets', assetIndex, assetType)" />
+                      <button class="asset-button" @click="deleteContactInfo('Assets', assetIndex)"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             </div>
@@ -35,13 +35,9 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'accessToken',
-      'msg',
       'accountSettings',
-      'userSettings',
-      'endPts',
-      'contacts',
-      'patchContact',
+      'patchContactInfo',
+      'deleteContactInfo',
       'slctdCntct',
     ]),
   },
@@ -58,14 +54,7 @@ export default {
   //     return {};
   //   },
 
-  methods: {
-    deleteAsset(assetIndex) {
-      this.contacts[this.userSettings.selectedContactIndex].Assets.splice(
-        assetIndex,
-        1
-      );
-    },
-  },
+  // methods: {},
 
   mounted() {
     style(

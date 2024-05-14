@@ -58,7 +58,7 @@ export default {
             !contactArray[contactIndex]
           ) {
             contactArray[contactIndex] = {
-              Name: Object.values(contact.Members[0])[0].Name,
+              Name: contact.Members[0].Name,
               Time: task.Date.split('T')[1],
               Type: 'list-check',
               Status: task.Status == 1 ? 'compltd' : 'not-compltd',
@@ -75,7 +75,7 @@ export default {
             !contactArray[contactIndex]
           ) {
             contactArray[contactIndex] = {
-              Name: Object.values(contact.Members[0])[0].Name,
+              Name: contact.Members[0].Name,
               Time: task.Time ? task.Time : '25:00',
               Type: 'repeat',
               Status:

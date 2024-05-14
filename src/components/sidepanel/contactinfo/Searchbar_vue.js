@@ -25,17 +25,16 @@ export default {
       if (this.search.length > 2) {
         this.contacts.forEach((contact, contactIndex) => {
           contact.Members.forEach((member) => {
-            Object.entries(member).forEach(([key, val]) => {
-              let fullName;
-              if (val.First && !val.Name) fullName = val.First;
-              if (val.Name && !val.First) fullName = val.Name;
-              if (val.First && val.Name) fullName = val.First + ' ' + val.Name;
-              if (
-                fullName?.toLowerCase().includes(this.search.toLowerCase()) &&
-                !searchResultArray.includes(`${fullName}_${contactIndex}`)
-              )
-                searchResultArray.push(`${fullName}_${contactIndex}`);
-            });
+            let fullName;
+            if (member.First && !member.Name) fullName = member.First;
+            if (member.Name && !member.First) fullName = member.Name;
+            if (member.First && member.Name)
+              fullName = member.First + ' ' + member.Name;
+            if (
+              fullName?.toLowerCase().includes(this.search.toLowerCase()) &&
+              !searchResultArray.includes(`${fullName}_${contactIndex}`)
+            )
+              searchResultArray.push(`${fullName}_${contactIndex}`);
           });
         });
       }

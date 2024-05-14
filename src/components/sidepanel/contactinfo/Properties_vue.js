@@ -5,21 +5,23 @@ export default {
 
   template: /*html*/ `
         <div class='properties'>
-            <div v-for="(property, propertyIndex) in contacts[userSettings.selectedContactIndex]?.Properties">
+            <div v-for="(property, propertyIndex) in slctdCntct?.Properties">
                 <div class="property-title-grid-container">
-                  <div class="property-title"><i class="fa-solid fa-house"></i>&nbsp;{{ Object.keys(property)[0] }}</div>
-                  <button class="property-button" @click="deleteProperty(propertyIndex)"><i class="fa-solid fa-trash"></i></button>
+                  <div class="property-title"><i class="fa-solid fa-house"></i>&nbsp;{{ property.Type }}</div>
+                  <button class="property-button" @click="deleteContactInfo('Properties', propertyIndex)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
                 </div>
-                <div class="property-grid-container" v-for="(propertyInfo, propertyType) in property">
-                    <div :class="'property-grid-item' + propertyInputIndex" v-for="(propertyInputs, propertyInputIndex) in accountSettings.contactInfo.keys.Properties[propertyType]">
+                <div class="property-grid-container">
+                    <div :class="'property-grid-item' + propertyInputIndex" v-for="(propertyInputs, propertyInputIndex) in accountSettings.contactInfo.keys.Properties[property.Type]">
                         <input 
                             :type="propertyInputs.type" 
                             :placeholder="propertyInputs.placeholder"
-                            :value="propertyInfo[propertyInputs.value]"
-                            @change="patchContact($event, 'Properties', propertyIndex, Object.keys(property)[0], propertyInputs.value)" />
+                            :value="property[propertyInputs.value]"
+                            @change="patchContactInfo($event, 'Properties', propertyIndex, propertyInputs.value)" />
                     </div>
                 </div>
-                <template v-if="propertyIndex === contacts[userSettings.selectedContactIndex]?.Properties.length - 1">
+                <template v-if="propertyIndex === slctdCntct.Properties.length - 1">
                     <hr>
                 </template>
             </div>
@@ -27,13 +29,10 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'accessToken',
-      'msg',
       'accountSettings',
-      'userSettings',
-      'endPts',
-      'contacts',
-      'patchContact',
+      'patchContactInfo',
+      'deleteContactInfo',
+      'slctdCntct',
     ]),
   },
 
@@ -49,14 +48,7 @@ export default {
   //     return {};
   //   },
 
-  methods: {
-    deleteProperty(propertyIndex) {
-      this.contacts[this.userSettings.selectedContactIndex].Properties.splice(
-        propertyIndex,
-        1
-      );
-    },
-  },
+  // methods: {},
 
   mounted() {
     style(

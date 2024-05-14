@@ -12,15 +12,15 @@ export default {
                           <i :class="connInputs.icon"></i>
                         </button>
                         <input 
-                            :placeholder="connInputs.placeholder"
                             :type="connInputs.type" 
+                            :placeholder="connInputs.placeholder"
                             :value="connInfo"
-                            @change="patchContact($event, 'Connections', connIndex, connType, null)" />
-                        <button class="conn-delete-icon" @click="deleteConn(connIndex)"><i class="fa-solid fa-trash"></i></button>
+                            @change="patchContactInfo($event, 'Connections', connIndex, connType)" />
+                        <button class="conn-delete-icon" @click="deleteContactInfo('Connections', connIndex)"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
                 <template v-if="connIndex === slctdCntct.Connections.length - 1">
-                    <input type="checkbox" :checked="contacts[userSettings.selectedContactIndex].DNC == 1" /> Do not contact
+                    <input type="checkbox" :checked="slctdCntct.DNC == 1" /> Do not contact
                     <hr>
                 </template>
             </div>
@@ -28,14 +28,10 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'accessToken',
-      'msg',
       'activeTab',
       'accountSettings',
-      'userSettings',
-      'endPts',
-      'contacts',
-      'patchContact',
+      'patchContactInfo',
+      'deleteContactInfo',
       'slctdCntct',
     ]),
   },
@@ -55,7 +51,7 @@ export default {
   methods: {
     connect(connIndex, connType) {
       let checkDNC = true;
-      if (this.contacts[this.userSettings.selectedContactIndex].DNC == 1) {
+      if (this.slctdCntct.DNC == 1) {
         checkDNC = confirm('Contact is listed as "Do not contact", proceed?')
           ? true
           : false;
@@ -63,21 +59,12 @@ export default {
       if (checkDNC) {
         if (connType == 'Phone') {
           window.location.href =
-            'tel:' +
-            this.contacts[this.userSettings.selectedContactIndex].Connections[
-              connIndex
-            ][connType];
+            'tel:' + this.slctdCntct.Connections[connIndex][connType];
         }
         if (connType == 'Email') {
           this.activeTab = 'envelope';
         }
       }
-    },
-    deleteConn(connIndex) {
-      this.contacts[this.userSettings.selectedContactIndex].Connections.splice(
-        connIndex,
-        1
-      );
     },
   },
 

@@ -10,8 +10,8 @@ export default {
           <div class="recur-tasks-title-grid-container">
             <div class="recur-tasks-title-grid-item1">
               Recurring tasks for
-              {{Object.values(slctdCntct.Members[0])[0].First ? Object.values(slctdCntct.Members[0])[0].First : ''}} 
-              {{Object.values(slctdCntct.Members[0])[0].Name}}
+              {{slctdCntct.Members[0].First ? slctdCntct.Members[0].First : ''}} 
+              {{slctdCntct.Members[0].Name}}
             </div>
             <div class="recur-tasks-title-grid-item2">
               <button @click="newTask" ><i class="fa-solid fa-square-plus"></i></button>
