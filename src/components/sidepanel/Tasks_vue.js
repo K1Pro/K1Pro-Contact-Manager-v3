@@ -23,11 +23,11 @@ export default {
           <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
             <i class="fa-solid fa-trash" @click="deleteContactInfo('Tasks', task.RealIndex)"></i>
             <div>
-              <input type="checkbox" :checked="task.Status == 1" @change="changeTask($event, 'Tasks', task.RealIndex, 'Status')"/>
-              <input type="datetime-local" :value="task.Date" @change="changeTask($event, 'Tasks', task.RealIndex, 'Date')" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
+              <input type="checkbox" :checked="task?.Status == 1" @change="updateTask($event, 'Tasks', task.RealIndex, 'Status')"/>
+              <input type="datetime-local" :value="task.Date" @change="updateTask($event, 'Tasks', task.RealIndex, 'Date')" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
             </div>
             <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
-              <span spellcheck="false" contenteditable v-on:blur="changeTask($event, 'Tasks', task.RealIndex, 'Desc')">{{task.Desc}}</span>
+              <span spellcheck="false" contenteditable v-on:blur="updateTask($event, 'Tasks', task.RealIndex, 'Desc')">{{task?.Desc}}</span>
             </div>
             <div>Owner: 
               <select :value="task.Assign" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
@@ -35,7 +35,6 @@ export default {
                 <option disabled>Last updated by: {{userList[task.Update][0]}}</option>
                 <option disabled>Created by: {{userList[task.Create][0]}}</option>
               </select>
-              {{task.RealIndex}}
             </div>
           </div>
           <div v-if="eventIndex !== null && slctdCntct.Tasks.length > 1" class="tasks-body" style="backgroundColor: lightblue; textAlign: right">
@@ -81,33 +80,18 @@ export default {
   //   },
 
   methods: {
-    changeTask(event, column, columnIndex, key) {
+    updateTask(event, column, columnIndex, key) {
       let taskValue =
         event.target.type == 'datetime-local'
           ? event.target.value
           : event.target.type == 'checkbox'
           ? event.target.checked
           : event.target.innerHTML;
-      // console.log('column: ' + column);
-      // console.log('columnIndex: ' + columnIndex);
-      // console.log('key: ' + key);
-      // console.log('value: ' + taskValue);
-      // console.log(event);
-      // console.log('================');
       this.patchContactInfo(taskValue, column, columnIndex, key);
     },
-    newTask(event, column, columnIndex, key) {
-      console.log('creating a new task');
-      console.log(this.times.Y_m_d_H_i);
-      let taskValue = {
-        Date: this.times.Y_m_d_H_i,
-        Desc: 'Just a test',
-        Status: '0',
-        Create: '5',
-        Assign: '5',
-        Update: '5',
-      };
-      this.patchContactInfo(taskValue, 'Tasks', null, null);
+    newTask() {
+      // prettier-ignore
+      this.patchContactInfo(this.times.Y_m_d+this.times.Y_m_d_H_i_s_z.slice(10,16), 'Tasks', this.slctdCntct.Tasks.length, 'Date');
     },
     showAll() {
       this.eventIndex = null;
@@ -162,11 +146,25 @@ export default {
   width: 50%
 }
 .tasks-span {
+  display: block;
+  min-height: 40px;
   border-radius: 1px;
   border: 1px solid lightgray;
-  padding: 5px;
+  padding: 10px 10px 0px 10px;
   word-break: break-word;
   font-size: 14px;
+}
+.tasks-span span{
+  display: block; /* not sure if this is needed */
+}
+.tasks-span span[contenteditable]:empty::before {
+  content: 'Enter task description';
+  display: inline-block;
+  color: grey;
+}
+.tasks-span span[contenteditable]:empty:focus::before {
+  content: 'Start typing';
+  color: grey;
 }
 .tasks-body span:focus {
   outline: none; 

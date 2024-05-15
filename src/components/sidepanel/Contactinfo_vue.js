@@ -20,7 +20,8 @@ export default {
           <select @change='addContactInfo' style="width: calc(100% - 80px)">
             <option selected disabled>contact info</option>
             <option v-for="cntctInfo in addCntctInfoDropDown" :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey" >{{cntctInfo.InfoKey.toLowerCase() + cntctInfo.InfoPlaceholder}}</option>
-            <option value="newContact" >new contact</option>
+            <option value="newContact">new contact</option>
+            <option value="deleteContact">delete contact</option>
           </select>
         </div>
         <div style="text-align: right">Owner: 
@@ -40,11 +41,14 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
+      'accessToken',
       'msg',
       'userData',
       'accountSettings',
       'userSettings',
+      'endPts',
       'contacts',
+      'times',
       'patchContactInfo',
       'slctdCntct',
       'userList',
@@ -85,12 +89,13 @@ export default {
   // },
 
   methods: {
-    addContactInfo(event) {
+    async addContactInfo(event) {
       const InfoGroup = event.target.value.split('_')[0];
-      const InfoKey = event.target.value.split('_')[1];
-      const columnIndex =
-        this.contacts[this.userSettings.selectedContactIndex][InfoGroup].length;
       if (InfoGroup != 'newContact') {
+        const InfoKey = event.target.value.split('_')[1];
+        const columnIndex =
+          this.contacts[this.userSettings.selectedContactIndex][InfoGroup]
+            .length;
         InfoGroup == 'Members' || InfoGroup == 'Properties'
           ? this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type')
           : this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
@@ -98,25 +103,68 @@ export default {
         const newMember = {
           Assets: [],
           Assigned: this.userData.id,
-          Categ: 'Former customer',
+          Categ: '',
           Connections: [],
-          Create: { [this.userData.id]: '2018-05-01' },
+          Created: {
+            [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+          },
           Custom1: [],
           Custom2: '',
           Custom3: '',
           Custom4: '',
           Custom5: '',
           DNC: 0,
-          Members: [{ Type: 'Primary', Name: '' }],
+          id: '',
+          Log: [],
+          Members: [
+            {
+              Type: Object.keys(
+                this.accountSettings.contactInfo.keys.Members
+              )[0],
+              Name: '',
+            },
+          ],
+          Notes: '',
           Properties: [],
           RecurTasks: [],
-          Tasks: {},
-          Updated: { [this.userData.id]: '2024-05-01T15:00' },
+          Tasks: [],
+          Updated: {
+            [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+          },
         };
-        this.userSettings.selectedContactIndex = this.contacts.length;
         this.contacts.push(newMember);
-      }
+        const newContactIndex = this.contacts.length - 1;
+        this.userSettings.selectedContactIndex = newContactIndex;
 
+        try {
+          const response = await fetch(servr_url + this.endPts.contacts, {
+            method: 'POST',
+            headers: {
+              Authorization: this.accessToken,
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store',
+            },
+            body: JSON.stringify({
+              Date: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+              Member: Object.keys(
+                this.accountSettings.contactInfo.keys.Members
+              )[0],
+            }),
+          });
+          const postContactInfoResJSON = await response.json();
+          if (postContactInfoResJSON.success) {
+            // this.msg.snackBar = 'Updated ';
+            console.log(postContactInfoResJSON);
+            console.log(newContactIndex);
+            console.log(this.contacts[newContactIndex]);
+            console.log(postContactInfoResJSON.data.contact_id);
+            this.contacts[newContactIndex].id =
+              postContactInfoResJSON.data.contact_id;
+          }
+        } catch (error) {
+          this.msg.snackBar = error.toString();
+        }
+      }
       event.srcElement.selectedIndex = 0;
     },
   },

@@ -90,6 +90,14 @@ export default {
         .match(new RegExp(`(^| )${sessionID}=([^;]+)`))
         ?.at(2);
     },
+    updateTime() {
+      const timeDifferenece = Math.round(
+        (this.times.initialTimestamp - new Date().getTime()) * -1
+      );
+      this.times.Y_m_d_H_i_s_z = new Date(
+        this.times.timestamp + timeDifferenece
+      ).toISOString();
+    },
 
     async getUserData() {
       try {
@@ -102,7 +110,15 @@ export default {
         });
         const userDataResJSON = await response.json();
         if (userDataResJSON.success) {
+          // console.log(userDataResJSON);
           this.times.Y_m_d = userDataResJSON.data.date_Y_m_d;
+          this.times.Y_m_d_H_i_s_z = userDataResJSON.data.date_Y_m_d_H_i_s_z;
+          this.times.initialTimestamp = new Date().getTime();
+          this.times.timestamp = new Date(this.times.Y_m_d_H_i_s_z).getTime();
+
+          setInterval(() => {
+            this.updateTime();
+          }, 60000);
           this.loggedIn = true;
           this.userData = userDataResJSON.data.user;
           this.accountSettings = userDataResJSON.data.accountSettings;
@@ -148,6 +164,11 @@ export default {
         console.log(error.toString());
       }
     },
+
+    // destroyed() {
+    //  Check this
+    //   clearInterval(this.updateTime());
+    // },
 
     updateScreenWidth() {
       this.windowWidth = window.innerWidth;

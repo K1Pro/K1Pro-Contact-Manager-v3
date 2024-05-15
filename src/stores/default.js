@@ -31,7 +31,9 @@ const useDefaultStore = Pinia.defineStore('default', {
       },
       times: {
         Y_m_d: null,
-        Y_m_d_H_i: server_datetime_Y_m_d_H_i,
+        Y_m_d_H_i_s_z: null,
+        timestamp: '',
+        initialTimestamp: '',
       },
       firstCalDate: '',
       daysRangeArr: [1, 3, 7, 14, 21, 28],
@@ -71,31 +73,31 @@ const useDefaultStore = Pinia.defineStore('default', {
       }
     },
     async patchContactInfo(event, column, columnIndex, key) {
-      console.log(
-        'id: ' + this.contacts[this.userSettings.selectedContactIndex].id
-      );
-      console.log('column: ' + column);
-      console.log('columnIndex: ' + columnIndex);
-      console.log('key: ' + key);
-      console.log(
-        'value: ' + (event?.target?.value ? event.target.value : event)
-      );
-      console.log('================');
-      const value = event?.target?.value ? event.target.value : event;
+      // console.log(
+      //   'id: ' + this.contacts[this.userSettings.selectedContactIndex].id
+      // );
+      // console.log('column: ' + column);
+      // console.log('columnIndex: ' + columnIndex);
+      // console.log('key: ' + key);
+      // console.log(
+      //   'value: ' + (event?.target?.value ? event.target.value : event)
+      // );
+      // console.log('================');
+      const value =
+        typeof event?.target?.value !== 'undefined' &&
+        event?.target?.value !== null
+          ? event.target.value
+          : event;
       // prettier-ignore
-      if (this.contacts[this.userSettings.selectedContactIndex][column][columnIndex]) {
-        // prettier-ignore
-        this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = value;
+      if (column == 'Tasks' && !this.contacts[this.userSettings.selectedContactIndex][column][columnIndex]) {
+        this.contacts[this.userSettings.selectedContactIndex][column].push({[key]: value, Assign: this.userData.id, Create: this.userData.id, Update:this.userData.id});
+      } else if (this.contacts[this.userSettings.selectedContactIndex][column][columnIndex]) {
+          this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = value;
       } else if (column == 'Notes') {
-        // possibly also DNC, Categ, and Assigned here
-        this.contacts[this.userSettings.selectedContactIndex][column] = value
-      } 
-      // else if (column == 'Tasks') {
-      //   console.log('creating a new task')
-      // } 
-      else {
-        // prettier-ignore
-        this.contacts[this.userSettings.selectedContactIndex][column].push({[key]: value,});
+          // possibly also DNC, Categ, and Assigned here
+          this.contacts[this.userSettings.selectedContactIndex][column] = value
+      } else {
+          this.contacts[this.userSettings.selectedContactIndex][column].push({[key]: value,});
       }
 
       try {
@@ -116,7 +118,7 @@ const useDefaultStore = Pinia.defineStore('default', {
         });
         const patchContactInfoResJSON = await response.json();
         if (patchContactInfoResJSON.success) {
-          this.msg.snackBar = 'Updated ';
+          // this.msg.snackBar = 'Updated ';
           console.log(patchContactInfoResJSON);
         }
       } catch (error) {
@@ -146,7 +148,7 @@ const useDefaultStore = Pinia.defineStore('default', {
         });
         const patchContactInfoResJSON = await response.json();
         if (patchContactInfoResJSON.success) {
-          this.msg.snackBar = 'Updated ';
+          // this.msg.snackBar = 'Updated ';
           console.log(patchContactInfoResJSON);
         }
       } catch (error) {

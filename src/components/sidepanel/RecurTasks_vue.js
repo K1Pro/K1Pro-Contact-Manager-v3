@@ -59,12 +59,9 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'accessToken',
-      'msg',
       'eventIndex',
       'userSettings',
       'contacts',
-      'endPts',
       'times',
       'slctdCntct',
       'userList',
@@ -91,30 +88,30 @@ export default {
       // console.log(key);
       // console.log(property);
       // console.log(event.target.innerHTML);
-      try {
-        const response = await fetch(servr_url + this.endPts.contacts, {
-          method: 'PATCH',
-          headers: {
-            Authorization: this.accessToken,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-          },
-          body: JSON.stringify({
-            ID: this.contacts[this.userSettings.selectedContactIndex].id,
-            Column: 'RecurTasks',
-            ColumnIndex: columnIndex,
-            Key: key,
-            Property: property,
-            Value: event.target.innerHTML,
-          }),
-        });
-        const patchRecurTasksResJSON = await response.json();
-        if (patchRecurTasksResJSON.success) {
-          console.log(patchRecurTasksResJSON);
-        }
-      } catch (error) {
-        this.msg.snackBar = error.toString();
-      }
+      // try {
+      //   const response = await fetch(servr_url + this.endPts.contacts, {
+      //     method: 'PATCH',
+      //     headers: {
+      //       Authorization: this.accessToken,
+      //       'Content-Type': 'application/json',
+      //       'Cache-Control': 'no-store',
+      //     },
+      //     body: JSON.stringify({
+      //       ID: this.contacts[this.userSettings.selectedContactIndex].id,
+      //       Column: 'RecurTasks',
+      //       ColumnIndex: columnIndex,
+      //       Key: key,
+      //       Property: property,
+      //       Value: event.target.innerHTML,
+      //     }),
+      //   });
+      //   const patchRecurTasksResJSON = await response.json();
+      //   if (patchRecurTasksResJSON.success) {
+      //     console.log(patchRecurTasksResJSON);
+      //   }
+      // } catch (error) {
+      //   this.msg.snackBar = error.toString();
+      // }
     },
     changeTask(event, taskDate) {
       //   if (event.target.type == 'datetime-local') {
@@ -150,7 +147,7 @@ export default {
     newTask() {
       console.log('creating a new task');
       //   this.contacts[this.userSettings.selectedContactIndex].Tasks[
-      //     this.times.Y_m_d_H_i
+      //     this.times.Y_m_d_H_i_s_z
       //   ] = {
       //     Desc: 'Just a test',
       //     Status: '0',
@@ -197,6 +194,7 @@ export default {
 .recur-tasks-body i{
   float: right;
   font-size: 14px;
+  cursor: pointer;
 }
 .recur-tasks-body div {
   padding-bottom: 10px;

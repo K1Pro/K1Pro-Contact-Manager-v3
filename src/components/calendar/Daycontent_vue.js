@@ -52,7 +52,7 @@ export default {
         //   }
         // });
         contact.Tasks.forEach((task, taskIndex) => {
-          calDay = task.Date.split('T')[0];
+          calDay = task?.Date?.split('T')[0];
           if (
             this.days[this.dayIndex] == calDay &&
             !contactArray[contactIndex]
