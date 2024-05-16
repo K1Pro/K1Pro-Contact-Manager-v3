@@ -14,45 +14,41 @@ export default {
               {{slctdCntct.Members[0].Name}}
             </div>
             <div class="recur-tasks-title-grid-item2">
-              <button @click="newTask" ><i class="fa-solid fa-square-plus"></i></button>
+              <button><i class="fa-solid fa-square-plus"></i></button>
             </div>
           </div>
         </div>
         
-        <template v-for="(recurTask, recurTaskIndex) in slctdCntct.RecurTasks">
-          <template v-if="eventIndex === recurTaskIndex || eventIndex === null">
-            <div class="recur-tasks-body" :style="{ 'background-color': recurTaskIndex % 2 && !eventIndex ? 'lightblue' : 'white'}">
-              <i class="fa-solid fa-trash"></i>
-              <div>Start: <input type="date" v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTaskIndex].Start" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']"></div>
-              <div>End: <input type="date" v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTaskIndex].End" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']"></div>
-              <div>Time: <input type="time" v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTaskIndex].Time" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']"></div>
-              <div>Recur:
-                <select v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTaskIndex].Freq" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
-                  <option>Daily</option>
-                  <option>Weekly</option>  
-                  <option>Monthly</option>
-                  <option>Semiannually</option>
-                  <option>Annually</option>
-                </select>
-              </div>
-              <div>Owner:
-                <select v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTaskIndex].Assign" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
-                  <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">{{userInfo[0]}}</option>
-                  <option disabled>Last updated by: {{userList[recurTask.Update][0]}}</option>
-                  <option disabled>Created by: {{userList[recurTask.Create][0]}}</option>
-                </select>
-              </div>
-              <div class="recur-tasks-span" :class="[recurTaskIndex % 2 && !eventIndex ? 'even-task' : 'odd-task']">
-                <span spellcheck="false" contenteditable v-on:blur="patchRecurTasks($event, recurTaskIndex, 'Desc', null)">{{recurTask.Desc}}</span>
-              </div>
-              <div>
-                <button>Reviewed</button> {{ recurTask.Review }}
-              </div>
+        <template v-for="(recurTask, recurTaskIndex) in recurtasks">
+          <div class="recur-tasks-body" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}">
+            <i class="fa-solid fa-trash"></i>
+            <span class="recur-tasks-label">Start:</span><input type="date" :value="recurTask.Start" @change="updateRecurTask($event, 'RecurTasks', recurTask.RealIndex, 'Start')" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
+            <span class="recur-tasks-label">End:</span><input type="date" :value="recurTask.End" @change="updateRecurTask($event, 'RecurTasks', recurTask.RealIndex, 'End')" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
+            <span class="recur-tasks-label">Time:</span><input type="time" :value="recurTask.Time" @change="updateRecurTask($event, 'RecurTasks', recurTask.RealIndex, 'Time')" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
+            <span class="recur-tasks-label">Recur:</span>
+            <select :value="recurTask.Freq" @change="updateRecurTaskFreq($event, 'RecurTasks', recurTask.RealIndex, 'Freq', recurTask.Start, recurTask.End)" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">              
+              <option>Annually</option>
+              <option>Semiannually</option>
+              <option>Monthly</option>
+              <option>Weekly</option>  
+              <option>Daily</option>
+            </select>
+            <span class="recur-tasks-label">Owner:</span>
+            <select :value="recurTask.Assign" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
+              <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">{{userInfo[0]}}</option>
+              <option disabled>Last updated by: {{userList[recurTask.Update][0]}}</option>
+              <option disabled>Created by: {{userList[recurTask.Create][0]}}</option>
+            </select>
+            <div class="recur-tasks-span" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
+              <span spellcheck="false" contenteditable v-on:blur="patchRecurTasks($event, recurTaskIndex, 'Desc', null)">{{recurTask.Desc}}</span>
             </div>
-            <div v-if="eventIndex && slctdCntct.RecurTasks.length > 1" class="recur-tasks-body" style="backgroundColor: lightblue; textAlign: right">
-              <div><b @click="showAll">Show {{slctdCntct.RecurTasks.length - 1}} more {{(slctdCntct.RecurTasks.length - 1) > 1 ? 'tasks' : 'task'}} </b></div>
+            <div>
+              <button>Reviewed</button> {{ recurTask.Review }}
             </div>
-          </template>
+          </div>
+          <div v-if="eventIndex !== null && slctdCntct.RecurTasks.length > 1" class="recur-tasks-body" style="backgroundColor: lightblue; textAlign: right">
+            <div><b @click="showAll">Show {{slctdCntct.RecurTasks.length - 1}} more {{(slctdCntct.RecurTasks.length - 1) > 1 ? 'tasks' : 'task'}} </b></div>
+          </div>
         </template>
       </template>
     </div>`,
@@ -60,12 +56,24 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'eventIndex',
-      'userSettings',
-      'contacts',
       'times',
+      'patchContactInfo',
+      'deleteContactInfo',
       'slctdCntct',
       'userList',
     ]),
+    recurtasks() {
+      return this.eventIndex === null
+        ? this.slctdCntct.RecurTasks.map((val, index) => {
+            return { ...val, RealIndex: index };
+          }).sort((a, b) => b.Start.localeCompare(a.Start))
+        : [
+            {
+              ...this.slctdCntct.RecurTasks[this.eventIndex],
+              RealIndex: this.eventIndex,
+            },
+          ];
+    },
   },
 
   //   components: {
@@ -81,80 +89,53 @@ export default {
   //   },
 
   methods: {
-    async patchRecurTasks(event, columnIndex, key, property) {
-      // console.log(this.contacts[this.userSettings.selectedContactIndex].id);
-      // console.log('RecurTasks');
-      // console.log(columnIndex);
-      // console.log(key);
-      // console.log(property);
-      // console.log(event.target.innerHTML);
-      // try {
-      //   const response = await fetch(servr_url + this.endPts.contacts, {
-      //     method: 'PATCH',
-      //     headers: {
-      //       Authorization: this.accessToken,
-      //       'Content-Type': 'application/json',
-      //       'Cache-Control': 'no-store',
-      //     },
-      //     body: JSON.stringify({
-      //       ID: this.contacts[this.userSettings.selectedContactIndex].id,
-      //       Column: 'RecurTasks',
-      //       ColumnIndex: columnIndex,
-      //       Key: key,
-      //       Property: property,
-      //       Value: event.target.innerHTML,
-      //     }),
-      //   });
-      //   const patchRecurTasksResJSON = await response.json();
-      //   if (patchRecurTasksResJSON.success) {
-      //     console.log(patchRecurTasksResJSON);
-      //   }
-      // } catch (error) {
-      //   this.msg.snackBar = error.toString();
-      // }
+    updateRecurTask(event, column, columnIndex, key) {
+      let recurTaskValue =
+        event.target.type == 'date'
+          ? event.target.value
+          : event.target.type == 'time'
+          ? event.target.value
+          : event.target.type == 'checkbox'
+          ? event.target.checked
+          : event.target.innerHTML;
+      this.patchContactInfo(recurTaskValue, column, columnIndex, key);
     },
-    changeTask(event, taskDate) {
-      //   if (event.target.type == 'datetime-local') {
-      //     this.contacts[this.userSettings.selectedContactIndex].Tasks[
-      //       event.target.value
-      //     ] =
-      //       this.contacts[this.userSettings.selectedContactIndex].Tasks[taskDate];
-      //     delete this.contacts[this.userSettings.selectedContactIndex].Tasks[
-      //       taskDate
-      //     ];
-      //   } else if (event.target.type == 'checkbox') {
-      //     if (event.target.checked) {
-      //       this.contacts[this.userSettings.selectedContactIndex].Tasks[
-      //         taskDate
-      //       ].Status = '1';
-      //     } else {
-      //       this.contacts[this.userSettings.selectedContactIndex].Tasks[
-      //         taskDate
-      //       ].Status = '0';
-      //     }
-      //   } else if (event.srcElement.nodeName == 'SPAN') {
-      //     if (
-      //       event.target.innerHTML !=
-      //       this.contacts[this.userSettings.selectedContactIndex].Tasks[taskDate]
-      //         .Desc
-      //     ) {
-      //       this.contacts[this.userSettings.selectedContactIndex].Tasks[
-      //         taskDate
-      //       ].Desc = event.target.innerHTML;
-      //     }
-      //   }
-    },
-    newTask() {
-      console.log('creating a new task');
-      //   this.contacts[this.userSettings.selectedContactIndex].Tasks[
-      //     this.times.Y_m_d_H_i_s_z
-      //   ] = {
-      //     Desc: 'Just a test',
-      //     Status: '0',
-      //     Create: 'Bartosz',
-      //     Assign: 'Bartosz',
-      //     Update: 'Bartosz',
-      //   };
+    updateRecurTaskFreq(event, column, columnIndex, key, start, end) {
+      let oneYearLater, endTimestamp;
+      let startTimestamp = new Date(start).getTime();
+      if (!end) {
+        endTimestamp = new Date(
+          startTimestamp + 1000 * 60 * 60 * 24 * 365
+        ).getTime();
+        oneYearLater = new Date(startTimestamp + 1000 * 60 * 60 * 24 * 365)
+          .toISOString()
+          .slice(0, 10);
+      } else {
+        endTimestamp = new Date(end).getTime(); // gotta work on this if the end time is more than a year
+      }
+      if (event.target.value == 'Monthly') {
+        const recurDay = start.slice(8, 11) < 31 ? start.slice(8, 11) : false;
+        let tempStartTimestamp = startTimestamp;
+        let recur = [];
+        while (tempStartTimestamp < endTimestamp) {
+          if (!recurDay) {
+            recur.push(new Date(tempStartTimestamp).toISOString().slice(5, 10));
+          } else {
+            recur.push(
+              new Date(tempStartTimestamp).toISOString().slice(5, 8) + recurDay
+            );
+          }
+          tempStartTimestamp += 1000 * 60 * 60 * 24 * 30.41666666666667;
+        }
+        console.log(recur);
+      }
+      // console.log('column: ' + column);
+      // console.log('columnIndex: ' + columnIndex);
+      // console.log('key: ' + key);
+      // console.log('event: ' + event.target.value);
+      // console.log('start: ' + start);
+      // console.log('end: ' + end);
+      // console.log('================');
     },
     showAll() {
       this.eventIndex = null;
@@ -189,19 +170,21 @@ export default {
   color: #DB66FF;
 }
 .recur-tasks-body{
-  padding: 10px 10px 0px 10px;
+  padding: 10px;
 }
 .recur-tasks-body i{
   float: right;
   font-size: 14px;
   cursor: pointer;
 }
-.recur-tasks-body div {
+.recur-tasks-label {
   padding-bottom: 10px;
+  font-size: 14px;
+  display: inline-block;
+  width: 60px;
+  text-align: right;
 }
 .recur-tasks-body input, .recur-tasks-body select {
-  position: absolute;
-  left: 60px;
   width: calc(100% - 100px);
   height: 20px;
   font-family: 'Helvetica', sans-serif;
@@ -217,7 +200,19 @@ export default {
   word-break: break-word;
   font-size: 14px;
 }
-.recur-tasks-body span:focus {
+.recur-tasks-span span[contenteditable]{
+  display: block; /* not sure if this is needed */
+}
+.recur-tasks-span span[contenteditable]:empty::before {
+  content: 'Enter task description';
+  display: inline-block;
+  color: grey;
+}
+.recur-tasks-span span[contenteditable]:empty:focus::before {
+  content: 'Start typing';
+  color: grey;
+}
+.recur-tasks-body span[contenteditable]:focus {
   outline: none; 
 }
 .recur-tasks b {
