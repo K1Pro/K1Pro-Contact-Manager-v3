@@ -96,9 +96,21 @@ export default {
         const columnIndex =
           this.contacts[this.userSettings.selectedContactIndex][InfoGroup]
             .length;
-        InfoGroup == 'Members' || InfoGroup == 'Properties'
-          ? this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type')
-          : this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
+        if (InfoGroup == 'Members' || InfoGroup == 'Properties') {
+          this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push(
+            {
+              ['Type']: InfoKey,
+            }
+          );
+          this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type');
+        } else {
+          this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push(
+            {
+              [InfoKey]: '',
+            }
+          );
+          this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
+        }
       } else {
         const newMember = {
           Assets: [],

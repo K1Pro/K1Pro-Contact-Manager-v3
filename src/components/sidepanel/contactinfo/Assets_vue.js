@@ -14,7 +14,7 @@ export default {
                           :placeholder="assetInputs.placeholder"
                           :type="assetInputs.type" 
                           :value="assetInfo"
-                          @change="patchContactInfo($event, 'Assets', assetIndex, assetType)" />
+                          @change="updateAsset($event, 'Assets', assetIndex, assetType)" />
                       <button class="asset-button" @click="deleteContactInfo('Assets', assetIndex)"><i class="fa-solid fa-trash"></i></button>
                     </div>
                     <div v-else >
@@ -22,7 +22,7 @@ export default {
                         :placeholder="assetInputs.placeholder"
                         :type="assetInputs.type" 
                         :value="assetInfo"
-                        @change="patchContactInfo($event, 'Assets', assetIndex, assetType)" />
+                        @change="updateAsset($event, 'Assets', assetIndex, assetType)" />
                       <button class="asset-button" @click="deleteContactInfo('Assets', assetIndex)"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
@@ -36,6 +36,8 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'accountSettings',
+      'userSettings',
+      'contacts',
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntct',
@@ -54,7 +56,14 @@ export default {
   //     return {};
   //   },
 
-  // methods: {},
+  methods: {
+    updateAsset(event, column, columnIndex, key) {
+      this.contacts[this.userSettings.selectedContactIndex][column][
+        columnIndex
+      ][key] = event.target.value;
+      this.patchContactInfo(event.target.value, column, columnIndex, key);
+    },
+  },
 
   mounted() {
     style(

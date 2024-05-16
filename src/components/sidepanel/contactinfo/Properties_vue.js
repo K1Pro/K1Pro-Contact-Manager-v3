@@ -18,7 +18,7 @@ export default {
                             :type="propertyInputs.type" 
                             :placeholder="propertyInputs.placeholder"
                             :value="property[propertyInputs.value]"
-                            @change="patchContactInfo($event, 'Properties', propertyIndex, propertyInputs.value)" />
+                            @change="updateProperty($event, 'Properties', propertyIndex, propertyInputs.value)" />
                     </div>
                 </div>
                 <template v-if="propertyIndex === slctdCntct.Properties.length - 1">
@@ -30,6 +30,8 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'accountSettings',
+      'userSettings',
+      'contacts',
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntct',
@@ -48,7 +50,14 @@ export default {
   //     return {};
   //   },
 
-  // methods: {},
+  methods: {
+    updateProperty(event, column, columnIndex, key) {
+      this.contacts[this.userSettings.selectedContactIndex][column][
+        columnIndex
+      ][key] = event.target.value;
+      this.patchContactInfo(event.target.value, column, columnIndex, key);
+    },
+  },
 
   mounted() {
     style(

@@ -9,7 +9,7 @@ export default {
           {{slctdCntct.Members[0].First ? slctdCntct.Members[0].First : ''}} 
           {{slctdCntct.Members[0].Name}}
         </div>
-        <textarea placeholder="Notes" :value="slctdCntct.Notes" @change="patchContactInfo($event, 'Notes')"></textarea>
+        <textarea placeholder="Notes" :value="slctdCntct.Notes" @change="updateNotes($event, 'Notes')"></textarea>
       </template>
       <template v-else>
         Notes
@@ -36,7 +36,13 @@ export default {
     return {};
   },
 
-  // methods: {},
+  methods: {
+    updateNotes(event, column) {
+      this.contacts[this.userSettings.selectedContactIndex][column] =
+        event.target.value;
+      patchContactInfo(event.target.value, column);
+    },
+  },
 
   mounted() {
     style(

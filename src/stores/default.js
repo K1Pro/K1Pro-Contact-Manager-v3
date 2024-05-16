@@ -73,33 +73,12 @@ const useDefaultStore = Pinia.defineStore('default', {
       }
     },
     async patchContactInfo(event, column, columnIndex, key) {
-      // console.log(
-      //   'id: ' + this.contacts[this.userSettings.selectedContactIndex].id
-      // );
+      // console.log('id: ' + this.contacts[this.userSettings.selectedContactIndex].id);
       // console.log('column: ' + column);
       // console.log('columnIndex: ' + columnIndex);
       // console.log('key: ' + key);
-      // console.log(
-      //   'value: ' + (event?.target?.value ? event.target.value : event)
-      // );
+      // console.log('value: ' + (event?.target?.value ? event.target.value : event));
       // console.log('================');
-      const value =
-        typeof event?.target?.value !== 'undefined' &&
-        event?.target?.value !== null
-          ? event.target.value
-          : event;
-      // prettier-ignore
-      if (column == 'Tasks' && !this.contacts[this.userSettings.selectedContactIndex][column][columnIndex]) {
-        this.contacts[this.userSettings.selectedContactIndex][column].push({[key]: value, Assign: this.userData.id, Create: this.userData.id, Update:this.userData.id});
-      } else if (this.contacts[this.userSettings.selectedContactIndex][column][columnIndex]) {
-          this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = value;
-      } else if (column == 'Notes') {
-          // possibly also DNC, Categ, and Assigned here
-          this.contacts[this.userSettings.selectedContactIndex][column] = value
-      } else {
-          this.contacts[this.userSettings.selectedContactIndex][column].push({[key]: value,});
-      }
-
       try {
         const response = await fetch(servr_url + this.endPts.contacts, {
           method: 'PATCH',
@@ -113,7 +92,7 @@ const useDefaultStore = Pinia.defineStore('default', {
             Column: column,
             ColumnIndex: columnIndex,
             Key: key,
-            Value: value,
+            Value: event,
           }),
         });
         const patchContactInfoResJSON = await response.json();

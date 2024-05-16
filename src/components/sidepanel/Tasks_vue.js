@@ -52,6 +52,9 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'eventIndex',
+      'userData',
+      'userSettings',
+      'contacts',
       'times',
       'patchContactInfo',
       'deleteContactInfo',
@@ -91,7 +94,18 @@ export default {
           ? event.target.value
           : event.target.type == 'checkbox'
           ? event.target.checked
-          : event.target.innerHTML;
+          : event.target.innerHTML; // SPAN
+      // prettier-ignore
+      if (!this.contacts[this.userSettings.selectedContactIndex][column][columnIndex]) {
+        this.contacts[this.userSettings.selectedContactIndex][column].push({
+          [key]: taskValue,
+          Assign: this.userData.id,
+          Create: this.userData.id,
+          Update: this.userData.id,
+        });
+      } else {
+        this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = taskValue;
+      }
       this.patchContactInfo(taskValue, column, columnIndex, key);
     },
     newTask() {

@@ -56,6 +56,8 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'eventIndex',
+      'userSettings',
+      'contacts',
       'times',
       'patchContactInfo',
       'deleteContactInfo',
@@ -101,41 +103,44 @@ export default {
       this.patchContactInfo(recurTaskValue, column, columnIndex, key);
     },
     updateRecurTaskFreq(event, column, columnIndex, key, start, end) {
-      let oneYearLater, endTimestamp;
-      let startTimestamp = new Date(start).getTime();
-      if (!end) {
-        endTimestamp = new Date(
-          startTimestamp + 1000 * 60 * 60 * 24 * 365
-        ).getTime();
-        oneYearLater = new Date(startTimestamp + 1000 * 60 * 60 * 24 * 365)
-          .toISOString()
-          .slice(0, 10);
-      } else {
-        endTimestamp = new Date(end).getTime(); // gotta work on this if the end time is more than a year
+      let halfYearLater, recurTaskEvent, newRecurTask;
+      if (event.target.value == 'Annually') {
+        recurTaskEvent =
+          event.target.value +
+          '+' +
+          (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28');
+        newRecurTask = [
+          start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28',
+        ];
+      } else if (event.target.value == 'Semiannually') {
+        halfYearLater = new Date(start).setMonth(
+          new Date(start).getMonth() + 6
+        );
+        recurTaskEvent =
+          event.target.value +
+          '+' +
+          (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28') +
+          '_' +
+          new Date(halfYearLater).toISOString().slice(5, 10);
+        newRecurTask = [
+          '"' + start.slice(5, 10) != '02-29'
+            ? start.slice(5, 10)
+            : '02-28' + '"',
+          new Date(halfYearLater).toISOString().slice(5, 10),
+        ];
+      } else if (event.target.value == 'Monthly') {
+        recurTaskEvent = event.target.value + '+' + start.slice(8, 10);
+        newRecurTask = [recurTaskEvent];
+      } else if (event.target.value == 'Weekly') {
+        recurTaskEvent = event.target.value + '+' + new Date(start).getDay();
+        newRecurTask = [recurTaskEvent.toString()];
+      } else if (event.target.value == 'Daily') {
+        recurTaskEvent = event.target.value + '+' + 'everyday';
+        newRecurTask = ['everyday'];
       }
-      if (event.target.value == 'Monthly') {
-        const recurDay = start.slice(8, 11) < 31 ? start.slice(8, 11) : false;
-        let tempStartTimestamp = startTimestamp;
-        let recur = [];
-        while (tempStartTimestamp < endTimestamp) {
-          if (!recurDay) {
-            recur.push(new Date(tempStartTimestamp).toISOString().slice(5, 10));
-          } else {
-            recur.push(
-              new Date(tempStartTimestamp).toISOString().slice(5, 8) + recurDay
-            );
-          }
-          tempStartTimestamp += 1000 * 60 * 60 * 24 * 30.41666666666667;
-        }
-        console.log(recur);
-      }
-      // console.log('column: ' + column);
-      // console.log('columnIndex: ' + columnIndex);
-      // console.log('key: ' + key);
-      // console.log('event: ' + event.target.value);
-      // console.log('start: ' + start);
-      // console.log('end: ' + end);
-      // console.log('================');
+      console.log(recurTaskEvent);
+      console.log(newRecurTask);
+      console.log('======================');
     },
     showAll() {
       this.eventIndex = null;

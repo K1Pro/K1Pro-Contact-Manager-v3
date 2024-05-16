@@ -15,7 +15,7 @@ export default {
                             :type="connInputs.type" 
                             :placeholder="connInputs.placeholder"
                             :value="connInfo"
-                            @change="patchContactInfo($event, 'Connections', connIndex, connType)" />
+                            @change="updateConnection($event, 'Connections', connIndex, connType)" />
                         <button class="conn-delete-icon" @click="deleteContactInfo('Connections', connIndex)"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
@@ -30,6 +30,8 @@ export default {
     ...Pinia.mapWritableState(useDefaultStore, [
       'activeTab',
       'accountSettings',
+      'userSettings',
+      'contacts',
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntct',
@@ -65,6 +67,12 @@ export default {
           this.activeTab = 'envelope';
         }
       }
+    },
+    updateConnection(event, column, columnIndex, key) {
+      this.contacts[this.userSettings.selectedContactIndex][column][
+        columnIndex
+      ][key] = event.target.value;
+      this.patchContactInfo(event.target.value, column, columnIndex, key);
     },
   },
 
