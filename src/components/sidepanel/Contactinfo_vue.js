@@ -25,20 +25,20 @@ export default {
           </select>
         </div>
         <div style="text-align: right">Owner: 
-          <select style="width: calc(100% - 80px)">
+          <select style="width: calc(100% - 80px)" v-model="contacts[userSettings.selectedContactIndex].Assigned" @change="patchContactInfo($event.target.value, 'Assigned')">
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">{{userInfo[0]}}</option>
             <option disabled>Last updated by: {{userList[Object.keys(contacts[userSettings.selectedContactIndex].Updated)][0]}} on {{Object.values(contacts[userSettings.selectedContactIndex].Updated)[0].replace('T', ' ')}}</option>
             <option disabled>Created by: {{userList[Object.keys(contacts[userSettings.selectedContactIndex].Created)][0]}} on {{Object.values(contacts[userSettings.selectedContactIndex].Created)[0]}}</option>
           </select>
         </div>
         <div style="text-align: right">Category: 
-          <select style="width: calc(100% - 80px)">
-            <option>{{contacts[userSettings.selectedContactIndex].Categ}}</option>
+          <select style="width: calc(100% - 80px)" v-model="contacts[userSettings.selectedContactIndex].Categ" @change="patchContactInfo($event.target.value, 'Categ')">
+            <option v-for="category in accountSettings.Categ">{{ category }}</option>
           </select>
         </div>
       </template>
     </div>`,
-
+  // <option>{{contacts[userSettings.selectedContactIndex].Categ}}</option> :selected="userNo == slctdCntct.Assigned"
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'accessToken',
@@ -89,6 +89,9 @@ export default {
   // },
 
   methods: {
+    testSelect(event) {
+      console.log(event);
+    },
     async addContactInfo(event) {
       const InfoGroup = event.target.value.split('_')[0];
       if (InfoGroup != 'newContact') {
