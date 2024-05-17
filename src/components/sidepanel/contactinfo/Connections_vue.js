@@ -20,7 +20,7 @@ export default {
                     </div>
                 </div>
                 <template v-if="connIndex === slctdCntct.Connections.length - 1">
-                    <input type="checkbox" :checked="slctdCntct.DNC == 1" /> Do not contact
+                    <input type="checkbox" v-model="slctdCntct.DNC" @change="patchContactInfo($event.target.checked, 'DNC')"/> Do not contact
                     <hr>
                 </template>
             </div>
@@ -53,7 +53,7 @@ export default {
   methods: {
     connect(connIndex, connType) {
       let checkDNC = true;
-      if (this.slctdCntct.DNC == 1) {
+      if (this.slctdCntct.DNC === true) {
         checkDNC = confirm('Contact is listed as "Do not contact", proceed?')
           ? true
           : false;

@@ -16,23 +16,23 @@ export default {
       <assets></assets>
       <connections></connections>
       <template  v-if="slctdCntct">
-        <div style="text-align: right">Add: 
-          <select @change='addContactInfo' style="width: calc(100% - 80px)">
+        <div style="text-align: right; font-size: 14px">Add: 
+          <select @change='addContactInfo' style="width: calc(100% - 80px); border: none; background-color:transparent">
             <option selected disabled>contact info</option>
             <option v-for="cntctInfo in addCntctInfoDropDown" :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey" >{{cntctInfo.InfoKey.toLowerCase() + cntctInfo.InfoPlaceholder}}</option>
             <option value="newContact">new contact</option>
             <option value="deleteContact">delete contact</option>
           </select>
         </div>
-        <div style="text-align: right">Owner: 
-          <select style="width: calc(100% - 80px)" v-model="contacts[userSettings.selectedContactIndex].Assigned" @change="patchContactInfo($event.target.value, 'Assigned')">
+        <div style="text-align: right; font-size: 14px">Owner: 
+          <select style="width: calc(100% - 80px); border: none; background-color:transparent" v-model="contacts[userSettings.selectedContactIndex].Assigned" @change="patchContactInfo($event.target.value, 'Assigned')">
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">{{userInfo[0]}}</option>
             <option disabled>Last updated by: {{userList[Object.keys(contacts[userSettings.selectedContactIndex].Updated)][0]}} on {{Object.values(contacts[userSettings.selectedContactIndex].Updated)[0].replace('T', ' ')}}</option>
             <option disabled>Created by: {{userList[Object.keys(contacts[userSettings.selectedContactIndex].Created)][0]}} on {{Object.values(contacts[userSettings.selectedContactIndex].Created)[0]}}</option>
           </select>
         </div>
-        <div style="text-align: right">Category: 
-          <select style="width: calc(100% - 80px)" v-model="contacts[userSettings.selectedContactIndex].Categ" @change="patchContactInfo($event.target.value, 'Categ')">
+        <div style="text-align: right; font-size: 14px">Category: 
+          <select style="width: calc(100% - 80px); border: none; background-color:transparent" v-model="contacts[userSettings.selectedContactIndex].Categ" @change="patchContactInfo($event.target.value, 'Categ')">
             <option v-for="category in accountSettings.Categ">{{ category }}</option>
           </select>
         </div>
