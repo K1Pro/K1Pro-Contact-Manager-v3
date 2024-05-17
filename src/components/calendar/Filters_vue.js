@@ -75,7 +75,6 @@ export default {
 
   methods: {
     daysRangeChange(event) {
-      console.log('this should not be triggering');
       this.userSettings.calendar.filters.days = event.target.value;
       this.tempFiltersDays = event.target.value;
       this.patchUserSettings();

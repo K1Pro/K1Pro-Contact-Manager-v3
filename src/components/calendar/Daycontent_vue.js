@@ -34,23 +34,6 @@ export default {
       let contactArray = {};
       let calDay;
       this.contacts.forEach((contact, contactIndex) => {
-        // Object.entries(contact.Tasks).forEach(([taskDate, taskEvent]) => {
-        //   calDay = taskDate.split('T')[0];
-        //   if (
-        //     this.days[this.dayIndex] == calDay &&
-        //     !contactArray[contactIndex]
-        //   ) {
-        //     contactArray[contactIndex] = {
-        //       Name: Object.values(contact.Members[0])[0].Name,
-        //       Time: taskDate.split('T')[1],
-        //       Type: 'list-check',
-        //       Status: taskEvent.Status == 1 ? 'compltd' : 'not-compltd',
-        //       Icon: taskEvent.Status == 1 ? 'fa fa-check' : false,
-        //       ContactIndex: contactIndex,
-        //       EventIndex: taskDate,
-        //     };
-        //   }
-        // });
         contact.Tasks.forEach((task, taskIndex) => {
           calDay = task?.Date?.split('T')[0];
           if (
@@ -71,7 +54,12 @@ export default {
         contact.RecurTasks.forEach((task, taskIndex) => {
           if (
             task.Start &&
-            task?.Recur.includes(this.days[this.dayIndex].slice(-5)) &&
+            (task?.Recur.includes(this.days[this.dayIndex].slice(-5)) ||
+              task?.Recur.includes(this.days[this.dayIndex].slice(8, 10)) ||
+              task?.Recur.includes(
+                new Date(this.days[this.dayIndex]).getDay()
+              ) ||
+              task?.Recur.includes('everyday')) &&
             !contactArray[contactIndex]
           ) {
             contactArray[contactIndex] = {

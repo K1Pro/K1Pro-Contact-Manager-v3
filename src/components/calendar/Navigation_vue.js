@@ -64,7 +64,6 @@ export default {
       if (!this.days.includes(event.target.value)) this.getFirstCalDate();
     },
     getTime(dateTimeDesc, firstCalDateTimeDesc) {
-      console.log('this should not be triggering as well.');
       firstCalDateTimeDesc =
         this.dayOfTheWeek != 1 && this.userSettings.calendar.filters.days > 1
           ? firstCalDateTimeDesc.replace('--', '+') + ' previous Monday'

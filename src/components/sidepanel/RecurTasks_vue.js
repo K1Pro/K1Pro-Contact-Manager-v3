@@ -14,19 +14,19 @@ export default {
               {{slctdCntct.Members[0].Name}}
             </div>
             <div class="recur-tasks-title-grid-item2">
-              <button><i class="fa-solid fa-square-plus"></i></button>
+              <button @click="newRecurTask" ><i class="fa-solid fa-square-plus"></i></button>
             </div>
           </div>
         </div>
         
         <template v-for="(recurTask, recurTaskIndex) in recurtasks">
           <div class="recur-tasks-body" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}">
-            <i class="fa-solid fa-trash"></i>
-            <span class="recur-tasks-label">Start:</span><input type="date" :value="recurTask.Start" @change="updateRecurTask($event, 'RecurTasks', recurTask.RealIndex, 'Start')" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
-            <span class="recur-tasks-label">End:</span><input type="date" :value="recurTask.End" @change="updateRecurTask($event, 'RecurTasks', recurTask.RealIndex, 'End')" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
-            <span class="recur-tasks-label">Time:</span><input type="time" :value="recurTask.Time" @change="updateRecurTask($event, 'RecurTasks', recurTask.RealIndex, 'Time')" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
+            <i class="fa-solid fa-trash" @click="deleteContactInfo('RecurTasks', recurTask.RealIndex)"></i>
+            <span class="recur-tasks-label">Start:</span><input type="date" v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTask.RealIndex].Start" @change="updateRecurTaskFreq(recurTask.RealIndex)" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
+            <span class="recur-tasks-label">End:</span><input type="date" :value="recurTask.End" @change="updateRecurTask($event, recurTask.RealIndex, 'End')" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
+            <span class="recur-tasks-label">Time:</span><input type="time" :value="recurTask.Time" @change="updateRecurTask($event, recurTask.RealIndex, 'Time')" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
             <span class="recur-tasks-label">Recur:</span>
-            <select :value="recurTask.Freq" @change="updateRecurTaskFreq($event, 'RecurTasks', recurTask.RealIndex, 'Freq', recurTask.Start, recurTask.End)" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">              
+            <select v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTask.RealIndex].Freq" @change="updateRecurTaskFreq(recurTask.RealIndex)" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">              
               <option>Annually</option>
               <option>Semiannually</option>
               <option>Monthly</option>
@@ -40,10 +40,10 @@ export default {
               <option disabled>Created by: {{userList[recurTask.Create][0]}}</option>
             </select>
             <div class="recur-tasks-span" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
-              <span spellcheck="false" contenteditable v-on:blur="patchRecurTasks($event, recurTaskIndex, 'Desc', null)">{{recurTask.Desc}}</span>
+              <span spellcheck="false" contenteditable v-on:blur="updateRecurTask($event, recurTaskIndex, 'Desc')">{{recurTask.Desc}}</span>
             </div>
             <div>
-              <button>Reviewed</button> {{ recurTask.Review }}
+              <button @click="updateRecurTask($event, recurTask.RealIndex, 'Review')">Reviewed</button> {{ recurTask.Review? recurTask.Review.slice(5,7) + '/' + recurTask.Review.slice(8,10) + '/' + recurTask.Review.slice(0,4) : '' }}
             </div>
           </div>
           <div v-if="eventIndex !== null && slctdCntct.RecurTasks.length > 1" class="recur-tasks-body" style="backgroundColor: lightblue; textAlign: right">
@@ -56,6 +56,7 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'eventIndex',
+      'userData',
       'userSettings',
       'contacts',
       'times',
@@ -91,7 +92,8 @@ export default {
   //   },
 
   methods: {
-    updateRecurTask(event, column, columnIndex, key) {
+    updateRecurTask(event, columnIndex, key) {
+      const column = 'RecurTasks';
       let recurTaskValue =
         event.target.type == 'date'
           ? event.target.value
@@ -99,48 +101,55 @@ export default {
           ? event.target.value
           : event.target.type == 'checkbox'
           ? event.target.checked
-          : event.target.innerHTML;
+          : event.target.type == 'submit'
+          ? this.times.Y_m_d_H_i_s_z.slice(0, 10)
+          : event.target.innerHTML; // SPAN
+      // prettier-ignore
+      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = recurTaskValue;
       this.patchContactInfo(recurTaskValue, column, columnIndex, key);
     },
-    updateRecurTaskFreq(event, column, columnIndex, key, start, end) {
-      let halfYearLater, recurTaskEvent, newRecurTask;
-      if (event.target.value == 'Annually') {
-        recurTaskEvent =
-          event.target.value +
-          '+' +
-          (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28');
-        newRecurTask = [
-          start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28',
-        ];
-      } else if (event.target.value == 'Semiannually') {
-        halfYearLater = new Date(start).setMonth(
-          new Date(start).getMonth() + 6
-        );
-        recurTaskEvent =
-          event.target.value +
-          '+' +
-          (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28') +
-          '_' +
-          new Date(halfYearLater).toISOString().slice(5, 10);
-        newRecurTask = [
-          '"' + start.slice(5, 10) != '02-29'
-            ? start.slice(5, 10)
-            : '02-28' + '"',
-          new Date(halfYearLater).toISOString().slice(5, 10),
-        ];
-      } else if (event.target.value == 'Monthly') {
-        recurTaskEvent = event.target.value + '+' + start.slice(8, 10);
-        newRecurTask = [recurTaskEvent];
-      } else if (event.target.value == 'Weekly') {
-        recurTaskEvent = event.target.value + '+' + new Date(start).getDay();
-        newRecurTask = [recurTaskEvent.toString()];
-      } else if (event.target.value == 'Daily') {
-        recurTaskEvent = event.target.value + '+' + 'everyday';
-        newRecurTask = ['everyday'];
+    updateRecurTaskFreq(columnIndex) {
+      const column = 'RecurTasks';
+      // prettier-ignore
+      const start = this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Start
+      // prettier-ignore
+      const freq = this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Freq;
+      let recurTaskEvent, newRecurTask;
+      if (freq == 'Annually') {
+        // prettier-ignore
+        recurTaskEvent = (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28');
+      } else if (freq == 'Semiannually') {
+        // prettier-ignore
+        const halfYearLater = new Date(start).setMonth(new Date(start).getMonth() + 6);
+        // prettier-ignore
+        recurTaskEvent = (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28') + '_' + new Date(halfYearLater).toISOString().slice(5, 10);
+        // prettier-ignore
+        newRecurTask = [(start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28'), new Date(halfYearLater).toISOString().slice(5, 10),];
+      } else if (freq == 'Monthly') {
+        recurTaskEvent = start.slice(8, 10);
+      } else if (freq == 'Weekly') {
+        recurTaskEvent = new Date(start).getDay();
+      } else if (freq == 'Daily') {
+        recurTaskEvent = 'everyday';
       }
-      console.log(recurTaskEvent);
-      console.log(newRecurTask);
-      console.log('======================');
+      // prettier-ignore
+      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Recur = freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
+      // prettier-ignore
+      this.patchContactInfo(freq + '+' + start + '+' + recurTaskEvent, column, columnIndex, 'Freq');
+    },
+    newRecurTask() {
+      this.showAll();
+      const column = 'RecurTasks';
+      this.contacts[this.userSettings.selectedContactIndex][column].push({
+        Start: this.times.Y_m_d,
+        Recur: [this.times.Y_m_d.slice(5, 10)],
+        Freq: 'Annually',
+        Assign: this.userData.id,
+        Create: this.userData.id,
+        Update: this.userData.id,
+      });
+      // prettier-ignore
+      this.patchContactInfo(this.times.Y_m_d, column, this.slctdCntct.RecurTasks.length, 'Start');
     },
     showAll() {
       this.eventIndex = null;

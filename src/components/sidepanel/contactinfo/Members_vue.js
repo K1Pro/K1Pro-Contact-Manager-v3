@@ -18,7 +18,7 @@ export default {
                     :type="memberInputs.type"
                     :placeholder="memberInputs.placeholder"
                     :value="member[memberInputs.value]"
-                    @change="updateMember($event, 'Members', memberIndex, memberInputs.value)" />
+                    @change="updateMember($event, memberIndex, memberInputs.value)" />
                   </div>
                 </div>
                 <template v-if="memberIndex === slctdCntct.Members.length - 1">
@@ -51,10 +51,10 @@ export default {
   //   },
 
   methods: {
-    updateMember(event, column, columnIndex, key) {
-      this.contacts[this.userSettings.selectedContactIndex][column][
-        columnIndex
-      ][key] = event.target.value;
+    updateMember(event, columnIndex, key) {
+      const column = 'Members';
+      // prettier-ignore
+      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },
   },

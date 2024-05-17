@@ -22,14 +22,14 @@ export default {
         <template v-for="(task, taskIndex) in tasks">
           <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
             <i class="fa-solid fa-trash" @click="deleteContactInfo('Tasks', task.RealIndex)"></i>
-            <span class="tasks-label">Date:</span><input type="datetime-local" :value="task.Date" @change="updateTask($event, 'Tasks', task.RealIndex, 'Date')" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
+            <span class="tasks-label">Date:</span><input type="datetime-local" :value="task.Date" @change="updateTask($event, task.RealIndex, 'Date')" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
             <span class="tasks-label">Tag:</span>
             <select :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
               <option>None</option>
-              <option>Urgent</option>
               <option>Call</option>
               <option>Email</option>
               <option>Meeting</option>
+              <option>Urgent</option>
             </select>
             <span class="tasks-label">Owner:</span>
             <select :value="task.Assign" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
@@ -37,9 +37,9 @@ export default {
               <option disabled>Last updated by: {{userList[task.Update][0]}}</option>
               <option disabled>Created by: {{userList[task.Create][0]}}</option>
             </select>
-            <span class="tasks-label">Finished:</span><input type="checkbox" :checked="task?.Status == 1" @change="updateTask($event, 'Tasks', task.RealIndex, 'Status')"/>
+            <span class="tasks-label">Finished:</span><input type="checkbox" :checked="task?.Status == 1" @change="updateTask($event, task.RealIndex, 'Status')"/>
             <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
-              <span spellcheck="false" contenteditable v-on:blur="updateTask($event, 'Tasks', task.RealIndex, 'Desc')">{{task?.Desc}}</span>
+              <span spellcheck="false" contenteditable v-on:blur="updateTask($event, task.RealIndex, 'Desc')">{{task?.Desc}}</span>
             </div>
           </div>
           <div v-if="eventIndex !== null && slctdCntct.Tasks.length > 1" class="tasks-body" style="backgroundColor: lightblue; textAlign: right">
@@ -88,7 +88,8 @@ export default {
   //   },
 
   methods: {
-    updateTask(event, column, columnIndex, key) {
+    updateTask(event, columnIndex, key) {
+      const column = 'Tasks';
       let taskValue =
         event.target.type == 'datetime-local'
           ? event.target.value
@@ -96,21 +97,20 @@ export default {
           ? event.target.checked
           : event.target.innerHTML; // SPAN
       // prettier-ignore
-      if (!this.contacts[this.userSettings.selectedContactIndex][column][columnIndex]) {
-        this.contacts[this.userSettings.selectedContactIndex][column].push({
-          [key]: taskValue,
-          Assign: this.userData.id,
-          Create: this.userData.id,
-          Update: this.userData.id,
-        });
-      } else {
-        this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = taskValue;
-      }
+      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = taskValue;
       this.patchContactInfo(taskValue, column, columnIndex, key);
     },
     newTask() {
+      this.showAll();
+      const column = 'Tasks';
+      this.contacts[this.userSettings.selectedContactIndex][column].push({
+        Date: this.times.Y_m_d + this.times.Y_m_d_H_i_s_z.slice(10, 16),
+        Assign: this.userData.id,
+        Create: this.userData.id,
+        Update: this.userData.id,
+      });
       // prettier-ignore
-      this.patchContactInfo(this.times.Y_m_d+this.times.Y_m_d_H_i_s_z.slice(10,16), 'Tasks', this.slctdCntct.Tasks.length, 'Date');
+      this.patchContactInfo(this.times.Y_m_d+this.times.Y_m_d_H_i_s_z.slice(10,16), column, this.slctdCntct.Tasks.length, 'Date');
     },
     showAll() {
       this.eventIndex = null;
@@ -148,7 +148,7 @@ export default {
 .tasks-body {
   padding: 10px;
 }
-.tasks-body i{
+.tasks-body i {
   float: right;
   font-size: 14px;
   cursor: pointer;

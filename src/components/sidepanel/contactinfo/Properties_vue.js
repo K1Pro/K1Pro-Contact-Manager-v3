@@ -18,7 +18,7 @@ export default {
                             :type="propertyInputs.type" 
                             :placeholder="propertyInputs.placeholder"
                             :value="property[propertyInputs.value]"
-                            @change="updateProperty($event, 'Properties', propertyIndex, propertyInputs.value)" />
+                            @change="updateProperty($event, propertyIndex, propertyInputs.value)" />
                     </div>
                 </div>
                 <template v-if="propertyIndex === slctdCntct.Properties.length - 1">
@@ -51,10 +51,10 @@ export default {
   //   },
 
   methods: {
-    updateProperty(event, column, columnIndex, key) {
-      this.contacts[this.userSettings.selectedContactIndex][column][
-        columnIndex
-      ][key] = event.target.value;
+    updateProperty(event, columnIndex, key) {
+      const column = 'Properties';
+      // prettier-ignore
+      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },
   },

@@ -93,22 +93,15 @@ export default {
       const InfoGroup = event.target.value.split('_')[0];
       if (InfoGroup != 'newContact') {
         const InfoKey = event.target.value.split('_')[1];
-        const columnIndex =
-          this.contacts[this.userSettings.selectedContactIndex][InfoGroup]
-            .length;
+        // prettier-ignore
+        const columnIndex = this.contacts[this.userSettings.selectedContactIndex][InfoGroup].length;
         if (InfoGroup == 'Members' || InfoGroup == 'Properties') {
-          this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push(
-            {
-              ['Type']: InfoKey,
-            }
-          );
+          // prettier-ignore
+          this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push({ ['Type']: InfoKey });
           this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type');
         } else {
-          this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push(
-            {
-              [InfoKey]: '',
-            }
-          );
+          // prettier-ignore
+          this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push({ [InfoKey]: '' });
           this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
         }
       } else {

@@ -14,7 +14,7 @@ export default {
                           :placeholder="assetInputs.placeholder"
                           :type="assetInputs.type" 
                           :value="assetInfo"
-                          @change="updateAsset($event, 'Assets', assetIndex, assetType)" />
+                          @change="updateAsset($event, assetIndex, assetType)" />
                       <button class="asset-button" @click="deleteContactInfo('Assets', assetIndex)"><i class="fa-solid fa-trash"></i></button>
                     </div>
                     <div v-else >
@@ -22,7 +22,7 @@ export default {
                         :placeholder="assetInputs.placeholder"
                         :type="assetInputs.type" 
                         :value="assetInfo"
-                        @change="updateAsset($event, 'Assets', assetIndex, assetType)" />
+                        @change="updateAsset($event, assetIndex, assetType)" />
                       <button class="asset-button" @click="deleteContactInfo('Assets', assetIndex)"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
@@ -57,10 +57,10 @@ export default {
   //   },
 
   methods: {
-    updateAsset(event, column, columnIndex, key) {
-      this.contacts[this.userSettings.selectedContactIndex][column][
-        columnIndex
-      ][key] = event.target.value;
+    updateAsset(event, columnIndex, key) {
+      const column = 'Assets';
+      // prettier-ignore
+      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },
   },
