@@ -2,13 +2,23 @@
 
 export default {
   name: 'Members',
+  // Steve Williams 2465 erie online lead do not call
+  // Neeraj 2830 erie online lead do not call
 
   template: /*html*/ `
         <div class='members'>
             <div v-for="(member, memberIndex) in slctdCntct?.Members">
                 <div class="member-title-grid-container">
-                  <div class="member-title"><i class="fa-solid fa-user">&nbsp;</i>{{ member.Type }}</div>
-                  <button v-if="memberIndex !== 0" class="member-button" @click="deleteContactInfo('Members', memberIndex)">
+                  <div class="member-title" ><i class="fa-solid fa-user">&nbsp;</i>{{ member.Type }}</div>
+                      <i v-if="memberIndex === 0" class="fa-solid fa-square-plus" style="position: absolute; right: 10px; margin-top: 10px"></i>
+                      <select v-if="memberIndex === 0" @change='addContactInfo' style="position: absolute; cursor: pointer; outline: none; right: 10px; width: 120px; border: none; background-color:transparent; appearance: none">
+                        <option selected disabled></option>
+                        <option v-for="cntctInfo in addCntctInfoDropDown" :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey" >{{cntctInfo.InfoKey + cntctInfo.InfoPlaceholder}}</option>
+                        <option value="newContact">New contact</option>
+                        <option value="deleteContact">Delete contact</option>
+                      </select>
+
+                  <button v-else class="member-button" @click="deleteContactInfo('Members', memberIndex)">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </div>
@@ -29,13 +39,34 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
+      'accessToken',
+      'userData',
       'accountSettings',
       'userSettings',
+      'endPts',
       'contacts',
+      'times',
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntct',
     ]),
+    addCntctInfoDropDown() {
+      const cntctInfoDropDown = [];
+      Object.entries(this.accountSettings.contactInfo.keys).forEach(
+        ([contactInfoGroup, contactInfoKeys]) => {
+          Object.keys(contactInfoKeys).forEach((contactInfoKey) => {
+            const test = {
+              InfoGroup: contactInfoGroup,
+              InfoKey: contactInfoKey,
+              InfoPlaceholder:
+                contactInfoGroup == 'Properties' ? ' address' : '',
+            };
+            cntctInfoDropDown.push(test);
+          });
+        }
+      );
+      return cntctInfoDropDown;
+    },
   },
 
   //   components: {
@@ -51,6 +82,89 @@ export default {
   //   },
 
   methods: {
+    async addContactInfo(event) {
+      const InfoGroup = event.target.value.split('_')[0];
+      if (InfoGroup != 'newContact') {
+        const InfoKey = event.target.value.split('_')[1];
+        // prettier-ignore
+        const columnIndex = this.contacts[this.userSettings.selectedContactIndex][InfoGroup].length;
+        if (InfoGroup == 'Members' || InfoGroup == 'Properties') {
+          // prettier-ignore
+          this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push({ ['Type']: InfoKey });
+          this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type');
+        } else {
+          // prettier-ignore
+          this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push({ [InfoKey]: '' });
+          this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
+        }
+      } else {
+        const newMember = {
+          Assets: [],
+          Assigned: this.userData.id,
+          Categ: '',
+          Connections: [],
+          Created: {
+            [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+          },
+          Custom1: [],
+          Custom2: '',
+          Custom3: '',
+          Custom4: '',
+          Custom5: '',
+          DNC: 0,
+          id: '',
+          Log: [],
+          Members: [
+            {
+              Type: Object.keys(
+                this.accountSettings.contactInfo.keys.Members
+              )[0],
+              Name: '',
+            },
+          ],
+          Notes: '',
+          Properties: [],
+          RecurTasks: [],
+          Tasks: [],
+          Updated: {
+            [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+          },
+        };
+        this.contacts.push(newMember);
+        const newContactIndex = this.contacts.length - 1;
+        this.userSettings.selectedContactIndex = newContactIndex;
+
+        try {
+          const response = await fetch(servr_url + this.endPts.contacts, {
+            method: 'POST',
+            headers: {
+              Authorization: this.accessToken,
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store',
+            },
+            body: JSON.stringify({
+              Date: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+              Member: Object.keys(
+                this.accountSettings.contactInfo.keys.Members
+              )[0],
+            }),
+          });
+          const postContactInfoResJSON = await response.json();
+          if (postContactInfoResJSON.success) {
+            // this.msg.snackBar = 'Updated ';
+            console.log(postContactInfoResJSON);
+            console.log(newContactIndex);
+            console.log(this.contacts[newContactIndex]);
+            console.log(postContactInfoResJSON.data.contact_id);
+            this.contacts[newContactIndex].id =
+              postContactInfoResJSON.data.contact_id;
+          }
+        } catch (error) {
+          this.msg.snackBar = error.toString();
+        }
+      }
+      event.srcElement.selectedIndex = 0;
+    },
     updateMember(event, columnIndex, key) {
       const column = 'Members';
       // prettier-ignore

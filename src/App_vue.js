@@ -10,23 +10,30 @@ export default {
     <snackbar> </snackbar>
 
     <template v-if="loggedIn === true">
-      <div class="app-grid-container" :style="appGridContainer" >
-        <div class="app-grid-item1">
-          <sidepanel></sidepanel>
-        </div>
+      <template v-if='contacts.length > 0'>
+        <div class="app-grid-container" :style="appGridContainer" >
+          <div class="app-grid-item1">
+            <sidepanel></sidepanel>
+          </div>
 
-        <div 
-          v-if="windowWidth > 768" 
-          class="app-grid-resizer" 
-          @mousedown="startResizeGrid" 
-          @mouseup="stopResizeGrid" 
-          v-on:dblclick="resetGrid">
-        </div>
+          <div 
+            v-if="windowWidth > 768" 
+            class="app-grid-resizer" 
+            @mousedown="startResizeGrid" 
+            @mouseup="stopResizeGrid" 
+            v-on:dblclick="resetGrid">
+          </div>
 
-        <div class="app-grid-item2">
-          <calendar></calendar>
+          <div class="app-grid-item2">
+            <calendar></calendar>
+          </div>
         </div>
-      </div>
+      </template>
+      <template v-else>
+        <div id="loader-container">
+          <div class="loader"></div>
+        </div>
+      </template>
     </template>
 
     <template v-if="loggedIn === false">
@@ -60,7 +67,6 @@ export default {
       'contacts',
       'endPts',
       'times',
-      'time',
       'patchUserSettings',
     ]),
 
@@ -78,7 +84,7 @@ export default {
   },
 
   data() {
-    return {};
+    return { currentUpdate: null };
   },
 
   methods: {
@@ -90,13 +96,34 @@ export default {
         .match(new RegExp(`(^| )${sessionID}=([^;]+)`))
         ?.at(2);
     },
-    updateTime() {
+    async updateTime() {
       const timeDifferenece = Math.round(
         (this.times.initialTimestamp - new Date().getTime()) * -1
       );
       this.times.Y_m_d_H_i_s_z = new Date(
         this.times.timestamp + timeDifferenece
       ).toISOString();
+      try {
+        const response = await fetch(servr_url + this.endPts.currentupdate, {
+          method: 'GET',
+          headers: {
+            Authorization: this.accessToken,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          },
+        });
+        const getCurrentupdateResJSON = await response.json();
+        if (getCurrentupdateResJSON.success) {
+          if (
+            this.currentUpdate != getCurrentupdateResJSON.data.datetime &&
+            this.currentUpdate != null
+          )
+            this.getContacts();
+          this.currentUpdate = getCurrentupdateResJSON.data.datetime;
+        }
+      } catch (error) {
+        this.msg.snackBar = error.toString();
+      }
     },
 
     async getUserData() {
@@ -118,7 +145,7 @@ export default {
 
           setInterval(() => {
             this.updateTime();
-          }, 60000);
+          }, 10000);
           this.loggedIn = true;
           this.userData = userDataResJSON.data.user;
           this.accountSettings = userDataResJSON.data.accountSettings;
@@ -206,7 +233,7 @@ export default {
 
   watch: {
     accessToken(newToken, oldToken) {
-      this.userData = '';
+      this.userData = {};
       // this.loggedIn = false;
       if (newToken != undefined) this.getUserData();
     },

@@ -51,21 +51,23 @@ export default {
       /*css*/ `
 .notes {
   background-color: lightblue;
-  
 }
 .notes-title{
   font-weight: bold;
   padding: 5px;
   color: black;
+  height: 30px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .notes textarea {
-    width: 100%;
-    height: calc(100vh - 90px);
-    font-family: 'Helvetica', sans-serif;
-    resize: none;
-    padding: 5px;
-    border: none;
-    margin-bottom: -4px;
+  width: 100%;
+  height: calc(100vh - 50px);
+  font-family: 'Helvetica', sans-serif;
+  resize: none;
+  padding: 5px;
+  border: none;
+  margin-bottom: -4px;
 }
 `
     );

@@ -22,24 +22,29 @@ export default {
         <template v-for="(task, taskIndex) in tasks">
           <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white'}">
             <i class="fa-solid fa-trash" @click="deleteContactInfo('Tasks', task.RealIndex)"></i>
-            <span class="tasks-label">Date:</span><input type="datetime-local" :value="task.Date" @change="updateTask($event, task.RealIndex, 'Date')" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
+            <span class="tasks-label">Date:</span><input type="datetime-local" :value="task.Date" @change="updateTask($event.target.value, task.RealIndex, 'Date')" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
             <span class="tasks-label">Tag:</span>
-            <select :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
-              <option>None</option>
-              <option>Call</option>
-              <option>Email</option>
-              <option>Meeting</option>
-              <option>Urgent</option>
+            <select :value="task.Tag" @change="updateTask($event.target.value, task.RealIndex, 'Tag')" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
+              <option value="">None</option>
+              <option value="fa-solid fa-phone">Call</option>
+              <option value="fa-regular fa-at">Email</option>
+              <option value="fa-solid fa-cart-shopping">Order</option>
+              <option value="fa-solid fa-dollar-sign">Payment</option>
+              <option value="fa-solid fa-print">Print</option>
+              <option value="fa-solid fa-question">Question</option>
+              <option value="fa-solid fa-user">Meeting</option>
+              <option value="fa-solid fa-star">Urgent</option>
+              <option value="fa-solid fa-pen">Write</option>
             </select>
             <span class="tasks-label">Owner:</span>
-            <select :value="task.Assign" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
+            <select :value="task.Assign" @change="updateTask($event.target.value, task.RealIndex, 'Assign')" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
               <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">{{userInfo[0]}}</option>
-              <option disabled>Last updated by: {{userList[task.Update][0]}}</option>
-              <option disabled>Created by: {{userList[task.Create][0]}}</option>
+              <option disabled>Updated by {{userList[task.Update][0]}}</option>
+              <option disabled>Created by {{userList[task.Create][0]}}</option>
             </select>
-            <span class="tasks-label">Finished:</span><input type="checkbox" :checked="task?.Status == 1" @change="updateTask($event, task.RealIndex, 'Status')"/>
+            <span class="tasks-label">Finished:</span><input type="checkbox" :checked="task?.Status == 1" @change="updateTask($event.target.checked, task.RealIndex, 'Status')"/>
             <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
-              <span spellcheck="false" contenteditable v-on:blur="updateTask($event, task.RealIndex, 'Desc')">{{task?.Desc}}</span>
+              <span spellcheck="false" contenteditable v-on:blur="updateTask($event.target.innerHTML, task.RealIndex, 'Desc')">{{task?.Desc}}</span>
             </div>
           </div>
           <div v-if="eventIndex !== null && slctdCntct.Tasks.length > 1" class="tasks-body" style="backgroundColor: lightblue; textAlign: right">
@@ -90,15 +95,11 @@ export default {
   methods: {
     updateTask(event, columnIndex, key) {
       const column = 'Tasks';
-      let taskValue =
-        event.target.type == 'datetime-local'
-          ? event.target.value
-          : event.target.type == 'checkbox'
-          ? event.target.checked
-          : event.target.innerHTML; // SPAN
       // prettier-ignore
-      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = taskValue;
-      this.patchContactInfo(taskValue, column, columnIndex, key);
+      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event;
+      // prettier-ignore
+      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Update = this.userData.id;
+      this.patchContactInfo(event, column, columnIndex, key);
     },
     newTask() {
       this.showAll();

@@ -12,6 +12,23 @@ body {
   overflow-x: hidden;
 }
 
+#loader-container {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  background-color: #999999;
+}
+
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 150px;
+  height: 150px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
 .prevent-select {
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */

@@ -1,8 +1,8 @@
-import Logoutbtn from './LogOutBtn_vue.js';
 import Contactinfo from './sidepanel/Contactinfo_vue.js';
 import Tasks from './sidepanel/Tasks_vue.js';
 import Recurtasks from './sidepanel/RecurTasks_vue.js';
 import Notes from './sidepanel/Notes_vue.js';
+import Settings from './sidepanel/Settings_vue.js';
 import Custom1 from './sidepanel/custom/1_vue.js';
 
 export default {
@@ -72,14 +72,6 @@ export default {
             </button>
           </template>
 
-          <button
-            title="User Info"
-            :class="{ 'tab-active': activeTab == 'user-tie' }"
-            @click="openTab($event)">
-            <i class="fa fa-user-tie"></i>
-            <span v-if="sidePanelOpen">User Info</span>
-          </button>
-
           ${
             /*
           <form :action="endPts.accountLoginURL" method="post" ref="accountLoginForm" >
@@ -108,7 +100,14 @@ export default {
             <span v-if="sidePanelOpen">Reports</span>
           </button>
 
-          <logoutbtn :sidePanelOpen="sidePanelOpen" ></logoutbtn>
+          <button
+            title="Settings"
+            :class="{ 'tab-active': activeTab == 'user-gear' }"
+            @click="openTab($event)">
+            <i class="fa fa-user-gear"></i>
+            <span v-if="sidePanelOpen">Settings</span>
+          </button>
+          
         </div>
 
         <div class="tab-content">
@@ -128,10 +127,6 @@ export default {
           <div v-else-if="activeTab == 'file-pen'">
             <notes></notes>
           </div>
-          
-          <div v-else-if="activeTab == 'user-tie'">
-            User Info
-          </div>
 
           <div v-else-if="activeTab == 'envelope'">
             Emails
@@ -139,7 +134,11 @@ export default {
           
           <div v-else-if="activeTab == 'chart-pie'">
             Reports
-            </div>
+          </div>
+
+          <div v-else-if="activeTab == 'user-gear'">
+            <settings></settings>
+          </div>
           
           <div v-else>
             <custom1 v-if="customTab === 0"></custom1>
@@ -152,7 +151,14 @@ export default {
     </div>
   `,
 
-  components: { Logoutbtn, Contactinfo, Tasks, Recurtasks, Notes, Custom1 },
+  components: {
+    Contactinfo,
+    Tasks,
+    Recurtasks,
+    Notes,
+    Settings,
+    Custom1,
+  },
 
   data() {
     return {

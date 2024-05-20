@@ -22,11 +22,11 @@ export default {
         <template v-for="(recurTask, recurTaskIndex) in recurtasks">
           <div class="recur-tasks-body" :style="{ 'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white'}">
             <i class="fa-solid fa-trash" @click="deleteContactInfo('RecurTasks', recurTask.RealIndex)"></i>
-            <span class="recur-tasks-label">Start:</span><input type="date" v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTask.RealIndex].Start" @change="updateRecurTaskFreq(recurTask.RealIndex)" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
-            <span class="recur-tasks-label">End:</span><input type="date" :value="recurTask.End" @change="updateRecurTask($event, recurTask.RealIndex, 'End')" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
-            <span class="recur-tasks-label">Time:</span><input type="time" :value="recurTask.Time" @change="updateRecurTask($event, recurTask.RealIndex, 'Time')" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
+            <span class="recur-tasks-label">Start:</span><input type="date" :value="recurTask.Start" @change="updateRecurTaskFreq(recurTask.RealIndex, $event.target.value, recurTask.Freq)" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
+            <span class="recur-tasks-label">End:</span><input type="date" :value="recurTask.End" @change="updateRecurTask($event.target.value, recurTask.RealIndex, 'End')" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
+            <span class="recur-tasks-label">Time:</span><input type="time" :value="recurTask.Time" @change="updateRecurTask($event.target.value, recurTask.RealIndex, 'Time')" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
             <span class="recur-tasks-label">Recur:</span>
-            <select v-model="contacts[userSettings.selectedContactIndex].RecurTasks[recurTask.RealIndex].Freq" @change="updateRecurTaskFreq(recurTask.RealIndex)" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">              
+            <select :value="recurTask.Freq" @change="updateRecurTaskFreq(recurTask.RealIndex, recurTask.Start, $event.target.value)" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">              
               <option>Annually</option>
               <option>Semiannually</option>
               <option>Monthly</option>
@@ -34,21 +34,21 @@ export default {
               <option>Daily</option>
             </select>
             <span class="recur-tasks-label">Owner:</span>
-            <select :value="recurTask.Assign" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
+            <select :value="recurTask.Assign" @change="updateRecurTask($event.target.value, recurTask.RealIndex, 'Assign')" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
               <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">{{userInfo[0]}}</option>
-              <option disabled>Last updated by: {{userList[recurTask.Update][0]}}</option>
-              <option disabled>Created by: {{userList[recurTask.Create][0]}}</option>
+              <option disabled>Updated by {{userList[recurTask.Update][0]}}</option>
+              <option disabled>Created by {{userList[recurTask.Create][0]}}</option>
             </select>
+            <span class="recur-tasks-label">Finished:</span>
+            <button @click="updateRecurTask(times.Y_m_d_H_i_s_z.slice(0, 10), recurTask.RealIndex, 'Review')">{{ recurTask.Review? recurTask.Review.slice(5,7) + '/' + recurTask.Review.slice(8,10) + '/' + recurTask.Review.slice(0,4) : 'Click here' }}</button> 
             <div class="recur-tasks-span" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
-              <span spellcheck="false" contenteditable v-on:blur="updateRecurTask($event, recurTaskIndex, 'Desc')">{{recurTask.Desc}}</span>
-            </div>
-            <div>
-              <button @click="updateRecurTask($event, recurTask.RealIndex, 'Review')">Reviewed</button> {{ recurTask.Review? recurTask.Review.slice(5,7) + '/' + recurTask.Review.slice(8,10) + '/' + recurTask.Review.slice(0,4) : '' }}
+              <span spellcheck="false" contenteditable v-on:blur="updateRecurTask($event.target.innerHTML, recurTask.RealIndex, 'Desc')">{{recurTask.Desc}}</span>
             </div>
           </div>
           <div v-if="eventIndex !== null && slctdCntct.RecurTasks.length > 1" class="recur-tasks-body" style="backgroundColor: lightblue; textAlign: right">
             <div><b @click="showAll">Show {{slctdCntct.RecurTasks.length - 1}} more {{(slctdCntct.RecurTasks.length - 1) > 1 ? 'tasks' : 'task'}} </b></div>
           </div>
+          
         </template>
       </template>
     </div>`,
@@ -94,26 +94,14 @@ export default {
   methods: {
     updateRecurTask(event, columnIndex, key) {
       const column = 'RecurTasks';
-      let recurTaskValue =
-        event.target.type == 'date'
-          ? event.target.value
-          : event.target.type == 'time'
-          ? event.target.value
-          : event.target.type == 'checkbox'
-          ? event.target.checked
-          : event.target.type == 'submit'
-          ? this.times.Y_m_d_H_i_s_z.slice(0, 10)
-          : event.target.innerHTML; // SPAN
       // prettier-ignore
-      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = recurTaskValue;
-      this.patchContactInfo(recurTaskValue, column, columnIndex, key);
+      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event;
+      // prettier-ignore
+      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Update = this.userData.id;
+      this.patchContactInfo(event, column, columnIndex, key);
     },
-    updateRecurTaskFreq(columnIndex) {
+    updateRecurTaskFreq(columnIndex, start, freq) {
       const column = 'RecurTasks';
-      // prettier-ignore
-      const start = this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Start
-      // prettier-ignore
-      const freq = this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Freq;
       let recurTaskEvent, newRecurTask;
       if (freq == 'Annually') {
         // prettier-ignore
@@ -128,12 +116,18 @@ export default {
       } else if (freq == 'Monthly') {
         recurTaskEvent = start.slice(8, 10);
       } else if (freq == 'Weekly') {
-        recurTaskEvent = new Date(start).getDay();
+        recurTaskEvent = new Date(start).getDay().toString();
       } else if (freq == 'Daily') {
         recurTaskEvent = 'everyday';
       }
       // prettier-ignore
+      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Start = start;
+      // prettier-ignore
       this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Recur = freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
+      // prettier-ignore
+      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Freq = freq;
+      // prettier-ignore
+      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Update = this.userData.id;
       // prettier-ignore
       this.patchContactInfo(freq + '+' + start + '+' + recurTaskEvent, column, columnIndex, 'Freq');
     },
@@ -198,15 +192,18 @@ export default {
   width: 60px;
   text-align: right;
 }
-.recur-tasks-body input, .recur-tasks-body select {
+.recur-tasks-body input, 
+.recur-tasks-body select, 
+.recur-tasks-body button {
   width: calc(100% - 100px);
   height: 20px;
   font-family: 'Helvetica', sans-serif;
   font-size: 14px;
+  overflow: hidden;
 }
-.recur-tasks-body button {
+/*.recur-tasks-body button {
   margin: 10px 10px 0px 0px;
-}
+}*/
 .recur-tasks-span {
   border-radius: 1px;
   border: 1px solid lightgray;

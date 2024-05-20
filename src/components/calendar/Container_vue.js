@@ -1,6 +1,5 @@
 import Navigation from './Navigation_vue.js';
 import Calendarbody from './Body_vue.js';
-import Filters from './Filters_vue.js';
 
 export default {
   name: 'Calendar',
@@ -13,10 +12,11 @@ export default {
             <div class="calendar-container-item2">
                 <calendarbody></calendarbody>
             </div>
-            <div class="calendar-container-item3">
-                <filters></filters>
-            </div> 
         </div>`,
+
+  // <div class="calendar-container-item3">
+  //     <filters></filters>
+  // </div>
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, ['msg']),
@@ -25,7 +25,6 @@ export default {
   components: {
     Navigation,
     Calendarbody,
-    Filters,
   },
 
   //   props: [''],
@@ -51,7 +50,7 @@ export default {
 }
 .calendar-container-item2 {
   background-color: white;
-  height: calc( 100vh - 100px);
+  height: calc(100vh - 60px);
 }
 .calendar-container-item3 {
   /* background-color: blue; */

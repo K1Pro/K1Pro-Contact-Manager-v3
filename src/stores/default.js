@@ -26,6 +26,7 @@ const useDefaultStore = Pinia.defineStore('default', {
         userData: 'users',
         settings: 'settings',
         contacts: 'contacts',
+        currentupdate: 'currentupdate',
         login: 'sessions',
         logout: 'sessions/',
       },
@@ -57,7 +58,7 @@ const useDefaultStore = Pinia.defineStore('default', {
         const timeResJSON = await response.json();
         if (timeResJSON.success) {
           if (type == 'time') {
-            this.times = timeResJSON.data;
+            this.times.Y_m_d = timeResJSON.data.Y_m_d;
             // console.log('times');
             // console.log(timeResJSON.data);
             // console.log('=================');
@@ -73,12 +74,19 @@ const useDefaultStore = Pinia.defineStore('default', {
       }
     },
     async patchContactInfo(event, column, columnIndex, key) {
-      // console.log('id: ' + this.contacts[this.userSettings.selectedContactIndex].id);
+      // console.log(
+      //   'id: ' + this.contacts[this.userSettings.selectedContactIndex].id
+      // );
       // console.log('column: ' + column);
       // console.log('columnIndex: ' + columnIndex);
       // console.log('key: ' + key);
-      // console.log('value: ' + (event?.target?.value ? event.target.value : event));
+      // console.log(
+      //   'value: ' + (event?.target?.value ? event.target.value : event)
+      // );
       // console.log('================');
+      this.contacts[this.userSettings.selectedContactIndex].Updated = {
+        [this.userData.id]: this.times.Y_m_d_H_i_s_z,
+      };
       try {
         const response = await fetch(servr_url + this.endPts.contacts, {
           method: 'PATCH',
@@ -107,31 +115,34 @@ const useDefaultStore = Pinia.defineStore('default', {
     async deleteContactInfo(column, columnIndex) {
       // console.log('column: ' + column);
       // console.log('columnIndex: ' + columnIndex);
-      this.contacts[this.userSettings.selectedContactIndex][column].splice(
-        columnIndex,
-        1
-      );
-      try {
-        const response = await fetch(servr_url + this.endPts.contacts, {
-          method: 'DELETE',
-          headers: {
-            Authorization: this.accessToken,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-          },
-          body: JSON.stringify({
-            ID: this.contacts[this.userSettings.selectedContactIndex].id,
-            Column: column,
-            ColumnIndex: columnIndex,
-          }),
-        });
-        const patchContactInfoResJSON = await response.json();
-        if (patchContactInfoResJSON.success) {
-          // this.msg.snackBar = 'Updated ';
-          console.log(patchContactInfoResJSON);
+      const confirmDeletion = 'Are you sure you would like to delete this?';
+      if (confirm(confirmDeletion) == true) {
+        this.contacts[this.userSettings.selectedContactIndex][column].splice(
+          columnIndex,
+          1
+        );
+        try {
+          const response = await fetch(servr_url + this.endPts.contacts, {
+            method: 'DELETE',
+            headers: {
+              Authorization: this.accessToken,
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store',
+            },
+            body: JSON.stringify({
+              ID: this.contacts[this.userSettings.selectedContactIndex].id,
+              Column: column,
+              ColumnIndex: columnIndex,
+            }),
+          });
+          const patchContactInfoResJSON = await response.json();
+          if (patchContactInfoResJSON.success) {
+            // this.msg.snackBar = 'Updated ';
+            console.log(patchContactInfoResJSON);
+          }
+        } catch (error) {
+          this.msg.snackBar = error.toString();
         }
-      } catch (error) {
-        this.msg.snackBar = error.toString();
       }
     },
     async patchUserSettings() {
@@ -149,7 +160,7 @@ const useDefaultStore = Pinia.defineStore('default', {
         });
         const patchUserSettingsResJSON = await response.json();
         if (!patchUserSettingsResJSON.success) {
-          console.log(patchUserSettingsResJSON);
+          // console.log(patchUserSettingsResJSON);
           // this.msg.snackBar = patchUserSettingsResJSON.messages[0];
         }
       } catch (error) {

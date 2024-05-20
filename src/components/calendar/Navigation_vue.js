@@ -95,7 +95,7 @@ export default {
 .navigation-grid-item1,
 .navigation-grid-item4 {
   text-align: right;
-  padding-right: 25px;
+  padding-right: 5px;
 }
 .navigation-grid-item2,
 .navigation-grid-item5 {
@@ -110,6 +110,14 @@ export default {
   background-color: #999999;
   color-scheme: dark;
   border: 0;
+}
+
+@media only screen and (min-width: 768px) {
+  .navigation-grid-item1,
+  .navigation-grid-item4 {
+    text-align: right;
+    padding-right: 25px;
+  }  
 }
 `
     );

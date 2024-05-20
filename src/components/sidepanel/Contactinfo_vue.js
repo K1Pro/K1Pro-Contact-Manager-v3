@@ -6,8 +6,7 @@ import Connections from './contactinfo/Connections_vue.js';
 
 export default {
   name: 'Contact Info',
-  // <option disabled>Created by: {{userList[task.Create][0]}}</option>
-  // <option disabled>Last updated by: {{userList[Object.keys(contacts[userSettings.selectedContactIndex].Created)]}}</option>
+
   template: /*html*/ `
     <div class='contact-info'>
       <searchbar></searchbar>
@@ -16,60 +15,30 @@ export default {
       <assets></assets>
       <connections></connections>
       <template  v-if="slctdCntct">
-        <div style="text-align: right; font-size: 14px">Add: 
-          <select @change='addContactInfo' style="width: calc(100% - 80px); border: none; background-color:transparent">
-            <option selected disabled>contact info</option>
-            <option v-for="cntctInfo in addCntctInfoDropDown" :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey" >{{cntctInfo.InfoKey.toLowerCase() + cntctInfo.InfoPlaceholder}}</option>
-            <option value="newContact">new contact</option>
-            <option value="deleteContact">delete contact</option>
-          </select>
-        </div>
         <div style="text-align: right; font-size: 14px">Owner: 
-          <select style="width: calc(100% - 80px); border: none; background-color:transparent" v-model="contacts[userSettings.selectedContactIndex].Assigned" @change="patchContactInfo($event.target.value, 'Assigned')">
+          <select style="margin-right: 5px; width: calc(100% - 85px); border: none; background-color:transparent" v-model="contacts[userSettings.selectedContactIndex].Assigned" @change="patchContactInfo($event.target.value, 'Assigned')">
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">{{userInfo[0]}}</option>
-            <option disabled>Last updated by: {{userList[Object.keys(contacts[userSettings.selectedContactIndex].Updated)][0]}} on {{Object.values(contacts[userSettings.selectedContactIndex].Updated)[0].replace('T', ' ')}}</option>
-            <option disabled>Created by: {{userList[Object.keys(contacts[userSettings.selectedContactIndex].Created)][0]}} on {{Object.values(contacts[userSettings.selectedContactIndex].Created)[0]}}</option>
+            <option disabled>Updated by {{userList[Object.keys(contacts[userSettings.selectedContactIndex].Updated)][0]}} on {{Object.values(contacts[userSettings.selectedContactIndex].Updated)[0].slice(5,10).replace('-', '/')}}/{{Object.values(contacts[userSettings.selectedContactIndex].Updated)[0].slice(0,4)}} {{Object.values(contacts[userSettings.selectedContactIndex].Updated)[0].slice(11,16)}}</option>
+            <option disabled>Created by {{userList[Object.keys(contacts[userSettings.selectedContactIndex].Created)][0]}} on {{Object.values(contacts[userSettings.selectedContactIndex].Created)[0].slice(5,10).replace('-', '/')}}/{{Object.values(contacts[userSettings.selectedContactIndex].Created)[0].slice(0,4)}} {{Object.values(contacts[userSettings.selectedContactIndex].Created)[0].slice(11,16)}}</option>
           </select>
         </div>
         <div style="text-align: right; font-size: 14px">Category: 
-          <select style="width: calc(100% - 80px); border: none; background-color:transparent" v-model="contacts[userSettings.selectedContactIndex].Categ" @change="patchContactInfo($event.target.value, 'Categ')">
+          <select style="margin-right: 5px; width: calc(100% - 85px); border: none; background-color:transparent" v-model="contacts[userSettings.selectedContactIndex].Categ" @change="patchContactInfo($event.target.value, 'Categ')">
             <option v-for="category in accountSettings.Categ">{{ category }}</option>
           </select>
         </div>
       </template>
     </div>`,
-  // <option>{{contacts[userSettings.selectedContactIndex].Categ}}</option> :selected="userNo == slctdCntct.Assigned"
+
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'accessToken',
-      'msg',
-      'userData',
       'accountSettings',
       'userSettings',
-      'endPts',
       'contacts',
-      'times',
       'patchContactInfo',
       'slctdCntct',
       'userList',
     ]),
-    addCntctInfoDropDown() {
-      const cntctInfoDropDown = [];
-      Object.entries(this.accountSettings.contactInfo.keys).forEach(
-        ([contactInfoGroup, contactInfoKeys]) => {
-          Object.keys(contactInfoKeys).forEach((contactInfoKey) => {
-            const test = {
-              InfoGroup: contactInfoGroup,
-              InfoKey: contactInfoKey,
-              InfoPlaceholder:
-                contactInfoGroup == 'Properties' ? ' address' : '',
-            };
-            cntctInfoDropDown.push(test);
-          });
-        }
-      );
-      return cntctInfoDropDown;
-    },
   },
 
   components: {
@@ -88,94 +57,7 @@ export default {
   //   return {};
   // },
 
-  methods: {
-    testSelect(event) {
-      console.log(event);
-    },
-    async addContactInfo(event) {
-      const InfoGroup = event.target.value.split('_')[0];
-      if (InfoGroup != 'newContact') {
-        const InfoKey = event.target.value.split('_')[1];
-        // prettier-ignore
-        const columnIndex = this.contacts[this.userSettings.selectedContactIndex][InfoGroup].length;
-        if (InfoGroup == 'Members' || InfoGroup == 'Properties') {
-          // prettier-ignore
-          this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push({ ['Type']: InfoKey });
-          this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type');
-        } else {
-          // prettier-ignore
-          this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push({ [InfoKey]: '' });
-          this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
-        }
-      } else {
-        const newMember = {
-          Assets: [],
-          Assigned: this.userData.id,
-          Categ: '',
-          Connections: [],
-          Created: {
-            [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
-          },
-          Custom1: [],
-          Custom2: '',
-          Custom3: '',
-          Custom4: '',
-          Custom5: '',
-          DNC: 0,
-          id: '',
-          Log: [],
-          Members: [
-            {
-              Type: Object.keys(
-                this.accountSettings.contactInfo.keys.Members
-              )[0],
-              Name: '',
-            },
-          ],
-          Notes: '',
-          Properties: [],
-          RecurTasks: [],
-          Tasks: [],
-          Updated: {
-            [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
-          },
-        };
-        this.contacts.push(newMember);
-        const newContactIndex = this.contacts.length - 1;
-        this.userSettings.selectedContactIndex = newContactIndex;
-
-        try {
-          const response = await fetch(servr_url + this.endPts.contacts, {
-            method: 'POST',
-            headers: {
-              Authorization: this.accessToken,
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-store',
-            },
-            body: JSON.stringify({
-              Date: this.times.Y_m_d_H_i_s_z.slice(0, 16),
-              Member: Object.keys(
-                this.accountSettings.contactInfo.keys.Members
-              )[0],
-            }),
-          });
-          const postContactInfoResJSON = await response.json();
-          if (postContactInfoResJSON.success) {
-            // this.msg.snackBar = 'Updated ';
-            console.log(postContactInfoResJSON);
-            console.log(newContactIndex);
-            console.log(this.contacts[newContactIndex]);
-            console.log(postContactInfoResJSON.data.contact_id);
-            this.contacts[newContactIndex].id =
-              postContactInfoResJSON.data.contact_id;
-          }
-        } catch (error) {
-          this.msg.snackBar = error.toString();
-        }
-      }
-      event.srcElement.selectedIndex = 0;
-    },
-  },
+  methods: {},
 
   mounted() {
     style(

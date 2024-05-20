@@ -95,12 +95,13 @@ export default {
     top: 12px;
     left: 22.5px;
     color: grey;
-    z-index: 1;
+    z-index: 2;
 }
 .search-bar select {
     appearance: none;
     color-scheme: dark;
     position: absolute;
+    z-index: 1;
     left: 0;
     top: 40px;
     width: 100%;

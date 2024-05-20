@@ -110,25 +110,25 @@ export default {
 .calendar-body-grid-container0,
 .calendar-body-grid-container1,
 .calendar-body-grid-container2 {
-  grid-template-rows: calc( 100vh - 100px);
+  grid-template-rows: calc( 100vh - 60px);
 }
 .calendar-body-grid-container3 {
-  grid-template-rows: calc( 50vh - 50px) calc( 50vh - 50px);
+  grid-template-rows: calc( 50vh - 30px) calc( 50vh - 30px);
 }
 .calendar-body-grid-container4 {
-  grid-template-rows: calc( 33.33vh - 33.33px) calc( 33.33vh - 33.33px) calc( 33.33vh - 33.33px);
+  grid-template-rows: calc( 33.33vh - 20px) calc( 33.33vh - 20px) calc( 33.33vh - 20px);
 }
 .calendar-body-grid-container5 {
-  grid-template-rows: calc( 25vh - 25px) calc( 25vh - 25px) calc( 25vh - 25px) calc( 25vh - 25px);
+  grid-template-rows: calc( 25vh - 15px) calc( 25vh - 15px) calc( 25vh - 15px) calc( 25vh - 15px);
 }
 .day {
   border: solid #999999;
   border-width: 2px;
   cursor: pointer;
-  overflow: hidden scroll;
+  overflow: hidden;
   white-space: nowrap;
 }
-.day::-webkit-scrollbar {
+/* .day::-webkit-scrollbar {
   width: 5px;
 }
 .day::-webkit-scrollbar-track {
@@ -141,7 +141,7 @@ export default {
 
 .day::-webkit-scrollbar-thumb:hover {
   background: #555;
-}
+} */
 .day:hover:not(.activeDay) {
   background-color: #EBCCFF;
 }

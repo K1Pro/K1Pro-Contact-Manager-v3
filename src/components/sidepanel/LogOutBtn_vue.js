@@ -6,9 +6,7 @@ export default {
       title="Log out"
       @click.prevent="deleteLogin">
       <i class="fa fa-sign-out"></i>
-      <span v-if="sidePanelOpen">
         Log out
-      </span>
     </button>
   `,
 
@@ -22,8 +20,6 @@ export default {
     ]),
   },
 
-  props: ['sidePanelOpen'],
-
   methods: {
     deleteCookie() {
       this.accessToken = undefined;
@@ -35,7 +31,7 @@ export default {
     async deleteLogin() {
       if (confirm('Are you sure you want to log out?') == true) {
         this.loggedIn = false;
-        this.msg.snackBar = 'Logged out';
+        // this.msg.snackBar = 'Logged out';
         try {
           const response = await fetch(
             this.endPts.loginURL + this.endPts.logout + this.sessionID,
@@ -51,7 +47,7 @@ export default {
           // const logOutResJSON = await response.json();
         } catch (error) {
           this.deleteCookie();
-          this.msg.snackBar = 'Logged out';
+          this.msg.snackBar = 'Logged out with error';
           console.log(error);
         }
       }
