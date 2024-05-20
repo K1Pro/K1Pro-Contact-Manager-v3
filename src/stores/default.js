@@ -189,7 +189,7 @@ const useDefaultStore = Pinia.defineStore('default', {
     days(state) {
       let dateRangeStart = 1;
       let dateArray = [];
-      let currentDate = new Date(state.firstCalDate);
+      let currentDate = new Date(state.firstCalDate + 'T00:00:00');
       // prettier-ignore
       while (dateRangeStart <= state.daysRangeArr[state.userSettings.calendar.filters.days]) {
         // prettier-ignore
@@ -200,7 +200,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       return dateArray;
     },
     dayOfTheWeek(state) {
-      return new Date(state.times.Y_m_d).getDay(); // 1 is Monday, 2 is Tuesday, ..., 0 is Sunday
+      return new Date(state.times.Y_m_d + 'T00:00:00').getDay(); // 1 is Monday, 2 is Tuesday, ..., 0 is Sunday
     },
     dayIndex(state) {
       return state.days.findIndex((day) => day == state.times.Y_m_d);

@@ -78,7 +78,9 @@ export default {
             (task?.Recur.includes(this.days[this.dayIndex].slice(-5)) ||
               task?.Recur.includes(this.days[this.dayIndex].slice(8, 10)) ||
               task?.Recur.includes(
-                new Date(this.days[this.dayIndex]).getDay().toString()
+                new Date(this.days[this.dayIndex] + 'T00:00:00')
+                  .getDay()
+                  .toString()
               ) ||
               task?.Recur.includes('everyday'))
           ) {

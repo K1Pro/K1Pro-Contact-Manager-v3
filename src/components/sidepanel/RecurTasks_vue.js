@@ -108,7 +108,7 @@ export default {
         recurTaskEvent = (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28');
       } else if (freq == 'Semiannually') {
         // prettier-ignore
-        const halfYearLater = new Date(start).setMonth(new Date(start).getMonth() + 6);
+        const halfYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 6);
         // prettier-ignore
         recurTaskEvent = (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28') + '_' + new Date(halfYearLater).toISOString().slice(5, 10);
         // prettier-ignore
@@ -116,7 +116,7 @@ export default {
       } else if (freq == 'Monthly') {
         recurTaskEvent = start.slice(8, 10);
       } else if (freq == 'Weekly') {
-        recurTaskEvent = new Date(start).getDay().toString();
+        recurTaskEvent = new Date(start + 'T00:00:00').getDay().toString();
       } else if (freq == 'Daily') {
         recurTaskEvent = 'everyday';
       }
