@@ -3,6 +3,7 @@ import Members from './contactinfo/Members_vue.js';
 import Properties from './contactinfo/Properties_vue.js';
 import Assets from './contactinfo/Assets_vue.js';
 import Connections from './contactinfo/Connections_vue.js';
+import Credentials from './contactinfo/Credentials_vue.js';
 
 export default {
   name: 'Contact Info',
@@ -14,6 +15,7 @@ export default {
       <properties></properties>
       <assets></assets>
       <connections></connections>
+      <credentials></credentials>
       <template  v-if="slctdCntct">
         <div style="text-align: right; font-size: 14px">Owner: 
           <select style="margin-right: 5px; width: calc(100% - 85px); border: none; background-color:transparent" v-model="contacts[userSettings.selectedContactIndex].Assigned" @change="patchContactInfo($event.target.value, 'Assigned')">
@@ -47,6 +49,7 @@ export default {
     Properties,
     Assets,
     Connections,
+    Credentials,
   },
 
   //   props: [''],

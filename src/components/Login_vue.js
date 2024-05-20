@@ -227,6 +227,7 @@ export default {
   right: 0px;
   background: none;
   border: none;
+  cursor: pointer;
 }
 .login-body input[type='text'],
 .login-body input[type='password'] {
