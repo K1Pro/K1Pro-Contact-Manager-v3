@@ -126,7 +126,6 @@ export default {
   },
 
   mounted() {
-    console.log('good_luck_buddy_again_and_again'.split(/_(.*)/s));
     document.addEventListener('click', this.onWindowClick);
     style(
       'search-bar',
