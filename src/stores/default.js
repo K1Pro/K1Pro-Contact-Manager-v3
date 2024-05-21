@@ -17,6 +17,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       userSettings: {},
       tempFiltersDays: null,
       contacts: [],
+      emails: [],
       endPts: {
         url: url,
         accountLoginURL: accountlogin_url,
@@ -27,6 +28,7 @@ const useDefaultStore = Pinia.defineStore('default', {
         settings: 'settings',
         contacts: 'contacts',
         currentupdate: 'currentupdate',
+        emails: 'emails',
         login: 'sessions',
         logout: 'sessions/',
       },

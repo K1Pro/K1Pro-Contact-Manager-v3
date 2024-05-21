@@ -4,6 +4,7 @@ import Recurtasks from './sidepanel/RecurTasks_vue.js';
 import Notes from './sidepanel/Notes_vue.js';
 import Settings from './sidepanel/Settings_vue.js';
 import Custom1 from './sidepanel/custom/1_vue.js';
+import Emails from './sidepanel/Emails_vue.js';
 
 export default {
   name: 'Side Panel',
@@ -129,7 +130,7 @@ export default {
           </div>
 
           <div v-else-if="activeTab == 'envelope'">
-            Emails
+            <emails></emails>
           </div>
           
           <div v-else-if="activeTab == 'chart-pie'">
@@ -158,6 +159,7 @@ export default {
     Notes,
     Settings,
     Custom1,
+    Emails,
   },
 
   data() {

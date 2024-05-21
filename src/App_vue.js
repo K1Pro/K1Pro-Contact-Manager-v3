@@ -65,6 +65,7 @@ export default {
       'userSettings',
       'tempFiltersDays',
       'contacts',
+      'emails',
       'endPts',
       'times',
       'patchUserSettings',
@@ -160,6 +161,7 @@ export default {
             userDataResJSON.data.userSettings.calendar.filters.days = 1;
           this.userSettings = userDataResJSON.data.userSettings;
           this.getContacts();
+          this.getEmailSettings();
         } else {
           this.loggedIn = false;
           document.cookie = `_a_t=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${cookiePath};`;
@@ -185,6 +187,26 @@ export default {
         if (getContactsResJSON.success) {
           // console.log(getContactsResJSON);
           this.contacts = getContactsResJSON.data.contacts;
+        }
+      } catch (error) {
+        this.msg.snackBar = error.toString();
+        console.log(error.toString());
+      }
+    },
+
+    async getEmailSettings() {
+      try {
+        const response = await fetch(servr_url + this.endPts.emails, {
+          method: 'GET',
+          headers: {
+            Authorization: this.accessToken,
+            'Cache-Control': 'no-store',
+          },
+        });
+        const getEmailSettingsResJSON = await response.json();
+        if (getEmailSettingsResJSON.success) {
+          // console.log(getEmailSettingsResJSON);
+          this.emails = getEmailSettingsResJSON.data.emailSettings;
         }
       } catch (error) {
         this.msg.snackBar = error.toString();
