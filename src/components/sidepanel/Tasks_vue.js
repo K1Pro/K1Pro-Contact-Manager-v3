@@ -44,7 +44,7 @@ export default {
             </select>
             <span class="tasks-label">Finished:</span><input type="checkbox" :checked="task?.Status == 1" @change="updateTask($event.target.checked, task.RealIndex, 'Status')"/>
             <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
-              <span spellcheck="false" contenteditable v-on:blur="updateTask($event.target.innerHTML, task.RealIndex, 'Desc')">{{task?.Desc}}</span>
+              <span spellcheck="false" contenteditable="plaintext-only" v-on:blur="updateTask($event.target.innerHTML, task.RealIndex, 'Desc')">{{task?.Desc}}</span>
             </div>
           </div>
           <div v-if="eventIndex !== null && slctdCntct.Tasks.length > 1" class="tasks-body" style="backgroundColor: lightblue; textAlign: right">
@@ -96,10 +96,13 @@ export default {
     updateTask(event, columnIndex, key) {
       const column = 'Tasks';
       // prettier-ignore
-      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event;
-      // prettier-ignore
-      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Update = this.userData.id;
-      this.patchContactInfo(event, column, columnIndex, key);
+      if(event != this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key]) {
+        // prettier-ignore
+        this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event;
+        // prettier-ignore
+        this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Update = this.userData.id;
+        this.patchContactInfo(event, column, columnIndex, key);
+      }
     },
     newTask() {
       this.showAll();

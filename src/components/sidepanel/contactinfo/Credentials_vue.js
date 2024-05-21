@@ -15,17 +15,12 @@ export default {
                                 :placeholder="credInputs.placeholder"
                                 :type="credInputType"
                                 :value="credInfo"
-                                :ref="'cred' + credIndex"
-                                @change="updateCred($event, credIndex, credType)" />
-                            <button class="cred-reveal" style="color: grey" @click="revealCred(credIndex)">
-                                <span
-                                v-if="credInputType == 'password'"
-                                class="fa-solid fa-eye"
-                                ></span>
-                                <span
-                                v-if="credInputType == 'text'"
-                                class="fa-solid fa-eye-slash"
-                                ></span>
+                                :ref="'credInput' + credIndex"
+                                :style="{'border-bottom': credIndex !== slctdCntct.Credentials.length - 1 ? '1px solid black' : '0'}"
+                                @change="updateCred($event, credIndex, credType)"
+                                @focusin="revealCred(credIndex)" />
+                            <button class="cred-reveal" style="color: grey" @click="toggleCred(credIndex)">
+                                <span :ref="'credIcon' + credIndex" class="fa-solid fa-eye"></span>
                             </button>
                             <button class="cred-button" @click="deleteContactInfo('Credentials', credIndex)"><i class="fa-solid fa-trash"></i></button>
                         </div>
@@ -68,13 +63,21 @@ export default {
       this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },
+    toggleCred(credIndex) {
+      if (this.$refs['credInput' + credIndex][0].type == 'password') {
+        this.$refs['credInput' + credIndex][0].type = 'text';
+        this.$refs['credIcon' + credIndex][0].classList.remove('fa-eye');
+        this.$refs['credIcon' + credIndex][0].classList.add('fa-eye-slash');
+      } else {
+        this.$refs['credInput' + credIndex][0].type = 'password';
+        this.$refs['credIcon' + credIndex][0].classList.remove('fa-eye-slash');
+        this.$refs['credIcon' + credIndex][0].classList.add('fa-eye');
+      }
+    },
     revealCred(credIndex) {
-      this.$refs['cred' + credIndex][0].type == 'password'
-        ? (this.$refs['cred' + credIndex][0].type = 'text')
-        : (this.$refs['cred' + credIndex][0].type = 'password');
-      //   this.credInputType == 'password'
-      //     ? (this.credInputType = 'text')
-      //     : (this.credInputType = 'password');
+      this.$refs['credInput' + credIndex][0].type = 'text';
+      this.$refs['credIcon' + credIndex][0].classList.remove('fa-eye');
+      this.$refs['credIcon' + credIndex][0].classList.add('fa-eye-slash');
     },
   },
 
@@ -85,8 +88,8 @@ export default {
   .credentials{}
   .cred-icon {
     position: absolute;
-    top: 6px;
-    left: 6px;
+    top: 5px;
+    left: 10px;
     color: grey;
     z-index: 1;
   }
@@ -94,24 +97,29 @@ export default {
     position: relative;
   }
   .credentials input[type='text'], .credentials input[type='password'] {
-    width: calc(100% - 32px);
-    padding: 6px 6px 6px 30px;
+    width: calc(100% - 30px);
+    padding: 5px 35px 5px 30px;
+    border: none;
+    border-radius: 0px;
   }
   .cred-reveal {
     width: 30px;
     position: absolute;
-    top: 7px;
-    right: 42px;
+    top: 5px;
+    right: 35px;
     background: none;
     border: none;
     cursor: pointer;
   }
   .cred-button{
-    padding: 6px;
-    width: 32px;
+    padding: 5px;
+    width: 30px;
     background-color: transparent;
     border: 0px;
     cursor: pointer;
+  }
+  .cred-button:hover{
+    color: DimGrey;
   }
   `
     );

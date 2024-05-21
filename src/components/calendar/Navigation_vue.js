@@ -90,7 +90,7 @@ export default {
 .navigation-grid-item4,
 .navigation-grid-item5 {
   font-size: 30px;
-  color: white;
+  color: Gray;
 }
 .navigation-grid-item1,
 .navigation-grid-item4 {
@@ -108,7 +108,7 @@ export default {
   font-family: 'Helvetica', sans-serif;
   font-size: 25px;
   background-color: #999999;
-  color-scheme: dark;
+  /* color-scheme: dark; */
   border: 0;
 }
 

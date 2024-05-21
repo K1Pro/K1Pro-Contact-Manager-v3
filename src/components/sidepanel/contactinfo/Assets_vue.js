@@ -11,6 +11,7 @@ export default {
                     <div v-if="assetInputs.icon" style="position: relative">
                       <i class="asset-icon" :class="assetInputs.icon"></i>
                       <input
+                          :style="{'border-bottom': assetIndex !== slctdCntct.Assets.length - 1 ? '1px solid black' : '0'}"
                           :placeholder="assetInputs.placeholder"
                           :type="assetInputs.type" 
                           :value="assetInfo"
@@ -72,21 +73,25 @@ export default {
 .assets{}
 .asset-icon {
   position: absolute;
-  top: 6px;
-  left: 6px;
+  top: 5px;
+  left: 5px;
   color: grey;
   z-index: 1;
 }
 .assets input[type='text'] {
-  width: calc(100% - 32px);
-  padding: 6px 6px 6px 30px;
+  width: calc(100% - 30px);
+  padding: 5px 5px 5px 30px;
+  border: none
 }
 .asset-button{
-  padding: 6px;
-  width: 32px;
+  padding: 5px;
+  width: 30px;
   background-color: transparent;
   border: 0px;
   cursor: pointer;
+}
+.asset-button:hover{
+  color: DimGrey;
 }
 `
     );

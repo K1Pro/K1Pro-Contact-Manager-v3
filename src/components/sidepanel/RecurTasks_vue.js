@@ -42,7 +42,7 @@ export default {
             <span class="recur-tasks-label">Finished:</span>
             <button @click="updateRecurTask(times.Y_m_d_H_i_s_z.slice(0, 10), recurTask.RealIndex, 'Review')">{{ recurTask.Review? recurTask.Review.slice(5,7) + '/' + recurTask.Review.slice(8,10) + '/' + recurTask.Review.slice(0,4) : 'Click here' }}</button> 
             <div class="recur-tasks-span" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
-              <span spellcheck="false" contenteditable v-on:blur="updateRecurTask($event.target.innerHTML, recurTask.RealIndex, 'Desc')">{{recurTask.Desc}}</span>
+              <span spellcheck="false" contenteditable="plaintext-only" v-on:blur="updateRecurTask($event.target.innerHTML, recurTask.RealIndex, 'Desc')">{{recurTask.Desc}}</span>
             </div>
           </div>
           <div v-if="eventIndex !== null && slctdCntct.RecurTasks.length > 1" class="recur-tasks-body" style="backgroundColor: lightblue; textAlign: right">
@@ -95,10 +95,13 @@ export default {
     updateRecurTask(event, columnIndex, key) {
       const column = 'RecurTasks';
       // prettier-ignore
-      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event;
-      // prettier-ignore
-      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Update = this.userData.id;
-      this.patchContactInfo(event, column, columnIndex, key);
+      if(event != this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key]) {
+        // prettier-ignore
+        this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event;
+        // prettier-ignore
+        this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Update = this.userData.id;
+        this.patchContactInfo(event, column, columnIndex, key);
+      }
     },
     updateRecurTaskFreq(columnIndex, start, freq) {
       const column = 'RecurTasks';

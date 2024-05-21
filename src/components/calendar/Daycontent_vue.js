@@ -142,10 +142,11 @@ export default {
   padding-top: 2px;
   padding-bottom: 2px;
   border-right: 5px solid #888;
+  overflow: hidden;
 }
 .task-grid-day-content{
   height: -webkit-fill-available;
-  overflow: hidden scroll
+  overflow: hidden scroll;
 }
 
 .task-grid-day-content::-webkit-scrollbar {

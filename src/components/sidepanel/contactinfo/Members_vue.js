@@ -9,8 +9,8 @@ export default {
         <div class='members'>
             <div v-for="(member, memberIndex) in slctdCntct?.Members">
                 <div class="member-title-grid-container">
-                  <div class="member-title" ><i class="fa-solid fa-user">&nbsp;</i>{{ member.Type }}</div>
-                      <i v-if="memberIndex === 0" class="fa-solid fa-square-plus" style="position: absolute; right: 10px; margin-top: 10px"></i>
+                  <div class="member-title"><i class="fa-solid fa-user">&nbsp;</i>{{ member.Type }}</div>
+                      <i v-if="memberIndex === 0" class="fa-solid fa-square-plus" style="position: absolute; right: 10px; margin-top: 5px"></i>
                       <select v-if="memberIndex === 0" @change='addContactInfo' style="position: absolute; cursor: pointer; outline: none; right: 10px; width: 120px; border: none; background-color:transparent; appearance: none">
                         <option selected disabled></option>
                         <option v-for="cntctInfo in addCntctInfoDropDown" :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey" >{{cntctInfo.InfoKey + cntctInfo.InfoPlaceholder}}</option>
@@ -40,6 +40,7 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'accessToken',
+      'msg',
       'userData',
       'accountSettings',
       'userSettings',
@@ -161,6 +162,7 @@ export default {
           }
         } catch (error) {
           this.msg.snackBar = error.toString();
+          console.log(error.toString());
         }
       }
       event.srcElement.selectedIndex = 0;
@@ -183,14 +185,17 @@ export default {
   grid-template-columns: calc(100% - 34px) 34px;
 }
 .member-title {
-  padding: 7px 0px 7px 0px;
+  padding: 5px 0px 5px 0px;
 }
 .member-button{
-  padding: 7px 0px 7px 0px;
+  padding: 5px 0px 5px 0px;
   width: 32px;
   background-color: transparent;
   border: 0px;
   cursor: pointer;
+}
+.member-button:hover{
+  color: DimGrey;
 }
 .member-grid-container {
   display: grid;
@@ -202,8 +207,9 @@ export default {
   border-right: 0px;
   border-bottom: 1px;
   border-left: 0px;
-  padding: 6px;
-  width: 100%
+  padding: 5px;
+  width: 100%;
+  height: 100%;
 }
 .member-grid-item input[type='date'] {
   font-family: 'Helvetica', sans-serif;
@@ -212,7 +218,8 @@ export default {
   border-bottom: 1px;
   border-left: 0px;
   padding: 5px;
-  width: 100%
+  width: 100%;
+  height: 100%;
 }
 `
     );

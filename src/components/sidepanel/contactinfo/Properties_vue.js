@@ -122,14 +122,17 @@ export default {
   grid-template-columns: calc(100% - 34px) 34px;
 }
 .property-title {
-  padding-top: 6px;
+  padding-top: 5px;
 }
 .property-button{
-  padding: 7px;
+  padding: 5px;
   width: 32px;
   background-color: transparent;
   border: 0px;
   cursor: pointer;
+}
+.property-button:hover{
+  color: DimGrey;
 }
 .property-grid-container {
   margin-top: 2px;
@@ -170,8 +173,9 @@ export default {
   border-right: 0px;
   border-bottom: 2px;
   border-left: 0px;
-  padding: 6px;
-  width: 100%
+  padding: 5px;
+  width: 100%;
+  height: 100%;
 }
 .property{
     text-align: left;

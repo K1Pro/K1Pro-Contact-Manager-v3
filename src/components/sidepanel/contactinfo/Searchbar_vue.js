@@ -16,6 +16,7 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
+      'userData',
       'userSettings',
       'contacts',
       'patchUserSettings',
@@ -23,22 +24,64 @@ export default {
     searchArray() {
       let searchResultArray = [];
       if (this.search.length > 2) {
-        this.contacts.forEach((contact, contactIndex) => {
-          contact.Members.forEach((member) => {
-            let fullName;
-            if (member.First && !member.Name) fullName = member.First;
-            if (member.Name && !member.First) fullName = member.Name;
-            if (member.First && member.Name)
-              fullName = member.First + ' ' + member.Name;
-            if (
-              fullName?.toLowerCase().includes(this.search.toLowerCase()) &&
-              !searchResultArray.includes(`${fullName}_${contactIndex}`)
-            )
+        this.contactInfoStringArray.forEach((contact, contactIndex) => {
+          if (contact.includes(this.search.toLowerCase().replaceAll('-', ''))) {
+            this.contacts[contactIndex].Members.forEach((member) => {
+              let fullName;
+              if (member.First && !member.Name) fullName = member.First;
+              if (member.Name && !member.First) fullName = member.Name;
+              if (member.First && member.Name)
+                fullName = member.First + ' ' + member.Name;
               searchResultArray.push(`${fullName}_${contactIndex}`);
-          });
+            });
+          }
         });
       }
       return searchResultArray.sort();
+    },
+    contactInfoStringArray() {
+      let stringArray = [];
+
+      this.contacts.forEach((contact, contactIndex) => {
+        stringArray[contactIndex] = [];
+        contact.Members.forEach((member) => {
+          let fullName;
+          if (member.First && !member.Name) fullName = member.First;
+          if (member.Name && !member.First) fullName = member.Name;
+          if (member.First && member.Name)
+            fullName = member.First + ' ' + member.Name;
+          stringArray[contactIndex] += (fullName + ' ').toLowerCase();
+        });
+
+        contact.Properties.forEach((property) => {
+          Object.entries(property).forEach(([propertyKey, propertyValue]) => {
+            if (propertyKey != 'Type')
+              stringArray[contactIndex] += (propertyValue + ' ').toLowerCase();
+          });
+        });
+
+        contact.Connections.forEach((connection) => {
+          Object.values(connection).forEach((connectionValue) => {
+            stringArray[contactIndex] += (connectionValue + ' ')
+              .toLowerCase()
+              .replaceAll('-', '');
+          });
+        });
+
+        contact.Custom1.forEach((custom1) => {
+          Object.entries(custom1).forEach(([custom1Key, custom1Value]) => {
+            if (
+              custom1Key == 'Policy_No' &&
+              this.userData.AppPermissions.ContactManager[0] ==
+                'bundle_insurance'
+            )
+              stringArray[contactIndex] += (custom1Value + ' ')
+                .toLowerCase()
+                .replaceAll('-', '');
+          });
+        });
+      });
+      return stringArray;
     },
   },
 
@@ -83,6 +126,7 @@ export default {
   },
 
   mounted() {
+    console.log('good_luck_buddy_again_and_again'.split(/_(.*)/s));
     document.addEventListener('click', this.onWindowClick);
     style(
       'search-bar',
