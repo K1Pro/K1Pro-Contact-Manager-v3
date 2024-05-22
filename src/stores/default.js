@@ -19,7 +19,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       tempFiltersDays: null,
       contacts: [],
       emails: [],
-      reports: 'All contacts',
+      reports: 'Contacts with expanded info',
       endPts: {
         url: url,
         accountLoginURL: accountlogin_url,

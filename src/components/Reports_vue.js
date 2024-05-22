@@ -5,37 +5,61 @@ export default {
 
   template: /*html*/ `
       <div class='reports'>
-        <template v-if="reports == 'All contacts'">
+        <template v-if="reports == 'Contacts with expanded info'">
             <table>
                 <thead>
                     <tr>
                         <th>id</th>
-                        <th>Members</th>
-                        <th>Properties</th>
+                        <th>Contact</th>
+                        <th>Address</th>
                         <th>Assets</th>
                         <th>Connections</th>
+                        <th>Category</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="contact, contactIndex in contacts" :class="'cell' + contactIndex % 2">
                         <td class="cellHover" @click="selectContact(contactIndex)">{{contact.id}}</td>
                         <td><div v-for="contactInfo in contact.Members">{{contactInfo.First}} {{contactInfo.Name}}</div></td>
-                        <td>{{Object.values(contact.Properties)?.[0]?.Address_1}}</td>
-                        <td>{{Object.values(contact.Assets)[0] ? Object.values(Object.values(contact.Assets)[0])[0] : ''}}</td>
-                        <td>{{Object.values(contact.Connections)[0] ? Object.values(Object.values(contact.Connections)[0])[0] : ''}}</td>
+                        <td>
+                          <template v-for="contactInfo in contact.Properties">
+                            <div>{{contactInfo.Address_1}} {{contactInfo.Address_2}}</div>
+                            <div>{{contactInfo.City}} {{contactInfo.State}} {{contactInfo.Zip}}</div>
+                          </template>
+                        </td>
+                        <td>
+                          <template v-for="contactInfo in contact.Assets">
+                            <div v-for="infoItem in contactInfo">
+                              {{infoItem}}
+                            </div>
+                          </template>
+                        </td>
+                        <td>
+                          <template v-for="contactInfo in contact.Connections">
+                            <div v-for="infoItem in contactInfo">
+                              {{infoItem}}
+                            </div>
+                          </template>
+                        </td>
+                        <td>
+                          <div>
+                            {{contact.Categ}}
+                          </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </template>
-        <template v-if="reports == 'Contacts with minimum information'">
+        <template v-if="reports == 'Contacts with minimum info'">
           <table>
               <thead>
                   <tr>
                       <th>id</th>
-                      <th>Members</th>
-                      <th>Properties</th>
+                      <th>Contact</th>
+                      <th>Address</th>
                       <th>Assets</th>
                       <th>Connections</th>
+                      <th>Category</th>
                   </tr>
               </thead>
               <tbody>
@@ -45,10 +69,53 @@ export default {
                       <td>{{Object.values(contact.Properties)?.[0]?.Address_1}}</td>
                       <td>{{Object.values(contact.Assets)[0] ? Object.values(Object.values(contact.Assets)[0])[0] : ''}}</td>
                       <td>{{Object.values(contact.Connections)[0] ? Object.values(Object.values(contact.Connections)[0])[0] : ''}}</td>
+                      <td>{{contact.Categ}}</td>
                   </tr>
               </tbody>
           </table>
-      </template>
+        </template>
+        <template v-if="reports == 'Policy info'">
+          <table>
+              <thead>
+                  <tr>
+                    <th>id</th>
+                    <th>Contact</th>
+                    <th>Carriers</th>
+                    <th>Policy Types</th>
+                    <th>Policy Numbers</th>
+                    <th>Effective Dates</th>
+                    <th>Category</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr v-for="contact, contactIndex in contacts" :class="'cell' + contactIndex % 2">
+                      <td class="cellHover" @click="selectContact(contactIndex)">{{contact.id}}</td>
+                      <td>{{Object.values(contact.Members)[0].Name}}</td>
+                      <td>
+                        <div v-for="custom1Info in contact.Custom1">
+                          {{custom1Info.Carrier}}
+                        </div>
+                      </td>
+                      <td>
+                        <div v-for="custom1Info in contact.Custom1">
+                          {{custom1Info.Policy_Type}}
+                        </div>
+                      </td>
+                      <td>
+                        <div v-for="custom1Info in contact.Custom1">
+                          {{custom1Info.Policy_No}}
+                        </div>
+                      </td>
+                      <td>
+                        <div v-for="custom1Info in contact.Custom1">
+                          {{custom1Info.Date}}
+                        </div>
+                      </td>
+                      <td>{{contact.Categ}}</td>
+                  </tr>
+              </tbody>
+          </table>
+        </template>
       </div>`,
 
   computed: {

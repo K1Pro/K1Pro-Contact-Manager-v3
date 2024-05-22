@@ -9,11 +9,10 @@ export default {
                 Select a report
             </div>
             <div class="reports-panel-body">
-                <div class="reports-panel-report reports-panel-odd" @click="selectReport($event.target.innerHTML)">All contacts</div>
-                <div class="reports-panel-report reports-panel-even" @click="selectReport($event.target.innerHTML)">Contacts with minimum information</div>
-                <div class="reports-panel-report reports-panel-odd">All Customers</div>
-                <div class="reports-panel-report reports-panel-even">All prospects</div>
-                <div class="reports-panel-report reports-panel-odd">New business</div>
+                <div class="reports-panel-report reports-panel-odd" @click="selectReport($event.target.innerHTML)">Contacts with expanded info</div>
+                <div class="reports-panel-report reports-panel-even" @click="selectReport($event.target.innerHTML)">Contacts with minimum info</div>
+                <div class="reports-panel-report reports-panel-odd" @click="selectReport($event.target.innerHTML)">Policy info</div>
+                <div class="reports-panel-report reports-panel-odd">All tasks</div>
             </div>
         </div>`,
 
@@ -55,7 +54,6 @@ export default {
     white-space: nowrap;
 }
 .reports-panel-body{
-    padding: 5px;
     background-color: white;
     height: calc(100vh - 50px);
 }

@@ -72,8 +72,20 @@ export default {
           .replaceAll('___Car2___', this.slctdCntct?.Assets?.[1]?.Car)
           .replaceAll('___Car3___', this.slctdCntct?.Assets?.[2]?.Car)
           .replaceAll('___Car4___', this.slctdCntct?.Assets?.[3]?.Car)
+          .replaceAll('___Policy1Type___', this.slctdCntct?.Custom1?.[0]?.Policy_Type)
+          .replaceAll('___Policy2Type___', this.slctdCntct?.Custom1?.[1]?.Policy_Type)
+          .replaceAll('___Policy3Type___', this.slctdCntct?.Custom1?.[2]?.Policy_Type)
+          .replaceAll('___Policy4Type___', this.slctdCntct?.Custom1?.[3]?.Policy_Type)
+          .replaceAll('___Policy1No___', this.slctdCntct?.Custom1?.[0]?.Policy_No)
+          .replaceAll('___Policy2No___', this.slctdCntct?.Custom1?.[1]?.Policy_No)
+          .replaceAll('___Policy3No___', this.slctdCntct?.Custom1?.[2]?.Policy_No)
+          .replaceAll('___Policy4No___', this.slctdCntct?.Custom1?.[3]?.Policy_No)
+          .replaceAll('___Policy1Date___', this.slctdCntct?.Custom1?.[0]?.Date.slice(5,7) + '/' + this.slctdCntct?.Custom1?.[0]?.Date.slice(8,10) + '/' + this.slctdCntct?.Custom1?.[0]?.Date.slice(0,4))
+          .replaceAll('___Policy2Date___', this.slctdCntct?.Custom1?.[1]?.Date.slice(5,7) + '/' + this.slctdCntct?.Custom1?.[1]?.Date.slice(8,10) + '/' + this.slctdCntct?.Custom1?.[1]?.Date.slice(0,4))
+          .replaceAll('___Policy3Date___', this.slctdCntct?.Custom1?.[2]?.Date.slice(5,7) + '/' + this.slctdCntct?.Custom1?.[2]?.Date.slice(8,10) + '/' + this.slctdCntct?.Custom1?.[2]?.Date.slice(0,4))
+          .replaceAll('___Policy4Date___', this.slctdCntct?.Custom1?.[3]?.Date.slice(5,7) + '/' + this.slctdCntct?.Custom1?.[3]?.Date.slice(8,10) + '/' + this.slctdCntct?.Custom1?.[3]?.Date.slice(0,4))
           .replaceAll('___Username___', this.userData.FirstName)
-          .replaceAll('___Useremail___', this.userData.Email)
+          .replaceAll('___Useremail___', this.userData.Email.slice(0,1).toUpperCase() + this.userData.Email.slice(1))
       } else {
         slctdTemplateBody = '';
       }
