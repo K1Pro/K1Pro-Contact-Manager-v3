@@ -76,7 +76,7 @@ export default {
       this.patchContactInfo('', column, this.slctdCntct.Custom1.length, 'Date');
     },
     updatePolicy(event, columnIndex, key) {
-      console.log(event);
+      // console.log(event);
       const column = 'Custom1';
       let custom1Value =
         event.target.type == 'checkbox'

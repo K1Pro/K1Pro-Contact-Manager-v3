@@ -2,6 +2,8 @@ import Snackbar from './components/Snackbar_vue.js';
 import Login from './components/Login_vue.js';
 import Sidepanel from './components/Sidepanel_vue.js';
 import Calendar from './components/calendar/Container_vue.js';
+import Emails from './components/Emails_vue.js';
+import Reports from './components/Reports_vue.js';
 
 export default {
   name: 'App',
@@ -25,7 +27,9 @@ export default {
           </div>
 
           <div class="app-grid-item2">
-            <calendar></calendar>
+            <calendar v-if="activeWindow == 'calendar'"></calendar>
+            <emails v-if="activeWindow == 'email'"></emails>
+            <reports v-if="activeWindow == 'reports'"></reports>
           </div>
         </div>
       </template>
@@ -50,6 +54,8 @@ export default {
     Login,
     Sidepanel,
     Calendar,
+    Emails,
+    Reports,
   },
 
   computed: {
@@ -59,6 +65,7 @@ export default {
       'loggedIn',
       'msg',
       'windowWidth',
+      'activeWindow',
       'userData',
       'activeUserList',
       'accountSettings',
@@ -68,6 +75,7 @@ export default {
       'emails',
       'endPts',
       'times',
+      'updatingContactInfo',
       'patchUserSettings',
     ]),
 
@@ -118,9 +126,11 @@ export default {
           if (
             this.currentUpdate != getCurrentupdateResJSON.data.datetime &&
             this.currentUpdate != null
-          )
-            this.getContacts();
-          this.currentUpdate = getCurrentupdateResJSON.data.datetime;
+          ) {
+            this.getContacts(getCurrentupdateResJSON.data.datetime);
+          } else if (this.currentUpdate == null) {
+            this.currentUpdate = getCurrentupdateResJSON.data.datetime;
+          }
         }
       } catch (error) {
         this.msg.snackBar = error.toString();
@@ -146,7 +156,7 @@ export default {
 
           setInterval(() => {
             this.updateTime();
-          }, 60000);
+          }, 6000);
           this.loggedIn = true;
           this.userData = userDataResJSON.data.user;
           this.accountSettings = userDataResJSON.data.accountSettings;
@@ -160,7 +170,7 @@ export default {
           )
             userDataResJSON.data.userSettings.calendar.filters.days = 1;
           this.userSettings = userDataResJSON.data.userSettings;
-          this.getContacts();
+          this.getContacts(null);
           this.getEmailSettings();
         } else {
           this.loggedIn = false;
@@ -174,7 +184,7 @@ export default {
       }
     },
 
-    async getContacts() {
+    async getContacts(updateTime) {
       try {
         const response = await fetch(servr_url + this.endPts.contacts, {
           method: 'GET',
@@ -184,9 +194,14 @@ export default {
           },
         });
         const getContactsResJSON = await response.json();
-        if (getContactsResJSON.success) {
+        if (
+          getContactsResJSON.success &&
+          document.activeElement.tagName == 'BODY' &&
+          !this.updatingContactInfo
+        ) {
           // console.log(getContactsResJSON);
           this.contacts = getContactsResJSON.data.contacts;
+          this.currentUpdate = updateTime;
         }
       } catch (error) {
         this.msg.snackBar = error.toString();

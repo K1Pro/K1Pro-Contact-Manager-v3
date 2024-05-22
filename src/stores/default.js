@@ -10,6 +10,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       },
       windowWidth: 0,
       activeTab: 'house-chimney-user',
+      activeWindow: 'calendar',
       eventIndex: null,
       userData: {},
       accountSettings: {},
@@ -18,6 +19,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       tempFiltersDays: null,
       contacts: [],
       emails: [],
+      reports: 'All contacts',
       endPts: {
         url: url,
         accountLoginURL: accountlogin_url,
@@ -41,6 +43,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       firstCalDate: '',
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       appName: app_name,
+      updatingContactInfo: false,
     };
   },
   actions: {
@@ -76,6 +79,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       }
     },
     async patchContactInfo(event, column, columnIndex, key) {
+      this.updatingContactInfo = true;
       // console.log(
       //   'id: ' + this.contacts[this.userSettings.selectedContactIndex].id
       // );
@@ -107,14 +111,19 @@ const useDefaultStore = Pinia.defineStore('default', {
         });
         const patchContactInfoResJSON = await response.json();
         if (patchContactInfoResJSON.success) {
+          this.updatingContactInfo = false;
           // this.msg.snackBar = 'Updated ';
-          console.log(patchContactInfoResJSON);
+          // console.log(patchContactInfoResJSON);
+        } else {
+          this.updatingContactInfo = false;
         }
       } catch (error) {
+        this.updatingContactInfo = false;
         this.msg.snackBar = error.toString();
       }
     },
     async deleteContactInfo(column, columnIndex) {
+      this.updatingContactInfo = true;
       // console.log('column: ' + column);
       // console.log('columnIndex: ' + columnIndex);
       const confirmDeletion = 'Are you sure you would like to delete this?';
@@ -139,11 +148,15 @@ const useDefaultStore = Pinia.defineStore('default', {
           });
           const patchContactInfoResJSON = await response.json();
           if (patchContactInfoResJSON.success) {
+            this.updatingContactInfo = false;
             // this.msg.snackBar = 'Updated ';
-            console.log(patchContactInfoResJSON);
+            // console.log(patchContactInfoResJSON);
+          } else {
+            this.updatingContactInfo = false;
           }
         } catch (error) {
           this.msg.snackBar = error.toString();
+          this.updatingContactInfo = false;
         }
       }
     },

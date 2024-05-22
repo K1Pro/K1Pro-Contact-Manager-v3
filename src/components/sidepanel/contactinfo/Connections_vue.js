@@ -32,7 +32,7 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'activeTab',
+      'activeWindow',
       'accountSettings',
       'userSettings',
       'contacts',
@@ -68,7 +68,7 @@ export default {
             'tel:' + this.slctdCntct.Connections[connIndex][connType];
         }
         if (connType == 'Email') {
-          this.activeTab = 'envelope';
+          this.activeWindow = 'email';
         }
       }
     },

@@ -5,7 +5,7 @@ export default {
   name: 'Calendar',
 
   template: /*html*/ `
-        <div class='calendar-container'>  
+        <div class='calendar-container'>
             <div class="calendar-container-item1">
                 <navigation></navigation>
             </div>

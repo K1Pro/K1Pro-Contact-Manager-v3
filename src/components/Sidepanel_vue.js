@@ -4,7 +4,8 @@ import Recurtasks from './sidepanel/RecurTasks_vue.js';
 import Notes from './sidepanel/Notes_vue.js';
 import Settings from './sidepanel/Settings_vue.js';
 import Custom1 from './sidepanel/custom/1_vue.js';
-import Emails from './sidepanel/Emails_vue.js';
+import Reports from './sidepanel/Reports_vue.js';
+// import Emails from './sidepanel/Emails_vue.js';
 
 export default {
   name: 'Side Panel',
@@ -82,8 +83,7 @@ export default {
               <i class="fa fa-user-gear"></i>
               <span v-if="sidePanelOpen">Account login</span>
             </button>
-          </form>*/ ''
-          }
+          </form>
 
           <button
             title="Emails"
@@ -91,7 +91,8 @@ export default {
             @click="openTab($event)">
             <i class="fa fa-envelope"></i>
             <span v-if="sidePanelOpen">Emails</span>
-          </button>
+          </button>*/ ''
+          }
     
           <button
             title="Reports"
@@ -129,12 +130,14 @@ export default {
             <notes></notes>
           </div>
 
-          <div v-else-if="activeTab == 'envelope'">
+          ${
+            /*<div v-else-if="activeTab == 'envelope'">
             <emails></emails>
-          </div>
+          </div>*/ ''
+          }
           
           <div v-else-if="activeTab == 'chart-pie'">
-            Reports
+            <reports></reports>
           </div>
 
           <div v-else-if="activeTab == 'user-gear'">
@@ -159,7 +162,8 @@ export default {
     Notes,
     Settings,
     Custom1,
-    Emails,
+    Reports,
+    // Emails,
   },
 
   data() {
@@ -177,6 +181,7 @@ export default {
       'msg',
       'windowWidth',
       'activeTab',
+      'activeWindow',
       'eventIndex',
       'userData',
       'accountSettings',
@@ -197,6 +202,9 @@ export default {
       if (selectedTab != this.activeTab) {
         this.sidePanelOpen = false;
         this.activeTab = selectedTab;
+        this.activeTab == 'chart-pie'
+          ? (this.activeWindow = 'reports')
+          : (this.activeWindow = 'calendar');
       }
       if (customTab !== null) {
         this.customTab = customTab;
