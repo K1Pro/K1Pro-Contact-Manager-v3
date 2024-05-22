@@ -10,14 +10,15 @@ export default {
             </div>
             <div class="reports-panel-body">
                 <div class="reports-panel-report reports-panel-odd" @click="selectReport($event.target.innerHTML)">All contacts</div>
-                <div class="reports-panel-report reports-panel-even">All customers</div>
-                <div class="reports-panel-report reports-panel-odd">All prospects</div>
-                <div class="reports-panel-report reports-panel-even">New business</div>
+                <div class="reports-panel-report reports-panel-even" @click="selectReport($event.target.innerHTML)">Contacts with minimum information</div>
+                <div class="reports-panel-report reports-panel-odd">All Customers</div>
+                <div class="reports-panel-report reports-panel-even">All prospects</div>
+                <div class="reports-panel-report reports-panel-odd">New business</div>
             </div>
         </div>`,
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, ['msg']),
+    ...Pinia.mapWritableState(useDefaultStore, ['msg', 'reports']),
   },
 
   //   components: {
@@ -34,7 +35,7 @@ export default {
 
   methods: {
     selectReport(event) {
-      console.log(event);
+      this.reports = event;
     },
   },
 
@@ -66,7 +67,7 @@ export default {
     background-color: white;
 }
 .reports-panel-even {
-    background-color: grey;
+    background-color: lightblue;
 }
 
     `
