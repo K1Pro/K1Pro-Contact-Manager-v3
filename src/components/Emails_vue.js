@@ -33,7 +33,7 @@ export default {
           <input ref="emailSubject" type="text" :value="slctdTemplate != 'null' ? emails[slctdTemplate].subject : ''" placeholder="Enter email subject" />
 
           <div class=emailInputLabel>Attachment:</div>
-          <input ref="emailAttachment" type="file" name="filename">
+          <input ref="emailAttachment" type="file" multiple>
 
           <span ref="emailBody" spellcheck="false" contenteditable="plaintext-only" v-html="templateBody"></span>
 
@@ -109,10 +109,14 @@ export default {
     async sendEmail() {
       const confirmSendEmail = 'Are you sure you would like to send this?';
       if (confirm(confirmSendEmail) == true) {
-        let files = this.$refs['emailAttachment'].files[0];
-        console.log(this.$refs['emailAttachment'].files);
+        // let files = this.$refs['emailAttachment'].files[0];
+        // let files = this.$refs['emailAttachment'].files;
+
         let formData = new FormData();
-        formData.append('email_attachment', files);
+        Object.values(this.$refs['emailAttachment'].files).forEach((file) => {
+          formData.append('email_attachment[]', file);
+        });
+        //   formData.append('email_attachment', files);
         formData.append('To', this.$refs['emailTo'].value);
         formData.append('Subject', this.$refs['emailSubject'].value);
         formData.append('Body', this.$refs['emailBody'].innerHTML);
