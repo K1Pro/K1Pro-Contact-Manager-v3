@@ -49,7 +49,9 @@ export default {
       'times',
       'patchContactInfo',
       'deleteContactInfo',
+      'patchUserSettings',
       'slctdCntct',
+      'updatingContactInfo',
     ]),
     addCntctInfoDropDown() {
       const cntctInfoDropDown = [];
@@ -84,6 +86,7 @@ export default {
 
   methods: {
     async addContactInfo(event) {
+      this.updatingContactInfo = true;
       const InfoGroup = event.target.value.split('_')[0];
       if (InfoGroup != 'newContact') {
         const InfoKey = event.target.value.split('_')[1];
@@ -134,6 +137,7 @@ export default {
         this.contacts.push(newMember);
         const newContactIndex = this.contacts.length - 1;
         this.userSettings.selectedContactIndex = newContactIndex;
+        this.patchUserSettings();
 
         try {
           const response = await fetch(servr_url + this.endPts.contacts, {
@@ -159,8 +163,12 @@ export default {
             console.log(postContactInfoResJSON.data.contact_id);
             this.contacts[newContactIndex].id =
               postContactInfoResJSON.data.contact_id;
+            this.updatingContactInfo = false;
+          } else {
+            this.updatingContactInfo = false;
           }
         } catch (error) {
+          this.updatingContactInfo = false;
           this.msg.snackBar = error.toString();
           console.log(error.toString());
         }

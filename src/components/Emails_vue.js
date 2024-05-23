@@ -33,7 +33,7 @@ export default {
           <input ref="emailSubject" type="text" :value="slctdTemplate != 'null' ? emails[slctdTemplate].subject : ''" placeholder="Enter email subject" />
 
           <div class=emailInputLabel>Attachment:</div>
-          <input type="file">
+          <input type="file" name="filename" @change="uploadFile" multiple>
 
           <span ref="emailBody" spellcheck="false" contenteditable="plaintext-only" v-html="templateBody"></span>
 
@@ -134,6 +134,35 @@ export default {
           this.msg.snackBar = error.toString();
           console.log(error.toString());
         }
+      }
+    },
+    async uploadFile(event) {
+      let files = event.target.files;
+      console.log(event.target.files);
+      let formData = new FormData();
+      formData.append('email_attachment', files);
+
+      // const reader = new FileReader();
+      // reader.readAsDataURL(event.target.files[0]);
+      // reader.onload = (e) => {
+      //   this.userStore.userData.MostRecentPhoto = e.target.result;
+      // };
+
+      try {
+        const response = await fetch(servr_url + this.endPts.emails, {
+          method: 'POST',
+          headers: {
+            Authorization: this.accessToken,
+            'Cache-Control': 'no-store',
+          },
+          body: formData,
+        });
+        const uploadFileJSON = await response.json();
+        if (uploadFileJSON.success) {
+          console.log(uploadFileJSON);
+        }
+      } catch (error) {
+        this.msg.snackBar = error.toString();
       }
     },
   },

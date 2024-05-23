@@ -9,10 +9,10 @@ export default {
                 Select a report
             </div>
             <div class="reports-panel-body">
-                <div class="reports-panel-report reports-panel-odd" @click="selectReport($event.target.innerHTML)">Contacts with expanded info</div>
-                <div class="reports-panel-report reports-panel-even" @click="selectReport($event.target.innerHTML)">Contacts with minimum info</div>
+                <div class="reports-panel-report reports-panel-odd" @click="selectReport($event.target.innerHTML)">Contacts with minimum info</div>
+                <div class="reports-panel-report reports-panel-even" @click="selectReport($event.target.innerHTML)">Contacts with expanded info</div>
                 <div class="reports-panel-report reports-panel-odd" @click="selectReport($event.target.innerHTML)">Policy info</div>
-                <div class="reports-panel-report reports-panel-odd">All tasks</div>
+                <div class="reports-panel-report reports-panel-even">All tasks</div>
             </div>
         </div>`,
 
