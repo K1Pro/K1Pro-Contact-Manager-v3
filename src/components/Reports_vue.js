@@ -116,6 +116,28 @@ export default {
               </tbody>
           </table>
         </template>
+        <template v-if="reports.includes('Activity log for')">
+          <table>
+              <thead>
+                  <tr>
+                    <th>Contact</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Activity</th>
+                    <th>Owner</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr v-for="log, logIndex in slctdCntct.Log" :class="'cell' + logIndex % 2">
+                    <td>{{slctdCntct.Members[0].Name}}</td>
+                    <td>{{slctdCntct.Categ}}</td>
+                    <td>{{log[1]}}</td>
+                    <td>{{log[2]}}</td>
+                    <td>{{userList[log[0]][0]}}</td>
+                  </tr>
+              </tbody>
+          </table>
+        </template>
       </div>`,
 
   computed: {
@@ -126,6 +148,8 @@ export default {
       'userSettings',
       'reports',
       'contacts',
+      'userList',
+      'slctdCntct',
     ]),
     reportType() {},
   },

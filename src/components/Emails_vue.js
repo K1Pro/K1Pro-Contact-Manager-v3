@@ -38,7 +38,10 @@ export default {
           <span ref="emailBody" spellcheck="false" contenteditable="plaintext-only" v-html="templateBody"></span>
 
 
-          <button @click="sendEmail">Send</button>
+          <button :disabled="spinLogin" @click="sendEmail" style="cursor: pointer">
+            <i v-if="spinLogin" class="spin fa-sharp fa-solid fa-circle-notch"></i>
+            <template v-else>Send</template>
+          </button>
 
         </div>
       </template>
@@ -102,24 +105,22 @@ export default {
   //   emits: [''],
 
   data() {
-    return { slctdTemplate: 'null' };
+    return { spinLogin: false, slctdTemplate: 'null' };
   },
 
   methods: {
     async sendEmail() {
       const confirmSendEmail = 'Are you sure you would like to send this?';
       if (confirm(confirmSendEmail) == true) {
-        // let files = this.$refs['emailAttachment'].files[0];
-        // let files = this.$refs['emailAttachment'].files;
-
+        this.spinLogin = true;
         let formData = new FormData();
         Object.values(this.$refs['emailAttachment'].files).forEach((file) => {
           formData.append('email_attachment[]', file);
         });
-        //   formData.append('email_attachment', files);
         formData.append('To', this.$refs['emailTo'].value);
         formData.append('Subject', this.$refs['emailSubject'].value);
         formData.append('Body', this.$refs['emailBody'].innerHTML);
+        formData.append('id', this.slctdCntct.id);
         try {
           const response = await fetch(servr_url + this.endPts.emails, {
             method: 'POST',
@@ -133,42 +134,16 @@ export default {
           if (sendEmailResJSON.success) {
             this.msg.snackBar = 'Email sent successfully';
             console.log(sendEmailResJSON);
+            this.spinLogin = false;
           } else {
             this.msg.snackBar = 'Email error';
+            this.spinLogin = false;
           }
         } catch (error) {
+          this.spinLogin = false;
           this.msg.snackBar = error.toString();
           console.log(error.toString());
         }
-      }
-    },
-    async uploadFile(event) {
-      let files = event.target.files[0];
-      console.log(event.target.files);
-      let formData = new FormData();
-      formData.append('email_attachment', files);
-
-      // const reader = new FileReader();
-      // reader.readAsDataURL(event.target.files[0]);
-      // reader.onload = (e) => {
-      //   this.userStore.userData.MostRecentPhoto = e.target.result;
-      // };
-
-      try {
-        const response = await fetch(servr_url + this.endPts.emails, {
-          method: 'POST',
-          headers: {
-            Authorization: this.accessToken,
-            'Cache-Control': 'no-store',
-          },
-          body: formData,
-        });
-        const uploadFileJSON = await response.json();
-        if (uploadFileJSON.success) {
-          console.log(uploadFileJSON);
-        }
-      } catch (error) {
-        this.msg.snackBar = error.toString();
       }
     },
   },
