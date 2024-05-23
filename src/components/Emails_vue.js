@@ -33,7 +33,7 @@ export default {
           <input ref="emailSubject" type="text" :value="slctdTemplate != 'null' ? emails[slctdTemplate].subject : ''" placeholder="Enter email subject" />
 
           <div class=emailInputLabel>Attachment:</div>
-          <input type="file" name="filename" @change="uploadFile" multiple>
+          <input ref="emailAttachment" type="file" name="filename">
 
           <span ref="emailBody" spellcheck="false" contenteditable="plaintext-only" v-html="templateBody"></span>
 
@@ -109,19 +109,21 @@ export default {
     async sendEmail() {
       const confirmSendEmail = 'Are you sure you would like to send this?';
       if (confirm(confirmSendEmail) == true) {
+        let files = this.$refs['emailAttachment'].files[0];
+        console.log(this.$refs['emailAttachment'].files);
+        let formData = new FormData();
+        formData.append('email_attachment', files);
+        formData.append('To', this.$refs['emailTo'].value);
+        formData.append('Subject', this.$refs['emailSubject'].value);
+        formData.append('Body', this.$refs['emailBody'].innerHTML);
         try {
           const response = await fetch(servr_url + this.endPts.emails, {
             method: 'POST',
             headers: {
               Authorization: this.accessToken,
-              'Content-Type': 'application/json',
               'Cache-Control': 'no-store',
             },
-            body: JSON.stringify({
-              To: this.$refs['emailTo'].value,
-              Subject: this.$refs['emailSubject'].value,
-              Body: this.$refs['emailBody'].innerHTML,
-            }),
+            body: formData,
           });
           const sendEmailResJSON = await response.json();
           if (sendEmailResJSON.success) {
@@ -137,7 +139,7 @@ export default {
       }
     },
     async uploadFile(event) {
-      let files = event.target.files;
+      let files = event.target.files[0];
       console.log(event.target.files);
       let formData = new FormData();
       formData.append('email_attachment', files);
