@@ -31,7 +31,7 @@ export default {
               <input 
                 :type="policyInfoInputs.type" 
                 :checked="policyInfo[policyInfoInputs.value] == 1" 
-                @change="updatePolicy($event, policyInfoIndex, policyInfoInputs.value)" />
+                @change="updatePolicy($event, policyInfoIndex, policyInfoInputs.value)" /> {{policyInfo[policyInfoInputs.value] == 1 ? 'Yes' : 'No'}}
             </template>
             <template v-else-if="policyInfoInputs.type == 'number' && !(policyInfo.Policy_Type != 'Home' && policyInfoInputs.value == 'EHV')">
               <input 

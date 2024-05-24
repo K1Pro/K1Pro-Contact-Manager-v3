@@ -42,7 +42,7 @@ export default {
               <option disabled>Updated by {{userList[task.Update][0]}}</option>
               <option disabled>Created by {{userList[task.Create][0]}}</option>
             </select>
-            <span class="tasks-label">Finished:</span><input type="checkbox" :checked="task?.Status == 1" @change="updateTask($event.target.checked, task.RealIndex, 'Status')"/>
+            <span class="tasks-label">Finished:</span><input type="checkbox" :checked="task?.Status == 1" @change="updateTask($event.target.checked, task.RealIndex, 'Status')"/> {{task?.Status == 1 ? 'Yes' : 'No'}}
             <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
               <span spellcheck="false" contenteditable="plaintext-only" v-on:blur="updateTask($event.target.innerHTML, task.RealIndex, 'Desc')">{{task?.Desc}}</span>
             </div>
