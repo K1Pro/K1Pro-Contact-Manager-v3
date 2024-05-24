@@ -74,7 +74,7 @@ export default {
               </tbody>
           </table>
         </template>
-        <template v-if="reports == 'Policy info'">
+        <template v-if="reports == 'Contacts Policy info'">
           <table>
               <thead>
                   <tr>

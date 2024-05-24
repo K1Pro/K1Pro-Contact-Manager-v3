@@ -31,6 +31,7 @@ const useDefaultStore = Pinia.defineStore('default', {
         contacts: 'contacts',
         currentupdate: 'currentupdate',
         emails: 'emails',
+        calls: 'calls',
         login: 'sessions',
         logout: 'sessions/',
       },

@@ -148,7 +148,7 @@ export default {
               'Cache-Control': 'no-store',
             },
             body: JSON.stringify({
-              Date: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+              Datetime: this.times.Y_m_d_H_i_s_z.slice(0, 16),
               Member: Object.keys(
                 this.accountSettings.contactInfo.keys.Members
               )[0],
@@ -156,11 +156,6 @@ export default {
           });
           const postContactInfoResJSON = await response.json();
           if (postContactInfoResJSON.success) {
-            // this.msg.snackBar = 'Updated ';
-            console.log(postContactInfoResJSON);
-            console.log(newContactIndex);
-            console.log(this.contacts[newContactIndex]);
-            console.log(postContactInfoResJSON.data.contact_id);
             this.contacts[newContactIndex].id =
               postContactInfoResJSON.data.contact_id;
             this.updatingContactInfo = false;

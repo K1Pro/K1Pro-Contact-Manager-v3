@@ -57,6 +57,7 @@ export default {
       'contacts',
       'emails',
       'endPts',
+      'times',
       'slctdCntct',
     ]),
     templateBody() {
@@ -113,6 +114,8 @@ export default {
       const confirmSendEmail = 'Are you sure you would like to send this?';
       if (confirm(confirmSendEmail) == true) {
         this.spinLogin = true;
+        const columnIndex = this.userSettings.selectedContactIndex;
+        const sendEmailDatetime = this.times.Y_m_d_H_i_s_z.slice(0, 16);
         let formData = new FormData();
         Object.values(this.$refs['emailAttachment'].files).forEach((file) => {
           formData.append('email_attachment[]', file);
@@ -121,6 +124,7 @@ export default {
         formData.append('Subject', this.$refs['emailSubject'].value);
         formData.append('Body', this.$refs['emailBody'].innerHTML);
         formData.append('id', this.slctdCntct.id);
+        formData.append('Datetime', sendEmailDatetime);
         try {
           const response = await fetch(servr_url + this.endPts.emails, {
             method: 'POST',
@@ -135,6 +139,11 @@ export default {
             this.msg.snackBar = 'Email sent successfully';
             console.log(sendEmailResJSON);
             this.spinLogin = false;
+            this.contacts[columnIndex].Log.unshift([
+              this.userData.id,
+              sendEmailDatetime,
+              'Emailed ' + this.$refs['emailTo'].value,
+            ]);
           } else {
             this.msg.snackBar = 'Email error';
             this.spinLogin = false;

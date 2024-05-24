@@ -32,10 +32,14 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
+      'accessToken',
       'activeWindow',
+      'userData',
       'accountSettings',
       'userSettings',
       'contacts',
+      'endPts',
+      'times',
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntct',
@@ -55,7 +59,7 @@ export default {
   //   },
 
   methods: {
-    connect(connIndex, connType) {
+    async connect(connIndex, connType) {
       let checkDNC = true;
       if (this.slctdCntct.DNC === true) {
         checkDNC = confirm('Contact is listed as "Do not contact", proceed?')
@@ -66,6 +70,36 @@ export default {
         if (connType == 'Phone') {
           window.location.href =
             'tel:' + this.slctdCntct.Connections[connIndex][connType];
+          const columnIndex = this.userSettings.selectedContactIndex;
+          try {
+            const response = await fetch(servr_url + this.endPts.calls, {
+              method: 'POST',
+              headers: {
+                Authorization: this.accessToken,
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-store',
+              },
+              body: JSON.stringify({
+                ID: this.slctdCntct.id,
+                Datetime: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+                Phone: this.slctdCntct.Connections[connIndex][connType],
+              }),
+            });
+            const postConnectResJSON = await response.json();
+            if (postConnectResJSON.success) {
+              // this.msg.snackBar = 'Updated ';
+              console.log(postConnectResJSON);
+              this.contacts[columnIndex].Log.unshift([
+                this.userData.id,
+                this.times.Y_m_d_H_i_s_z.slice(0, 16),
+                'Called ' + this.slctdCntct.Connections[connIndex][connType],
+              ]);
+            } else {
+            }
+          } catch (error) {
+            this.msg.snackBar = error.toString();
+            console.log(error.toString());
+          }
         }
         if (connType == 'Email') {
           this.activeWindow = 'email';
