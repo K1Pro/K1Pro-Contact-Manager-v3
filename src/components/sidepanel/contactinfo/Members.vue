@@ -43,7 +43,13 @@
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
-      <div class="member-grid-container">
+      <div
+        :class="
+          'member-grid-container' +
+          Object.values(accountSettings.contactInfo.keys.Members[member.Type])
+            .length
+        "
+      >
         <div
           class="member-grid-item"
           v-for="memberInputs in accountSettings.contactInfo.keys.Members[
@@ -222,7 +228,15 @@ export default {
 .member-button:hover {
   color: DimGrey;
 }
-.member-grid-container {
+.member-grid-container1 {
+  display: grid;
+  grid-template-columns: 100%;
+}
+.member-grid-container2 {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+.member-grid-container3 {
   display: grid;
   grid-template-columns: 33% 33% 33%;
 }
