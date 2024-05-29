@@ -1,41 +1,75 @@
-// import example from './components/example_vue.js';
+<template>
+  <div class="members">
+    <div v-for="(member, memberIndex) in slctdCntct?.Members">
+      <div class="member-title-grid-container">
+        <div class="member-title">
+          <i class="fa-solid fa-user">&nbsp;</i>{{ member.Type }}
+        </div>
+        <i
+          v-if="memberIndex === 0"
+          class="fa-solid fa-square-plus"
+          style="position: absolute; right: 10px; margin-top: 5px"
+        ></i>
+        <select
+          v-if="memberIndex === 0"
+          @change="addContactInfo"
+          style="
+            position: absolute;
+            cursor: pointer;
+            outline: none;
+            right: 10px;
+            width: 120px;
+            border: none;
+            background-color: transparent;
+            appearance: none;
+          "
+        >
+          <option selected disabled></option>
+          <option
+            v-for="cntctInfo in addCntctInfoDropDown"
+            :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey"
+          >
+            {{ cntctInfo.InfoKey + cntctInfo.InfoPlaceholder }}
+          </option>
+          <option value="newContact">New contact</option>
+          <option value="deleteContact">Delete contact</option>
+        </select>
 
+        <button
+          v-else
+          class="member-button"
+          @click="deleteContactInfo('Members', memberIndex)"
+        >
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+      <div class="member-grid-container">
+        <div
+          class="member-grid-item"
+          v-for="memberInputs in accountSettings.contactInfo.keys.Members[
+            member.Type
+          ]"
+        >
+          <input
+            :type="memberInputs.type"
+            :placeholder="memberInputs.placeholder"
+            :value="member[memberInputs.value]"
+            @change="updateMember($event, memberIndex, memberInputs.value)"
+          />
+        </div>
+      </div>
+      <template v-if="memberIndex === slctdCntct.Members.length - 1">
+        <hr />
+      </template>
+    </div>
+  </div>
+</template>
+
+<script>
 export default {
   name: 'Members',
   // Steve Williams 2465 erie online lead do not call
   // Neeraj 2830 erie online lead do not call
-
-  template: /*html*/ `
-        <div class='members'>
-            <div v-for="(member, memberIndex) in slctdCntct?.Members">
-                <div class="member-title-grid-container">
-                  <div class="member-title"><i class="fa-solid fa-user">&nbsp;</i>{{ member.Type }}</div>
-                      <i v-if="memberIndex === 0" class="fa-solid fa-square-plus" style="position: absolute; right: 10px; margin-top: 5px"></i>
-                      <select v-if="memberIndex === 0" @change='addContactInfo' style="position: absolute; cursor: pointer; outline: none; right: 10px; width: 120px; border: none; background-color:transparent; appearance: none">
-                        <option selected disabled></option>
-                        <option v-for="cntctInfo in addCntctInfoDropDown" :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey" >{{cntctInfo.InfoKey + cntctInfo.InfoPlaceholder}}</option>
-                        <option value="newContact">New contact</option>
-                        <option value="deleteContact">Delete contact</option>
-                      </select>
-
-                  <button v-else class="member-button" @click="deleteContactInfo('Members', memberIndex)">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-                <div class="member-grid-container">
-                  <div class="member-grid-item" v-for="memberInputs in accountSettings.contactInfo.keys.Members[member.Type]">
-                    <input
-                    :type="memberInputs.type"
-                    :placeholder="memberInputs.placeholder"
-                    :value="member[memberInputs.value]"
-                    @change="updateMember($event, memberIndex, memberInputs.value)" />
-                  </div>
-                </div>
-                <template v-if="memberIndex === slctdCntct.Members.length - 1">
-                  <hr>
-                </template>
-            </div>
-        </div>`,
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
@@ -71,18 +105,6 @@ export default {
       return cntctInfoDropDown;
     },
   },
-
-  //   components: {
-  //     example,
-  //   },
-
-  //   props: [''],
-
-  //   emits: [''],
-
-  //   data() {
-  //     return {};
-  //   },
 
   methods: {
     async addContactInfo(event) {
@@ -177,12 +199,12 @@ export default {
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },
   },
+};
+</script>
 
-  mounted() {
-    style(
-      'members',
-      /*css*/ `
-.members{}
+<style>
+.members {
+}
 .member-title-grid-container {
   display: grid;
   grid-template-columns: calc(100% - 34px) 34px;
@@ -190,21 +212,22 @@ export default {
 .member-title {
   padding: 5px 0px 5px 0px;
 }
-.member-button{
+.member-button {
   padding: 5px 0px 5px 0px;
   width: 32px;
   background-color: transparent;
   border: 0px;
   cursor: pointer;
 }
-.member-button:hover{
+.member-button:hover {
   color: DimGrey;
 }
 .member-grid-container {
   display: grid;
   grid-template-columns: 33% 33% 33%;
 }
-.member-grid-item {}
+.member-grid-item {
+}
 .member-grid-item input[type='text'] {
   border-top: 1px;
   border-right: 0px;
@@ -224,7 +247,4 @@ export default {
   width: 100%;
   height: 100%;
 }
-`
-    );
-  },
-};
+</style>

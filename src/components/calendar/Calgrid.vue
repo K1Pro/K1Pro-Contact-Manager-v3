@@ -1,38 +1,44 @@
-import Daycontent from './Daycontent_vue.js';
+<template>
+  <div class="calendar-body">
+    <div
+      :class="
+        'calendar-body-grid-container' + userSettings.calendar.filters.days
+      "
+    >
+      <template v-for="(day, dayIndex) in days">
+        <div
+          v-if="(dayIndex + 1) % 7 && (dayIndex + 2) % 7"
+          class="calendar-body-grid-item day"
+          :class="{ activeDay: days[dayIndex] == times.Y_m_d }"
+          @click="changeDate(days[dayIndex])"
+        >
+          <calcontent :dayIndex="dayIndex"></calcontent>
+        </div>
 
+        <div v-if="(dayIndex + 1) % 7 === 0" class="calendar-body-grid-item">
+          <div
+            class="day saturday"
+            :class="{ activeDay: days[dayIndex - 1] == times.Y_m_d }"
+            @click="changeDate(days[dayIndex - 1])"
+          >
+            <calcontent :dayIndex="dayIndex - 1"></calcontent>
+          </div>
+          <div
+            class="day sunday"
+            :class="{ activeDay: days[dayIndex] == times.Y_m_d }"
+            @click="changeDate(days[dayIndex])"
+          >
+            <calcontent :dayIndex="dayIndex"></calcontent>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</template>
+
+<script>
 export default {
   name: 'Calendar body',
-
-  template: /*html*/ `
-        <div class='calendar-body'>
-          <div :class="'calendar-body-grid-container' + userSettings.calendar.filters.days">
-            <template v-for="(day, dayIndex) in days">
-              <div v-if="((dayIndex + 1) % 7) && ((dayIndex + 2) % 7)"
-                class="calendar-body-grid-item day"
-                :class="{ activeDay: days[dayIndex] == times.Y_m_d }"
-                @click="changeDate(days[dayIndex])">
-                  <daycontent :dayIndex="dayIndex" ></daycontent>
-              </div>
-        
-              <div v-if="(dayIndex + 1) % 7 === 0"
-                class="calendar-body-grid-item">
-                  <div
-                    class="day saturday"
-                    :class="{ activeDay: days[dayIndex-1] == times.Y_m_d }"
-                    @click="changeDate(days[dayIndex-1])">
-                      <daycontent :dayIndex="dayIndex-1" ></daycontent>
-                  </div>
-                  <div
-                    class="day sunday"
-                    :class="{ activeDay: days[dayIndex] == times.Y_m_d }"
-                    @click="changeDate(days[dayIndex])">
-                      <daycontent :dayIndex="dayIndex" ></daycontent>
-                  </div>
-              </div>
-        
-            </template>
-          </div>
-        </div>`,
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
@@ -47,16 +53,8 @@ export default {
   },
 
   components: {
-    Daycontent,
+    Calcontent,
   },
-
-  //   props: [''],
-
-  //   emits: [''],
-
-  // data() {
-  //   return {};
-  // },
 
   methods: {
     changeDate(selectedY_m_d) {
@@ -88,10 +86,13 @@ export default {
   mounted() {
     this.getFirstCalDate();
     this.tempFiltersDays = this.userSettings.calendar.filters.days;
-    style(
-      'Calendar-body',
-      /*css*/ `
-.Calendar body{}
+  },
+};
+</script>
+
+<style>
+.Calendar body {
+}
 .calendar-body-grid-container0 {
   display: grid;
   grid-template-columns: 100%;
@@ -110,16 +111,20 @@ export default {
 .calendar-body-grid-container0,
 .calendar-body-grid-container1,
 .calendar-body-grid-container2 {
-  grid-template-rows: calc( 100vh - 60px);
+  grid-template-rows: calc(100vh - 60px);
 }
 .calendar-body-grid-container3 {
-  grid-template-rows: calc( 50vh - 30px) calc( 50vh - 30px);
+  grid-template-rows: calc(50vh - 30px) calc(50vh - 30px);
 }
 .calendar-body-grid-container4 {
-  grid-template-rows: calc( 33.33vh - 20px) calc( 33.33vh - 20px) calc( 33.33vh - 20px);
+  grid-template-rows: calc(33.33vh - 20px) calc(33.33vh - 20px) calc(
+      33.33vh - 20px
+    );
 }
 .calendar-body-grid-container5 {
-  grid-template-rows: calc( 25vh - 15px) calc( 25vh - 15px) calc( 25vh - 15px) calc( 25vh - 15px);
+  grid-template-rows: calc(25vh - 15px) calc(25vh - 15px) calc(25vh - 15px) calc(
+      25vh - 15px
+    );
 }
 .day {
   border: solid #999999;
@@ -127,6 +132,7 @@ export default {
   cursor: pointer;
   overflow: hidden;
   white-space: nowrap;
+  background-image: linear-gradient(125deg, #ffffff 0 25%, #cccccc 95% 100%);
 }
 /* .day::-webkit-scrollbar {
   width: 5px;
@@ -143,7 +149,8 @@ export default {
   background: #555;
 } */
 .day:hover:not(.activeDay) {
-  background-color: #EBCCFF;
+  background-color: #ebccff;
+  background-image: linear-gradient(125deg, #ebccff 0 25%, #bca3cc 95% 100%);
 }
 .saturday {
   height: 50%;
@@ -153,11 +160,8 @@ export default {
   height: 50%;
 }
 .activeDay {
-  background-color: lightblue;
   cursor: default;
+  background-color: lightblue;
+  background-image: linear-gradient(125deg, #add8e6 0 25%, #8aacb8 95% 100%);
 }
-
-`
-    );
-  },
-};
+</style>

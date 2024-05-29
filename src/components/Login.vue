@@ -1,83 +1,86 @@
-export default {
-  name: 'Login',
+<template>
+  <div class="login">
+    <div class="login-title">
+      <i style="font-size: 30px" class="ba-icons ba-k1pro-regular"></i>
+      <span style="font-size: 18px"
+        >Pro {{ appName.replace(/([a-z])([A-Z])/g, '$1 $2').trim() }}</span
+      >
+    </div>
 
-  template: /*html*/ `
-    <div class="login">
-      <div class="login-title">
-        <i style="font-size: 30px" class="ba-icons ba-k1pro-regular"></i>
-        <span style="font-size: 18px">Pro {{ appName.replace(/([a-z])([A-Z])/g, '$1 $2').trim() }}</span>
+    <div class="login-body">
+      <div class="login-username">
+        <i class="fa-solid fa-user"></i>
+        <input
+          type="text"
+          placeholder="Username"
+          class="loginInpts"
+          autocomplete="username"
+          v-model="username"
+          @keyup="validate"
+          @keyup.enter="loginFn"
+        />
       </div>
 
-      <div class="login-body">
-        <div class="login-username">
-          <i class="fa-solid fa-user"></i>
-          <input
-            type="text"
-            placeholder="Username"
-            class="loginInpts"
-            autocomplete="username"
-            v-model="username"
-            @keyup="validate"
-            @keyup.enter="loginFn"
-          />
-        </div>
-
-        <div class="login-password">
-          <i class="fa-solid fa-key"></i>
-          <input
-            :type="loginPasswordInputType"
-            placeholder="Password"
-            class="loginInpts"
-            autocomplete="current-password"
-            minlength="8"
-            v-model="password"
-            @keyup="validate"
-            @keyup.enter="loginFn"
-          />
-          <button @click="passwordReveal" style="color: grey">
-            <span
-              v-if="loginPasswordInputType == 'password'"
-              class="fa-solid fa-eye"
-            ></span>
-            <span
-              v-if="loginPasswordInputType == 'text'"
-              class="fa-solid fa-eye-slash"
-            ></span>
-          </button>
-        </div>
-
-        <button :disabled="spinLogin" @click.prevent="loginFn">
-          <i v-if="spinLogin" class="spin fa-sharp fa-solid fa-circle-notch"></i>
-          <span v-else>Log In</span>
+      <div class="login-password">
+        <i class="fa-solid fa-key"></i>
+        <input
+          :type="loginPasswordInputType"
+          placeholder="Password"
+          class="loginInpts"
+          autocomplete="current-password"
+          minlength="8"
+          v-model="password"
+          @keyup="validate"
+          @keyup.enter="loginFn"
+        />
+        <button @click="passwordReveal" style="color: grey">
+          <span
+            v-if="loginPasswordInputType == 'password'"
+            class="fa-solid fa-eye"
+          ></span>
+          <span
+            v-if="loginPasswordInputType == 'text'"
+            class="fa-solid fa-eye-slash"
+          ></span>
         </button>
+      </div>
 
-        <form :action="endPts.accountResetURL" method="post">
-          <input type="hidden" name="appName" :value="appName" />
-          <input type="hidden" name="referer" :value="endPts.url" />
-          <input type="submit" value="Reset" />
-          <!-- <button @click="goToURL" type="button">Reset</button>-->
-        </form>
+      <button :disabled="spinLogin" @click.prevent="loginFn">
+        <i v-if="spinLogin" class="spin fa-sharp fa-solid fa-circle-notch"></i>
+        <span v-else>Log In</span>
+      </button>
 
-        <div class="login-remember">
-          <input type="checkbox" name="remember" />Remember me?
-        </div>
+      <form :action="endPts.accountResetURL" method="post">
+        <input type="hidden" name="appName" :value="appName" />
+        <input type="hidden" name="referer" :value="endPts.url" />
+        <input type="submit" value="Reset" />
+        <!-- <button @click="goToURL" type="button">Reset</button>-->
+      </form>
 
-        <div
-          class="validation-message"
-          :style="{
-            'margin-bottom': msg.login ? '0px' : '35px',
-            padding: msg.login ? '5px' : '0px',
-          }"
-        >
-          {{ msg.login ? msg.login : '' }}
-        </div>
+      <div class="login-remember">
+        <input type="checkbox" name="remember" />Remember me?
+      </div>
 
-        <div class="login-copyright">
-          © {{ new Date().getFullYear() }} K1Pro | All Rights Reserved
-        </div>
+      <div
+        class="validation-message"
+        :style="{
+          'margin-bottom': msg.login ? '0px' : '35px',
+          padding: msg.login ? '5px' : '0px',
+        }"
+      >
+        {{ msg.login ? msg.login : '' }}
+      </div>
+
+      <div class="login-copyright">
+        © {{ new Date().getFullYear() }} K1Pro | All Rights Reserved
       </div>
     </div>
-  `,
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'Login',
 
   data() {
     return {
@@ -186,11 +189,10 @@ export default {
         : (this.loginPasswordInputType = 'password');
     },
   },
+};
+</script>
 
-  mounted() {
-    style(
-      'Login',
-      /*css*/ `
+<style>
 .login {
   width: 290px;
 }
@@ -255,7 +257,4 @@ export default {
   font-size: 12px;
   padding: 15px 0px 0px 0px;
 }
-    `
-    );
-  },
-};
+</style>

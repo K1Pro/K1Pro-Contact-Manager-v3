@@ -1,14 +1,13 @@
-export default {
-  name: 'LogOutBtn',
+<template>
+  <button title="Log out" @click.prevent="deleteLogin">
+    <i class="fa fa-sign-out"></i>
+    Log out
+  </button>
+</template>
 
-  template: /*html*/ `
-    <button
-      title="Log out"
-      @click.prevent="deleteLogin">
-      <i class="fa fa-sign-out"></i>
-        Log out
-    </button>
-  `,
+<script>
+export default {
+  name: 'Logoutbtn',
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
@@ -54,3 +53,6 @@ export default {
     },
   },
 };
+</script>
+
+<style></style>

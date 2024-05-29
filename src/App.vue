@@ -1,61 +1,55 @@
-import Snackbar from './components/Snackbar_vue.js';
-import Login from './components/Login_vue.js';
-import Sidepanel from './components/Sidepanel_vue.js';
-import Calendar from './components/calendar/Container_vue.js';
-import Emails from './components/Emails_vue.js';
-import Reports from './components/Reports_vue.js';
+<template>
+  <snackbar> </snackbar>
 
+  <template v-if="loggedIn === true">
+    <template v-if="contacts.length > 0">
+      <div class="app-grid-container" :style="appGridContainer">
+        <div class="app-grid-item1">
+          <sidepanel></sidepanel>
+        </div>
+
+        <div
+          v-if="windowWidth > 768"
+          class="app-grid-resizer"
+          @mousedown="startResizeGrid"
+          @mouseup="stopResizeGrid"
+          v-on:dblclick="resetGrid"
+        ></div>
+
+        <div class="app-grid-item2">
+          <calendar v-if="activeWindow == 'calendar'"></calendar>
+          <emails v-if="activeWindow == 'email'"></emails>
+          <reports v-if="activeWindow == 'reports'"></reports>
+        </div>
+      </div>
+    </template>
+    <template v-else>
+      <div id="loader-container">
+        <div class="loader"></div>
+      </div>
+    </template>
+  </template>
+
+  <template v-if="loggedIn === false">
+    <div id="login-container">
+      <login> </login>
+    </div>
+  </template>
+
+  <template v-else></template>
+</template>
+
+<script>
 export default {
   name: 'App',
 
-  template: /*html*/ `
-    <snackbar> </snackbar>
-
-    <template v-if="loggedIn === true">
-      <template v-if='contacts.length > 0'>
-        <div class="app-grid-container" :style="appGridContainer" >
-          <div class="app-grid-item1">
-            <sidepanel></sidepanel>
-          </div>
-
-          <div 
-            v-if="windowWidth > 768" 
-            class="app-grid-resizer" 
-            @mousedown="startResizeGrid" 
-            @mouseup="stopResizeGrid" 
-            v-on:dblclick="resetGrid">
-          </div>
-
-          <div class="app-grid-item2">
-            <calendar v-if="activeWindow == 'calendar'"></calendar>
-            <emails v-if="activeWindow == 'email'"></emails>
-            <reports v-if="activeWindow == 'reports'"></reports>
-          </div>
-        </div>
-      </template>
-      <template v-else>
-        <div id="loader-container">
-          <div class="loader"></div>
-        </div>
-      </template>
-    </template>
-
-    <template v-if="loggedIn === false">
-      <div id="login-container">
-        <login> </login>
-      </div>
-    </template>
-
-    <template v-else></template>
-  `,
-
   components: {
     Snackbar,
-    Login,
     Sidepanel,
-    Calendar,
-    Emails,
     Reports,
+    Login,
+    Emails,
+    Calendar,
   },
 
   computed: {
@@ -288,10 +282,11 @@ export default {
   mounted() {
     this.updateScreenWidth();
     this.onScreenResize();
+  },
+};
+</script>
 
-    style(
-      'App',
-      /*css*/ `
+<style>
 .app-grid-container {
   display: grid;
   grid-template-columns: 100%;
@@ -303,7 +298,7 @@ export default {
 
 .app-grid-item1 {
   order: 3;
-  overflow-y: hidden; 
+  overflow-y: hidden;
   background: -webkit-linear-gradient(left, #f1f1f1 49px, #999999 49px);
   background: -moz-linear-gradient(left, #f1f1f1 49px, #999999 49px);
   background: -ms-linear-gradient(left, #f1f1f1 49px, #999999 49px);
@@ -327,7 +322,7 @@ export default {
     background: #999999;
   }
 
-  .app-grid-resizer{
+  .app-grid-resizer {
     order: 2;
     cursor: col-resize;
     background-color: #999999;
@@ -337,7 +332,4 @@ export default {
     order: 3;
   }
 }
-      `
-    );
-  },
-};
+</style>

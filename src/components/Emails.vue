@@ -1,51 +1,70 @@
-// import example from './components/example_vue.js';
+<template>
+  <div class="emails">
+    <template v-if="slctdCntct && contacts && userSettings">
+      <div class="emails-title">
+        Send email to
+        {{ slctdCntct.Members[0].First ? slctdCntct.Members[0].First : '' }}
+        {{ slctdCntct.Members[0].Name }}
+        <i @click="activeWindow = 'calendar'" class="fa-solid fa-xmark"></i>
+      </div>
+      <div class="emails-body">
+        <div class="emailInputLabel">From:</div>
+        <input type="text" :value="userData.Email" disabled />
 
+        <div class="emailInputLabel">To:</div>
+        <select ref="emailTo">
+          <template v-for="connection in slctdCntct.Connections">
+            <option v-if="connection.Email" :value="connection.Email">
+              {{ connection.Email }}
+            </option>
+          </template>
+        </select>
+
+        <div class="emailInputLabel">Template:</div>
+        <select v-model="slctdTemplate">
+          <option value="null">None</option>
+          <option v-for="(email, emailIndex) in emails" :value="emailIndex">
+            {{ email.placeholder }}
+          </option>
+        </select>
+
+        <div class="emailInputLabel">Subject:</div>
+        <input
+          ref="emailSubject"
+          type="text"
+          :value="slctdTemplate != 'null' ? emails[slctdTemplate].subject : ''"
+          placeholder="Enter email subject"
+        />
+
+        <div class="emailInputLabel">Attachment:</div>
+        <input ref="emailAttachment" type="file" multiple />
+
+        <span
+          ref="emailBody"
+          spellcheck="false"
+          contenteditable="plaintext-only"
+          v-html="templateBody"
+        ></span>
+
+        <button
+          :disabled="spinLogin"
+          @click="sendEmail"
+          style="cursor: pointer"
+        >
+          <i
+            v-if="spinLogin"
+            class="spin fa-sharp fa-solid fa-circle-notch"
+          ></i>
+          <template v-else>Send</template>
+        </button>
+      </div>
+    </template>
+  </div>
+</template>
+
+<script>
 export default {
   name: 'Emails',
-
-  template: /*html*/ `
-    <div class='emails'>
-      <template v-if="slctdCntct && contacts && userSettings">
-        <div class="emails-title">
-        Send email to
-        {{slctdCntct.Members[0].First ? slctdCntct.Members[0].First : ''}} 
-        {{slctdCntct.Members[0].Name}}
-        <i @click="activeWindow = 'calendar'" class="fa-solid fa-xmark"></i>
-        </div>
-        <div class="emails-body">
-          <div class=emailInputLabel>From:</div>
-          <input type="text" :value="userData.Email" disabled/>
-
-          <div class=emailInputLabel>To:</div>
-          <select ref="emailTo">
-            <template v-for="connection in slctdCntct.Connections">
-              <option v-if="connection.Email" :value="connection.Email">{{ connection.Email }}</option>
-            </template>
-          </select>
-
-          <div class=emailInputLabel>Template:</div>
-          <select v-model="slctdTemplate">
-            <option value="null">None</option>
-            <option v-for="email, emailIndex in emails" :value="emailIndex">{{email.placeholder}}</option>
-          </select>
-
-          <div class=emailInputLabel>Subject:</div>
-          <input ref="emailSubject" type="text" :value="slctdTemplate != 'null' ? emails[slctdTemplate].subject : ''" placeholder="Enter email subject" />
-
-          <div class=emailInputLabel>Attachment:</div>
-          <input ref="emailAttachment" type="file" multiple>
-
-          <span ref="emailBody" spellcheck="false" contenteditable="plaintext-only" v-html="templateBody"></span>
-
-
-          <button :disabled="spinLogin" @click="sendEmail" style="cursor: pointer">
-            <i v-if="spinLogin" class="spin fa-sharp fa-solid fa-circle-notch"></i>
-            <template v-else>Send</template>
-          </button>
-
-        </div>
-      </template>
-    </div>`,
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
@@ -96,14 +115,6 @@ export default {
       return slctdTemplateBody.replaceAll('undefined', '');
     },
   },
-
-  //   components: {
-  //     example,
-  //   },
-
-  //   props: [''],
-
-  //   emits: [''],
 
   data() {
     return { spinLogin: false, slctdTemplate: 'null' };
@@ -156,36 +167,35 @@ export default {
       }
     },
   },
+};
+</script>
 
-  mounted() {
-    style(
-      'emails',
-      /*css*/ `
+<style>
 .emails {
   padding: 10px 10px 10px 0px;
   font-size: 12px;
 }
 .emails-title {
-    background-color: lightblue;
-    font-weight: bold;
-    padding: 5px;
-    color: black;
-    height: 30px;
-    overflow: hidden;
-    white-space: nowrap;
-    font-size: 16px;
+  background-color: lightblue;
+  font-weight: bold;
+  padding: 5px;
+  color: black;
+  height: 30px;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 16px;
 }
-.emails-title i{
+.emails-title i {
   cursor: pointer;
 }
 .emails-body {
-    background-color: white;
-    width: 100%;
-    height: calc(100vh - 50px);
-    font-family: 'Helvetica', sans-serif;
-    padding: 5px;
-    border: none;
-    overflow: hidden scroll;
+  background-color: white;
+  width: 100%;
+  height: calc(100vh - 50px);
+  font-family: 'Helvetica', sans-serif;
+  padding: 5px;
+  border: none;
+  overflow: hidden scroll;
 }
 .emailInputLabel {
   text-align: right;
@@ -193,40 +203,37 @@ export default {
   width: 70px;
   padding: 5px;
 }
-.emails-body select, 
-.emails-body input{
-    width: calc(100% - 75px);
-    margin: 5px 0px 5px 0px;
-    padding: 5px;
-}
-.emails-body button{
+.emails-body select,
+.emails-body input {
+  width: calc(100% - 75px);
+  margin: 5px 0px 5px 0px;
   padding: 5px;
-    width: 50%;
-    margin: 5px;
+}
+.emails-body button {
+  padding: 5px;
+  width: 50%;
+  margin: 5px;
 }
 .emails-body span {
-    border-radius: 1px;
-    border: 1px solid black;
-    padding: 5px;
-    margin: 5px;
-    word-break: break-word;
-    font-size: 12px;
+  border-radius: 1px;
+  border: 1px solid black;
+  padding: 5px;
+  margin: 5px;
+  word-break: break-word;
+  font-size: 12px;
 }
-.emails-body span[contenteditable]{
-    display: block; /* not sure if this is needed */
+.emails-body span[contenteditable] {
+  display: block; /* not sure if this is needed */
 }
 .emails-body span[contenteditable]:empty::before {
-    content: 'Enter email body';
-    display: inline-block;
-    color: grey;
-    height: 200px;
+  content: 'Enter email body';
+  display: inline-block;
+  color: grey;
+  height: 200px;
 }
 .emails-body span[contenteditable]:empty:focus::before {
-    content: 'Start typing';
-    color: grey;
-    height: 200px;
+  content: 'Start typing';
+  color: grey;
+  height: 200px;
 }
-`
-    );
-  },
-};
+</style>

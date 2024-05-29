@@ -1,20 +1,24 @@
+<template>
+  <div class="notes">
+    <template v-if="slctdCntct && contacts && userSettings">
+      <div class="notes-title">
+        Notes for
+        {{ slctdCntct.Members[0].First ? slctdCntct.Members[0].First : '' }}
+        {{ slctdCntct.Members[0].Name }}
+      </div>
+      <textarea
+        placeholder="Notes"
+        :value="slctdCntct.Notes"
+        @change="updateNotes($event)"
+      ></textarea>
+    </template>
+    <template v-else> Notes </template>
+  </div>
+</template>
+
+<script>
 export default {
   name: 'Notes',
-  // v-model="contacts[userSettings.selectedContactIndex].Notes"
-  template: /*html*/ `
-    <div class='notes'>
-      <template v-if="slctdCntct && contacts && userSettings">
-        <div class="notes-title">
-          Notes for
-          {{slctdCntct.Members[0].First ? slctdCntct.Members[0].First : ''}} 
-          {{slctdCntct.Members[0].Name}}
-        </div>
-        <textarea placeholder="Notes" :value="slctdCntct.Notes" @change="updateNotes($event)"></textarea>
-      </template>
-      <template v-else>
-        Notes
-      </template>
-    </div>`,
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
@@ -25,12 +29,6 @@ export default {
       'slctdCntct',
     ]),
   },
-
-  //   components: {},
-
-  //   props: [''],
-
-  //   emits: [''],
 
   data() {
     return {};
@@ -44,15 +42,14 @@ export default {
       this.patchContactInfo(event.target.value, column);
     },
   },
+};
+</script>
 
-  mounted() {
-    style(
-      'notes',
-      /*css*/ `
+<style>
 .notes {
   background-color: lightblue;
 }
-.notes-title{
+.notes-title {
   font-weight: bold;
   padding: 5px;
   color: black;
@@ -69,7 +66,4 @@ export default {
   border: none;
   margin-bottom: -4px;
 }
-`
-    );
-  },
-};
+</style>

@@ -1,34 +1,60 @@
-// import example from './components/example_vue.js';
+<template>
+  <div class="connections">
+    <div v-for="(conn, connIndex) in slctdCntct?.Connections">
+      <div v-for="(connInfo, connType) in conn">
+        <div
+          v-for="connInputs in accountSettings.contactInfo.keys.Connections[
+            connType
+          ]"
+        >
+          <button
+            class="conn-icon"
+            :style="{
+              'border-bottom':
+                connIndex !== slctdCntct.Connections.length - 1
+                  ? '1px solid black'
+                  : '0',
+            }"
+            @click="connect(connIndex, connType)"
+          >
+            <i :class="connInputs.icon"></i>
+          </button>
+          <input
+            :type="connInputs.type"
+            :placeholder="connInputs.placeholder"
+            :style="{
+              'border-bottom':
+                connIndex !== slctdCntct.Connections.length - 1
+                  ? '1px solid black'
+                  : '0',
+            }"
+            :value="connInfo"
+            @change="updateConnection($event, connIndex, connType)"
+          />
+          <button
+            class="conn-delete-icon"
+            @click="deleteContactInfo('Connections', connIndex)"
+          >
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+      <template v-if="connIndex === slctdCntct.Connections.length - 1">
+        <input
+          type="checkbox"
+          v-model="slctdCntct.DNC"
+          @change="patchContactInfo($event.target.checked, 'DNC')"
+        />
+        Do not contact
+        <hr />
+      </template>
+    </div>
+  </div>
+</template>
 
+<script>
 export default {
   name: 'Connections',
-
-  template: /*html*/ `
-        <div class='connections'>
-            <div v-for="(conn, connIndex) in slctdCntct?.Connections">
-                <div v-for="(connInfo, connType) in conn">
-                    <div v-for="connInputs in accountSettings.contactInfo.keys.Connections[connType]">
-                        <button 
-                          class="conn-icon" 
-                          :style="{'border-bottom': connIndex !== slctdCntct.Connections.length - 1 ? '1px solid black' : '0'}"
-                          @click="connect(connIndex, connType)" >
-                          <i :class="connInputs.icon"></i>
-                        </button>
-                        <input 
-                            :type="connInputs.type" 
-                            :placeholder="connInputs.placeholder"
-                            :style="{'border-bottom': connIndex !== slctdCntct.Connections.length - 1 ? '1px solid black' : '0'}"
-                            :value="connInfo"
-                            @change="updateConnection($event, connIndex, connType)" />
-                        <button class="conn-delete-icon" @click="deleteContactInfo('Connections', connIndex)"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                </div>
-                <template v-if="connIndex === slctdCntct.Connections.length - 1">
-                    <input type="checkbox" v-model="slctdCntct.DNC" @change="patchContactInfo($event.target.checked, 'DNC')"/> Do not contact
-                    <hr>
-                </template>
-            </div>
-        </div>`,
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
@@ -45,18 +71,6 @@ export default {
       'slctdCntct',
     ]),
   },
-
-  //   components: {
-  //     example,
-  //   },
-
-  //   props: [''],
-
-  //   emits: [''],
-
-  //   data() {
-  //     return {};
-  //   },
 
   methods: {
     async connect(connIndex, connType) {
@@ -113,49 +127,45 @@ export default {
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },
   },
+};
+</script>
 
-  mounted() {
-    style(
-      'connections',
-      /*css*/ `
-.connections input{
+<style>
+.connections input {
   border: none;
   border-radius: 0px;
 }
-.conn-icon{
+.conn-icon {
   padding: 5px;
   width: 30px;
   border: none;
   border-radius: 0px;
   cursor: pointer;
 }
-.conn-icon:hover{
+.conn-icon:hover {
   color: DimGrey;
 }
-.conn-delete-icon{
+.conn-delete-icon {
   padding: 5px;
   width: 30px;
   background-color: transparent;
   border: 0px;
   cursor: pointer;
 }
-.conn-delete-icon:hover{
+.conn-delete-icon:hover {
   color: DimGrey;
 }
-.connections input[type='text']{
+.connections input[type='text'] {
   width: calc(100% - 60px);
   padding: 5px;
 }
 .connections input[type='text']:focus {
   outline: none;
 }
-.connections input[type='checkbox']{
+.connections input[type='checkbox'] {
   margin: 0px;
   margin-top: 5px;
   margin-right: 0px;
   width: 30px;
 }
-`
-    );
-  },
-};
+</style>
