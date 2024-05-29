@@ -144,7 +144,7 @@
         <div
           v-if="eventIndex !== null && slctdCntct.RecurTasks.length > 1"
           class="recur-tasks-body"
-          style="backgroundcolor: lightblue; textalign: right"
+          style="background-color: lightblue; text-align: right"
         >
           <div>
             <b @click="showAll"

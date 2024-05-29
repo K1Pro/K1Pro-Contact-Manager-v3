@@ -117,7 +117,7 @@ export default {
 <style>
 .navigation-grid-container {
   display: grid;
-  grid-template-columns: 0px 70px calc(100% - 140px) 70px 0px;
+  grid-template-columns: auto auto 175px auto auto;
 }
 .navigation i {
   cursor: pointer;
