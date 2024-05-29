@@ -38,6 +38,7 @@ export default {
       'userData',
       'userSettings',
       'contacts',
+      'appName',
       'patchUserSettings',
     ]),
     searchArray() {
@@ -91,7 +92,7 @@ export default {
           Object.entries(custom1).forEach(([custom1Key, custom1Value]) => {
             if (
               custom1Key == 'Policy_No' &&
-              this.userData.AppPermissions.ContactManager[0] ==
+              this.userData.AppPermissions[this.appName][0] ==
                 'bundle_insurance'
             )
               stringArray[contactIndex] += (custom1Value + ' ')

@@ -1,8 +1,7 @@
 <template>
   <template
     v-if="
-      slctdCntct &&
-      userData?.AppPermissions.ContactManager[0] == 'bundle_insurance'
+      slctdCntct && userData?.AppPermissions[appName][0] == 'bundle_insurance'
     "
   >
     <div class="policy-info">
@@ -132,6 +131,7 @@ export default {
       'accountSettings',
       'userSettings',
       'contacts',
+      'appName',
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntct',

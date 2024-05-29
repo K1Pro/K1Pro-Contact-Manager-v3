@@ -187,6 +187,7 @@ export default {
       'userSettings',
       'reports',
       'contacts',
+      'patchUserSettings',
       'userList',
       'slctdCntct',
     ]),

@@ -15,6 +15,7 @@
         Contacts with expanded info
       </div>
       <div
+        v-if="userData?.AppPermissions[appName][0] == 'bundle_insurance'"
         class="reports-panel-report reports-panel-odd"
         @click="selectReport($event.target.innerHTML)"
       >
@@ -40,14 +41,16 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
+      'userData',
       'reports',
+      'appName',
       'slctdCntct',
     ]),
   },
 
   methods: {
     selectReport(event) {
-      this.reports = event;
+      this.reports = event.trim();
     },
   },
 };
