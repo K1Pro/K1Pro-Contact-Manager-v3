@@ -2,13 +2,20 @@
   <div class="day-content">
     <div class="task-grid-day" v-if="firstCalDate && calContactTasks">
       <b v-if="days[dayIndex] == times.Y_m_d_H_i_s_z.slice(0, 10)">
-        {{ firstCalDate ? days[dayIndex].slice(-5) : ''
+        {{
+          firstCalDate
+            ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10)
+            : ''
         }}{{
           days[dayIndex] == times.Y_m_d_H_i_s_z.slice(0, 10) ? ' - Today' : ''
         }}
       </b>
       <span v-else>
-        {{ firstCalDate ? days[dayIndex].slice(-5) : '' }}
+        {{
+          firstCalDate
+            ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10)
+            : ''
+        }}
       </span>
     </div>
     <div class="task-grid-day-content" v-if="firstCalDate && calContactTasks">
