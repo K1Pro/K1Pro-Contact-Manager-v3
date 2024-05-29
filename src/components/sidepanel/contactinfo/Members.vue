@@ -74,8 +74,6 @@
 <script>
 export default {
   name: 'Members',
-  // Steve Williams 2465 erie online lead do not call
-  // Neeraj 2830 erie online lead do not call
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [

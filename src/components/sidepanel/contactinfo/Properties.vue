@@ -25,6 +25,7 @@
               updateProperty($event, propertyIndex, propertyInputs.value)
             "
           >
+            <option value="" disabled selected>State</option>
             <option value="AL">AL</option>
             <option value="AK">AK</option>
             <option value="AZ">AZ</option>
