@@ -83,7 +83,8 @@ export default {
       if (checkDNC) {
         if (connType == 'Phone') {
           window.location.href =
-            'tel:' + this.slctdCntct.Connections[connIndex][connType];
+            'tel:' +
+            this.slctdCntct.Connections[connIndex][connType].replace(/\D/g, '');
           const columnIndex = this.userSettings.selectedContactIndex;
           try {
             const response = await fetch(servr_url + this.endPts.calls, {
