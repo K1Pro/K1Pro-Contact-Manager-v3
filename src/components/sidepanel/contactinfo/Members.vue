@@ -184,12 +184,18 @@ export default {
           if (postContactInfoResJSON.success) {
             this.contacts[newContactIndex].id =
               postContactInfoResJSON.data.contact_id;
-            this.updatingContactInfo = false;
+            setTimeout(() => {
+              this.updatingContactInfo = false;
+            }, 6000);
           } else {
-            this.updatingContactInfo = false;
+            setTimeout(() => {
+              this.updatingContactInfo = false;
+            }, 6000);
           }
         } catch (error) {
-          this.updatingContactInfo = false;
+          setTimeout(() => {
+            this.updatingContactInfo = false;
+          }, 6000);
           this.msg.snackBar = error.toString();
           console.log(error.toString());
         }

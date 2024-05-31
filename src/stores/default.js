@@ -112,14 +112,20 @@ const useDefaultStore = Pinia.defineStore('default', {
         });
         const patchContactInfoResJSON = await response.json();
         if (patchContactInfoResJSON.success) {
-          this.updatingContactInfo = false;
+          setTimeout(() => {
+            this.updatingContactInfo = false;
+          }, 6000);
           // this.msg.snackBar = 'Updated ';
           // console.log(patchContactInfoResJSON);
         } else {
-          this.updatingContactInfo = false;
+          setTimeout(() => {
+            this.updatingContactInfo = false;
+          }, 6000);
         }
       } catch (error) {
-        this.updatingContactInfo = false;
+        setTimeout(() => {
+          this.updatingContactInfo = false;
+        }, 6000);
         this.msg.snackBar = error.toString();
       }
     },
@@ -149,15 +155,21 @@ const useDefaultStore = Pinia.defineStore('default', {
           });
           const patchContactInfoResJSON = await response.json();
           if (patchContactInfoResJSON.success) {
-            this.updatingContactInfo = false;
+            setTimeout(() => {
+              this.updatingContactInfo = false;
+            }, 6000);
             // this.msg.snackBar = 'Updated ';
             // console.log(patchContactInfoResJSON);
           } else {
-            this.updatingContactInfo = false;
+            setTimeout(() => {
+              this.updatingContactInfo = false;
+            }, 6000);
           }
         } catch (error) {
           this.msg.snackBar = error.toString();
-          this.updatingContactInfo = false;
+          setTimeout(() => {
+            this.updatingContactInfo = false;
+          }, 6000);
         }
       }
     },
