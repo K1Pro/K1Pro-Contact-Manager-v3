@@ -186,6 +186,7 @@ export default {
   font-size: 16px;
 }
 .emails-title i {
+  float: right;
   cursor: pointer;
 }
 .emails-body {
@@ -224,16 +225,20 @@ export default {
 }
 .emails-body span[contenteditable] {
   display: block; /* not sure if this is needed */
+  height: calc(100vh - 330px);
+  overflow: hidden scroll;
 }
 .emails-body span[contenteditable]:empty::before {
   content: 'Enter email body';
   display: inline-block;
   color: grey;
-  height: 200px;
+  height: calc(100vh - 330px);
+  overflow: hidden hidden;
 }
 .emails-body span[contenteditable]:empty:focus::before {
   content: 'Start typing';
   color: grey;
-  height: 200px;
+  height: calc(100vh - 330px);
+  overflow: hidden hidden;
 }
 </style>
