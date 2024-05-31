@@ -92,7 +92,7 @@
         <div
           v-if="eventIndex !== null && slctdCntct.Tasks.length > 1"
           class="tasks-body"
-          style="backgroundcolor: lightblue; textalign: right"
+          style="background-color: lightblue; text-align: right"
         >
           <div>
             <b @click="showAll"
