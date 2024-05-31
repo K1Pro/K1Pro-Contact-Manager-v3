@@ -1,29 +1,27 @@
 <template>
-  <div class="properties">
-    <div v-for="(property, propertyIndex) in slctdCntct?.Properties">
-      <div class="property-title-grid-container">
-        <div class="property-title">
-          <i class="fa-solid fa-house"></i>&nbsp;{{ property.Type }}
+  <div class="addresses">
+    <div v-for="(address, addressIndex) in slctdCntct?.Addresses">
+      <div class="address-title-grid-container">
+        <div class="address-title">
+          <i class="fa-solid fa-house"></i>&nbsp;{{ address.Type }}
         </div>
         <button
-          class="property-button"
-          @click="deleteContactInfo('Properties', propertyIndex)"
+          class="address-button"
+          @click="deleteContactInfo('Addresses', addressIndex)"
         >
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
-      <div class="property-grid-container">
+      <div class="address-grid-container">
         <div
-          :class="'property-grid-item' + propertyInputIndex"
-          v-for="(propertyInputs, propertyInputIndex) in accountSettings
-            .contactInfo.keys.Properties[property.Type]"
+          :class="'address-grid-item' + addressInputIndex"
+          v-for="(addressInputs, addressInputIndex) in accountSettings
+            .contactInfo.keys.Addresses[address.Type]"
         >
           <select
-            v-if="propertyInputs.value == 'State'"
-            :value="property[propertyInputs.value]"
-            @change="
-              updateProperty($event, propertyIndex, propertyInputs.value)
-            "
+            v-if="addressInputs.value == 'State'"
+            :value="address[addressInputs.value]"
+            @change="updateAddress($event, addressIndex, addressInputs.value)"
           >
             <option value="" disabled selected>State</option>
             <option value="AL">AL</option>
@@ -80,16 +78,14 @@
           </select>
           <input
             v-else
-            :type="propertyInputs.type"
-            :placeholder="propertyInputs.placeholder"
-            :value="property[propertyInputs.value]"
-            @change="
-              updateProperty($event, propertyIndex, propertyInputs.value)
-            "
+            :type="addressInputs.type"
+            :placeholder="addressInputs.placeholder"
+            :value="address[addressInputs.value]"
+            @change="updateAddress($event, addressIndex, addressInputs.value)"
           />
         </div>
       </div>
-      <template v-if="propertyIndex === slctdCntct.Properties.length - 1">
+      <template v-if="addressIndex === slctdCntct.Addresses.length - 1">
         <hr />
       </template>
     </div>
@@ -98,7 +94,7 @@
 
 <script>
 export default {
-  name: 'Properties',
+  name: 'Addresses',
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
@@ -112,8 +108,8 @@ export default {
   },
 
   methods: {
-    updateProperty(event, columnIndex, key) {
-      const column = 'Properties';
+    updateAddress(event, columnIndex, key) {
+      const column = 'Addresses';
       // prettier-ignore
       this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
@@ -123,58 +119,58 @@ export default {
 </script>
 
 <style>
-.properties {
+.addresses {
 }
-.property-title-grid-container {
+.address-title-grid-container {
   display: grid;
   grid-template-columns: calc(100% - 34px) 34px;
 }
-.property-title {
+.address-title {
   padding-top: 5px;
 }
-.property-button {
+.address-button {
   padding: 5px;
   width: 32px;
   background-color: transparent;
   border: 0px;
   cursor: pointer;
 }
-.property-button:hover {
+.address-button:hover {
   color: DimGrey;
 }
-.property-grid-container {
+.address-grid-container {
   margin-top: 2px;
   display: grid;
   grid-template-columns: 33% 33% 33%;
   grid-template-rows: 28px 28px;
 }
-.property-grid-item0 {
+.address-grid-item0 {
   grid-column-start: 1;
   grid-column-end: 3;
   grid-row-start: 1;
   grid-row-end: 1;
 }
 
-.property-grid-item2 {
+.address-grid-item2 {
   grid-column-start: 1;
   grid-row-start: 2;
   grid-row-end: 2;
 }
-.property-grid-item0 input[type='text'],
-.property-grid-item1 input[type='text'],
-.property-grid-item2 input[type='text'],
-.property-grid-item3 input[type='text'],
-.property-grid-item4 input[type='text'],
-.property-grid-item0 input[type='number'],
-.property-grid-item1 input[type='number'],
-.property-grid-item2 input[type='number'],
-.property-grid-item3 input[type='number'],
-.property-grid-item4 input[type='number'],
-.property-grid-item0 select,
-.property-grid-item1 select,
-.property-grid-item2 select,
-.property-grid-item3 select,
-.property-grid-item4 select {
+.address-grid-item0 input[type='text'],
+.address-grid-item1 input[type='text'],
+.address-grid-item2 input[type='text'],
+.address-grid-item3 input[type='text'],
+.address-grid-item4 input[type='text'],
+.address-grid-item0 input[type='number'],
+.address-grid-item1 input[type='number'],
+.address-grid-item2 input[type='number'],
+.address-grid-item3 input[type='number'],
+.address-grid-item4 input[type='number'],
+.address-grid-item0 select,
+.address-grid-item1 select,
+.address-grid-item2 select,
+.address-grid-item3 select,
+.address-grid-item4 select {
   border-style: solid;
   border-color: black;
   border-top: 2px;
@@ -185,7 +181,7 @@ export default {
   width: 100%;
   height: 100%;
 }
-.property {
+.address {
   text-align: left;
 }
 </style>

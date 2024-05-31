@@ -2,7 +2,7 @@
   <div class="contact-info">
     <searchbar></searchbar>
     <members></members>
-    <properties></properties>
+    <addresses></addresses>
     <assets></assets>
     <connections></connections>
     <credentials></credentials>
@@ -116,7 +116,7 @@ export default {
   components: {
     Searchbar,
     Members,
-    Properties,
+    Addresses,
     Assets,
     Connections,
     Credentials,

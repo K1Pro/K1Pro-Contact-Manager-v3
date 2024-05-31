@@ -26,7 +26,7 @@
               </div>
             </td>
             <td>
-              <template v-for="contactInfo in contact.Properties">
+              <template v-for="contactInfo in contact.Addresses">
                 <div>
                   {{ contactInfo.Address_1 }} {{ contactInfo.Address_2 }}
                 </div>
@@ -80,7 +80,7 @@
               {{ contact.id }}
             </td>
             <td>{{ Object.values(contact.Members)[0].Name }}</td>
-            <td>{{ Object.values(contact.Properties)?.[0]?.Address_1 }}</td>
+            <td>{{ Object.values(contact.Addresses)?.[0]?.Address_1 }}</td>
             <td>
               {{
                 Object.values(contact.Assets)[0]

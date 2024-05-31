@@ -73,10 +73,10 @@ export default {
           stringArray[contactIndex] += (fullName + ' ').toLowerCase();
         });
 
-        contact.Properties.forEach((property) => {
-          Object.entries(property).forEach(([propertyKey, propertyValue]) => {
-            if (propertyKey != 'Type')
-              stringArray[contactIndex] += (propertyValue + ' ').toLowerCase();
+        contact.Addresses.forEach((addres) => {
+          Object.entries(addres).forEach(([addresKey, addresValue]) => {
+            if (addresKey != 'Type')
+              stringArray[contactIndex] += (addresValue + ' ').toLowerCase();
           });
         });
 

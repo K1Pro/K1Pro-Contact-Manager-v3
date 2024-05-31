@@ -100,7 +100,7 @@ export default {
               InfoGroup: contactInfoGroup,
               InfoKey: contactInfoKey,
               InfoPlaceholder:
-                contactInfoGroup == 'Properties' ? ' address' : '',
+                contactInfoGroup == 'Addresses' ? ' address' : '',
             };
             cntctInfoDropDown.push(test);
           });
@@ -118,7 +118,7 @@ export default {
         const InfoKey = event.target.value.split('_')[1];
         // prettier-ignore
         const columnIndex = this.contacts[this.userSettings.selectedContactIndex][InfoGroup].length;
-        if (InfoGroup == 'Members' || InfoGroup == 'Properties') {
+        if (InfoGroup == 'Members' || InfoGroup == 'Addresses') {
           // prettier-ignore
           this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push({ ['Type']: InfoKey });
           this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type');
@@ -153,7 +153,7 @@ export default {
             },
           ],
           Notes: '',
-          Properties: [],
+          Addresses: [],
           RecurTasks: [],
           Tasks: [],
           Updated: {
