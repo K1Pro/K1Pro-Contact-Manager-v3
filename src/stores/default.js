@@ -7,6 +7,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       msg: {
         snackBar: '',
         login: '',
+        confirmDeletion: 'Are you sure you would like to delete this?',
       },
       windowWidth: 0,
       activeTab: 'house-chimney-user',
@@ -129,16 +130,12 @@ const useDefaultStore = Pinia.defineStore('default', {
         this.msg.snackBar = error.toString();
       }
     },
-    async deleteContactInfo(column, columnIndex) {
+    async deleteContactInfo(column, columnIndex, prevConfirm) {
       this.updatingContactInfo = true;
       // console.log('column: ' + column);
       // console.log('columnIndex: ' + columnIndex);
-      const confirmDeletion = 'Are you sure you would like to delete this?';
-      if (confirm(confirmDeletion) == true) {
-        this.contacts[this.userSettings.selectedContactIndex][column].splice(
-          columnIndex,
-          1
-        );
+      if (prevConfirm || confirm(this.msg.confirmDeletion) == true) {
+        this.contacts[this.userSettings.selectedContactIndex][column].splice(columnIndex, 1);
         try {
           const response = await fetch(servr_url + this.endPts.contacts, {
             method: 'DELETE',
@@ -197,8 +194,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       }
     },
     getFirstCalDate() {
-      const DaysOrderYesterday =
-        this.dayOfTheWeek == 1 ? '' : 'previous Monday';
+      const DaysOrderYesterday = this.dayOfTheWeek == 1 ? '' : 'previous Monday';
       if (this.userSettings.calendar.filters.days == 0) {
         this.time('POST', null, this.times.Y_m_d, 'firstCalDate');
       } else if (this.userSettings.calendar.filters.days == 1) {
@@ -234,9 +230,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       return state.days.findIndex((day) => day == state.times.Y_m_d);
     },
     calRow(state) {
-      return Math.ceil(
-        (state.days.findIndex((day) => day == state.times.Y_m_d) + 1) / 7
-      );
+      return Math.ceil((state.days.findIndex((day) => day == state.times.Y_m_d) + 1) / 7);
     },
     slctdCntct(state) {
       return state.contacts[state.userSettings.selectedContactIndex];

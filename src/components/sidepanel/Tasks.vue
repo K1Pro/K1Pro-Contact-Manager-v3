@@ -9,6 +9,12 @@
             {{ slctdCntct.Members[0].Name }}
           </div>
           <div class="tasks-title-grid-item2">
+            <button v-if="eventIndex === null" @click="sortTask">
+              <i v-if="sortAscDesc" class="fa-solid fa-arrow-down-wide-short"></i>
+              <i v-else class="fa-solid fa-arrow-up-wide-short"></i>
+            </button>
+          </div>
+          <div class="tasks-title-grid-item3">
             <button @click="newTask">
               <i class="fa-solid fa-square-plus"></i>
             </button>
@@ -17,25 +23,19 @@
       </div>
 
       <template v-for="(task, taskIndex) in tasks">
-        <div
-          class="tasks-body"
-          :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }"
-        >
-          <i
-            class="fa-solid fa-trash"
-            @click="deleteContactInfo('Tasks', task.RealIndex)"
-          ></i>
+        <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }">
+          <i class="fa-solid fa-trash" @click="deleteTask(task.RealIndex, taskIndex)"></i>
           <span class="tasks-label">Date:</span
           ><input
             type="datetime-local"
             :value="task.Date"
-            @change="updateTask($event.target.value, task.RealIndex, 'Date')"
+            @change="updateTask($event.target.value, task.RealIndex, taskIndex, 'Date')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="tasks-label">Tag:</span>
           <select
             :value="task.Tag"
-            @change="updateTask($event.target.value, task.RealIndex, 'Tag')"
+            @change="updateTask($event.target.value, task.RealIndex, taskIndex, 'Tag')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
           >
             <option value="">None</option>
@@ -52,15 +52,10 @@
           <span class="tasks-label">Owner:</span>
           <select
             :value="task.Assign"
-            @change="updateTask($event.target.value, task.RealIndex, 'Assign')"
+            @change="updateTask($event.target.value, task.RealIndex, taskIndex, 'Assign')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
           >
-            <option
-              v-for="([userNo, userInfo], userIndex) in Object.entries(
-                userList
-              )"
-              :value="userNo"
-            >
+            <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
               {{ userInfo[0] }}
             </option>
             <option disabled>Updated by {{ userList[task.Update][0] }}</option>
@@ -70,21 +65,14 @@
           ><input
             type="checkbox"
             :checked="task?.Status == 1"
-            @change="
-              updateTask($event.target.checked, task.RealIndex, 'Status')
-            "
+            @change="updateTask($event.target.checked, task.RealIndex, taskIndex, 'Status')"
           />
           {{ task?.Status == 1 ? 'Yes' : 'No' }}
-          <div
-            class="tasks-span"
-            :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
-          >
+          <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
             <span
               spellcheck="false"
               contenteditable="plaintext-only"
-              v-on:blur="
-                updateTask($event.target.innerHTML, task.RealIndex, 'Desc')
-              "
+              v-on:blur="updateTask($event.target.innerHTML, task.RealIndex, taskIndex, 'Desc')"
               >{{ task?.Desc }}</span
             >
           </div>
@@ -102,6 +90,9 @@
           </div>
         </div>
       </template>
+      <div v-if="tasks.length === 0" class="tasks-body" style="background-color: white">
+        <div>No tasks</div>
+      </div>
     </template>
   </div>
 </template>
@@ -112,6 +103,7 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
+      'msg',
       'eventIndex',
       'userData',
       'userSettings',
@@ -122,47 +114,104 @@ export default {
       'slctdCntct',
       'userList',
     ]),
-    tasks() {
-      return this.eventIndex === null
-        ? this.slctdCntct.Tasks.map((val, index) => {
-            return { ...val, RealIndex: index };
-          }).sort((a, b) => b.Date.localeCompare(a.Date))
-        : [
-            {
-              ...this.slctdCntct.Tasks[this.eventIndex],
-              RealIndex: this.eventIndex,
-            },
-          ];
-    },
+    // tasks() {
+    //   return this.eventIndex === null
+    //     ? this.slctdCntct.Tasks.map((val, index) => {
+    //         return { ...val, RealIndex: index };
+    //       }).sort((a, b) => b.Date.localeCompare(a.Date))
+    //     : [
+    //         {
+    //           ...this.slctdCntct.Tasks[this.eventIndex],
+    //           RealIndex: this.eventIndex,
+    //         },
+    //       ];
+    // },
+  },
+
+  data() {
+    return { tasks: [], column: 'Tasks', sortAscDesc: false };
   },
 
   methods: {
-    updateTask(event, columnIndex, key) {
-      const column = 'Tasks';
-      // prettier-ignore
-      if(event != this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key]) {
-        // prettier-ignore
-        this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event;
-        // prettier-ignore
-        this.contacts[this.userSettings.selectedContactIndex][column][columnIndex].Update = this.userData.id;
-        this.patchContactInfo(event, column, columnIndex, key);
+    taskArray() {
+      this.tasks =
+        this.eventIndex === null
+          ? this.slctdCntct.Tasks.map((val, index) => {
+              return { ...val, RealIndex: index };
+            }).sort((a, b) => b.Date.localeCompare(a.Date))
+          : [
+              {
+                ...this.slctdCntct.Tasks[this.eventIndex],
+                RealIndex: this.eventIndex,
+              },
+            ];
+    },
+    sortTask() {
+      if (this.sortAscDesc) {
+        this.tasks = this.slctdCntct.Tasks.map((val, index) => {
+          return { ...val, RealIndex: index };
+        }).sort((a, b) => b.Date.localeCompare(a.Date));
+      } else {
+        this.tasks = this.slctdCntct.Tasks.map((val, index) => {
+          return { ...val, RealIndex: index };
+        }).sort((a, b) => a.Date.localeCompare(b.Date));
       }
+      this.sortAscDesc = !this.sortAscDesc;
     },
     newTask() {
       this.showAll();
-      const column = 'Tasks';
-      this.contacts[this.userSettings.selectedContactIndex][column].push({
+      // new component task
+      this[this.column.toLowerCase()].unshift({
+        Date: this.times.Y_m_d + this.times.Y_m_d_H_i_s_z.slice(10, 16),
+        Assign: this.userData.id,
+        Create: this.userData.id,
+        Update: this.userData.id,
+        RealIndex: this.tasks.length,
+      });
+      // new state task
+      this.contacts[this.userSettings.selectedContactIndex][this.column].push({
         Date: this.times.Y_m_d + this.times.Y_m_d_H_i_s_z.slice(10, 16),
         Assign: this.userData.id,
         Create: this.userData.id,
         Update: this.userData.id,
       });
+      // new database task
       // prettier-ignore
-      this.patchContactInfo(this.times.Y_m_d+this.times.Y_m_d_H_i_s_z.slice(10,16), column, this.slctdCntct.Tasks.length, 'Date');
+      this.patchContactInfo(this.times.Y_m_d+this.times.Y_m_d_H_i_s_z.slice(10,16), this.column, this.slctdCntct.Tasks.length, 'Date');
+    },
+    updateTask(event, columnIndex, taskIndex, key) {
+      if (event != this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex][key]) {
+        // updating component task
+        this[this.column.toLowerCase()][taskIndex][key] = event;
+        this[this.column.toLowerCase()][taskIndex].Update = this.userData.id;
+        // updating state task
+        this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex][key] = event;
+        this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex].Update = this.userData.id;
+        // updating database task
+        this.patchContactInfo(event, this.column, columnIndex, key);
+      }
+    },
+    deleteTask(columnIndex, taskIndex) {
+      if (confirm(this.msg.confirmDeletion) == true) {
+        // deleting component task
+        this[this.column.toLowerCase()].splice(taskIndex, 1);
+        // deleting state and database task
+        this.deleteContactInfo(this.column, columnIndex, true);
+      }
     },
     showAll() {
       this.eventIndex = null;
     },
+  },
+
+  watch: {
+    eventIndex() {
+      this.taskArray();
+    },
+  },
+
+  mounted() {
+    this.taskArray();
   },
 };
 </script>
@@ -178,13 +227,19 @@ export default {
 }
 .tasks-title-grid-container {
   display: grid;
-  grid-template-columns: calc(100% - 30px) 30px;
+  grid-template-columns: calc(100% - 60px) 30px 30px;
 }
 .tasks-title-grid-item1 {
   height: 20px;
   overflow: hidden;
 }
 .tasks-title-grid-item2 button {
+  background-color: transparent;
+  border: 0px;
+  cursor: pointer;
+  color: #417cd9;
+}
+.tasks-title-grid-item3 button {
   background-color: transparent;
   border: 0px;
   cursor: pointer;
