@@ -1,21 +1,14 @@
 <template>
   <div class="connections">
-    <div v-for="(conn, connIndex) in slctdCntct?.Connections">
+    <div v-for="(conn, connIndex) in connections">
       <div v-for="(connInfo, connType) in conn">
-        <div
-          v-for="connInputs in accountSettings.contactInfo.keys.Connections[
-            connType
-          ]"
-        >
+        <div v-for="connInputs in accountSettings.contactInfo.keys.Connections[connType]">
           <button
             class="conn-icon"
             :style="{
-              'border-bottom':
-                connIndex !== slctdCntct.Connections.length - 1
-                  ? '1px solid black'
-                  : '0',
+              'border-bottom': connIndex !== slctdCntct.Connections.length - 1 ? '1px solid black' : '0',
             }"
-            @click="connect(connIndex, connType)"
+            @click="connect(conn.RealIndex, connType)"
           >
             <i :class="connInputs.icon"></i>
           </button>
@@ -23,28 +16,18 @@
             :type="connInputs.type"
             :placeholder="connInputs.placeholder"
             :style="{
-              'border-bottom':
-                connIndex !== slctdCntct.Connections.length - 1
-                  ? '1px solid black'
-                  : '0',
+              'border-bottom': connIndex !== slctdCntct.Connections.length - 1 ? '1px solid black' : '0',
             }"
             :value="connInfo"
-            @change="updateConnection($event, connIndex, connType)"
+            @change="updateConnection($event, conn.RealIndex, connType)"
           />
-          <button
-            class="conn-delete-icon"
-            @click="deleteContactInfo('Connections', connIndex)"
-          >
+          <button class="conn-delete-icon" @click="deleteContactInfo('Connections', conn.RealIndex)">
             <i class="fa-solid fa-trash"></i>
           </button>
         </div>
       </div>
       <template v-if="connIndex === slctdCntct.Connections.length - 1">
-        <input
-          type="checkbox"
-          v-model="slctdCntct.DNC"
-          @change="patchContactInfo($event.target.checked, 'DNC')"
-        />
+        <input type="checkbox" v-model="slctdCntct.DNC" @change="patchContactInfo($event.target.checked, 'DNC')" />
         Do not contact
         <hr />
       </template>
@@ -70,21 +53,22 @@ export default {
       'deleteContactInfo',
       'slctdCntct',
     ]),
+    connections() {
+      return this.slctdCntct.Connections.map((val, index) => {
+        return { ...val, RealIndex: index };
+      }).sort((a, b) => Object.keys(b)[0].localeCompare(Object.keys(a)[0]));
+    },
   },
 
   methods: {
     async connect(connIndex, connType) {
       let checkDNC = true;
       if (this.slctdCntct.DNC === true) {
-        checkDNC = confirm('Contact is listed as "Do not contact", proceed?')
-          ? true
-          : false;
+        checkDNC = confirm('Contact is listed as "Do not contact", proceed?') ? true : false;
       }
       if (checkDNC) {
         if (connType == 'Phone') {
-          window.location.href =
-            'tel:' +
-            this.slctdCntct.Connections[connIndex][connType].replace(/\D/g, '');
+          window.location.href = 'tel:' + this.slctdCntct.Connections[connIndex][connType].replace(/\D/g, '');
           const columnIndex = this.userSettings.selectedContactIndex;
           try {
             const response = await fetch(servr_url + this.endPts.calls, {
