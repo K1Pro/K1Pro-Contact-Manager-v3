@@ -3,89 +3,44 @@
     <searchbar></searchbar>
     <members></members>
     <addresses></addresses>
-    <assets></assets>
     <connections></connections>
+    <assets></assets>
     <credentials></credentials>
     <template v-if="slctdCntct">
       <div style="text-align: right; font-size: 14px">
         Owner:
         <select
-          style="
-            margin-right: 5px;
-            width: calc(100% - 85px);
-            border: none;
-            background-color: transparent;
-          "
+          style="margin-right: 5px; width: calc(100% - 85px); border: none; background-color: transparent"
           v-model="contacts[userSettings.selectedContactIndex].Assigned"
           @change="patchContactInfo($event.target.value, 'Assigned')"
         >
-          <option
-            v-for="([userNo, userInfo], userIndex) in Object.entries(userList)"
-            :value="userNo"
-          >
+          <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
             {{ userInfo[0] }}
           </option>
           <option disabled>
             Updated by
-            {{
-              userList[
-                Object.keys(contacts[userSettings.selectedContactIndex].Updated)
-              ][0]
-            }}
+            {{ userList[Object.keys(contacts[userSettings.selectedContactIndex].Updated)][0] }}
             on
             {{
-              Object.values(
-                contacts[userSettings.selectedContactIndex].Updated
-              )[0]
-                .slice(5, 10)
-                .replace('-', '/')
-            }}/{{
-              Object.values(
-                contacts[userSettings.selectedContactIndex].Updated
-              )[0].slice(0, 4)
-            }}
-            {{
-              Object.values(
-                contacts[userSettings.selectedContactIndex].Updated
-              )[0].slice(11, 16)
-            }}
+              Object.values(contacts[userSettings.selectedContactIndex].Updated)[0].slice(5, 10).replace('-', '/')
+            }}/{{ Object.values(contacts[userSettings.selectedContactIndex].Updated)[0].slice(0, 4) }}
+            {{ Object.values(contacts[userSettings.selectedContactIndex].Updated)[0].slice(11, 16) }}
           </option>
           <option disabled>
             Created by
-            {{
-              userList[
-                Object.keys(contacts[userSettings.selectedContactIndex].Created)
-              ][0]
-            }}
+            {{ userList[Object.keys(contacts[userSettings.selectedContactIndex].Created)][0] }}
             on
             {{
-              Object.values(
-                contacts[userSettings.selectedContactIndex].Created
-              )[0]
-                .slice(5, 10)
-                .replace('-', '/')
-            }}/{{
-              Object.values(
-                contacts[userSettings.selectedContactIndex].Created
-              )[0].slice(0, 4)
-            }}
-            {{
-              Object.values(
-                contacts[userSettings.selectedContactIndex].Created
-              )[0].slice(11, 16)
-            }}
+              Object.values(contacts[userSettings.selectedContactIndex].Created)[0].slice(5, 10).replace('-', '/')
+            }}/{{ Object.values(contacts[userSettings.selectedContactIndex].Created)[0].slice(0, 4) }}
+            {{ Object.values(contacts[userSettings.selectedContactIndex].Created)[0].slice(11, 16) }}
           </option>
         </select>
       </div>
       <div style="text-align: right; font-size: 14px">
         Category:
         <select
-          style="
-            margin-right: 5px;
-            width: calc(100% - 85px);
-            border: none;
-            background-color: transparent;
-          "
+          style="margin-right: 5px; width: calc(100% - 85px); border: none; background-color: transparent"
           v-model="contacts[userSettings.selectedContactIndex].Categ"
           @change="patchContactInfo($event.target.value, 'Categ')"
         >
