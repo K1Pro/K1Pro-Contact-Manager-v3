@@ -114,18 +114,6 @@ export default {
       'slctdCntct',
       'userList',
     ]),
-    // tasks() {
-    //   return this.eventIndex === null
-    //     ? this.slctdCntct.Tasks.map((val, index) => {
-    //         return { ...val, RealIndex: index };
-    //       }).sort((a, b) => b.Date.localeCompare(a.Date))
-    //     : [
-    //         {
-    //           ...this.slctdCntct.Tasks[this.eventIndex],
-    //           RealIndex: this.eventIndex,
-    //         },
-    //       ];
-    // },
   },
 
   data() {
