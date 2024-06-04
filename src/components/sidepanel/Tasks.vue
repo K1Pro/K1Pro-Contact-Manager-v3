@@ -198,6 +198,9 @@ export default {
     eventIndex() {
       this.taskArray();
     },
+    slctdCntct() {
+      this.taskArray();
+    },
   },
 
   mounted() {

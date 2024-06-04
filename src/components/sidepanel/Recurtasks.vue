@@ -254,6 +254,9 @@ export default {
     eventIndex() {
       this.recurTaskArray();
     },
+    slctdCntct() {
+      this.recurTaskArray();
+    },
   },
 
   mounted() {
