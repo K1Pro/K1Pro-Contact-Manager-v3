@@ -22,7 +22,7 @@
         </div>
       </div>
 
-      <template v-for="(task, taskIndex) in tasks">
+      <template v-for="(task, taskIndex) in Tasks">
         <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }">
           <i class="fa-solid fa-trash" @click="deleteTask(task.RealIndex, taskIndex)"></i>
           <span class="tasks-label">Date:</span
@@ -90,7 +90,7 @@
           </div>
         </div>
       </template>
-      <div v-if="tasks.length === 0" class="tasks-body" style="background-color: white">
+      <div v-if="Tasks.length === 0" class="tasks-body" style="background-color: white">
         <div>No tasks</div>
       </div>
     </template>
@@ -117,12 +117,12 @@ export default {
   },
 
   data() {
-    return { tasks: [], column: 'Tasks', sortAscDesc: false };
+    return { Tasks: [], column: 'Tasks', sortAscDesc: false };
   },
 
   methods: {
     taskArray() {
-      this.tasks =
+      this.Tasks =
         this.eventIndex === null
           ? this.slctdCntct.Tasks.map((val, index) => {
               return { ...val, RealIndex: index };
@@ -136,11 +136,11 @@ export default {
     },
     sortTask() {
       if (this.sortAscDesc) {
-        this.tasks = this.slctdCntct.Tasks.map((val, index) => {
+        this.Tasks = this.slctdCntct.Tasks.map((val, index) => {
           return { ...val, RealIndex: index };
         }).sort((a, b) => b.Date.localeCompare(a.Date));
       } else {
-        this.tasks = this.slctdCntct.Tasks.map((val, index) => {
+        this.Tasks = this.slctdCntct.Tasks.map((val, index) => {
           return { ...val, RealIndex: index };
         }).sort((a, b) => a.Date.localeCompare(b.Date));
       }
@@ -149,12 +149,12 @@ export default {
     newTask() {
       this.showAll();
       // new component task
-      this[this.column.toLowerCase()].unshift({
+      this[this.column].unshift({
         Date: this.times.Y_m_d + this.times.Y_m_d_H_i_s_z.slice(10, 16),
         Assign: this.userData.id,
         Create: this.userData.id,
         Update: this.userData.id,
-        RealIndex: this.tasks.length,
+        RealIndex: this.Tasks.length,
       });
       // new state task
       this.contacts[this.userSettings.selectedContactIndex][this.column].push({
@@ -170,8 +170,8 @@ export default {
     updateTask(event, columnIndex, taskIndex, key) {
       if (event != this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex][key]) {
         // updating component task
-        this[this.column.toLowerCase()][taskIndex][key] = event;
-        this[this.column.toLowerCase()][taskIndex].Update = this.userData.id;
+        this[this.column][taskIndex][key] = event;
+        this[this.column][taskIndex].Update = this.userData.id;
         // updating state task
         this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex][key] = event;
         this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex].Update = this.userData.id;
@@ -182,7 +182,7 @@ export default {
     deleteTask(columnIndex, taskIndex) {
       if (confirm(this.msg.confirmDeletion) == true) {
         // deleting component task
-        this[this.column.toLowerCase()].splice(taskIndex, 1);
+        this[this.column].splice(taskIndex, 1);
         // deleting state and database task
         this.deleteContactInfo(this.column, columnIndex, true);
       }
@@ -221,19 +221,15 @@ export default {
   height: 20px;
   overflow: hidden;
 }
-.tasks-title-grid-item2 button {
-  background-color: transparent;
-  border: 0px;
-  cursor: pointer;
-  color: #417cd9;
-}
+.tasks-title-grid-item2 button,
 .tasks-title-grid-item3 button {
   background-color: transparent;
   border: 0px;
   cursor: pointer;
   color: #417cd9;
 }
-.tasks-title-grid-item2 button:hover {
+.tasks-title-grid-item2 button:hover,
+.tasks-title-grid-item3 button:hover {
   color: #db66ff;
 }
 .tasks-body {

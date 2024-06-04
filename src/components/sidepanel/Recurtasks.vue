@@ -8,7 +8,13 @@
             {{ slctdCntct.Members[0].First ? slctdCntct.Members[0].First : '' }}
             {{ slctdCntct.Members[0].Name }}
           </div>
-          <div class="recur-tasks-title-grid-item2">
+          <div class="tasks-title-grid-item2">
+            <button v-if="eventIndex === null" @click="sortTask">
+              <i v-if="sortAscDesc" class="fa-solid fa-arrow-down-wide-short"></i>
+              <i v-else class="fa-solid fa-arrow-up-wide-short"></i>
+            </button>
+          </div>
+          <div class="recur-tasks-title-grid-item3">
             <button @click="newRecurTask">
               <i class="fa-solid fa-square-plus"></i>
             </button>
@@ -16,7 +22,7 @@
         </div>
       </div>
 
-      <template v-for="(recurTask, recurTaskIndex) in recurtasks">
+      <template v-for="(recurTask, recurTaskIndex) in RecurTasks">
         <div
           class="recur-tasks-body"
           :style="{
@@ -105,6 +111,9 @@
           </div>
         </div>
       </template>
+      <div v-if="RecurTasks.length === 0" class="recur-tasks-body" style="background-color: white">
+        <div>No recurring tasks</div>
+      </div>
     </template>
   </div>
 </template>
@@ -129,12 +138,12 @@ export default {
   },
 
   data() {
-    return { recurtasks: [], column: 'RecurTasks', sortAscDesc: false };
+    return { RecurTasks: [], column: 'RecurTasks', sortAscDesc: false };
   },
 
   methods: {
     recurTaskArray() {
-      this.recurtasks =
+      this.RecurTasks =
         this.eventIndex === null
           ? this.slctdCntct.RecurTasks.map((val, index) => {
               return { ...val, RealIndex: index };
@@ -148,11 +157,11 @@ export default {
     },
     sortTask() {
       if (this.sortAscDesc) {
-        this.recurtasks = this.slctdCntct.RecurTasks.map((val, index) => {
+        this.RecurTasks = this.slctdCntct.RecurTasks.map((val, index) => {
           return { ...val, RealIndex: index };
         }).sort((a, b) => b.Start.localeCompare(a.Start));
       } else {
-        this.recurtasks = this.slctdCntct.RecurTasks.map((val, index) => {
+        this.RecurTasks = this.slctdCntct.RecurTasks.map((val, index) => {
           return { ...val, RealIndex: index };
         }).sort((a, b) => a.Start.localeCompare(b.Start));
       }
@@ -161,13 +170,14 @@ export default {
     newRecurTask() {
       this.showAll();
       // new component recurTask
-      this[this.column.toLowerCase()].unshift({
+      this[this.column].unshift({
         Start: this.times.Y_m_d,
         Recur: [this.times.Y_m_d.slice(5, 10)],
         Freq: 'Annually',
         Assign: this.userData.id,
         Create: this.userData.id,
         Update: this.userData.id,
+        RealIndex: this.RecurTasks.length,
       });
       // new state recurTask
       this.contacts[this.userSettings.selectedContactIndex][this.column].push({
@@ -184,8 +194,8 @@ export default {
     updateRecurTask(event, columnIndex, recurTaskIndex, key) {
       if (event != this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex][key]) {
         // updating component recurTask
-        this[this.column.toLowerCase()][recurTaskIndex][key] = event;
-        this[this.column.toLowerCase()][recurTaskIndex].Update = this.userData.id;
+        this[this.column][recurTaskIndex][key] = event;
+        this[this.column][recurTaskIndex].Update = this.userData.id;
         // updating state recurTask
         this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex][key] = event;
         this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex].Update = this.userData.id;
@@ -211,11 +221,11 @@ export default {
         recurTaskEvent = 'everyday';
       }
       // updating component recurTask
-      this[this.column.toLowerCase()][recurTaskIndex].Start = start;
+      this[this.column][recurTaskIndex].Start = start;
       // prettier-ignore
-      this[this.column.toLowerCase()][recurTaskIndex].Recur = freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
-      this[this.column.toLowerCase()][recurTaskIndex].Freq = freq;
-      this[this.column.toLowerCase()][recurTaskIndex].Update = this.userData.id;
+      this[this.column][recurTaskIndex].Recur = freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
+      this[this.column][recurTaskIndex].Freq = freq;
+      this[this.column][recurTaskIndex].Update = this.userData.id;
       // updating state recurTask
       this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex].Start = start;
       // prettier-ignore
@@ -228,7 +238,7 @@ export default {
     deleteRecurTask(columnIndex, taskIndex) {
       if (confirm(this.msg.confirmDeletion) == true) {
         // deleting component task
-        this[this.column.toLowerCase()].splice(taskIndex, 1);
+        this[this.column].splice(taskIndex, 1);
         // deleting state and database task
         this.deleteContactInfo(this.column, columnIndex, true);
       }
@@ -259,19 +269,21 @@ export default {
 }
 .recur-tasks-title-grid-container {
   display: grid;
-  grid-template-columns: calc(100% - 30px) 30px;
+  grid-template-columns: calc(100% - 60px) 30px 30px;
 }
 .recur-tasks-title-grid-item1 {
   height: 20px;
   overflow: hidden;
 }
-.recur-tasks-title-grid-item2 button {
+.recur-tasks-title-grid-item2 button,
+.recur-tasks-title-grid-item3 button {
   background-color: transparent;
   border: 0px;
   cursor: pointer;
   color: #417cd9;
 }
-.recur-tasks-title-grid-item2 button:hover {
+.recur-tasks-title-grid-item2 button:hover,
+.recur-tasks-title-grid-item3 button:hover {
   color: #db66ff;
 }
 .recur-tasks-body {
