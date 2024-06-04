@@ -10,8 +10,10 @@
           </div>
           <div class="tasks-title-grid-item2">
             <button v-if="eventIndex === null" @click="sortTask">
-              <i v-if="sortAscDesc" class="fa-solid fa-arrow-down-wide-short"></i>
-              <i v-else class="fa-solid fa-arrow-up-wide-short"></i>
+              <template v-if="RecurTasks.length > 1">
+                <i v-if="sortAscDesc" class="fa-solid fa-arrow-down-wide-short"></i>
+                <i v-else class="fa-solid fa-arrow-up-wide-short"></i>
+              </template>
             </button>
           </div>
           <div class="recur-tasks-title-grid-item3">
