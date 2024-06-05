@@ -2,11 +2,7 @@
   <div class="credentials">
     <div v-for="(cred, credIndex) in slctdCntct?.Credentials">
       <div v-for="(credInfo, credType) in cred">
-        <div
-          v-for="credInputs in accountSettings.contactInfo.keys.Credentials[
-            credType
-          ]"
-        >
+        <div v-for="credInputs in accountSettings.contactInfo.keys.Credentials[credType]">
           <div style="position: relative">
             <div class="credentials-group">
               <i class="cred-icon" :class="credInputs.icon"></i>
@@ -16,28 +12,15 @@
                 :value="credInfo"
                 :ref="'credInput' + credIndex"
                 :style="{
-                  'border-bottom':
-                    credIndex !== slctdCntct.Credentials.length - 1
-                      ? '1px solid black'
-                      : '0',
+                  'border-bottom': credIndex !== slctdCntct.Credentials.length - 1 ? '1px solid black' : '0',
                 }"
                 @change="updateCred($event, credIndex, credType)"
                 @focusin="revealCred(credIndex)"
               />
-              <button
-                class="cred-reveal"
-                style="color: grey"
-                @click="toggleCred(credIndex)"
-              >
-                <span
-                  :ref="'credIcon' + credIndex"
-                  class="fa-solid fa-eye"
-                ></span>
+              <button class="cred-reveal" style="color: grey" @click="toggleCred(credIndex)">
+                <span :ref="'credIcon' + credIndex" class="fa-solid fa-eye"></span>
               </button>
-              <button
-                class="cred-button"
-                @click="deleteContactInfo('Credentials', credIndex)"
-              >
+              <button class="cred-button" @click="deleteContactInfo('Credentials', credIndex)">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
@@ -63,6 +46,7 @@ export default {
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntct',
+      'slctdCntctIndex',
     ]),
   },
 
@@ -73,8 +57,8 @@ export default {
   methods: {
     updateCred(event, columnIndex, key) {
       const column = 'Credentials';
-      // prettier-ignore
-      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event.target.value;
+      this.slctdCntct[column][columnIndex][key] = event.target.value;
+      this.contacts[slctdCntctIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },
     toggleCred(credIndex) {

@@ -52,6 +52,7 @@ export default {
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntct',
+      'slctdCntctIndex',
     ]),
     connections() {
       return this.slctdCntct.Connections.map((val, index) => {
@@ -69,7 +70,7 @@ export default {
       if (checkDNC) {
         if (connType == 'Phone') {
           window.location.href = 'tel:' + this.slctdCntct.Connections[connIndex][connType].replace(/\D/g, '');
-          const columnIndex = this.userSettings.selectedContactIndex;
+          const columnIndex = this.slctdCntctIndex;
           try {
             const response = await fetch(servr_url + this.endPts.calls, {
               method: 'POST',
@@ -88,6 +89,11 @@ export default {
             if (postConnectResJSON.success) {
               // this.msg.snackBar = 'Updated ';
               console.log(postConnectResJSON);
+              this.slctdCntct.Log.unshift([
+                this.userData.id,
+                this.times.Y_m_d_H_i_s_z.slice(0, 16),
+                'Called ' + this.slctdCntct.Connections[connIndex][connType],
+              ]);
               this.contacts[columnIndex].Log.unshift([
                 this.userData.id,
                 this.times.Y_m_d_H_i_s_z.slice(0, 16),
@@ -108,7 +114,8 @@ export default {
     updateConnection(event, columnIndex, key) {
       const column = 'Connections';
       // prettier-ignore
-      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event.target.value;
+      this.slctdCntct[column][columnIndex][key] = event.target.value;
+      this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },
   },

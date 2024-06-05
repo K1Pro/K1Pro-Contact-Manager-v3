@@ -2,21 +2,15 @@
   <div class="addresses">
     <div v-for="(address, addressIndex) in slctdCntct?.Addresses">
       <div class="address-title-grid-container">
-        <div class="address-title">
-          <i class="fa-solid fa-house"></i>&nbsp;{{ address.Type }}
-        </div>
-        <button
-          class="address-button"
-          @click="deleteContactInfo('Addresses', addressIndex)"
-        >
+        <div class="address-title"><i class="fa-solid fa-house"></i>&nbsp;{{ address.Type }}</div>
+        <button class="address-button" @click="deleteContactInfo('Addresses', addressIndex)">
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
       <div class="address-grid-container">
         <div
           :class="'address-grid-item' + addressInputIndex"
-          v-for="(addressInputs, addressInputIndex) in accountSettings
-            .contactInfo.keys.Addresses[address.Type]"
+          v-for="(addressInputs, addressInputIndex) in accountSettings.contactInfo.keys.Addresses[address.Type]"
         >
           <select
             v-if="addressInputs.value == 'State'"
@@ -104,14 +98,15 @@ export default {
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntct',
+      'slctdCntctIndex',
     ]),
   },
 
   methods: {
     updateAddress(event, columnIndex, key) {
       const column = 'Addresses';
-      // prettier-ignore
-      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event.target.value;
+      this.slctdCntct[column][columnIndex][key] = event.target.value;
+      this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },
   },

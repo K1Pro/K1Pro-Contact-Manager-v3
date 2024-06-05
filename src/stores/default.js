@@ -45,7 +45,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       firstCalDate: '',
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       appName: app_name,
-      updatingContactInfo: false,
+      slctdCntct: [],
     };
   },
   actions: {
@@ -81,9 +81,8 @@ const useDefaultStore = Pinia.defineStore('default', {
       }
     },
     async patchContactInfo(event, column, columnIndex, key) {
-      this.updatingContactInfo = true;
       // console.log(
-      //   'id: ' + this.contacts[this.userSettings.selectedContactIndex].id
+      //   'id: ' + this.contacts[this.slctdCntctIndex].id
       // );
       // console.log('column: ' + column);
       // console.log('columnIndex: ' + columnIndex);
@@ -92,7 +91,10 @@ const useDefaultStore = Pinia.defineStore('default', {
       //   'value: ' + (event?.target?.value ? event.target.value : event)
       // );
       // console.log('================');
-      this.contacts[this.userSettings.selectedContactIndex].Updated = {
+      this.slctdCntct.Updated = {
+        [this.userData.id]: this.times.Y_m_d_H_i_s_z,
+      };
+      this.contacts[this.slctdCntctIndex].Updated = {
         [this.userData.id]: this.times.Y_m_d_H_i_s_z,
       };
       try {
@@ -104,7 +106,7 @@ const useDefaultStore = Pinia.defineStore('default', {
             'Cache-Control': 'no-store',
           },
           body: JSON.stringify({
-            ID: this.contacts[this.userSettings.selectedContactIndex].id,
+            ID: this.slctdCntct.id,
             Column: column,
             ColumnIndex: columnIndex,
             Key: key,
@@ -113,29 +115,19 @@ const useDefaultStore = Pinia.defineStore('default', {
         });
         const patchContactInfoResJSON = await response.json();
         if (patchContactInfoResJSON.success) {
-          setTimeout(() => {
-            this.updatingContactInfo = false;
-          }, 6000);
           // this.msg.snackBar = 'Updated ';
           // console.log(patchContactInfoResJSON);
-        } else {
-          setTimeout(() => {
-            this.updatingContactInfo = false;
-          }, 6000);
         }
       } catch (error) {
-        setTimeout(() => {
-          this.updatingContactInfo = false;
-        }, 6000);
         this.msg.snackBar = error.toString();
       }
     },
     async deleteContactInfo(column, columnIndex, prevConfirm) {
-      this.updatingContactInfo = true;
       // console.log('column: ' + column);
       // console.log('columnIndex: ' + columnIndex);
       if (prevConfirm || confirm(this.msg.confirmDeletion) == true) {
-        this.contacts[this.userSettings.selectedContactIndex][column].splice(columnIndex, 1);
+        this.slctdCntct[column].splice(columnIndex, 1);
+        this.contacts[this.slctdCntctIndex][column].splice(columnIndex, 1);
         try {
           const response = await fetch(servr_url + this.endPts.contacts, {
             method: 'DELETE',
@@ -145,28 +137,18 @@ const useDefaultStore = Pinia.defineStore('default', {
               'Cache-Control': 'no-store',
             },
             body: JSON.stringify({
-              ID: this.contacts[this.userSettings.selectedContactIndex].id,
+              ID: this.slctdCntct.id,
               Column: column,
               ColumnIndex: columnIndex,
             }),
           });
           const patchContactInfoResJSON = await response.json();
           if (patchContactInfoResJSON.success) {
-            setTimeout(() => {
-              this.updatingContactInfo = false;
-            }, 6000);
             // this.msg.snackBar = 'Updated ';
             // console.log(patchContactInfoResJSON);
-          } else {
-            setTimeout(() => {
-              this.updatingContactInfo = false;
-            }, 6000);
           }
         } catch (error) {
           this.msg.snackBar = error.toString();
-          setTimeout(() => {
-            this.updatingContactInfo = false;
-          }, 6000);
         }
       }
     },
@@ -232,8 +214,8 @@ const useDefaultStore = Pinia.defineStore('default', {
     calRow(state) {
       return Math.ceil((state.days.findIndex((day) => day == state.times.Y_m_d) + 1) / 7);
     },
-    slctdCntct(state) {
-      return state.contacts[state.userSettings.selectedContactIndex];
+    slctdCntctIndex(state) {
+      return state.contacts.findIndex((contact) => contact.id == state.slctdCntct.id);
     },
     userList(state) {
       return { ...state.activeUserList, ...state.accountSettings.userList };

@@ -39,22 +39,10 @@
         <div class="emailInputLabel">Attachment:</div>
         <input ref="emailAttachment" type="file" multiple />
 
-        <span
-          ref="emailBody"
-          spellcheck="false"
-          contenteditable="plaintext-only"
-          v-html="templateBody"
-        ></span>
+        <span ref="emailBody" spellcheck="false" contenteditable="plaintext-only" v-html="templateBody"></span>
 
-        <button
-          :disabled="spinLogin"
-          @click="sendEmail"
-          style="cursor: pointer"
-        >
-          <i
-            v-if="spinLogin"
-            class="spin fa-sharp fa-solid fa-circle-notch"
-          ></i>
+        <button :disabled="spinLogin" @click="sendEmail" style="cursor: pointer">
+          <i v-if="spinLogin" class="spin fa-sharp fa-solid fa-circle-notch"></i>
           <template v-else>Send</template>
         </button>
       </div>
@@ -78,6 +66,7 @@ export default {
       'endPts',
       'times',
       'slctdCntct',
+      'slctdCntctIndex',
     ]),
     templateBody() {
       let slctdTemplateBody;
@@ -125,7 +114,7 @@ export default {
       const confirmSendEmail = 'Are you sure you would like to send this?';
       if (confirm(confirmSendEmail) == true) {
         this.spinLogin = true;
-        const columnIndex = this.userSettings.selectedContactIndex;
+        const columnIndex = this.slctdCntctIndex;
         const sendEmailDatetime = this.times.Y_m_d_H_i_s_z.slice(0, 16);
         let formData = new FormData();
         Object.values(this.$refs['emailAttachment'].files).forEach((file) => {
@@ -150,6 +139,11 @@ export default {
             this.msg.snackBar = 'Email sent successfully';
             console.log(sendEmailResJSON);
             this.spinLogin = false;
+            this.slctdCntct.Log.unshift([
+              this.userData.id,
+              sendEmailDatetime,
+              'Emailed ' + this.$refs['emailTo'].value,
+            ]);
             this.contacts[columnIndex].Log.unshift([
               this.userData.id,
               sendEmailDatetime,

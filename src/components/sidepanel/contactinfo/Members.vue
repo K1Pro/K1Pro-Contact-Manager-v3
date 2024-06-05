@@ -2,14 +2,16 @@
   <div class="members">
     <div v-for="(member, memberIndex) in slctdCntct?.Members">
       <div class="member-title-grid-container">
-        <div class="member-title">
-          <i class="fa-solid fa-user">&nbsp;</i>{{ member.Type }}
-        </div>
-        <i
-          v-if="memberIndex === 0"
-          class="fa-solid fa-square-plus"
-          style="position: absolute; right: 10px; margin-top: 5px"
-        ></i>
+        <div class="member-title"><i class="fa-solid fa-user">&nbsp;</i>{{ member.Type }}</div>
+        <template v-if="memberIndex === 0">
+          <i
+            v-if="spinLogin"
+            class="spin fa-sharp fa-solid fa-circle-notch"
+            style="position: absolute; right: 10px; margin-top: 5px; width: 17px; height: 17px"
+          ></i>
+          <i v-else class="fa-solid fa-square-plus" style="position: absolute; right: 10px; margin-top: 5px"></i>
+        </template>
+
         <select
           v-if="memberIndex === 0"
           @change="addContactInfo"
@@ -25,37 +27,21 @@
           "
         >
           <option selected disabled></option>
-          <option
-            v-for="cntctInfo in addCntctInfoDropDown"
-            :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey"
-          >
+          <option v-for="cntctInfo in addCntctInfoDropDown" :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey">
             {{ cntctInfo.InfoKey + cntctInfo.InfoPlaceholder }}
           </option>
           <option value="newContact">New contact</option>
           <option value="deleteContact">Delete contact</option>
         </select>
 
-        <button
-          v-else
-          class="member-button"
-          @click="deleteContactInfo('Members', memberIndex)"
-        >
+        <button v-else class="member-button" @click="deleteContactInfo('Members', memberIndex)">
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
       <div
-        :class="
-          'member-grid-container' +
-          Object.values(accountSettings.contactInfo.keys.Members[member.Type])
-            .length
-        "
+        :class="'member-grid-container' + Object.values(accountSettings.contactInfo.keys.Members[member.Type]).length"
       >
-        <div
-          class="member-grid-item"
-          v-for="memberInputs in accountSettings.contactInfo.keys.Members[
-            member.Type
-          ]"
-        >
+        <div class="member-grid-item" v-for="memberInputs in accountSettings.contactInfo.keys.Members[member.Type]">
           <input
             :type="memberInputs.type"
             :placeholder="memberInputs.placeholder"
@@ -89,82 +75,47 @@ export default {
       'deleteContactInfo',
       'patchUserSettings',
       'slctdCntct',
-      'updatingContactInfo',
+      'slctdCntctIndex',
     ]),
     addCntctInfoDropDown() {
       const cntctInfoDropDown = [];
-      Object.entries(this.accountSettings.contactInfo.keys).forEach(
-        ([contactInfoGroup, contactInfoKeys]) => {
-          Object.keys(contactInfoKeys).forEach((contactInfoKey) => {
-            const test = {
-              InfoGroup: contactInfoGroup,
-              InfoKey: contactInfoKey,
-              InfoPlaceholder:
-                contactInfoGroup == 'Addresses' ? ' address' : '',
-            };
-            cntctInfoDropDown.push(test);
-          });
-        }
-      );
+      Object.entries(this.accountSettings.contactInfo.keys).forEach(([contactInfoGroup, contactInfoKeys]) => {
+        Object.keys(contactInfoKeys).forEach((contactInfoKey) => {
+          const test = {
+            InfoGroup: contactInfoGroup,
+            InfoKey: contactInfoKey,
+            InfoPlaceholder: contactInfoGroup == 'Addresses' ? ' address' : '',
+          };
+          cntctInfoDropDown.push(test);
+        });
+      });
       return cntctInfoDropDown;
     },
   },
 
+  data() {
+    return { spinLogin: false };
+  },
+
   methods: {
     async addContactInfo(event) {
-      this.updatingContactInfo = true;
       const InfoGroup = event.target.value.split('_')[0];
       if (InfoGroup != 'newContact') {
         const InfoKey = event.target.value.split('_')[1];
-        // prettier-ignore
-        const columnIndex = this.contacts[this.userSettings.selectedContactIndex][InfoGroup].length;
+        event.srcElement.selectedIndex = 0;
+        const columnIndex = this.contacts[this.slctdCntctIndex][InfoGroup].length;
         if (InfoGroup == 'Members' || InfoGroup == 'Addresses') {
-          // prettier-ignore
-          this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push({ ['Type']: InfoKey });
+          this.slctdCntct[InfoGroup].push({ ['Type']: InfoKey });
+          this.contacts[this.slctdCntctIndex][InfoGroup].push({ ['Type']: InfoKey });
           this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type');
         } else {
-          // prettier-ignore
-          this.contacts[this.userSettings.selectedContactIndex][InfoGroup].push({ [InfoKey]: '' });
+          this.slctdCntct[InfoGroup].push({ [InfoKey]: '' });
+          this.contacts[this.slctdCntctIndex][InfoGroup].push({ [InfoKey]: '' });
           this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
         }
       } else {
-        const newMember = {
-          Assets: [],
-          Assigned: this.userData.id,
-          Categ: '',
-          Connections: [],
-          Created: {
-            [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
-          },
-          Custom1: [],
-          Custom2: '',
-          Custom3: '',
-          Custom4: '',
-          Custom5: '',
-          DNC: 0,
-          id: '',
-          Log: [],
-          Members: [
-            {
-              Type: Object.keys(
-                this.accountSettings.contactInfo.keys.Members
-              )[0],
-              Name: '',
-            },
-          ],
-          Notes: '',
-          Addresses: [],
-          RecurTasks: [],
-          Tasks: [],
-          Updated: {
-            [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
-          },
-        };
-        this.contacts.push(newMember);
-        const newContactIndex = this.contacts.length - 1;
-        this.userSettings.selectedContactIndex = newContactIndex;
-        this.patchUserSettings();
-
+        event.srcElement.selectedIndex = 0;
+        this.spinLogin = true;
         try {
           const response = await fetch(servr_url + this.endPts.contacts, {
             method: 'POST',
@@ -175,37 +126,64 @@ export default {
             },
             body: JSON.stringify({
               Datetime: this.times.Y_m_d_H_i_s_z.slice(0, 16),
-              Member: Object.keys(
-                this.accountSettings.contactInfo.keys.Members
-              )[0],
+              Member: Object.keys(this.accountSettings.contactInfo.keys.Members)[0],
             }),
           });
           const postContactInfoResJSON = await response.json();
           if (postContactInfoResJSON.success) {
-            this.contacts[newContactIndex].id =
-              postContactInfoResJSON.data.contact_id;
-            setTimeout(() => {
-              this.updatingContactInfo = false;
-            }, 6000);
+            console.log(postContactInfoResJSON);
+            const newContactIndex = postContactInfoResJSON.data.contact_id;
+            const newMember = {
+              id: newContactIndex,
+              Members: [
+                {
+                  Type: Object.keys(this.accountSettings.contactInfo.keys.Members)[0],
+                  Name: '',
+                },
+              ],
+              Addresses: [],
+              Assets: [],
+              Connections: [],
+              Credentials: [],
+              Tasks: [],
+              RecurTasks: [],
+              Notes: '',
+              Categ: '',
+              DNC: 0,
+              Created: {
+                [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+              },
+              Updated: {
+                [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+              },
+              Assigned: this.userData.id,
+              Log: [],
+              Custom1: [],
+              Custom2: '',
+              Custom3: '',
+              Custom4: '',
+              Custom5: '',
+            };
+            this.slctdCntct = newMember;
+            this.contacts.push(newMember);
+            this.userSettings.selectedContactIndex = newContactIndex;
+            this.patchUserSettings();
+
+            this.spinLogin = false;
           } else {
-            setTimeout(() => {
-              this.updatingContactInfo = false;
-            }, 6000);
+            this.spinLogin = false;
           }
         } catch (error) {
-          setTimeout(() => {
-            this.updatingContactInfo = false;
-          }, 6000);
+          this.spinLogin = false;
           this.msg.snackBar = error.toString();
           console.log(error.toString());
         }
       }
-      event.srcElement.selectedIndex = 0;
     },
     updateMember(event, columnIndex, key) {
       const column = 'Members';
-      // prettier-ignore
-      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event.target.value;
+      this.slctdCntct[column][columnIndex][key] = event.target.value;
+      this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },
   },

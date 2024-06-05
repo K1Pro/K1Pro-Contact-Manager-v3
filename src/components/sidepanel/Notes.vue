@@ -6,11 +6,7 @@
         {{ slctdCntct.Members[0].First ? slctdCntct.Members[0].First : '' }}
         {{ slctdCntct.Members[0].Name }}
       </div>
-      <textarea
-        placeholder="Notes"
-        :value="slctdCntct.Notes"
-        @change="updateNotes($event)"
-      ></textarea>
+      <textarea placeholder="Notes" :value="slctdCntct.Notes" @change="updateNotes($event)"></textarea>
     </template>
     <template v-else> Notes </template>
   </div>
@@ -27,6 +23,7 @@ export default {
       'contacts',
       'patchContactInfo',
       'slctdCntct',
+      'slctdCntctIndex',
     ]),
   },
 
@@ -37,8 +34,8 @@ export default {
   methods: {
     updateNotes(event) {
       const column = 'Notes';
-      // prettier-ignore
-      this.contacts[this.userSettings.selectedContactIndex][column] = event.target.value;
+      this.slctdCntct[column] = event.target.value;
+      this.contacts[this.slctdCntctIndex][column] = event.target.value;
       this.patchContactInfo(event.target.value, column);
     },
   },

@@ -2,20 +2,11 @@
   <div class="day-content">
     <div class="task-grid-day" v-if="firstCalDate && calContactTasks">
       <b v-if="days[dayIndex] == times.Y_m_d_H_i_s_z.slice(0, 10)">
-        {{
-          firstCalDate
-            ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10)
-            : ''
-        }}{{
-          days[dayIndex] == times.Y_m_d_H_i_s_z.slice(0, 10) ? ' - Today' : ''
-        }}
+        {{ firstCalDate ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : ''
+        }}{{ days[dayIndex] == times.Y_m_d_H_i_s_z.slice(0, 10) ? ' - Today' : '' }}
       </b>
       <span v-else>
-        {{
-          firstCalDate
-            ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10)
-            : ''
-        }}
+        {{ firstCalDate ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : '' }}
       </span>
     </div>
     <div class="task-grid-day-content" v-if="firstCalDate && calContactTasks">
@@ -25,22 +16,17 @@
           :class="[
             calContactTask.Status,
             {
-              active:
-                calContactTask.ContactIndex ==
-                userSettings.selectedContactIndex,
+              active: calContactTask.ContactIndex == userSettings.selectedContactIndex,
             },
             {
               activeTask:
                 calContactTask.EventIndex == eventIndex &&
-                calContactTask.ContactIndex ==
-                  userSettings.selectedContactIndex &&
+                calContactTask.ContactIndex == userSettings.selectedContactIndex &&
                 calContactTask.Type == activeTab,
             },
           ]"
           :style="{
-            'grid-template-columns': calContactTask.Icon
-              ? 'calc(100% - 20px) 20px'
-              : '100%',
+            'grid-template-columns': calContactTask.Icon ? 'calc(100% - 20px) 20px' : '100%',
           }"
           v-show="
             (userSettings.calendar.filters.owners == calContactTask.Assign ||
@@ -54,29 +40,13 @@
           <div
             style="overflow: hidden"
             class="prevent-select"
-            @click="
-              selectContact(
-                calContactTask.ContactIndex,
-                calContactTask.Type,
-                calContactTask.EventIndex
-              )
-            "
-            v-on:dblclick="
-              selectContact(
-                calContactTask.ContactIndex,
-                'house-chimney-user',
-                null
-              )
-            "
+            @click="selectContact(calContactTask.ContactIndex, calContactTask.Type, calContactTask.EventIndex)"
+            v-on:dblclick="selectContact(calContactTask.ContactIndex, 'house-chimney-user', null)"
           >
             {{ calContactTask.Time != '25:00' ? calContactTask.Time : '' }}
             {{ calContactTask.Name }}
           </div>
-          <div
-            style="text-align: center"
-            class="prevent-select"
-            v-if="calContactTask.Icon"
-          >
+          <div style="text-align: center" class="prevent-select" v-if="calContactTask.Icon">
             <i :class="calContactTask.Icon"></i>
           </div>
         </div>
@@ -96,6 +66,7 @@ export default {
       'eventIndex',
       'userSettings',
       'contacts',
+      'slctdCntct',
       'patchUserSettings',
       'times',
       'firstCalDate',
@@ -115,13 +86,8 @@ export default {
               Status: task.Status == 1 ? 'compltd' : 'not-compltd',
               Assign: task.Assign,
               Categ: contact.Categ,
-              Icon:
-                task.Status == 1
-                  ? 'fa fa-check'
-                  : task.Tag != ''
-                  ? task.Tag
-                  : false,
-              ContactIndex: contactIndex,
+              Icon: task.Status == 1 ? 'fa fa-check' : task.Tag != '' ? task.Tag : false,
+              ContactIndex: contact.id,
               EventIndex: taskIndex,
             };
           }
@@ -133,34 +99,24 @@ export default {
             (!task?.End || task?.End >= this.days[this.dayIndex]) &&
             (task?.Recur.includes(this.days[this.dayIndex].slice(-5)) ||
               task?.Recur.includes(this.days[this.dayIndex].slice(8, 10)) ||
-              task?.Recur.includes(
-                new Date(this.days[this.dayIndex] + 'T00:00:00')
-                  .getDay()
-                  .toString()
-              ) ||
+              task?.Recur.includes(new Date(this.days[this.dayIndex] + 'T00:00:00').getDay().toString()) ||
               task?.Recur.includes('everyday'))
           ) {
             contactArray[contactIndex + 'Recur' + taskIndex] = {
               Name: contact.Members[0].Name,
               Time: task.Time ? task.Time : '25:00',
               Type: 'repeat',
-              Status:
-                task.Review >= this.days[this.dayIndex] ? 'compltd' : 'renewal',
-              Icon:
-                task.Review >= this.days[this.dayIndex]
-                  ? 'fa fa-check'
-                  : 'fa fa-repeat',
+              Status: task.Review >= this.days[this.dayIndex] ? 'compltd' : 'renewal',
+              Icon: task.Review >= this.days[this.dayIndex] ? 'fa fa-check' : 'fa fa-repeat',
               Assign: task.Assign,
               Categ: contact.Categ,
-              ContactIndex: contactIndex,
+              ContactIndex: contact.id,
               EventIndex: taskIndex,
             };
           }
         });
       });
-      return Object.values(contactArray).sort((a, b) =>
-        a.Time.localeCompare(b.Time)
-      );
+      return Object.values(contactArray).sort((a, b) => a.Time.localeCompare(b.Time));
     },
   },
 
@@ -168,8 +124,9 @@ export default {
 
   methods: {
     selectContact(contactIndex, tab, eventIndex) {
+      this.slctdCntct = this.contacts.filter((contact) => contact.id == contactIndex)[0];
+      this.userSettings.selectedContactIndex = this.slctdCntct.id;
       this.activeTab = tab;
-      this.userSettings.selectedContactIndex = contactIndex;
       this.eventIndex = eventIndex;
       this.patchUserSettings();
     },

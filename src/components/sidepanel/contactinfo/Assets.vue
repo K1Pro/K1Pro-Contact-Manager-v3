@@ -2,29 +2,19 @@
   <div class="assets">
     <div v-for="(asset, assetIndex) in slctdCntct?.Assets">
       <div v-for="(assetInfo, assetType) in asset">
-        <div
-          v-for="assetInputs in accountSettings.contactInfo.keys.Assets[
-            assetType
-          ]"
-        >
+        <div v-for="assetInputs in accountSettings.contactInfo.keys.Assets[assetType]">
           <div v-if="assetInputs.icon" style="position: relative">
             <i class="asset-icon" :class="assetInputs.icon"></i>
             <input
               :style="{
-                'border-bottom':
-                  assetIndex !== slctdCntct.Assets.length - 1
-                    ? '1px solid black'
-                    : '0',
+                'border-bottom': assetIndex !== slctdCntct.Assets.length - 1 ? '1px solid black' : '0',
               }"
               :placeholder="assetInputs.placeholder"
               :type="assetInputs.type"
               :value="assetInfo"
               @change="updateAsset($event, assetIndex, assetType)"
             />
-            <button
-              class="asset-button"
-              @click="deleteContactInfo('Assets', assetIndex)"
-            >
+            <button class="asset-button" @click="deleteContactInfo('Assets', assetIndex)">
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>
@@ -35,10 +25,7 @@
               :value="assetInfo"
               @change="updateAsset($event, assetIndex, assetType)"
             />
-            <button
-              class="asset-button"
-              @click="deleteContactInfo('Assets', assetIndex)"
-            >
+            <button class="asset-button" @click="deleteContactInfo('Assets', assetIndex)">
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>
@@ -63,14 +50,15 @@ export default {
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntct',
+      'slctdCntctIndex',
     ]),
   },
 
   methods: {
     updateAsset(event, columnIndex, key) {
       const column = 'Assets';
-      // prettier-ignore
-      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = event.target.value;
+      this.slctdCntct[column][columnIndex][key] = event.target.value;
+      this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },
   },

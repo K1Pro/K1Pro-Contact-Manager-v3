@@ -69,8 +69,8 @@ export default {
       'emails',
       'endPts',
       'times',
-      'updatingContactInfo',
       'patchUserSettings',
+      'slctdCntct',
     ]),
 
     appGridItem2Width() {
@@ -92,20 +92,12 @@ export default {
 
   methods: {
     getCookie(accessToken, sessionID) {
-      this.accessToken = document.cookie
-        .match(new RegExp(`(^| )${accessToken}=([^;]+)`))
-        ?.at(2);
-      this.sessionID = document.cookie
-        .match(new RegExp(`(^| )${sessionID}=([^;]+)`))
-        ?.at(2);
+      this.accessToken = document.cookie.match(new RegExp(`(^| )${accessToken}=([^;]+)`))?.at(2);
+      this.sessionID = document.cookie.match(new RegExp(`(^| )${sessionID}=([^;]+)`))?.at(2);
     },
     async updateTime() {
-      const timeDifferenece = Math.round(
-        (this.times.initialTimestamp - new Date().getTime()) * -1
-      );
-      this.times.Y_m_d_H_i_s_z = new Date(
-        this.times.timestamp + timeDifferenece
-      ).toISOString();
+      const timeDifferenece = Math.round((this.times.initialTimestamp - new Date().getTime()) * -1);
+      this.times.Y_m_d_H_i_s_z = new Date(this.times.timestamp + timeDifferenece).toISOString();
       try {
         const response = await fetch(servr_url + this.endPts.currentupdate, {
           method: 'GET',
@@ -117,10 +109,7 @@ export default {
         });
         const getCurrentupdateResJSON = await response.json();
         if (getCurrentupdateResJSON.success) {
-          if (
-            this.currentUpdate != getCurrentupdateResJSON.data.datetime &&
-            this.currentUpdate != null
-          ) {
+          if (this.currentUpdate != getCurrentupdateResJSON.data.datetime && this.currentUpdate != null) {
             this.getContacts(getCurrentupdateResJSON.data.datetime);
           } else if (this.currentUpdate == null) {
             this.currentUpdate = getCurrentupdateResJSON.data.datetime;
@@ -154,8 +143,7 @@ export default {
           this.loggedIn = true;
           this.userData = userDataResJSON.data.user;
           this.accountSettings = userDataResJSON.data.accountSettings;
-          this.tempFiltersDays =
-            userDataResJSON.data.userSettings.calendar.filters.days;
+          this.tempFiltersDays = userDataResJSON.data.userSettings.calendar.filters.days;
           this.activeUserList = userDataResJSON.data.activeUserList;
           if (
             this.windowWidth < 768 &&
@@ -188,12 +176,18 @@ export default {
           },
         });
         const getContactsResJSON = await response.json();
-        if (
-          getContactsResJSON.success &&
-          document.activeElement.tagName == 'BODY' &&
-          !this.updatingContactInfo
-        ) {
+        if (getContactsResJSON.success) {
+          // if (getContactsResJSON.success && document.activeElement.tagName == 'BODY' && !this.updatingContactInfo) {
           // console.log(getContactsResJSON);
+          if (this.slctdCntct.length == 0) {
+            this.slctdCntct = getContactsResJSON.data.contacts.filter(
+              (contact) => contact.id == this.userSettings.selectedContactIndex
+            )[0]
+              ? getContactsResJSON.data.contacts.filter(
+                  (contact) => contact.id == this.userSettings.selectedContactIndex
+                )[0]
+              : getContactsResJSON.data.contacts[0];
+          }
           this.contacts = getContactsResJSON.data.contacts;
           this.currentUpdate = updateTime;
         }
@@ -239,8 +233,7 @@ export default {
 
     resizeGrid(event) {
       const newGridSize = Math.round((event.clientX / window.innerWidth) * 100);
-      if (newGridSize > 25 && newGridSize < 65)
-        this.userSettings.layout['grid-size'] = newGridSize;
+      if (newGridSize > 25 && newGridSize < 65) this.userSettings.layout['grid-size'] = newGridSize;
     },
 
     startResizeGrid() {

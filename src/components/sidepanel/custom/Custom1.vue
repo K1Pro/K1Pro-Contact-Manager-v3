@@ -1,9 +1,5 @@
 <template>
-  <template
-    v-if="
-      slctdCntct && userData?.AppPermissions[appName][0] == 'bundle_insurance'
-    "
-  >
+  <template v-if="slctdCntct && userData?.AppPermissions[appName][0] == 'bundle_insurance'">
     <div class="policy-info">
       <div class="policy-info-title">
         <div class="policy-info-title-grid-container">
@@ -27,32 +23,17 @@
           'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white',
         }"
       >
-        <i
-          class="fa-solid fa-trash"
-          @click="deleteContactInfo('Custom1', policyInfoIndex)"
-        ></i>
+        <i class="fa-solid fa-trash" @click="deleteContactInfo('Custom1', policyInfoIndex)"></i>
         <div v-for="policyInfoInputs in accountSettings.Custom1">
-          <span
-            class="policy-info-label"
-            v-if="
-              !(
-                policyInfo.Policy_Type != 'Home' &&
-                policyInfoInputs.value == 'EHV'
-              )
-            "
+          <span class="policy-info-label" v-if="!(policyInfo.Policy_Type != 'Home' && policyInfoInputs.value == 'EHV')"
             >{{ policyInfoInputs.placeholder }}:</span
           >
           <template v-if="policyInfoInputs.type == 'select'">
             <select
-              @change="
-                updatePolicy($event, policyInfoIndex, policyInfoInputs.value)
-              "
+              @change="updatePolicy($event, policyInfoIndex, policyInfoInputs.value)"
               :style="{
                 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white',
-                border:
-                  policyInfoIndex % 2
-                    ? '1px solid gray'
-                    : '1px solid lightgray',
+                border: policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray',
               }"
             >
               <option
@@ -67,34 +48,24 @@
             <input
               :type="policyInfoInputs.type"
               :checked="policyInfo[policyInfoInputs.value] == 1"
-              @change="
-                updatePolicy($event, policyInfoIndex, policyInfoInputs.value)
-              "
+              @change="updatePolicy($event, policyInfoIndex, policyInfoInputs.value)"
             />
             {{ policyInfo[policyInfoInputs.value] == 1 ? 'Yes' : 'No' }}
           </template>
           <template
             v-else-if="
               policyInfoInputs.type == 'number' &&
-              !(
-                policyInfo.Policy_Type != 'Home' &&
-                policyInfoInputs.value == 'EHV'
-              )
+              !(policyInfo.Policy_Type != 'Home' && policyInfoInputs.value == 'EHV')
             "
           >
             <input
               :style="{
                 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white',
-                border:
-                  policyInfoIndex % 2
-                    ? '1px solid gray'
-                    : '1px solid lightgray',
+                border: policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray',
               }"
               :type="policyInfoInputs.type"
               :value="policyInfo[policyInfoInputs.value]"
-              @change="
-                updatePolicy($event, policyInfoIndex, policyInfoInputs.value)
-              "
+              @change="updatePolicy($event, policyInfoIndex, policyInfoInputs.value)"
             />
           </template>
           <template v-else>
@@ -102,16 +73,11 @@
               v-if="policyInfoInputs.type != 'number'"
               :style="{
                 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white',
-                border:
-                  policyInfoIndex % 2
-                    ? '1px solid gray'
-                    : '1px solid lightgray',
+                border: policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray',
               }"
               :type="policyInfoInputs.type"
               :value="policyInfo[policyInfoInputs.value]"
-              @change="
-                updatePolicy($event, policyInfoIndex, policyInfoInputs.value)
-              "
+              @change="updatePolicy($event, policyInfoIndex, policyInfoInputs.value)"
             />
           </template>
         </div>
@@ -135,25 +101,23 @@ export default {
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntct',
+      'slctdCntctIndex',
     ]),
   },
 
   methods: {
     newPolicy() {
       const column = 'Custom1';
-      this.contacts[this.userSettings.selectedContactIndex][column].push({});
-      // prettier-ignore
+      this.slctdCntct[column].push({});
+      this.contacts[this.slctdCntctIndex][column].push({});
       this.patchContactInfo('', column, this.slctdCntct.Custom1.length, 'Date');
     },
     updatePolicy(event, columnIndex, key) {
       // console.log(event);
       const column = 'Custom1';
-      let custom1Value =
-        event.target.type == 'checkbox'
-          ? event.target.checked
-          : event.target.value;
-      // prettier-ignore
-      this.contacts[this.userSettings.selectedContactIndex][column][columnIndex][key] = custom1Value;
+      let custom1Value = event.target.type == 'checkbox' ? event.target.checked : event.target.value;
+      this.slctdCntct[column][columnIndex][key] = custom1Value;
+      this.contacts[this.slctdCntctIndex][column][columnIndex][key] = custom1Value;
       this.patchContactInfo(custom1Value, column, columnIndex, key);
     },
   },

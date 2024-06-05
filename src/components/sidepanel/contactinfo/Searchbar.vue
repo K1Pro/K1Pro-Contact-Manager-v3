@@ -1,12 +1,7 @@
 <template>
   <div class="search-bar">
     <i class="fa-solid fa-magnifying-glass"></i>
-    <input
-      type="search"
-      placeholder="Search for contact"
-      v-model="search"
-      @keyup="findSearchedContact"
-    />
+    <input type="search" placeholder="Search for contact" v-model="search" @keyup="findSearchedContact" />
     <select
       name="Contact Search"
       ref="searchDropdown"
@@ -18,10 +13,7 @@
         Found {{ searchArray.length }}
         {{ searchArray.length != 1 ? 'contacts' : 'contact' }}
       </option>
-      <option
-        v-for="(searchResult, index) in searchArray"
-        :value="searchResult.split('_')[1]"
-      >
+      <option v-for="(searchResult, index) in searchArray" :value="searchResult.split('_')[1]">
         {{ searchResult.split('_')[0] }}
       </option>
     </select>
@@ -39,6 +31,7 @@ export default {
       'userSettings',
       'contacts',
       'appName',
+      'slctdCntct',
       'patchUserSettings',
     ]),
     searchArray() {
@@ -50,8 +43,7 @@ export default {
               let fullName;
               if (member.First && !member.Name) fullName = member.First;
               if (member.Name && !member.First) fullName = member.Name;
-              if (member.First && member.Name)
-                fullName = member.First + ' ' + member.Name;
+              if (member.First && member.Name) fullName = member.First + ' ' + member.Name;
               searchResultArray.push(`${fullName}_${contactIndex}`);
             });
           }
@@ -68,36 +60,26 @@ export default {
           let fullName;
           if (member.First && !member.Name) fullName = member.First;
           if (member.Name && !member.First) fullName = member.Name;
-          if (member.First && member.Name)
-            fullName = member.First + ' ' + member.Name;
+          if (member.First && member.Name) fullName = member.First + ' ' + member.Name;
           stringArray[contactIndex] += (fullName + ' ').toLowerCase();
         });
 
         contact.Addresses.forEach((addres) => {
           Object.entries(addres).forEach(([addresKey, addresValue]) => {
-            if (addresKey != 'Type')
-              stringArray[contactIndex] += (addresValue + ' ').toLowerCase();
+            if (addresKey != 'Type') stringArray[contactIndex] += (addresValue + ' ').toLowerCase();
           });
         });
 
         contact.Connections.forEach((connection) => {
           Object.values(connection).forEach((connectionValue) => {
-            stringArray[contactIndex] += (connectionValue + ' ')
-              .toLowerCase()
-              .replaceAll('-', '');
+            stringArray[contactIndex] += (connectionValue + ' ').toLowerCase().replaceAll('-', '');
           });
         });
 
         contact.Custom1.forEach((custom1) => {
           Object.entries(custom1).forEach(([custom1Key, custom1Value]) => {
-            if (
-              custom1Key == 'Policy_No' &&
-              this.userData.AppPermissions[this.appName][0] ==
-                'bundle_insurance'
-            )
-              stringArray[contactIndex] += (custom1Value + ' ')
-                .toLowerCase()
-                .replaceAll('-', '');
+            if (custom1Key == 'Policy_No' && this.userData.AppPermissions[this.appName][0] == 'bundle_insurance')
+              stringArray[contactIndex] += (custom1Value + ' ').toLowerCase().replaceAll('-', '');
           });
         });
       });
@@ -112,13 +94,13 @@ export default {
   methods: {
     findSearchedContact() {
       if (this.search.length > 2) {
-        this.$refs.searchDropdown.size =
-          this.searchArray.length < 10 ? this.searchArray.length + 1 : 10;
+        this.$refs.searchDropdown.size = this.searchArray.length < 10 ? this.searchArray.length + 1 : 10;
       }
     },
 
     selectSearchedContact(event) {
-      this.userSettings.selectedContactIndex = event.target.value;
+      this.slctdCntct = this.contacts[event.target.value];
+      this.userSettings.selectedContactIndex = this.contacts[event.target.value].id;
       this.search = '';
       this.$refs.searchDropdown.size = 0;
       this.patchUserSettings();

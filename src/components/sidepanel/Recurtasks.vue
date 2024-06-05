@@ -136,6 +136,7 @@ export default {
       'deleteContactInfo',
       'slctdCntct',
       'userList',
+      'slctdCntctIndex',
     ]),
   },
 
@@ -181,8 +182,17 @@ export default {
         Update: this.userData.id,
         RealIndex: this.RecurTasks.length,
       });
+      // new selected contact recurTask
+      this.slctdCntct[this.column].push({
+        Start: this.times.Y_m_d,
+        Recur: [this.times.Y_m_d.slice(5, 10)],
+        Freq: 'Annually',
+        Assign: this.userData.id,
+        Create: this.userData.id,
+        Update: this.userData.id,
+      });
       // new state recurTask
-      this.contacts[this.userSettings.selectedContactIndex][this.column].push({
+      this.contacts[this.slctdCntctIndex][this.column].push({
         Start: this.times.Y_m_d,
         Recur: [this.times.Y_m_d.slice(5, 10)],
         Freq: 'Annually',
@@ -194,13 +204,16 @@ export default {
       this.patchContactInfo(this.times.Y_m_d, this.column, this.slctdCntct.RecurTasks.length, 'Start');
     },
     updateRecurTask(event, columnIndex, recurTaskIndex, key) {
-      if (event != this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex][key]) {
+      if (event != this.contacts[this.slctdCntctIndex][this.column][columnIndex][key]) {
         // updating component recurTask
         this[this.column][recurTaskIndex][key] = event;
         this[this.column][recurTaskIndex].Update = this.userData.id;
+        // updating selected contact recurTask
+        this.slctdCntct[this.column][columnIndex][key] = event;
+        this.slctdCntct[this.column][columnIndex].Update = this.userData.id;
         // updating state recurTask
-        this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex][key] = event;
-        this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex].Update = this.userData.id;
+        this.contacts[this.slctdCntctIndex][this.column][columnIndex][key] = event;
+        this.contacts[this.slctdCntctIndex][this.column][columnIndex].Update = this.userData.id;
         // updating database recurTask
         this.patchContactInfo(event, this.column, columnIndex, key);
       }
@@ -228,12 +241,18 @@ export default {
       this[this.column][recurTaskIndex].Recur = freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
       this[this.column][recurTaskIndex].Freq = freq;
       this[this.column][recurTaskIndex].Update = this.userData.id;
-      // updating state recurTask
-      this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex].Start = start;
+      // updating selected contact recurTask
+      this.slctdCntct[this.column][columnIndex].Start = start;
       // prettier-ignore
-      this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex].Recur = freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
-      this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex].Freq = freq;
-      this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex].Update = this.userData.id;
+      this.slctdCntct[this.column][columnIndex].Recur = freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
+      this.slctdCntct[this.column][columnIndex].Freq = freq;
+      this.slctdCntct[this.column][columnIndex].Update = this.userData.id;
+      // updating state recurTask
+      this.contacts[this.slctdCntctIndex][this.column][columnIndex].Start = start;
+      // prettier-ignore
+      this.contacts[this.slctdCntctIndex][this.column][columnIndex].Recur = freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
+      this.contacts[this.slctdCntctIndex][this.column][columnIndex].Freq = freq;
+      this.contacts[this.slctdCntctIndex][this.column][columnIndex].Update = this.userData.id;
       // updating database recurTask
       this.patchContactInfo(freq + '+' + start + '+' + recurTaskEvent, this.column, columnIndex, 'Freq');
     },
@@ -254,7 +273,7 @@ export default {
     eventIndex() {
       this.recurTaskArray();
     },
-    slctdCntct() {
+    slctdCntctIndex() {
       this.recurTaskArray();
     },
   },

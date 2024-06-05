@@ -13,23 +13,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="(contact, contactIndex) in contacts"
-            :class="'cell' + (contactIndex % 2)"
-          >
+          <tr v-for="(contact, contactIndex) in contacts" :class="'cell' + (contactIndex % 2)">
             <td class="cellHover" @click="selectContact(contactIndex)">
               {{ contact.id }}
             </td>
             <td>
-              <div v-for="contactInfo in contact.Members">
-                {{ contactInfo.First }} {{ contactInfo.Name }}
-              </div>
+              <div v-for="contactInfo in contact.Members">{{ contactInfo.First }} {{ contactInfo.Name }}</div>
             </td>
             <td>
               <template v-for="contactInfo in contact.Addresses">
-                <div>
-                  {{ contactInfo.Address_1 }} {{ contactInfo.Address_2 }}
-                </div>
+                <div>{{ contactInfo.Address_1 }} {{ contactInfo.Address_2 }}</div>
                 <div>
                   {{ contactInfo.City }} {{ contactInfo.State }}
                   {{ contactInfo.Zip }}
@@ -72,28 +65,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="(contact, contactIndex) in contacts"
-            :class="'cell' + (contactIndex % 2)"
-          >
+          <tr v-for="(contact, contactIndex) in contacts" :class="'cell' + (contactIndex % 2)">
             <td class="cellHover" @click="selectContact(contactIndex)">
               {{ contact.id }}
             </td>
             <td>{{ Object.values(contact.Members)[0].Name }}</td>
             <td>{{ Object.values(contact.Addresses)?.[0]?.Address_1 }}</td>
             <td>
-              {{
-                Object.values(contact.Assets)[0]
-                  ? Object.values(Object.values(contact.Assets)[0])[0]
-                  : ''
-              }}
+              {{ Object.values(contact.Assets)[0] ? Object.values(Object.values(contact.Assets)[0])[0] : '' }}
             </td>
             <td>
-              {{
-                Object.values(contact.Connections)[0]
-                  ? Object.values(Object.values(contact.Connections)[0])[0]
-                  : ''
-              }}
+              {{ Object.values(contact.Connections)[0] ? Object.values(Object.values(contact.Connections)[0])[0] : '' }}
             </td>
             <td>{{ contact.Categ }}</td>
           </tr>
@@ -114,10 +96,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="(contact, contactIndex) in contacts"
-            :class="'cell' + (contactIndex % 2)"
-          >
+          <tr v-for="(contact, contactIndex) in contacts" :class="'cell' + (contactIndex % 2)">
             <td class="cellHover" @click="selectContact(contactIndex)">
               {{ contact.id }}
             </td>
@@ -159,10 +138,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="(log, logIndex) in slctdCntct.Log"
-            :class="'cell' + (logIndex % 2)"
-          >
+          <tr v-for="(log, logIndex) in slctdCntct.Log" :class="'cell' + (logIndex % 2)">
             <td>{{ slctdCntct.Members[0].Name }}</td>
             <td>{{ slctdCntct.Categ }}</td>
             <td>{{ log[1] }}</td>
@@ -198,7 +174,8 @@ export default {
     selectContact(contactIndex) {
       this.activeWindow = 'calendar';
       this.activeTab = 'house-chimney-user';
-      this.userSettings.selectedContactIndex = contactIndex;
+      this.slctdCntct = this.contacts[contactIndex];
+      this.userSettings.selectedContactIndex = this.contacts[contactIndex].id;
       this.patchUserSettings();
     },
   },

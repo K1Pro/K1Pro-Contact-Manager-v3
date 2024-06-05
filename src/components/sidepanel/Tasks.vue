@@ -115,6 +115,7 @@ export default {
       'deleteContactInfo',
       'slctdCntct',
       'userList',
+      'slctdCntctIndex',
     ]),
   },
 
@@ -158,8 +159,17 @@ export default {
         Update: this.userData.id,
         RealIndex: this.Tasks.length,
       });
+      // new selected contact recurTask
+      this.slctdCntct[this.column].push({
+        Start: this.times.Y_m_d,
+        Recur: [this.times.Y_m_d.slice(5, 10)],
+        Freq: 'Annually',
+        Assign: this.userData.id,
+        Create: this.userData.id,
+        Update: this.userData.id,
+      });
       // new state task
-      this.contacts[this.userSettings.selectedContactIndex][this.column].push({
+      this.contacts[this.slctdCntctIndex][this.column].push({
         Date: this.times.Y_m_d + this.times.Y_m_d_H_i_s_z.slice(10, 16),
         Assign: this.userData.id,
         Create: this.userData.id,
@@ -170,13 +180,16 @@ export default {
       this.patchContactInfo(this.times.Y_m_d+this.times.Y_m_d_H_i_s_z.slice(10,16), this.column, this.slctdCntct.Tasks.length, 'Date');
     },
     updateTask(event, columnIndex, taskIndex, key) {
-      if (event != this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex][key]) {
+      if (event != this.contacts[this.slctdCntctIndex][this.column][columnIndex][key]) {
         // updating component task
         this[this.column][taskIndex][key] = event;
         this[this.column][taskIndex].Update = this.userData.id;
+        // updating selected contact recurTask
+        this.slctdCntct[this.column][columnIndex][key] = event;
+        this.slctdCntct[this.column][columnIndex].Update = this.userData.id;
         // updating state task
-        this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex][key] = event;
-        this.contacts[this.userSettings.selectedContactIndex][this.column][columnIndex].Update = this.userData.id;
+        this.contacts[this.slctdCntctIndex][this.column][columnIndex][key] = event;
+        this.contacts[this.slctdCntctIndex][this.column][columnIndex].Update = this.userData.id;
         // updating database task
         this.patchContactInfo(event, this.column, columnIndex, key);
       }
@@ -198,7 +211,7 @@ export default {
     eventIndex() {
       this.taskArray();
     },
-    slctdCntct() {
+    slctdCntctIndex() {
       this.taskArray();
     },
   },
