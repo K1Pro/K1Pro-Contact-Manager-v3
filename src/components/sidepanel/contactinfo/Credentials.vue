@@ -58,7 +58,7 @@ export default {
     updateCred(event, columnIndex, key) {
       const column = 'Credentials';
       this.slctdCntct[column][columnIndex][key] = event.target.value;
-      this.contacts[slctdCntctIndex][column][columnIndex][key] = event.target.value;
+      this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },
     toggleCred(credIndex) {
