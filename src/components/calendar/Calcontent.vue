@@ -97,10 +97,12 @@ export default {
             task.Start &&
             task?.Start <= this.days[this.dayIndex] &&
             (!task?.End || task?.End >= this.days[this.dayIndex]) &&
-            (task?.Recur.includes(this.days[this.dayIndex].slice(-5)) ||
-              task?.Recur.includes(this.days[this.dayIndex].slice(8, 10)) ||
-              task?.Recur.includes(new Date(this.days[this.dayIndex] + 'T00:00:00').getDay().toString()) ||
-              task?.Recur.includes('everyday'))
+            ((task?.Recur.includes(this.days[this.dayIndex].slice(-5)) &&
+              (task?.Freq == 'Annually' || task?.Freq == 'Semiannually')) ||
+              (task?.Recur.includes(this.days[this.dayIndex].slice(8, 10)) && task?.Freq == 'Monthly') ||
+              (task?.Recur.includes(new Date(this.days[this.dayIndex] + 'T00:00:00').getDay().toString()) &&
+                task?.Freq == 'Weekly') ||
+              (task?.Recur.includes('everyday') && task?.Freq == 'Daily'))
           ) {
             contactArray[contactIndex + 'Recur' + taskIndex] = {
               Name: contact.Members[0].Name,

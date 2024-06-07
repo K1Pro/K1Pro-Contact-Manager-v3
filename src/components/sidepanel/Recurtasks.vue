@@ -237,20 +237,18 @@ export default {
       }
       // updating component recurTask
       this[this.column][recurTaskIndex].Start = start;
-      // prettier-ignore
       this[this.column][recurTaskIndex].Recur = freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
       this[this.column][recurTaskIndex].Freq = freq;
       this[this.column][recurTaskIndex].Update = this.userData.id;
       // updating selected contact recurTask
       this.slctdCntct[this.column][columnIndex].Start = start;
-      // prettier-ignore
       this.slctdCntct[this.column][columnIndex].Recur = freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
       this.slctdCntct[this.column][columnIndex].Freq = freq;
       this.slctdCntct[this.column][columnIndex].Update = this.userData.id;
       // updating state recurTask
       this.contacts[this.slctdCntctIndex][this.column][columnIndex].Start = start;
-      // prettier-ignore
-      this.contacts[this.slctdCntctIndex][this.column][columnIndex].Recur = freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
+      this.contacts[this.slctdCntctIndex][this.column][columnIndex].Recur =
+        freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
       this.contacts[this.slctdCntctIndex][this.column][columnIndex].Freq = freq;
       this.contacts[this.slctdCntctIndex][this.column][columnIndex].Update = this.userData.id;
       // updating database recurTask
