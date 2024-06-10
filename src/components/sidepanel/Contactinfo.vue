@@ -11,7 +11,7 @@
         Owner:
         <select
           style="margin-right: 5px; width: calc(100% - 85px); border: none; background-color: transparent"
-          v-model="contacts[slctdCntctIndex].Assigned"
+          v-model="slctdCntct.Assigned"
           @change="patchContactInfo($event.target.value, 'Assigned')"
         >
           <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
@@ -19,21 +19,21 @@
           </option>
           <option disabled>
             Updated by
-            {{ userList[Object.keys(contacts[slctdCntctIndex].Updated)][0] }}
+            {{ userList[Object.keys(slctdCntct.Updated)][0] }}
             on
-            {{ Object.values(contacts[slctdCntctIndex].Updated)[0].slice(5, 10).replace('-', '/') }}/{{
-              Object.values(contacts[slctdCntctIndex].Updated)[0].slice(0, 4)
+            {{ Object.values(slctdCntct.Updated)[0].slice(5, 10).replace('-', '/') }}/{{
+              Object.values(slctdCntct.Updated)[0].slice(0, 4)
             }}
-            {{ Object.values(contacts[slctdCntctIndex].Updated)[0].slice(11, 16) }}
+            {{ Object.values(slctdCntct.Updated)[0].slice(11, 16) }}
           </option>
           <option disabled>
             Created by
-            {{ userList[Object.keys(contacts[slctdCntctIndex].Created)][0] }}
+            {{ userList[Object.keys(slctdCntct.Created)][0] }}
             on
-            {{ Object.values(contacts[slctdCntctIndex].Created)[0].slice(5, 10).replace('-', '/') }}/{{
-              Object.values(contacts[slctdCntctIndex].Created)[0].slice(0, 4)
+            {{ Object.values(slctdCntct.Created)[0].slice(5, 10).replace('-', '/') }}/{{
+              Object.values(slctdCntct.Created)[0].slice(0, 4)
             }}
-            {{ Object.values(contacts[slctdCntctIndex].Created)[0].slice(11, 16) }}
+            {{ Object.values(slctdCntct.Created)[0].slice(11, 16) }}
           </option>
         </select>
       </div>
@@ -41,7 +41,7 @@
         Category:
         <select
           style="margin-right: 5px; width: calc(100% - 85px); border: none; background-color: transparent"
-          v-model="contacts[slctdCntctIndex].Categ"
+          v-model="slctdCntct.Categ"
           @change="patchContactInfo($event.target.value, 'Categ')"
         >
           <option v-for="category in accountSettings.Categ">

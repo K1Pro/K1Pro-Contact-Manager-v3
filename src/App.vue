@@ -262,6 +262,9 @@ export default {
       // this.loggedIn = false;
       if (newToken != undefined) this.getUserData();
     },
+    slctdCntct() {
+      console.log('slctdCntct is being changed');
+    },
   },
 
   created() {
