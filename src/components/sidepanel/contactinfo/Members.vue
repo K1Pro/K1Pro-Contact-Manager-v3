@@ -164,6 +164,7 @@ export default {
               Custom4: '',
               Custom5: '',
             };
+            console.log(newMember);
             this.slctdCntct = newMember;
             this.contacts.push(newMember);
             this.userSettings.selectedContactIndex = newContactIndex;
