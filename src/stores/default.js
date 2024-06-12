@@ -220,8 +220,13 @@ const useDefaultStore = Pinia.defineStore('default', {
     userList(state) {
       return { ...state.activeUserList, ...state.accountSettings.userList };
     },
-    timeframe(state) {
-      return state.daysRangeArr[state.userSettings.calendar.filters.days] - 7 - state.dayIndex;
+    firstDate(state) {
+      const oneWeek = state.daysRangeArr[state.userSettings.calendar.filters.days] > 7 ? 7 : 0;
+      return new Date(
+        new Date(state.times.Y_m_d + 'T00:00:00').setDate(
+          new Date(state.times.Y_m_d + 'T00:00:00').getDate() - (oneWeek + state.dayOfTheWeek - 1)
+        )
+      );
     },
   },
 });
