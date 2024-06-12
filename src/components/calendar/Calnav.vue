@@ -102,6 +102,9 @@ export default {
       if (!this.days.includes(event.target.value)) this.getFirstCalDate();
     },
     getTime(dateTimeDesc, firstCalDateTimeDesc) {
+      console.log(
+        new Date(new Date(this.times.Y_m_d_H_i_s_z).setDate(new Date(this.times.Y_m_d_H_i_s_z).getDate() - 7))
+      );
       firstCalDateTimeDesc =
         this.dayOfTheWeek != 1 && this.userSettings.calendar.filters.days > 1
           ? firstCalDateTimeDesc.replace('--', '+') + ' previous Monday'

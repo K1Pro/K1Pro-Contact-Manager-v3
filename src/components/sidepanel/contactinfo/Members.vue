@@ -105,10 +105,12 @@ export default {
         event.srcElement.selectedIndex = 0;
         const columnIndex = this.contacts[this.slctdCntctIndex][InfoGroup].length;
         if (InfoGroup == 'Members' || InfoGroup == 'Addresses') {
+          console.log('adding a member or address');
           this.slctdCntct[InfoGroup].push({ ['Type']: InfoKey });
           this.contacts[this.slctdCntctIndex][InfoGroup].push({ ['Type']: InfoKey });
           this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type');
         } else {
+          console.log('adding something else besides member or address');
           this.slctdCntct[InfoGroup].push({ [InfoKey]: '' });
           this.contacts[this.slctdCntctIndex][InfoGroup].push({ [InfoKey]: '' });
           this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);

@@ -220,5 +220,8 @@ const useDefaultStore = Pinia.defineStore('default', {
     userList(state) {
       return { ...state.activeUserList, ...state.accountSettings.userList };
     },
+    timeframe(state) {
+      return state.daysRangeArr[state.userSettings.calendar.filters.days] - 7 - state.dayIndex;
+    },
   },
 });
