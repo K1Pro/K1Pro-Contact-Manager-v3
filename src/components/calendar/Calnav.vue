@@ -16,7 +16,14 @@
         <i
           v-if="userSettings.calendar.filters.days > 1"
           class="fa fa-backward-fast"
-          @click="getTime('-4 weeks', '-' + (calRow + 3) + ' weeks', '+1 week filter and 4 weeks - N weeks ago')"
+          @click="
+            getTime(
+              '-4 weeks',
+              '-' + (calRow + 3) + ' weeks',
+              '+1 week filter and 4 weeks - N weeks ago',
+              (calRow + 3) * -7
+            )
+          "
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 0"
@@ -101,13 +108,17 @@ export default {
     changeDate(event) {
       if (!this.days.includes(event.target.value)) this.getFirstCalDate();
     },
-    getTime(dateTimeDesc, firstCalDateTimeDesc, extra) {
+    getTime(dateTimeDesc, firstCalDateTimeDesc, extra, newValue) {
       console.log(dateTimeDesc);
       console.log(firstCalDateTimeDesc);
       console.log(extra);
-      // console.log(
-      //   new Date(new Date(this.times.Y_m_d_H_i_s_z).setDate(new Date(this.times.Y_m_d_H_i_s_z).getDate() - 7))
-      // );
+      console.log(
+        new Date(
+          new Date(this.times.Y_m_d + 'T12:00:00').setDate(
+            new Date(this.times.Y_m_d + 'T12:00:00').getDate() + newValue
+          )
+        )
+      );
       firstCalDateTimeDesc =
         this.dayOfTheWeek != 1 && this.userSettings.calendar.filters.days > 1
           ? firstCalDateTimeDesc.replace('--', '+') + ' previous Monday'
