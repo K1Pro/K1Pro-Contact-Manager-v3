@@ -6,48 +6,32 @@
         <i
           v-if="userSettings.calendar.filters.days == 0"
           class="fa fa-backward-fast"
-          @click="getTime('-1 week', '-1 week', '1 day filter and 1 week ago', -7)"
+          @click="getTime('-1 week', '-1 week', -7)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 1"
           class="fa fa-backward-fast"
-          @click="
-            getTime(
-              '-1 week',
-              '-' + (dayIndex + 7) + ' days',
-              '3 days filter and 1 week ago + days',
-              (dayIndex + 7) * -1
-            )
-          "
+          @click="getTime('-1 week', '-' + (dayIndex + 7) + ' days', (dayIndex + 7) * -1)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days > 1"
           class="fa fa-backward-fast"
-          @click="
-            getTime(
-              '-4 weeks',
-              '-' + (calRow + 3) + ' weeks',
-              '+1 week filter and 4 weeks - N weeks ago',
-              (calRow + 3) * -7
-            )
-          "
+          @click="getTime('-4 weeks', '-' + (calRow + 3) + ' weeks', (calRow + 3) * -7)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 0"
           class="fa fa-backward-step"
-          @click="getTime('-1 day', '-1 day', '1 day filter and 1 day ago', -1)"
+          @click="getTime('-1 day', '-1 day', -1)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 1"
           class="fa fa-backward-step"
-          @click="
-            getTime('-3 days', '-' + (dayIndex + 3) + ' days', '3 days filter and N day ago', (dayIndex + 3) * -1)
-          "
+          @click="getTime('-3 days', '-' + (dayIndex + 3) + ' days', (dayIndex + 3) * -1)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days > 1"
           class="fa fa-backward-step"
-          @click="getTime('-1 week', '-' + calRow + ' weeks', '+1 week filter and N weeks ago', calRow * -7)"
+          @click="getTime('-1 week', '-' + calRow + ' weeks', calRow * -7)"
         ></i>
       </div>
       <div class="navigation-grid-item3">
@@ -57,32 +41,32 @@
         <i
           v-if="userSettings.calendar.filters.days == 0"
           class="fa fa-forward-step"
-          @click="getTime('+1 day', '+1 day')"
+          @click="getTime('+1 day', '+1 day', 1)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 1"
           class="fa fa-forward-step"
-          @click="getTime('+3 days', '+' + (dayIndex - 3) + ' days')"
+          @click="getTime('+3 days', '+' + (dayIndex - 3) + ' days', dayIndex - 3)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days > 1"
           class="fa fa-forward-step"
-          @click="getTime('+1 week', '-' + (calRow - 2) + ' weeks')"
+          @click="getTime('+1 week', '-' + (calRow - 2) + ' weeks', (calRow - 2) * -7)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 0"
           class="fa fa-forward-fast"
-          @click="getTime('+1 week', '+1 week')"
+          @click="getTime('+1 week', '+1 week', 7)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 1"
           class="fa fa-forward-fast"
-          @click="getTime('+1 week', '+' + (dayIndex - 7) + ' days')"
+          @click="getTime('+1 week', '+' + (dayIndex - 7) + ' days', dayIndex - 7)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days > 1"
           class="fa fa-forward-fast"
-          @click="getTime('+4 weeks', '-' + (calRow - 5) + ' weeks')"
+          @click="getTime('+4 weeks', '-' + (calRow - 5) + ' weeks', (calRow - 5) * -7)"
         ></i>
       </div>
       <div class="navigation-grid-item5"></div>
@@ -117,10 +101,9 @@ export default {
     changeDate(event) {
       if (!this.days.includes(event.target.value)) this.getFirstCalDate();
     },
-    getTime(dateTimeDesc, firstCalDateTimeDesc, extra, newValue) {
+    getTime(dateTimeDesc, firstCalDateTimeDesc, newValue) {
       console.log(dateTimeDesc);
       console.log(firstCalDateTimeDesc);
-      console.log(extra);
       console.log(
         new Date(
           new Date(this.times.Y_m_d + 'T12:00:00').setDate(
