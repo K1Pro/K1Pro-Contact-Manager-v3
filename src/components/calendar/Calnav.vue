@@ -6,17 +6,17 @@
         <i
           v-if="userSettings.calendar.filters.days == 0"
           class="fa fa-backward-fast"
-          @click="getTime('-1 week', '-1 week', -7)"
+          @click="getTime('-1 week', '-1 week', -7, -7)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 1"
           class="fa fa-backward-fast"
-          @click="getTime('-1 week', '-' + (dayIndex + 7) + ' days', (dayIndex + 7) * -1)"
+          @click="getTime('-1 week', '-' + (dayIndex + 7) + ' days', -7, -7 - dayIndex)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days > 1"
           class="fa fa-backward-fast"
-          @click="getTime('-4 weeks', '-' + (calRow + 3) + ' weeks', (calRow + 3) * -7)"
+          @click="getTime('-4 weeks', '-' + (calRow + 3) + ' weeks', -28, -28 - dayIndex)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 0"
@@ -101,13 +101,16 @@ export default {
     changeDate(event) {
       if (!this.days.includes(event.target.value)) this.getFirstCalDate();
     },
-    getTime(dateTimeDesc, firstCalDateTimeDesc, newValue) {
-      console.log(dateTimeDesc);
-      console.log(firstCalDateTimeDesc);
+    getTime(dateTimeDesc, firstCalDateTimeDesc, newDate, newFirstDate) {
+      console.log(
+        new Date(
+          new Date(this.times.Y_m_d + 'T12:00:00').setDate(new Date(this.times.Y_m_d + 'T12:00:00').getDate() + newDate)
+        )
+      );
       console.log(
         new Date(
           new Date(this.times.Y_m_d + 'T12:00:00').setDate(
-            new Date(this.times.Y_m_d + 'T12:00:00').getDate() + newValue
+            new Date(this.times.Y_m_d + 'T12:00:00').getDate() + newFirstDate
           )
         )
       );
