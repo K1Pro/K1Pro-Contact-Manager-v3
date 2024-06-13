@@ -6,12 +6,19 @@
         <i
           v-if="userSettings.calendar.filters.days == 0"
           class="fa fa-backward-fast"
-          @click="getTime('-1 week', '-1 week', '1 day filter and 1 week ago')"
+          @click="getTime('-1 week', '-1 week', '1 day filter and 1 week ago', -7)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 1"
           class="fa fa-backward-fast"
-          @click="getTime('-1 week', '-' + (dayIndex + 7) + ' days', '3 days filter and 1 week ago + days')"
+          @click="
+            getTime(
+              '-1 week',
+              '-' + (dayIndex + 7) + ' days',
+              '3 days filter and 1 week ago + days',
+              (dayIndex + 7) * -1
+            )
+          "
         ></i>
         <i
           v-if="userSettings.calendar.filters.days > 1"
@@ -28,17 +35,19 @@
         <i
           v-if="userSettings.calendar.filters.days == 0"
           class="fa fa-backward-step"
-          @click="getTime('-1 day', '-1 day', '1 day filter and 1 day ago')"
+          @click="getTime('-1 day', '-1 day', '1 day filter and 1 day ago', -1)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 1"
           class="fa fa-backward-step"
-          @click="getTime('-3 days', '-' + (dayIndex + 3) + ' days', '3 days filter and N day ago')"
+          @click="
+            getTime('-3 days', '-' + (dayIndex + 3) + ' days', '3 days filter and N day ago', (dayIndex + 3) * -1)
+          "
         ></i>
         <i
           v-if="userSettings.calendar.filters.days > 1"
           class="fa fa-backward-step"
-          @click="getTime('-1 week', '-' + calRow + ' weeks', '+1 week filter and N weeks ago')"
+          @click="getTime('-1 week', '-' + calRow + ' weeks', '+1 week filter and N weeks ago', calRow * -7)"
         ></i>
       </div>
       <div class="navigation-grid-item3">
