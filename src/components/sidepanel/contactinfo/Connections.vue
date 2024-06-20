@@ -113,7 +113,6 @@ export default {
     },
     updateConnection(event, columnIndex, key) {
       const column = 'Connections';
-      // prettier-ignore
       this.slctdCntct[column][columnIndex][key] = event.target.value;
       this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
