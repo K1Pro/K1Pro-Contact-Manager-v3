@@ -99,87 +99,92 @@ export default {
 
   methods: {
     async addContactInfo(event) {
-      const InfoGroup = event.target.value.split('_')[0];
-      if (InfoGroup != 'newContact') {
-        const InfoKey = event.target.value.split('_')[1];
-        event.srcElement.selectedIndex = 0;
-        const columnIndex = this.contacts[this.slctdCntctIndex][InfoGroup].length;
-        if (InfoGroup == 'Members' || InfoGroup == 'Addresses') {
-          console.log('adding a member or address');
-          this.slctdCntct[InfoGroup].push({ ['Type']: InfoKey });
-          this.contacts[this.slctdCntctIndex][InfoGroup].push({ ['Type']: InfoKey });
-          this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type');
-        } else {
-          console.log('adding something else besides member or address');
-          this.slctdCntct[InfoGroup].push({ [InfoKey]: '' });
-          this.contacts[this.slctdCntctIndex][InfoGroup].push({ [InfoKey]: '' });
-          this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
-        }
-      } else {
-        event.srcElement.selectedIndex = 0;
-        this.spinLogin = true;
-        try {
-          const response = await fetch(servr_url + this.endPts.contacts, {
-            method: 'POST',
-            headers: {
-              Authorization: this.accessToken,
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-store',
-            },
-            body: JSON.stringify({
-              Datetime: this.times.Y_m_d_H_i_s_z.slice(0, 16),
-              Member: Object.keys(this.accountSettings.contactInfo.keys.Members)[0],
-            }),
-          });
-          const postContactInfoResJSON = await response.json();
-          if (postContactInfoResJSON.success) {
-            console.log(postContactInfoResJSON);
-            const newContactIndex = postContactInfoResJSON.data.contact_id;
-            const newMember = {
-              id: newContactIndex,
-              Members: [
-                {
-                  Type: Object.keys(this.accountSettings.contactInfo.keys.Members)[0],
-                  Name: '',
-                },
-              ],
-              Addresses: [],
-              Assets: [],
-              Connections: [],
-              Credentials: [],
-              Tasks: [],
-              RecurTasks: [],
-              Notes: '',
-              Categ: '',
-              DNC: 0,
-              Created: {
-                [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
-              },
-              Updated: {
-                [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
-              },
-              Assigned: this.userData.id,
-              Log: [],
-              Custom1: [],
-              Custom2: '',
-              Custom3: '',
-              Custom4: '',
-              Custom5: '',
-            };
-            console.log(newMember);
-            this.slctdCntct = newMember;
-            this.contacts.push(newMember);
-            this.userSettings.selectedContactIndex = newContactIndex;
-            this.patchUserSettings();
-
-            this.spinLogin = false;
+      if (event.srcElement.selectedIndex != 0) {
+        console.log(event.srcElement.selectedIndex);
+        const InfoGroup = event.target.value.split('_')[0];
+        if (InfoGroup != 'newContact') {
+          const InfoKey = event.target.value.split('_')[1];
+          console.log(InfoGroup);
+          console.log(InfoKey);
+          event.srcElement.selectedIndex = 0;
+          const columnIndex = this.contacts[this.slctdCntctIndex][InfoGroup].length;
+          if (InfoGroup == 'Members' || InfoGroup == 'Addresses') {
+            console.log('adding a member or address');
+            this.slctdCntct[InfoGroup].push({ ['Type']: InfoKey });
+            this.contacts[this.slctdCntctIndex][InfoGroup].push({ ['Type']: InfoKey });
+            this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type');
           } else {
-            this.spinLogin = false;
+            console.log('adding something else besides member or address');
+            this.slctdCntct[InfoGroup].push({ [InfoKey]: '' });
+            this.contacts[this.slctdCntctIndex][InfoGroup].push({ [InfoKey]: '' });
+            this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
           }
-        } catch (error) {
-          this.spinLogin = false;
-          this.msg.snackBar = error.toString();
-          console.log(error.toString());
+        } else {
+          event.srcElement.selectedIndex = 0;
+          this.spinLogin = true;
+          try {
+            const response = await fetch(servr_url + this.endPts.contacts, {
+              method: 'POST',
+              headers: {
+                Authorization: this.accessToken,
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-store',
+              },
+              body: JSON.stringify({
+                Datetime: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+                Member: Object.keys(this.accountSettings.contactInfo.keys.Members)[0],
+              }),
+            });
+            const postContactInfoResJSON = await response.json();
+            if (postContactInfoResJSON.success) {
+              console.log(postContactInfoResJSON);
+              const newContactIndex = postContactInfoResJSON.data.contact_id;
+              const newMember = {
+                id: newContactIndex,
+                Members: [
+                  {
+                    Type: Object.keys(this.accountSettings.contactInfo.keys.Members)[0],
+                    Name: '',
+                  },
+                ],
+                Addresses: [],
+                Assets: [],
+                Connections: [],
+                Credentials: [],
+                Tasks: [],
+                RecurTasks: [],
+                Notes: '',
+                Categ: '',
+                DNC: 0,
+                Created: {
+                  [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+                },
+                Updated: {
+                  [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+                },
+                Assigned: this.userData.id,
+                Log: [],
+                Custom1: [],
+                Custom2: '',
+                Custom3: '',
+                Custom4: '',
+                Custom5: '',
+              };
+              console.log(newMember);
+              this.slctdCntct = newMember;
+              this.contacts.push(newMember);
+              this.userSettings.selectedContactIndex = newContactIndex;
+              this.patchUserSettings();
+
+              this.spinLogin = false;
+            } else {
+              this.spinLogin = false;
+            }
+          } catch (error) {
+            this.spinLogin = false;
+            this.msg.snackBar = error.toString();
+            console.log(error.toString());
+          }
         }
       }
     },

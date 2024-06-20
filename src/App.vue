@@ -177,20 +177,21 @@ export default {
         });
         const getContactsResJSON = await response.json();
         if (getContactsResJSON.success) {
-          // if (getContactsResJSON.success && document.activeElement.tagName == 'BODY' && !this.updatingContactInfo) {
-          // console.log(getContactsResJSON);
-          if (this.slctdCntct.length == 0) {
-            console.log('slctdCntct assigned from contacts');
-            this.slctdCntct = getContactsResJSON.data.contacts.filter(
-              (contact) => contact.id == this.userSettings.selectedContactIndex
-            )[0]
-              ? getContactsResJSON.data.contacts.filter(
-                  (contact) => contact.id == this.userSettings.selectedContactIndex
-                )[0]
-              : getContactsResJSON.data.contacts[0];
+          if (document.activeElement.tagName == 'BODY') {
+            // console.log(getContactsResJSON);
+            if (this.slctdCntct.length == 0) {
+              console.log('slctdCntct assigned from contacts');
+              this.slctdCntct = getContactsResJSON.data.contacts.filter(
+                (contact) => contact.id == this.userSettings.selectedContactIndex
+              )[0]
+                ? getContactsResJSON.data.contacts.filter(
+                    (contact) => contact.id == this.userSettings.selectedContactIndex
+                  )[0]
+                : getContactsResJSON.data.contacts[0];
+            }
+            this.contacts = getContactsResJSON.data.contacts;
+            this.currentUpdate = updateTime;
           }
-          this.contacts = getContactsResJSON.data.contacts;
-          this.currentUpdate = updateTime;
         }
       } catch (error) {
         this.msg.snackBar = error.toString();
