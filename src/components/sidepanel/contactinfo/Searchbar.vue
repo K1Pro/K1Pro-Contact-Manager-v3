@@ -1,7 +1,7 @@
 <template>
   <div class="search-bar">
     <i class="fa-solid fa-magnifying-glass"></i>
-    <input type="search" placeholder="Search for contact" v-model="search" @keyup="findSearchedContact" />
+    <input type="search" placeholder="Search for contact" v-model.trim="search" @keyup="findSearchedContact" />
     <select
       name="Contact Search"
       ref="searchDropdown"
@@ -38,7 +38,7 @@ export default {
       let searchResultArray = [];
       if (this.search.length > 2) {
         this.contactInfoStringArray.forEach((contact, contactIndex) => {
-          if (contact.includes(this.search.toLowerCase().replaceAll('-', ''))) {
+          if (contact.includes(this.search.trim().toLowerCase().replaceAll('-', ''))) {
             this.contacts[contactIndex].Members.forEach((member) => {
               let fullName;
               if (member.First && !member.Name) fullName = member.First;
