@@ -36,6 +36,7 @@
                 border: policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray',
               }"
             >
+              <option></option>
               <option
                 v-for="option in policyInfoInputs.options"
                 :selected="option == policyInfo[policyInfoInputs.value]"

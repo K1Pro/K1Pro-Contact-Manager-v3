@@ -111,8 +111,8 @@ export default {
           console.log('columnIndex: ' + columnIndex);
           if (InfoGroup == 'Members' || InfoGroup == 'Addresses') {
             console.log('adding a member or address');
-            // this.slctdCntct[InfoGroup].push({ ['Type']: InfoKey });
-            // this.contacts[this.slctdCntctIndex][InfoGroup].push({ ['Type']: InfoKey });
+            // this.slctdCntct[InfoGroup].push({ ['Type']: InfoKey }); we can delete this after further debugging
+            // this.contacts[this.slctdCntctIndex][InfoGroup].push({ ['Type']: InfoKey }); we can delete this after further debugging
             this.slctdCntct[InfoGroup] = [...this.slctdCntct[InfoGroup], { Type: InfoKey }];
             this.contacts[this.slctdCntctIndex][InfoGroup] = [
               ...this.contacts[this.slctdCntctIndex][InfoGroup],
@@ -121,8 +121,8 @@ export default {
             this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type');
           } else {
             console.log('adding something else besides member or address');
-            // this.slctdCntct[InfoGroup].push({ [InfoKey]: '' });
-            // this.contacts[this.slctdCntctIndex][InfoGroup].push({ [InfoKey]: '' });
+            // this.slctdCntct[InfoGroup].push({ [InfoKey]: '' }); we can delete this after further debugging
+            // this.contacts[this.slctdCntctIndex][InfoGroup].push({ [InfoKey]: '' }); we can delete this after further debugging
             this.slctdCntct[InfoGroup] = [...this.slctdCntct[InfoGroup], { [InfoKey]: '' }];
             this.contacts[this.slctdCntctIndex][InfoGroup] = [...this.slctdCntct[InfoGroup], { [InfoKey]: '' }];
             this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
