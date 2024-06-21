@@ -81,12 +81,12 @@ export default {
       const cntctInfoDropDown = [];
       Object.entries(this.accountSettings.contactInfo.keys).forEach(([contactInfoGroup, contactInfoKeys]) => {
         Object.keys(contactInfoKeys).forEach((contactInfoKey) => {
-          const test = {
+          const cntctInfoDropDownOpt = {
             InfoGroup: contactInfoGroup,
             InfoKey: contactInfoKey,
             InfoPlaceholder: contactInfoGroup == 'Addresses' ? ' address' : '',
           };
-          cntctInfoDropDown.push(test);
+          cntctInfoDropDown.push(cntctInfoDropDownOpt);
         });
       });
       return cntctInfoDropDown;
@@ -107,7 +107,8 @@ export default {
           console.log(InfoGroup);
           console.log(InfoKey);
           event.srcElement.selectedIndex = 0;
-          const columnIndex = this.contacts[this.slctdCntctIndex][InfoGroup].length;
+          const columnIndex = this.slctdCntct[InfoGroup].length;
+          console.log('columnIndex: ' + columnIndex);
           if (InfoGroup == 'Members' || InfoGroup == 'Addresses') {
             console.log('adding a member or address');
             this.slctdCntct[InfoGroup].push({ ['Type']: InfoKey });
