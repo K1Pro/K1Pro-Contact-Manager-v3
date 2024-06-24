@@ -100,31 +100,26 @@ export default {
   methods: {
     async addContactInfo(event) {
       if (event.srcElement.selectedIndex != 0) {
-        console.log(event.srcElement.selectedIndex);
         const InfoGroup = event.target.value.split('_')[0];
         if (InfoGroup != 'newContact') {
           const InfoKey = event.target.value.split('_')[1];
-          console.log(InfoGroup);
-          console.log(InfoKey);
           event.srcElement.selectedIndex = 0;
           const columnIndex = this.slctdCntct[InfoGroup].length;
-          console.log('columnIndex: ' + columnIndex);
           if (InfoGroup == 'Members' || InfoGroup == 'Addresses') {
-            console.log('adding a member or address');
             // this.slctdCntct[InfoGroup].push({ ['Type']: InfoKey }); we can delete this after further debugging
             // this.contacts[this.slctdCntctIndex][InfoGroup].push({ ['Type']: InfoKey }); we can delete this after further debugging
-            this.slctdCntct[InfoGroup] = [...this.slctdCntct[InfoGroup], { Type: InfoKey }];
-            this.contacts[this.slctdCntctIndex][InfoGroup] = [
-              ...this.contacts[this.slctdCntctIndex][InfoGroup],
-              { Type: InfoKey },
-            ];
+            let cloneSlctdCntct = [...this.slctdCntct[InfoGroup], { Type: InfoKey }];
+            let cloneContacts = [...this.contacts[this.slctdCntctIndex][InfoGroup], { Type: InfoKey }];
+            this.slctdCntct[InfoGroup] = cloneSlctdCntct;
+            this.contacts[this.slctdCntctIndex][InfoGroup] = cloneContacts;
             this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type');
           } else {
-            console.log('adding something else besides member or address');
             // this.slctdCntct[InfoGroup].push({ [InfoKey]: '' }); we can delete this after further debugging
             // this.contacts[this.slctdCntctIndex][InfoGroup].push({ [InfoKey]: '' }); we can delete this after further debugging
-            this.slctdCntct[InfoGroup] = [...this.slctdCntct[InfoGroup], { [InfoKey]: '' }];
-            this.contacts[this.slctdCntctIndex][InfoGroup] = [...this.slctdCntct[InfoGroup], { [InfoKey]: '' }];
+            let cloneSlctdCntct = [...this.slctdCntct[InfoGroup], { [InfoKey]: '' }];
+            let cloneContacts = [...this.slctdCntct[InfoGroup], { [InfoKey]: '' }];
+            this.slctdCntct[InfoGroup] = cloneSlctdCntct;
+            this.contacts[this.slctdCntctIndex][InfoGroup] = cloneContacts;
             this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
           }
         } else {
