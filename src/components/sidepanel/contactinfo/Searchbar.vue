@@ -1,7 +1,13 @@
 <template>
   <div class="search-bar">
     <i class="fa-solid fa-magnifying-glass"></i>
-    <input type="search" placeholder="Search for contact" v-model.trim="search" @keyup="findSearchedContact" />
+    <input
+      name="Search Input"
+      type="search"
+      placeholder="Search for contact"
+      v-model.trim="search"
+      @keyup="findSearchedContact"
+    />
     <select
       name="Contact Search"
       ref="searchDropdown"
@@ -107,7 +113,7 @@ export default {
     },
 
     onWindowClick() {
-      if (this.pageClicks > 0 && this.search.length > 2) {
+      if (this.pageClicks > 0 && this.search.length > 2 && document.activeElement.name != 'Search Input') {
         this.search = '';
         this.$refs.searchDropdown.size = 0;
       }
