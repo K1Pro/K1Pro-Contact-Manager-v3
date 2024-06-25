@@ -18,3 +18,4 @@
 /src/assets/js/pinia
 /src/assets/js/vue-demi
 /src/assets/js/vue3-sfc-loader
+*.txt
