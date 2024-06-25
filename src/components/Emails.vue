@@ -116,52 +116,52 @@ export default {
     async sendEmail() {
       const confirmSendEmail = 'Are you sure you would like to send this?';
       if (confirm(confirmSendEmail) == true) {
-        console.log(this.$refs['CC'].checked);
-        // this.spinLogin = true;
-        // const columnIndex = this.slctdCntctIndex;
-        // const sendEmailDatetime = this.times.Y_m_d_H_i_s_z.slice(0, 16);
-        // let formData = new FormData();
-        // Object.values(this.$refs['emailAttachment'].files).forEach((file) => {
-        //   formData.append('email_attachment[]', file);
-        // });
-        // formData.append('To', this.$refs['emailTo'].value);
-        // formData.append('Subject', this.$refs['emailSubject'].value);
-        // formData.append('Body', this.$refs['emailBody'].innerHTML);
-        // formData.append('id', this.slctdCntct.id);
-        // formData.append('Datetime', sendEmailDatetime);
-        // try {
-        //   const response = await fetch(servr_url + this.endPts.emails, {
-        //     method: 'POST',
-        //     headers: {
-        //       Authorization: this.accessToken,
-        //       'Cache-Control': 'no-store',
-        //     },
-        //     body: formData,
-        //   });
-        //   const sendEmailResJSON = await response.json();
-        //   if (sendEmailResJSON.success) {
-        //     this.msg.snackBar = 'Email sent successfully';
-        //     console.log(sendEmailResJSON);
-        //     this.spinLogin = false;
-        //     this.slctdCntct.Log.unshift([
-        //       this.userData.id,
-        //       sendEmailDatetime,
-        //       'Emailed ' + this.$refs['emailTo'].value,
-        //     ]);
-        //     this.contacts[columnIndex].Log.unshift([
-        //       this.userData.id,
-        //       sendEmailDatetime,
-        //       'Emailed ' + this.$refs['emailTo'].value,
-        //     ]);
-        //   } else {
-        //     this.msg.snackBar = 'Email error';
-        //     this.spinLogin = false;
-        //   }
-        // } catch (error) {
-        //   this.spinLogin = false;
-        //   this.msg.snackBar = error.toString();
-        //   console.log(error.toString());
-        // }
+        this.spinLogin = true;
+        const columnIndex = this.slctdCntctIndex;
+        const sendEmailDatetime = this.times.Y_m_d_H_i_s_z.slice(0, 16);
+        let formData = new FormData();
+        Object.values(this.$refs['emailAttachment'].files).forEach((file) => {
+          formData.append('email_attachment[]', file);
+        });
+        formData.append('To', this.$refs['emailTo'].value);
+        formData.append('Subject', this.$refs['emailSubject'].value);
+        formData.append('Body', this.$refs['emailBody'].innerHTML);
+        formData.append('id', this.slctdCntct.id);
+        formData.append('Datetime', sendEmailDatetime);
+        formData.append('CC', this.$refs['CC'].checked);
+        try {
+          const response = await fetch(servr_url + this.endPts.emails, {
+            method: 'POST',
+            headers: {
+              Authorization: this.accessToken,
+              'Cache-Control': 'no-store',
+            },
+            body: formData,
+          });
+          const sendEmailResJSON = await response.json();
+          if (sendEmailResJSON.success) {
+            this.msg.snackBar = 'Email sent successfully';
+            console.log(sendEmailResJSON);
+            this.spinLogin = false;
+            this.slctdCntct.Log.unshift([
+              this.userData.id,
+              sendEmailDatetime,
+              'Emailed ' + this.$refs['emailTo'].value,
+            ]);
+            this.contacts[columnIndex].Log.unshift([
+              this.userData.id,
+              sendEmailDatetime,
+              'Emailed ' + this.$refs['emailTo'].value,
+            ]);
+          } else {
+            this.msg.snackBar = 'Email error';
+            this.spinLogin = false;
+          }
+        } catch (error) {
+          this.spinLogin = false;
+          this.msg.snackBar = error.toString();
+          console.log(error.toString());
+        }
       }
     },
   },
