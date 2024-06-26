@@ -26,7 +26,7 @@
       </option>
     </select>
     <select class="search-bar-mobile" style="height: 42px" @change="selectSearchedContact">
-      <option disabled>
+      <option disabled selected="true">
         Found {{ searchArray.length }}
         {{ searchArray.length != 1 ? 'contacts' : 'contact' }}
       </option>

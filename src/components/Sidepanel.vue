@@ -33,40 +33,24 @@
           <span v-if="sidePanelOpen">Contact info</span>
         </button>
 
-        <button
-          title="Tasks"
-          :class="{ 'tab-active': activeTab == 'list-check' }"
-          @click="openTab($event)"
-        >
+        <button title="Tasks" :class="{ 'tab-active': activeTab == 'list-check' }" @click="openTab($event)">
           <i class="fa fa-list-check"></i>
           <span v-if="sidePanelOpen">Tasks</span>
         </button>
 
-        <button
-          title="Recurring tasks"
-          :class="{ 'tab-active': activeTab == 'repeat' }"
-          @click="openTab($event)"
-        >
+        <button title="Recurring tasks" :class="{ 'tab-active': activeTab == 'repeat' }" @click="openTab($event)">
           <i class="fa fa-repeat"></i>
           <span v-if="sidePanelOpen">Recurring tasks</span>
         </button>
 
-        <button
-          title="Notes"
-          :class="{ 'tab-active': activeTab == 'file-pen' }"
-          @click="openTab($event)"
-        >
+        <button title="Notes" :class="{ 'tab-active': activeTab == 'file-pen' }" @click="openTab($event)">
           <i class="fa fa-file-pen"></i>
           <span v-if="sidePanelOpen">Notes</span>
         </button>
 
-        <template
-          v-for="(accountParam, accountParamIndex) in accountSettings?.tabs"
-        >
+        <template v-for="(accountParam, accountParamIndex) in accountSettings?.tabs">
           <button
-            v-for="([paramKey, paramValue], paramIndex) in Object.entries(
-              accountParam
-            )"
+            v-for="([paramKey, paramValue], paramIndex) in Object.entries(accountParam)"
             :title="paramKey"
             :class="{ 'tab-active': activeTab == paramValue }"
             @click="openTab($event, accountParamIndex)"
@@ -76,20 +60,12 @@
           </button>
         </template>
 
-        <button
-          title="Reports"
-          :class="{ 'tab-active': activeTab == 'chart-pie' }"
-          @click="openTab($event)"
-        >
+        <button title="Reports" :class="{ 'tab-active': activeTab == 'chart-pie' }" @click="openTab($event)">
           <i class="fa fa-chart-pie"></i>
           <span v-if="sidePanelOpen">Reports</span>
         </button>
 
-        <button
-          title="Settings"
-          :class="{ 'tab-active': activeTab == 'user-gear' }"
-          @click="openTab($event)"
-        >
+        <button title="Settings" :class="{ 'tab-active': activeTab == 'user-gear' }" @click="openTab($event)">
           <i class="fa fa-user-gear"></i>
           <span v-if="sidePanelOpen">Settings</span>
         </button>
@@ -179,9 +155,7 @@ export default {
       if (selectedTab != this.activeTab) {
         this.sidePanelOpen = false;
         this.activeTab = selectedTab;
-        this.activeTab == 'chart-pie'
-          ? (this.activeWindow = 'reports')
-          : (this.activeWindow = 'calendar');
+        this.activeTab == 'chart-pie' ? (this.activeWindow = 'reports') : (this.activeWindow = 'calendar');
       }
       if (customTab !== null) {
         this.customTab = customTab;
@@ -190,9 +164,7 @@ export default {
 
     goToURL(link) {
       if (confirm('Are you sure you want to leave this page?') == true) {
-        link.slice(-4) == 'Form'
-          ? this.$refs[link].submit()
-          : (window.location.href = link);
+        link.slice(-4) == 'Form' ? this.$refs[link].submit() : (window.location.href = link);
       }
     },
 
@@ -227,7 +199,7 @@ export default {
 <style>
 .side-panel-toggle i {
   position: absolute;
-  z-index: 4;
+  z-index: 5;
   top: 58px;
   font-size: 8px;
   padding: 6px 7.5px 6px 7.5px;
@@ -235,7 +207,7 @@ export default {
   color: white;
   background-color: black;
   cursor: pointer;
-  z-index: 4;
+
   transition: all 0.3s ease;
 }
 .tab-title-container {
@@ -245,7 +217,7 @@ export default {
 .tab-body-container {
 }
 .tab {
-  z-index: 3;
+  z-index: 4;
   float: left;
   height: 100%;
   background-color: #f1f1f1;
