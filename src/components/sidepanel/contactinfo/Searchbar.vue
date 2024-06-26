@@ -10,6 +10,7 @@
       @click="findSearchedContact"
     />
     <select
+      class="search-bar-full"
       v-show="search.length > 2 && appActiveElement == 'Search Input'"
       ref="searchDropdown"
       @change="selectSearchedContact"
@@ -23,10 +24,15 @@
         {{ searchResult.split('_')[0] }}
       </option>
     </select>
-    <button>
-      <span v-if="searchArray.length > 1" class="fa-solid fa-sort-down" style="color: white; cursor: pointer"></span>
-      <span v-else class="fa-solid fa-sort-down" style="color: grey"></span>
-    </button>
+    <select class="search-bar-mobile" style="height: 42px" @change="selectSearchedContact">
+      <option disabled>
+        Found {{ searchArray.length }}
+        {{ searchArray.length != 1 ? 'contacts' : 'contact' }}
+      </option>
+      <option v-for="(searchResult, index) in searchArray" :value="searchResult.split('_')[1]">
+        {{ searchResult.split('_')[0] }}
+      </option>
+    </select>
   </div>
 </template>
 
@@ -108,7 +114,6 @@ export default {
         this.$refs.searchDropdown.size = this.searchArray.length < 10 ? this.searchArray.length + 1 : 10;
       }
     },
-
     selectSearchedContact(event) {
       this.slctdCntct = this.contacts[event.target.value];
       this.userSettings.selectedContactIndex = this.contacts[event.target.value].id;
@@ -141,11 +146,12 @@ export default {
   top: 12px;
   left: 22.5px;
   color: grey;
-  z-index: 2;
+  z-index: 3;
 }
 .search-bar input[type='search'] {
   position: relative;
-  width: calc(100% - 24px);
+  z-index: 2;
+  width: calc(100% - 20px);
   padding: 12px 10px 12px 45px;
   border-left: 12px solid black;
   border-top: 1px solid grey;
@@ -155,7 +161,7 @@ export default {
 .search-bar input[type='search']:focus {
   outline: none;
 }
-.search-bar select {
+.search-bar-full {
   appearance: none;
   color-scheme: dark;
   position: absolute;
@@ -169,7 +175,23 @@ export default {
   border-right: 1px solid grey;
   border-bottom: 1px solid grey;
 }
-.search-bar select:focus {
+.search-bar-full:focus {
+  outline: none;
+}
+.search-bar-mobile {
+  color-scheme: dark;
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0px;
+  width: 100%;
+  padding: 10px;
+  border-left: 1px solid grey;
+  border-top: 1px solid grey;
+  border-right: 1px solid grey;
+  border-bottom: 1px solid grey;
+}
+.search-bar-mobile:focus {
   outline: none;
 }
 .search-bar button {
