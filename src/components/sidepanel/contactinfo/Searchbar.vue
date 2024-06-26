@@ -7,9 +7,10 @@
       placeholder="Search for contact"
       v-model.trim="search"
       @keyup="findSearchedContact"
+      @click="findSearchedContact"
     />
     <select
-      v-if="search.length > 2 && appActiveElement == 'Search Input'"
+      v-show="search.length > 2 && appActiveElement == 'Search Input'"
       ref="searchDropdown"
       @change="selectSearchedContact"
       :style="{ overflow: searchArray.length < 10 ? 'hidden' : 'auto' }"
@@ -102,6 +103,7 @@ export default {
 
   methods: {
     findSearchedContact() {
+      this.appActiveElement = 'Search Input';
       if (this.search.length > 2) {
         this.$refs.searchDropdown.size = this.searchArray.length < 10 ? this.searchArray.length + 1 : 10;
       }
@@ -116,13 +118,7 @@ export default {
     },
 
     onWindowClick() {
-      console.log(document.activeElement.name);
       this.appActiveElement = document.activeElement.name ? document.activeElement.name : null;
-      // if (this.pageClicks > 0 && this.search.length > 2 && this.appActiveElement != 'Search Input') {
-      //   // this.search = '';
-      //   this.$refs.searchDropdown.size = 0;
-      // }
-      // this.pageClicks++;
     },
   },
 
