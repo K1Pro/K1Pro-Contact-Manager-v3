@@ -4,6 +4,7 @@
     <input
       name="Search Input"
       type="search"
+      autocomplete="off"
       placeholder="Search for contact"
       v-model.trim="search"
       @keyup="findSearchedContact"
