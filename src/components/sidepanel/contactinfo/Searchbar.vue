@@ -9,9 +9,8 @@
       @keyup="findSearchedContact"
     />
     <select
-      name="Contact Search"
+      v-if="search.length > 2 && appActiveElement == 'Search Input'"
       ref="searchDropdown"
-      v-if="search.length > 2"
       @change="selectSearchedContact"
       :style="{ overflow: searchArray.length < 10 ? 'hidden' : 'auto' }"
     >
@@ -23,6 +22,10 @@
         {{ searchResult.split('_')[0] }}
       </option>
     </select>
+    <button>
+      <span v-if="searchArray.length > 1" class="fa-solid fa-sort-down" style="color: white; cursor: pointer"></span>
+      <span v-else class="fa-solid fa-sort-down" style="color: grey"></span>
+    </button>
   </div>
 </template>
 
@@ -94,7 +97,7 @@ export default {
   },
 
   data() {
-    return { search: '', pageClicks: 0 };
+    return { search: '', pageClicks: 0, appActiveElement: null };
   },
 
   methods: {
@@ -113,11 +116,13 @@ export default {
     },
 
     onWindowClick() {
-      if (this.pageClicks > 0 && this.search.length > 2 && document.activeElement.name != 'Search Input') {
-        this.search = '';
-        this.$refs.searchDropdown.size = 0;
-      }
-      this.pageClicks++;
+      console.log(document.activeElement.name);
+      this.appActiveElement = document.activeElement.name ? document.activeElement.name : null;
+      // if (this.pageClicks > 0 && this.search.length > 2 && this.appActiveElement != 'Search Input') {
+      //   // this.search = '';
+      //   this.$refs.searchDropdown.size = 0;
+      // }
+      // this.pageClicks++;
     },
   },
 
@@ -142,6 +147,18 @@ export default {
   color: grey;
   z-index: 2;
 }
+.search-bar input[type='search'] {
+  position: relative;
+  width: calc(100% - 24px);
+  padding: 12px 10px 12px 45px;
+  border-left: 12px solid black;
+  border-top: 1px solid grey;
+  border-right: 1px solid grey;
+  border-bottom: 1px solid grey;
+}
+.search-bar input[type='search']:focus {
+  outline: none;
+}
 .search-bar select {
   appearance: none;
   color-scheme: dark;
@@ -159,16 +176,10 @@ export default {
 .search-bar select:focus {
   outline: none;
 }
-.search-bar input[type='search'] {
-  position: relative;
-  width: 100%;
-  padding: 12px 10px 12px 45px;
-  border-left: 12px solid black;
-  border-top: 1px solid grey;
-  border-right: 1px solid grey;
-  border-bottom: 1px solid grey;
-}
-.search-bar input[type='search']:focus {
-  outline: none;
+.search-bar button {
+  height: 40px;
+  width: 24px;
+  background-color: black;
+  border: none;
 }
 </style>
