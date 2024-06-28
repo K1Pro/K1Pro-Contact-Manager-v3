@@ -82,7 +82,51 @@
         </tbody>
       </table>
     </template>
-    <template v-if="reports == 'Contacts Policy info'">
+    <template v-if="reports == 'Policy info for all Contacts'">
+      <table>
+        <thead>
+          <tr>
+            <th>id</th>
+            <th>Contact</th>
+            <th>Carriers</th>
+            <th>Policy Types</th>
+            <th>Policy Numbers</th>
+            <th>Effective Dates</th>
+            <th>Category</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(contact, contactIndex) in contacts" :class="'cell' + (contactIndex % 2)">
+            <td class="cellHover" @click="selectContact(contactIndex)">
+              {{ contact.id }}
+            </td>
+            <td>{{ Object.values(contact.Members)[0].Name }}</td>
+            <td>
+              <div v-for="custom1Info in contact.Custom1">
+                {{ custom1Info.Carrier }}
+              </div>
+            </td>
+            <td>
+              <div v-for="custom1Info in contact.Custom1">
+                {{ custom1Info.Policy_Type }}
+              </div>
+            </td>
+            <td>
+              <div v-for="custom1Info in contact.Custom1">
+                {{ custom1Info.Policy_No }}
+              </div>
+            </td>
+            <td>
+              <div v-for="custom1Info in contact.Custom1">
+                {{ custom1Info.Date }}
+              </div>
+            </td>
+            <td>{{ contact.Categ }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
+    <template v-if="reports == 'Policy info for Contacts with active policies'">
       <table>
         <thead>
           <tr>
