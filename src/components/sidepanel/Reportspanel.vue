@@ -13,14 +13,21 @@
         class="reports-panel-report reports-panel-odd"
         @click="selectReport($event.target.innerHTML)"
       >
-        Contacts Policy info
+        Policy info for all Contacts
       </div>
-      <div class="reports-panel-report reports-panel-even" @click="selectReport($event.target.innerHTML)">
+      <div
+        v-if="userData?.AppPermissions[appName][0] == 'bundle_insurance'"
+        class="reports-panel-report reports-panel-even"
+        @click="selectReport($event.target.innerHTML)"
+      >
+        Policy info for Contacts with active policies
+      </div>
+      <div class="reports-panel-report reports-panel-odd" @click="selectReport($event.target.innerHTML)">
         Activity log for
         {{ slctdCntct.Members[0].First ? slctdCntct.Members[0].First : '' }}
         {{ slctdCntct.Members[0].Name }}
       </div>
-      <div class="reports-panel-report reports-panel-odd">All tasks</div>
+      <div class="reports-panel-report reports-panel-even">All tasks</div>
     </div>
   </div>
 </template>
