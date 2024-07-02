@@ -1,15 +1,11 @@
 <template>
   <div class="calendar-body">
-    <div
-      :class="
-        'calendar-body-grid-container' + userSettings.calendar.filters.days
-      "
-    >
+    <div :class="'calendar-body-grid-container' + userSettings.calendar.filters.days">
       <template v-for="(day, dayIndex) in days">
         <div
           v-if="(dayIndex + 1) % 7 && (dayIndex + 2) % 7"
           class="calendar-body-grid-item day"
-          :class="{ activeDay: days[dayIndex] == times.Y_m_d }"
+          :class="{ activeDay: days[dayIndex] == slctdTmstmpY_m_d }"
           @click="changeDate(days[dayIndex])"
         >
           <calcontent :dayIndex="dayIndex"></calcontent>
@@ -18,14 +14,14 @@
         <div v-if="(dayIndex + 1) % 7 === 0" class="calendar-body-grid-item">
           <div
             class="day saturday"
-            :class="{ activeDay: days[dayIndex - 1] == times.Y_m_d }"
+            :class="{ activeDay: days[dayIndex - 1] == slctdTmstmpY_m_d }"
             @click="changeDate(days[dayIndex - 1])"
           >
             <calcontent :dayIndex="dayIndex - 1"></calcontent>
           </div>
           <div
             class="day sunday"
-            :class="{ activeDay: days[dayIndex] == times.Y_m_d }"
+            :class="{ activeDay: days[dayIndex] == slctdTmstmpY_m_d }"
             @click="changeDate(days[dayIndex])"
           >
             <calcontent :dayIndex="dayIndex"></calcontent>
@@ -49,6 +45,7 @@ export default {
       'times',
       'getFirstCalDate',
       'days',
+      'slctdTmstmpY_m_d',
     ]),
   },
 
@@ -58,7 +55,8 @@ export default {
 
   methods: {
     changeDate(selectedY_m_d) {
-      this.times.Y_m_d = selectedY_m_d;
+      // this.times.Y_m_d = selectedY_m_d;
+      this.times.slctdTmstmp = new Date(selectedY_m_d).getTime();
     },
   },
 
@@ -72,11 +70,7 @@ export default {
       ) {
         this.userSettings.calendar.filters.days = 1;
         this.getFirstCalDate();
-      } else if (
-        newWidth > 768 &&
-        oldWidth < 768 &&
-        this.userSettings.calendar.filters.days != this.tempFiltersDays
-      ) {
+      } else if (newWidth > 768 && oldWidth < 768 && this.userSettings.calendar.filters.days != this.tempFiltersDays) {
         this.userSettings.calendar.filters.days = this.tempFiltersDays;
         this.getFirstCalDate();
       }
@@ -117,14 +111,10 @@ export default {
   grid-template-rows: calc(50vh - 30px) calc(50vh - 30px);
 }
 .calendar-body-grid-container4 {
-  grid-template-rows: calc(33.33vh - 20px) calc(33.33vh - 20px) calc(
-      33.33vh - 20px
-    );
+  grid-template-rows: calc(33.33vh - 20px) calc(33.33vh - 20px) calc(33.33vh - 20px);
 }
 .calendar-body-grid-container5 {
-  grid-template-rows: calc(25vh - 15px) calc(25vh - 15px) calc(25vh - 15px) calc(
-      25vh - 15px
-    );
+  grid-template-rows: calc(25vh - 15px) calc(25vh - 15px) calc(25vh - 15px) calc(25vh - 15px);
 }
 .day {
   border: solid #999999;

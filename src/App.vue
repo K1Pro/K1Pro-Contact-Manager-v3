@@ -153,28 +153,19 @@ export default {
             userDataResJSON.data.userSettings.calendar.filters.days = 1;
           this.userSettings = userDataResJSON.data.userSettings;
 
-          this.times.firstSlctdTmstmp = new Date(this.times.Y_m_d_H_i_s_z).getTime();
+          // const slctdDayOfTheWeek =
+          //   new Date(this.times.Y_m_d_H_i_s_z).getDay() == 0 ? 7 : new Date(this.times.Y_m_d_H_i_s_z).getDay() - 1;
+          // const slctdDayFilter = userDataResJSON.data.userSettings.calendar.filters.days;
+
           this.times.slctdTmstmp = new Date(this.times.Y_m_d_H_i_s_z).getTime();
-
-          const slctdDayOfTheWeek =
-            new Date(this.times.Y_m_d_H_i_s_z).getDay() == 0 ? 7 : new Date(this.times.Y_m_d_H_i_s_z).getDay() - 1;
-          const slctdDayFilter = userDataResJSON.data.userSettings.calendar.filters.days;
-
-          const lclFirstSlctdTmstmp = new Date(this.times.Y_m_d_H_i_s_z).getTime();
-
-          if (slctdDayFilter == 0) {
-            console.log(new Date(lclFirstSlctdTmstmp));
-            console.log(new Date(lclFirstSlctdTmstmp));
-          } else if (slctdDayFilter == 1) {
-            console.log(new Date(lclFirstSlctdTmstmp - 86400000));
-            console.log(new Date(lclFirstSlctdTmstmp));
-          } else if (slctdDayFilter == 2) {
-            console.log(new Date(lclFirstSlctdTmstmp - slctdDayOfTheWeek * 86400000));
-            console.log(new Date(lclFirstSlctdTmstmp));
-          } else {
-            console.log(new Date(lclFirstSlctdTmstmp - 604800000 - slctdDayOfTheWeek * 86400000));
-            console.log(new Date(lclFirstSlctdTmstmp));
-          }
+          // this.times.firstSlctdTmstmp =
+          //   slctdDayFilter == 0
+          //     ? this.times.slctdTmstmp
+          //     : slctdDayFilter == 1
+          //     ? this.times.slctdTmstmp - 86400000
+          //     : slctdDayFilter == 2
+          //     ? this.times.slctdTmstmp - slctdDayOfTheWeek * 86400000
+          //     : this.times.slctdTmstmp - 604800000 - slctdDayOfTheWeek * 86400000;
 
           this.getContacts(null);
           this.getEmailSettings();

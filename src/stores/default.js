@@ -41,8 +41,8 @@ const useDefaultStore = Pinia.defineStore('default', {
         Y_m_d_H_i_s_z: null,
         timestamp: '',
         initialTimestamp: '',
-        slctdTmstmp: '',
-        firstSlctdTmstmp: '',
+        slctdTmstmp: '', // still not in production
+        // firstSlctdTmstmp: '', // still not in production
       },
       firstCalDate: '',
       daysRangeArr: [1, 3, 7, 14, 21, 28],
@@ -65,7 +65,7 @@ const useDefaultStore = Pinia.defineStore('default', {
           }),
         });
         const timeResJSON = await response.json();
-        console.log(timeResJSON);
+        // console.log(timeResJSON);
         if (timeResJSON.success) {
           if (type == 'time') {
             this.times.Y_m_d = timeResJSON.data.Y_m_d;
@@ -199,7 +199,7 @@ const useDefaultStore = Pinia.defineStore('default', {
     days(state) {
       let dateRangeStart = 1;
       let dateArray = [];
-      let currentDate = new Date(state.firstCalDate + 'T00:00:00');
+      let currentDate = new Date(state.firstSlctdTmstmp);
       // prettier-ignore
       while (dateRangeStart <= state.daysRangeArr[state.userSettings.calendar.filters.days]) {
         // prettier-ignore
@@ -210,27 +210,47 @@ const useDefaultStore = Pinia.defineStore('default', {
       return dateArray;
     },
     dayOfTheWeek(state) {
-      return new Date(state.times.Y_m_d + 'T00:00:00').getDay(); // 1 is Monday, 2 is Tuesday, ..., 0 is Sunday
+      return new Date(state.times.slctdTmstmp).getDay(); // 0 is Sunday, 1 is Monday, 2 is Tuesday, ...,
     },
     dayIndex(state) {
-      return state.days.findIndex((day) => day == state.times.Y_m_d);
+      return state.days.findIndex((day) => day == state.slctdTmstmpY_m_d);
     },
     calRow(state) {
-      return Math.ceil((state.days.findIndex((day) => day == state.times.Y_m_d) + 1) / 7);
+      return Math.ceil((state.days.findIndex((day) => day == state.slctdTmstmpY_m_d) + 1) / 7);
     },
     slctdCntctIndex(state) {
       return state.contacts.findIndex((contact) => contact.id == state.slctdCntct.id);
     },
+    firstSlctdTmstmp(state) {
+      const slctdDayOfTheWeek = state.dayOfTheWeek == 0 ? 7 : state.dayOfTheWeek - 1;
+      return state.userSettings.calendar.filters.days == 0
+        ? state.times.slctdTmstmp
+        : state.userSettings.calendar.filters.days == 1
+        ? state.times.slctdTmstmp - 86400000
+        : state.userSettings.calendar.filters.days == 2
+        ? state.times.slctdTmstmp - slctdDayOfTheWeek * 86400000
+        : state.times.slctdTmstmp - 604800000 - slctdDayOfTheWeek * 86400000;
+    },
+    firstSlctdTmstmpY_m_d(state) {
+      return (
+        new Date(state.firstSlctdTmstmp).getFullYear() +
+        '-' +
+        (new Date(state.firstSlctdTmstmp).getMonth() + 1).toString().padStart(2, '0') +
+        '-' +
+        new Date(state.firstSlctdTmstmp).getDate().toString().padStart(2, '0')
+      );
+    },
+    slctdTmstmpY_m_d(state) {
+      return (
+        new Date(state.times.slctdTmstmp).getFullYear() +
+        '-' +
+        (new Date(state.times.slctdTmstmp).getMonth() + 1).toString().padStart(2, '0') +
+        '-' +
+        new Date(state.times.slctdTmstmp).getDate().toString().padStart(2, '0')
+      );
+    },
     userList(state) {
       return { ...state.activeUserList, ...state.accountSettings.userList };
-    },
-    firstDate(state) {
-      const oneWeek = state.daysRangeArr[state.userSettings.calendar.filters.days] > 7 ? 7 : 0;
-      return new Date(
-        new Date(state.times.Y_m_d + 'T00:00:00').setDate(
-          new Date(state.times.Y_m_d + 'T00:00:00').getDate() - (oneWeek + state.dayOfTheWeek - 1)
-        )
-      );
     },
   },
 });
