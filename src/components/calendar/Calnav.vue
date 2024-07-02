@@ -46,27 +46,27 @@
         <i
           v-if="userSettings.calendar.filters.days == 1"
           class="fa fa-forward-step"
-          @click="getTime('+3 days', '+' + (dayIndex - 3) + ' days', dayIndex - 3)"
+          @click="getTime('+3 days', '+' + (dayIndex - 3) + ' days', 3, 3 - dayIndex)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days > 1"
           class="fa fa-forward-step"
-          @click="getTime('+1 week', '-' + (calRow - 2) + ' weeks', (calRow - 2) * -7)"
+          @click="getTime('+1 week', '-' + (calRow - 2) + ' weeks', 7, 7 - dayIndex)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 0"
           class="fa fa-forward-fast"
-          @click="getTime('+1 week', '+1 week', 7)"
+          @click="getTime('+1 week', '+1 week', 7, 7)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 1"
           class="fa fa-forward-fast"
-          @click="getTime('+1 week', '+' + (dayIndex - 7) + ' days', dayIndex - 7)"
+          @click="getTime('+1 week', '+' + (dayIndex - 7) + ' days', 7, 7 - dayIndex)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days > 1"
           class="fa fa-forward-fast"
-          @click="getTime('+4 weeks', '-' + (calRow - 5) + ' weeks', (calRow - 5) * -7)"
+          @click="getTime('+4 weeks', '-' + (calRow - 5) + ' weeks', 28, 28 - dayIndex)"
         ></i>
       </div>
       <div class="navigation-grid-item5"></div>
