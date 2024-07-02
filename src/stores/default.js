@@ -41,6 +41,8 @@ const useDefaultStore = Pinia.defineStore('default', {
         Y_m_d_H_i_s_z: null,
         timestamp: '',
         initialTimestamp: '',
+        slctdTmstmp: '',
+        firstSlctdTmstmp: '',
       },
       firstCalDate: '',
       daysRangeArr: [1, 3, 7, 14, 21, 28],
@@ -63,17 +65,18 @@ const useDefaultStore = Pinia.defineStore('default', {
           }),
         });
         const timeResJSON = await response.json();
+        console.log(timeResJSON);
         if (timeResJSON.success) {
           if (type == 'time') {
             this.times.Y_m_d = timeResJSON.data.Y_m_d;
-            // console.log('times');
-            // console.log(timeResJSON.data);
-            // console.log('=================');
+            console.log('times');
+            console.log(timeResJSON.data);
+            console.log('=================');
           } else if (type == 'firstCalDate') {
             this.firstCalDate = timeResJSON.data.Y_m_d;
-            // console.log('firstCalDate');
-            // console.log(timeResJSON.data.Y_m_d);
-            // console.log('=================');
+            console.log('firstCalDate');
+            console.log(timeResJSON.data.Y_m_d);
+            console.log('=================');
           }
         }
       } catch (error) {
@@ -166,6 +169,7 @@ const useDefaultStore = Pinia.defineStore('default', {
           }),
         });
         const patchUserSettingsResJSON = await response.json();
+        console.log(patchUserSettingsResJSON);
         if (!patchUserSettingsResJSON.success) {
           // console.log(patchUserSettingsResJSON);
           // this.msg.snackBar = patchUserSettingsResJSON.messages[0];
