@@ -21,17 +21,17 @@
         <i
           v-if="userSettings.calendar.filters.days == 0"
           class="fa fa-backward-step"
-          @click="getTime('-1 day', '-1 day', -1)"
+          @click="getTime('-1 day', '-1 week', -1, -1)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 1"
           class="fa fa-backward-step"
-          @click="getTime('-3 days', '-' + (dayIndex + 3) + ' days', (dayIndex + 3) * -1)"
+          @click="getTime('-3 days', '-' + (dayIndex + 3) + ' days', -3, -3 - dayIndex)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days > 1"
           class="fa fa-backward-step"
-          @click="getTime('-1 week', '-' + calRow + ' weeks', calRow * -7)"
+          @click="getTime('-1 week', '-' + calRow + ' weeks', -7, -7 - dayIndex)"
         ></i>
       </div>
       <div class="navigation-grid-item3">
@@ -41,7 +41,7 @@
         <i
           v-if="userSettings.calendar.filters.days == 0"
           class="fa fa-forward-step"
-          @click="getTime('+1 day', '+1 day', 1)"
+          @click="getTime('+1 day', '+1 day', 1, 1)"
         ></i>
         <i
           v-if="userSettings.calendar.filters.days == 1"
