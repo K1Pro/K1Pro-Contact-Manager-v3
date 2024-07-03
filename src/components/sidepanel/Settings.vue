@@ -10,7 +10,6 @@
         max="5"
         v-model="userSettings.calendar.filters.days"
         @change="daysRangeChange"
-        @input="getFirstCalDate"
       />
       <input
         v-if="windowWidth < 768"
@@ -19,37 +18,24 @@
         max="1"
         v-model="userSettings.calendar.filters.days"
         @change="daysRangeChange"
-        @input="getFirstCalDate"
       />
       <span>{{ daysRangeArr[userSettings.calendar.filters.days] }}</span>
       <div class="settings-body-label">Owners:</div>
-      <select
-        v-model="userSettings.calendar.filters.owners"
-        @change="ownersChange"
-      >
+      <select v-model="userSettings.calendar.filters.owners" @change="ownersChange">
         <option value="">All</option>
-        <option
-          v-for="([userNo, userInfo], userIndex) in Object.entries(userList)"
-          :value="userNo"
-        >
+        <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
           {{ userInfo[0] }}
         </option>
       </select>
       <div class="settings-body-label">Status:</div>
-      <select
-        v-model="userSettings.calendar.filters.status"
-        @change="statusChange"
-      >
+      <select v-model="userSettings.calendar.filters.status" @change="statusChange">
         <option value="">All</option>
         <option value="compltd">Completed</option>
         <option value="not-compltd">Not completed</option>
         <option value="renewal">Recurring</option>
       </select>
       <div class="settings-body-label">Category:</div>
-      <select
-        v-model="userSettings.calendar.filters.category"
-        @change="categoryChange"
-      >
+      <select v-model="userSettings.calendar.filters.category" @change="categoryChange">
         <option value="">All</option>
         <option v-for="category in accountSettings.Categ" :value="category">
           {{ category }}
@@ -80,7 +66,6 @@ export default {
       'tempFiltersDays',
       'daysRangeArr',
       'patchUserSettings',
-      'getFirstCalDate',
       'dayIndex',
       'calRow',
       'userList',

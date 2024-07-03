@@ -44,7 +44,6 @@ const useDefaultStore = Pinia.defineStore('default', {
         slctdTmstmp: '', // still not in production
         // firstSlctdTmstmp: '', // still not in production
       },
-      firstCalDate: '',
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       appName: app_name,
       slctdCntct: [],
@@ -177,21 +176,6 @@ const useDefaultStore = Pinia.defineStore('default', {
       } catch (error) {
         console.log(error.toString());
         this.msg.snackBar = error.toString();
-      }
-    },
-    getFirstCalDate() {
-      const DaysOrderYesterday = this.dayOfTheWeek == 1 ? '' : 'previous Monday';
-      if (this.userSettings.calendar.filters.days == 0) {
-        this.time('POST', null, this.times.Y_m_d, 'firstCalDate');
-      } else if (this.userSettings.calendar.filters.days == 1) {
-        // prettier-ignore
-        this.time('POST', null, `${this.times.Y_m_d} yesterday`, 'firstCalDate');
-      } else if (this.userSettings.calendar.filters.days == 2) {
-        // prettier-ignore
-        this.time('POST', null, `${this.times.Y_m_d} ${DaysOrderYesterday}`, 'firstCalDate');
-      } else {
-        // prettier-ignore
-        this.time('POST', null, `${this.times.Y_m_d} -1 week ${DaysOrderYesterday}`, 'firstCalDate');
       }
     },
   },

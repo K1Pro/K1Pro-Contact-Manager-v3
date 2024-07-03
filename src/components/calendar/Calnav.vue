@@ -35,7 +35,6 @@ export default {
       'userSettings',
       'times',
       'time',
-      'getFirstCalDate',
       'days',
       'dayOfTheWeek',
       'dayIndex',
@@ -50,33 +49,10 @@ export default {
 
   methods: {
     changeDate(event) {
-      // get rid of getFirstCalDate
-      // if (!this.days.includes(event.target.value)) this.getFirstCalDate();
       if (!this.days.includes(event.target.value)) this.times.slctdTmstmp = new Date(event.target.value).getTime();
     },
     getTime(newDate) {
       this.times.slctdTmstmp += newDate * 86400000;
-      console.log(this.times.slctdTmstmp);
-      // console.log(new Date(this.times.slctdTmstmp));
-      // console.log(
-      //   new Date(
-      //     new Date(this.times.Y_m_d + 'T12:00:00').setDate(new Date(this.times.Y_m_d + 'T12:00:00').getDate() + newDate)
-      //   )
-      // );
-      // console.log(
-      //   new Date(
-      //     new Date(this.times.Y_m_d + 'T12:00:00').setDate(
-      //       new Date(this.times.Y_m_d + 'T12:00:00').getDate() + newFirstDate
-      //     )
-      //   )
-      // );
-      // firstCalDateTimeDesc =
-      //   this.dayOfTheWeek != 1 && this.userSettings.calendar.filters.days > 1
-      //     ? firstCalDateTimeDesc.replace('--', '+') + ' previous Monday'
-      //     : firstCalDateTimeDesc.replace('--', '+');
-      // this.time('POST', null, `${this.times.Y_m_d} ${dateTimeDesc}`, 'time');
-      // // prettier-ignore
-      // this.time('POST', null, `${this.times.Y_m_d} ${firstCalDateTimeDesc}`, 'firstCalDate');
     },
   },
 };
