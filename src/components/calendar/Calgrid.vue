@@ -43,7 +43,6 @@ export default {
       'userSettings',
       'tempFiltersDays',
       'times',
-      'getFirstCalDate',
       'days',
       'slctdTmstmpY_m_d',
     ]),
@@ -69,16 +68,13 @@ export default {
         this.userSettings.calendar.filters.days != 1
       ) {
         this.userSettings.calendar.filters.days = 1;
-        this.getFirstCalDate();
       } else if (newWidth > 768 && oldWidth < 768 && this.userSettings.calendar.filters.days != this.tempFiltersDays) {
         this.userSettings.calendar.filters.days = this.tempFiltersDays;
-        this.getFirstCalDate();
       }
     },
   },
 
   mounted() {
-    this.getFirstCalDate();
     this.tempFiltersDays = this.userSettings.calendar.filters.days;
   },
 };
