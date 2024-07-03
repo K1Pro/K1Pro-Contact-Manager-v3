@@ -9,6 +9,7 @@
         min="0"
         max="5"
         v-model="userSettings.calendar.filters.days"
+        @input="daysRangeInput"
         @change="daysRangeChange"
       />
       <input
@@ -17,6 +18,7 @@
         min="0"
         max="1"
         v-model="userSettings.calendar.filters.days"
+        @input="daysRangeInput"
         @change="daysRangeChange"
       />
       <span>{{ daysRangeArr[userSettings.calendar.filters.days] }}</span>
@@ -65,6 +67,7 @@ export default {
       'userSettings',
       'tempFiltersDays',
       'daysRangeArr',
+      'slctdDayIndex',
       'patchUserSettings',
       'dayIndex',
       'userList',
@@ -72,9 +75,15 @@ export default {
   },
 
   methods: {
+    daysRangeInput(event) {
+      this.userSettings.calendar.filters.days = event.target.value;
+      this.tempFiltersDays = event.target.value;
+      this.slctdDayIndex = null;
+    },
     daysRangeChange(event) {
       this.userSettings.calendar.filters.days = event.target.value;
       this.tempFiltersDays = event.target.value;
+      this.slctdDayIndex = null;
       this.patchUserSettings();
     },
     ownersChange() {

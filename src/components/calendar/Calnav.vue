@@ -3,7 +3,7 @@
     <div class="navigation-grid-container">
       <div class="navigation-grid-item1"></div>
       <div class="navigation-grid-item2">
-        <i v-if="userSettings.calendar.filters.days < 1" class="fa fa-backward-fast" @click="getTime(-7)"></i>
+        <i v-if="userSettings.calendar.filters.days <= 1" class="fa fa-backward-fast" @click="getTime(-7)"></i>
         <i v-if="userSettings.calendar.filters.days > 1" class="fa fa-backward-fast" @click="getTime(-28)"></i>
         <i v-if="userSettings.calendar.filters.days == 0" class="fa fa-backward-step" @click="getTime(-1)"></i>
         <i v-if="userSettings.calendar.filters.days == 1" class="fa fa-backward-step" @click="getTime(-3)"></i>
@@ -16,7 +16,7 @@
         <i v-if="userSettings.calendar.filters.days == 0" class="fa fa-forward-step" @click="getTime(1)"></i>
         <i v-if="userSettings.calendar.filters.days == 1" class="fa fa-forward-step" @click="getTime(3)"></i>
         <i v-if="userSettings.calendar.filters.days > 1" class="fa fa-forward-step" @click="getTime(7)"></i>
-        <i v-if="userSettings.calendar.filters.days < 1" class="fa fa-forward-fast" @click="getTime(7)"></i>
+        <i v-if="userSettings.calendar.filters.days <= 1" class="fa fa-forward-fast" @click="getTime(7)"></i>
         <i v-if="userSettings.calendar.filters.days > 1" class="fa fa-forward-fast" @click="getTime(28)"></i>
       </div>
       <div class="navigation-grid-item5"></div>

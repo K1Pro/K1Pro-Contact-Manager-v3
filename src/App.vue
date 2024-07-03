@@ -140,6 +140,7 @@ export default {
           setInterval(() => {
             this.updateTime();
           }, 6000);
+
           this.loggedIn = true;
           this.userData = userDataResJSON.data.user;
           this.accountSettings = userDataResJSON.data.accountSettings;

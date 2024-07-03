@@ -45,6 +45,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       appName: app_name,
       slctdCntct: [],
+      slctdDayIndex: null,
     };
   },
   actions: {
@@ -147,14 +148,16 @@ const useDefaultStore = Pinia.defineStore('default', {
   },
   getters: {
     firstDayTmstmp(state) {
-      const slctdDayOfTheWeek = state.dayOfTheWeek == 0 ? 6 : state.dayOfTheWeek - 1;
+      const cmptdDayNumber = state.slctdDayIndex != null ? state.slctdDayIndex : 1;
+      const cmptdDayOfTheWeek = state.dayOfTheWeek == 0 ? 6 : state.dayOfTheWeek - 1;
+      const cmptdNoOfWeeks = state.slctdDayIndex != null ? Math.floor(state.slctdDayIndex / 7) : 1;
       return state.userSettings.calendar.filters.days == 0
         ? state.times.slctdTmstmp
         : state.userSettings.calendar.filters.days == 1
-        ? state.times.slctdTmstmp - 86400000
+        ? state.times.slctdTmstmp - cmptdDayNumber * 86400000
         : state.userSettings.calendar.filters.days == 2
-        ? state.times.slctdTmstmp - slctdDayOfTheWeek * 86400000
-        : state.times.slctdTmstmp - 604800000 - slctdDayOfTheWeek * 86400000;
+        ? state.times.slctdTmstmp - cmptdDayOfTheWeek * 86400000
+        : state.times.slctdTmstmp - cmptdNoOfWeeks * 604800000 - cmptdDayOfTheWeek * 86400000;
     },
     firstDayY_m_d(state) {
       return (
