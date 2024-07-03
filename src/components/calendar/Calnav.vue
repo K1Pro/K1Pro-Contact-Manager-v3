@@ -29,7 +29,7 @@ export default {
   name: 'Navigation',
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, ['userSettings', 'times', 'days', 'slctdY_m_d']),
+    ...Pinia.mapWritableState(useDefaultStore, ['userSettings', 'times', 'slctdDayIndex', 'days', 'slctdY_m_d']),
   },
 
   data() {
@@ -38,7 +38,12 @@ export default {
 
   methods: {
     changeDate(event) {
-      if (!this.days.includes(event.target.value)) this.times.slctdTmstmp = new Date(event.target.value).getTime();
+      if (event.target.value != this.slctdY_m_d) {
+        this.slctdDayIndex = this.days.includes(event.target.value)
+          ? this.days.findIndex((day) => day == event.target.value)
+          : null;
+        this.times.slctdTmstmp = new Date(event.target.value).getTime();
+      }
     },
     getTime(newDate) {
       this.times.slctdTmstmp += newDate * 86400000;
