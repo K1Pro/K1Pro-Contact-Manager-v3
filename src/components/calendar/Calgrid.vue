@@ -54,7 +54,6 @@ export default {
 
   methods: {
     changeDate(selectedY_m_d) {
-      // this.times.Y_m_d = selectedY_m_d;
       this.times.slctdTmstmp = new Date(selectedY_m_d).getTime();
     },
   },

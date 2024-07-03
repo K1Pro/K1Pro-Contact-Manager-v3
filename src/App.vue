@@ -132,10 +132,10 @@ export default {
         const userDataResJSON = await response.json();
         if (userDataResJSON.success) {
           // console.log(userDataResJSON);
-          this.times.Y_m_d = userDataResJSON.data.date_Y_m_d;
           this.times.Y_m_d_H_i_s_z = userDataResJSON.data.date_Y_m_d_H_i_s_z;
           this.times.initialTimestamp = new Date().getTime();
           this.times.timestamp = new Date(this.times.Y_m_d_H_i_s_z).getTime();
+          this.times.slctdTmstmp = new Date(this.times.Y_m_d_H_i_s_z).getTime();
 
           setInterval(() => {
             this.updateTime();
@@ -152,20 +152,6 @@ export default {
           )
             userDataResJSON.data.userSettings.calendar.filters.days = 1;
           this.userSettings = userDataResJSON.data.userSettings;
-
-          // const slctdDayOfTheWeek =
-          //   new Date(this.times.Y_m_d_H_i_s_z).getDay() == 0 ? 7 : new Date(this.times.Y_m_d_H_i_s_z).getDay() - 1;
-          // const slctdDayFilter = userDataResJSON.data.userSettings.calendar.filters.days;
-
-          this.times.slctdTmstmp = new Date(this.times.Y_m_d_H_i_s_z).getTime();
-          // this.times.firstSlctdTmstmp =
-          //   slctdDayFilter == 0
-          //     ? this.times.slctdTmstmp
-          //     : slctdDayFilter == 1
-          //     ? this.times.slctdTmstmp - 86400000
-          //     : slctdDayFilter == 2
-          //     ? this.times.slctdTmstmp - slctdDayOfTheWeek * 86400000
-          //     : this.times.slctdTmstmp - 604800000 - slctdDayOfTheWeek * 86400000;
 
           this.getContacts(null);
           this.getEmailSettings();

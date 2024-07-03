@@ -116,6 +116,7 @@ export default {
       'slctdCntct',
       'userList',
       'slctdCntctIndex',
+      'slctdTmstmpY_m_d',
     ]),
   },
 
@@ -153,7 +154,7 @@ export default {
       this.showAll();
       // new component task
       this[this.column].unshift({
-        Date: this.times.Y_m_d + this.times.Y_m_d_H_i_s_z.slice(10, 16),
+        Date: this.slctdTmstmpY_m_d + this.times.Y_m_d_H_i_s_z.slice(10, 16),
         Assign: this.userData.id,
         Create: this.userData.id,
         Update: this.userData.id,
@@ -161,8 +162,8 @@ export default {
       });
       // new selected contact recurTask
       this.slctdCntct[this.column].push({
-        Start: this.times.Y_m_d,
-        Recur: [this.times.Y_m_d.slice(5, 10)],
+        Start: this.slctdTmstmpY_m_d,
+        Recur: [this.slctdTmstmpY_m_d.slice(5, 10)],
         Freq: 'Annually',
         Assign: this.userData.id,
         Create: this.userData.id,
@@ -170,14 +171,18 @@ export default {
       });
       // new state task
       this.contacts[this.slctdCntctIndex][this.column].push({
-        Date: this.times.Y_m_d + this.times.Y_m_d_H_i_s_z.slice(10, 16),
+        Date: this.slctdTmstmpY_m_d + this.times.Y_m_d_H_i_s_z.slice(10, 16),
         Assign: this.userData.id,
         Create: this.userData.id,
         Update: this.userData.id,
       });
       // new database task
-      // prettier-ignore
-      this.patchContactInfo(this.times.Y_m_d+this.times.Y_m_d_H_i_s_z.slice(10,16), this.column, this.slctdCntct.Tasks.length, 'Date');
+      this.patchContactInfo(
+        this.slctdTmstmpY_m_d + this.times.Y_m_d_H_i_s_z.slice(10, 16),
+        this.column,
+        this.slctdCntct.Tasks.length,
+        'Date'
+      );
     },
     updateTask(event, columnIndex, taskIndex, key) {
       if (event != this.contacts[this.slctdCntctIndex][this.column][columnIndex][key]) {

@@ -67,7 +67,6 @@ export default {
       'daysRangeArr',
       'patchUserSettings',
       'dayIndex',
-      'calRow',
       'userList',
     ]),
   },

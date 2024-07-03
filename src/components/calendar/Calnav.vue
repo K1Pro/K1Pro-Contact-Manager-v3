@@ -29,18 +29,7 @@ export default {
   name: 'Navigation',
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'msg',
-      'windowWidth',
-      'userSettings',
-      'times',
-      'time',
-      'days',
-      'dayOfTheWeek',
-      'dayIndex',
-      'calRow',
-      'slctdTmstmpY_m_d',
-    ]),
+    ...Pinia.mapWritableState(useDefaultStore, ['userSettings', 'times', 'days', 'slctdTmstmpY_m_d']),
   },
 
   data() {

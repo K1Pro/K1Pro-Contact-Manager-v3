@@ -37,12 +37,10 @@ const useDefaultStore = Pinia.defineStore('default', {
         logout: 'sessions/',
       },
       times: {
-        Y_m_d: null,
         Y_m_d_H_i_s_z: null,
         timestamp: '',
         initialTimestamp: '',
         slctdTmstmp: '', // still not in production
-        // firstSlctdTmstmp: '', // still not in production
       },
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       appName: app_name,
@@ -50,38 +48,6 @@ const useDefaultStore = Pinia.defineStore('default', {
     };
   },
   actions: {
-    async time(method, timezone, datetimeDescription, type) {
-      try {
-        const response = await fetch(time_url, {
-          method: method,
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-          },
-          body: JSON.stringify({
-            Timezone: timezone,
-            DatetimeDescription: datetimeDescription,
-          }),
-        });
-        const timeResJSON = await response.json();
-        // console.log(timeResJSON);
-        if (timeResJSON.success) {
-          if (type == 'time') {
-            this.times.Y_m_d = timeResJSON.data.Y_m_d;
-            console.log('times');
-            console.log(timeResJSON.data);
-            console.log('=================');
-          } else if (type == 'firstCalDate') {
-            this.firstCalDate = timeResJSON.data.Y_m_d;
-            console.log('firstCalDate');
-            console.log(timeResJSON.data.Y_m_d);
-            console.log('=================');
-          }
-        }
-      } catch (error) {
-        console.log(error.toString());
-      }
-    },
     async patchContactInfo(event, column, columnIndex, key) {
       // console.log(
       //   'id: ' + this.contacts[this.slctdCntctIndex].id
@@ -206,7 +172,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       return state.contacts.findIndex((contact) => contact.id == state.slctdCntct.id);
     },
     firstSlctdTmstmp(state) {
-      const slctdDayOfTheWeek = state.dayOfTheWeek == 0 ? 7 : state.dayOfTheWeek - 1;
+      const slctdDayOfTheWeek = state.dayOfTheWeek == 0 ? 6 : state.dayOfTheWeek - 1;
       return state.userSettings.calendar.filters.days == 0
         ? state.times.slctdTmstmp
         : state.userSettings.calendar.filters.days == 1
