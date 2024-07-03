@@ -96,8 +96,8 @@ export default {
       this.sessionID = document.cookie.match(new RegExp(`(^| )${sessionID}=([^;]+)`))?.at(2);
     },
     async updateTime() {
-      const timeDifferenece = Math.round((this.times.initialTimestamp - new Date().getTime()) * -1);
-      this.times.Y_m_d_H_i_s_z = new Date(this.times.timestamp + timeDifferenece).toISOString();
+      const timeDifference = Math.round((this.times.initialBrwsrTmstmp - new Date().getTime()) * -1);
+      this.times.updtngY_m_d_H_i_s_z = new Date(this.times.initialUsrTmstmp + timeDifference).toISOString();
       try {
         const response = await fetch(servr_url + this.endPts.currentupdate, {
           method: 'GET',
@@ -132,10 +132,10 @@ export default {
         const userDataResJSON = await response.json();
         if (userDataResJSON.success) {
           // console.log(userDataResJSON);
-          this.times.Y_m_d_H_i_s_z = userDataResJSON.data.date_Y_m_d_H_i_s_z;
-          this.times.initialTimestamp = new Date().getTime();
-          this.times.timestamp = new Date(this.times.Y_m_d_H_i_s_z).getTime();
-          this.times.slctdTmstmp = new Date(this.times.Y_m_d_H_i_s_z).getTime();
+          this.times.initialBrwsrTmstmp = new Date().getTime();
+          this.times.initialUsrTmstmp = new Date(userDataResJSON.data.date_Y_m_d_H_i_s_z).getTime();
+          this.times.updtngY_m_d_H_i_s_z = userDataResJSON.data.date_Y_m_d_H_i_s_z;
+          this.times.slctdTmstmp = new Date(this.times.updtngY_m_d_H_i_s_z).getTime();
 
           setInterval(() => {
             this.updateTime();

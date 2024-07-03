@@ -118,7 +118,7 @@ export default {
       if (confirm(confirmSendEmail) == true) {
         this.spinLogin = true;
         const columnIndex = this.slctdCntctIndex;
-        const sendEmailDatetime = this.times.Y_m_d_H_i_s_z.slice(0, 16);
+        const sendEmailDatetime = this.times.updtngY_m_d_H_i_s_z.slice(0, 16);
         let formData = new FormData();
         Object.values(this.$refs['emailAttachment'].files).forEach((file) => {
           formData.append('email_attachment[]', file);

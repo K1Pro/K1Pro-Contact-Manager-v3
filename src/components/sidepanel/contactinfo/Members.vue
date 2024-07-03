@@ -134,7 +134,7 @@ export default {
                 'Cache-Control': 'no-store',
               },
               body: JSON.stringify({
-                Datetime: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+                Datetime: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
                 Member: Object.keys(this.accountSettings.contactInfo.keys.Members)[0],
               }),
             });
@@ -160,10 +160,10 @@ export default {
                 Categ: '',
                 DNC: 0,
                 Created: {
-                  [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+                  [this.userData.id]: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
                 },
                 Updated: {
-                  [this.userData.id]: this.times.Y_m_d_H_i_s_z.slice(0, 16),
+                  [this.userData.id]: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
                 },
                 Assigned: this.userData.id,
                 Log: [],

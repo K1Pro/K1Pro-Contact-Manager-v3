@@ -79,7 +79,9 @@
           </select>
           <span class="recur-tasks-label">Finished:</span>
           <button
-            @click="updateRecurTask(times.Y_m_d_H_i_s_z.slice(0, 10), recurTask.RealIndex, recurTaskIndex, 'Review')"
+            @click="
+              updateRecurTask(times.updtngY_m_d_H_i_s_z.slice(0, 10), recurTask.RealIndex, recurTaskIndex, 'Review')
+            "
           >
             {{
               recurTask.Review
@@ -137,7 +139,7 @@ export default {
       'slctdCntct',
       'userList',
       'slctdCntctIndex',
-      'slctdTmstmpY_m_d',
+      'slctdY_m_d',
     ]),
   },
 
@@ -175,8 +177,8 @@ export default {
       this.showAll();
       // new component recurTask
       this[this.column].unshift({
-        Start: this.slctdTmstmpY_m_d,
-        Recur: [this.slctdTmstmpY_m_d.slice(5, 10)],
+        Start: this.slctdY_m_d,
+        Recur: [this.slctdY_m_d.slice(5, 10)],
         Freq: 'Annually',
         Assign: this.userData.id,
         Create: this.userData.id,
@@ -185,8 +187,8 @@ export default {
       });
       // new selected contact recurTask
       this.slctdCntct[this.column].push({
-        Start: this.slctdTmstmpY_m_d,
-        Recur: [this.slctdTmstmpY_m_d.slice(5, 10)],
+        Start: this.slctdY_m_d,
+        Recur: [this.slctdY_m_d.slice(5, 10)],
         Freq: 'Annually',
         Assign: this.userData.id,
         Create: this.userData.id,
@@ -194,15 +196,15 @@ export default {
       });
       // new state recurTask
       this.contacts[this.slctdCntctIndex][this.column].push({
-        Start: this.slctdTmstmpY_m_d,
-        Recur: [this.slctdTmstmpY_m_d.slice(5, 10)],
+        Start: this.slctdY_m_d,
+        Recur: [this.slctdY_m_d.slice(5, 10)],
         Freq: 'Annually',
         Assign: this.userData.id,
         Create: this.userData.id,
         Update: this.userData.id,
       });
       // new database recurTask
-      this.patchContactInfo(this.slctdTmstmpY_m_d, this.column, this.slctdCntct.RecurTasks.length, 'Start');
+      this.patchContactInfo(this.slctdY_m_d, this.column, this.slctdCntct.RecurTasks.length, 'Start');
     },
     updateRecurTask(event, columnIndex, recurTaskIndex, key) {
       if (event != this.contacts[this.slctdCntctIndex][this.column][columnIndex][key]) {

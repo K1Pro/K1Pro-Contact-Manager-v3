@@ -10,7 +10,7 @@
         <i v-if="userSettings.calendar.filters.days > 1" class="fa fa-backward-step" @click="getTime(-7)"></i>
       </div>
       <div class="navigation-grid-item3">
-        <input type="date" :value="slctdTmstmpY_m_d" @change="changeDate" />
+        <input type="date" :value="slctdY_m_d" @change="changeDate" />
       </div>
       <div class="navigation-grid-item4">
         <i v-if="userSettings.calendar.filters.days == 0" class="fa fa-forward-step" @click="getTime(1)"></i>
@@ -29,7 +29,7 @@ export default {
   name: 'Navigation',
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, ['userSettings', 'times', 'days', 'slctdTmstmpY_m_d']),
+    ...Pinia.mapWritableState(useDefaultStore, ['userSettings', 'times', 'days', 'slctdY_m_d']),
   },
 
   data() {

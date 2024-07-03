@@ -1,15 +1,15 @@
 <template>
   <div class="day-content">
-    <div class="task-grid-day" v-if="firstSlctdTmstmpY_m_d && calContactTasks">
-      <b v-if="days[dayIndex] == times.Y_m_d_H_i_s_z.slice(0, 10)">
-        {{ firstSlctdTmstmpY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : ''
-        }}{{ days[dayIndex] == times.Y_m_d_H_i_s_z.slice(0, 10) ? ' - Today' : '' }}
+    <div class="task-grid-day" v-if="firstDayY_m_d && calContactTasks">
+      <b v-if="days[dayIndex] == times.updtngY_m_d_H_i_s_z.slice(0, 10)">
+        {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : ''
+        }}{{ days[dayIndex] == times.updtngY_m_d_H_i_s_z.slice(0, 10) ? ' - Today' : '' }}
       </b>
       <span v-else>
-        {{ firstSlctdTmstmpY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : '' }}
+        {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : '' }}
       </span>
     </div>
-    <div class="task-grid-day-content" v-if="firstSlctdTmstmpY_m_d && calContactTasks">
+    <div class="task-grid-day-content" v-if="firstDayY_m_d && calContactTasks">
       <template v-for="calContactTask in calContactTasks">
         <div
           class="task-grid-container"
@@ -70,7 +70,7 @@ export default {
       'patchUserSettings',
       'times',
       'days',
-      'firstSlctdTmstmpY_m_d',
+      'firstDayY_m_d',
     ]),
     calContactTasks() {
       let contactArray = {};

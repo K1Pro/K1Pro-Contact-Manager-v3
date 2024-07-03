@@ -5,7 +5,7 @@
         <div
           v-if="(dayIndex + 1) % 7 && (dayIndex + 2) % 7"
           class="calendar-body-grid-item day"
-          :class="{ activeDay: days[dayIndex] == slctdTmstmpY_m_d }"
+          :class="{ activeDay: days[dayIndex] == slctdY_m_d }"
           @click="changeDate(days[dayIndex])"
         >
           <calcontent :dayIndex="dayIndex"></calcontent>
@@ -14,14 +14,14 @@
         <div v-if="(dayIndex + 1) % 7 === 0" class="calendar-body-grid-item">
           <div
             class="day saturday"
-            :class="{ activeDay: days[dayIndex - 1] == slctdTmstmpY_m_d }"
+            :class="{ activeDay: days[dayIndex - 1] == slctdY_m_d }"
             @click="changeDate(days[dayIndex - 1])"
           >
             <calcontent :dayIndex="dayIndex - 1"></calcontent>
           </div>
           <div
             class="day sunday"
-            :class="{ activeDay: days[dayIndex] == slctdTmstmpY_m_d }"
+            :class="{ activeDay: days[dayIndex] == slctdY_m_d }"
             @click="changeDate(days[dayIndex])"
           >
             <calcontent :dayIndex="dayIndex"></calcontent>
@@ -44,7 +44,7 @@ export default {
       'tempFiltersDays',
       'times',
       'days',
-      'slctdTmstmpY_m_d',
+      'slctdY_m_d',
     ]),
   },
 
