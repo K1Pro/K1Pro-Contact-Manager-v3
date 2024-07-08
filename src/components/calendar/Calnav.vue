@@ -3,23 +3,39 @@
     <div class="navigation-grid-container">
       <div class="navigation-grid-item1"></div>
       <div class="navigation-grid-item2">
-        <i v-if="userSettings.calendar.filters.days <= 1" class="fa fa-backward-fast" @click="getTime(-7)"></i>
-        <i v-if="userSettings.calendar.filters.days > 1" class="fa fa-backward-fast" @click="getTime(-28)"></i>
-        <i v-if="userSettings.calendar.filters.days == 0" class="fa fa-backward-step" @click="getTime(-1)"></i>
-        <i v-if="userSettings.calendar.filters.days == 1" class="fa fa-backward-step" @click="getTime(-3)"></i>
-        <i v-if="userSettings.calendar.filters.days > 1" class="fa fa-backward-step" @click="getTime(-7)"></i>
+        <button v-if="userSettings.calendar.filters.days <= 1" @click="getTime(-7)">
+          <i class="fa fa-caret-left"></i>
+          <i class="fa fa-caret-left"></i>
+        </button>
+        <button v-if="userSettings.calendar.filters.days > 1" @click="getTime(-28)">
+          <i class="fa fa-caret-left"></i>
+          <i class="fa fa-caret-left"></i>
+        </button>
       </div>
       <div class="navigation-grid-item3">
-        <input type="date" :value="slctdY_m_d" @change="changeDate" />
+        <i v-if="userSettings.calendar.filters.days == 0" class="fa fa-caret-left" @click="getTime(-1)"></i>
+        <i v-if="userSettings.calendar.filters.days == 1" class="fa fa-caret-left" @click="getTime(-3)"></i>
+        <i v-if="userSettings.calendar.filters.days > 1" class="fa fa-caret-left" @click="getTime(-7)"></i>
       </div>
       <div class="navigation-grid-item4">
-        <i v-if="userSettings.calendar.filters.days == 0" class="fa fa-forward-step" @click="getTime(1)"></i>
-        <i v-if="userSettings.calendar.filters.days == 1" class="fa fa-forward-step" @click="getTime(3)"></i>
-        <i v-if="userSettings.calendar.filters.days > 1" class="fa fa-forward-step" @click="getTime(7)"></i>
-        <i v-if="userSettings.calendar.filters.days <= 1" class="fa fa-forward-fast" @click="getTime(7)"></i>
-        <i v-if="userSettings.calendar.filters.days > 1" class="fa fa-forward-fast" @click="getTime(28)"></i>
+        <input type="date" :value="slctdY_m_d" @change="changeDate" />
       </div>
-      <div class="navigation-grid-item5"></div>
+      <div class="navigation-grid-item5">
+        <i v-if="userSettings.calendar.filters.days == 0" class="fa fa-caret-right" @click="getTime(1)"></i>
+        <i v-if="userSettings.calendar.filters.days == 1" class="fa fa-caret-right" @click="getTime(3)"></i>
+        <i v-if="userSettings.calendar.filters.days > 1" class="fa fa-caret-right" @click="getTime(7)"></i>
+      </div>
+      <div class="navigation-grid-item6">
+        <button v-if="userSettings.calendar.filters.days > 1" @click="getTime(28)">
+          <i class="fa fa-caret-right"></i>
+          <i class="fa fa-caret-right"></i>
+        </button>
+        <button v-if="userSettings.calendar.filters.days <= 1" @click="getTime(7)">
+          <i class="fa fa-caret-right"></i>
+          <i class="fa fa-caret-right"></i>
+        </button>
+      </div>
+      <div class="navigation-grid-item7"></div>
     </div>
   </div>
 </template>
@@ -55,36 +71,41 @@ export default {
 <style>
 .navigation-grid-container {
   display: grid;
-  grid-template-columns: auto auto 175px auto auto;
+  grid-template-columns: auto 25px 30px 175px 30px 25px auto;
 }
 .navigation i {
   cursor: pointer;
 }
+.navigation button {
+  background-color: transparent;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  font-size: 28px;
+  color: black;
+}
+.navigation button:hover,
 .navigation i:hover {
-  cursor: pointer;
   color: Gray;
 }
 .navigation-grid-item1,
-.navigation-grid-item2,
+.navigation-grid-item3,
+.navigation-grid-item5,
+.navigation-grid-item6,
+.navigation-grid-item7 {
+  /* padding-top: 4px; */
+  font-size: 28px;
+  color: black;
+}
+.navigation-grid-item2 i:first-child {
+  margin-right: -3px;
+}
+.navigation-grid-item6 i:first-child {
+  margin-right: -4px;
+}
+.navigation-grid-item3,
 .navigation-grid-item4,
 .navigation-grid-item5 {
-  padding-top: 4px;
-  font-size: 20px;
-  color: #505050;
-}
-.navigation-grid-item2 {
-  text-align: right;
-}
-.navigation-grid-item2 i {
-  padding-right: 10px;
-}
-.navigation-grid-item4 {
-  text-align: left;
-}
-.navigation-grid-item4 i {
-  padding-left: 10px;
-}
-.navigation-grid-item3 {
   text-align: center;
 }
 .navigation input[type='date'] {
@@ -96,9 +117,9 @@ export default {
   width: 175px;
 }
 
-@media only screen and (min-width: 768px) {
+/* @media only screen and (min-width: 768px) {
   .navigation-grid-container {
-    grid-template-columns: auto auto 175px auto auto;
+    grid-template-columns: auto auto auto 175px auto auto auto;
   }
-}
+} */
 </style>

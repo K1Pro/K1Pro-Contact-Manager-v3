@@ -7,6 +7,7 @@
             <div class="credentials-group">
               <i class="cred-icon" :class="credInputs.icon"></i>
               <input
+                autocomplete="off"
                 :placeholder="credInputs.placeholder"
                 :type="credInputType"
                 :value="credInfo"

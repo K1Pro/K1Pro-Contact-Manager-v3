@@ -1,12 +1,12 @@
 <template>
   <div class="tasks">
-    <template v-if="slctdCntct">
+    <template v-if="contacts[slctdCntctIndex]">
       <div class="tasks-title">
         <div class="tasks-title-grid-container">
           <div class="tasks-title-grid-item1">
             Tasks for
-            {{ slctdCntct.Members[0].First ? slctdCntct.Members[0].First : '' }}
-            {{ slctdCntct.Members[0].Name }}
+            {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
+            {{ contacts[slctdCntctIndex].Members[0].Name }}
           </div>
           <div class="tasks-title-grid-item2">
             <button v-if="eventIndex === null" @click="sortTask">
@@ -80,14 +80,14 @@
           </div>
         </div>
         <div
-          v-if="eventIndex !== null && slctdCntct.Tasks.length > 1"
+          v-if="eventIndex !== null && contacts[slctdCntctIndex].Tasks.length > 1"
           class="tasks-body"
           style="background-color: lightblue; text-align: right"
         >
           <div>
             <b @click="showAll"
-              >Show {{ slctdCntct.Tasks.length - 1 }} more
-              {{ slctdCntct.Tasks.length - 1 > 1 ? 'tasks' : 'task' }}
+              >Show {{ contacts[slctdCntctIndex].Tasks.length - 1 }} more
+              {{ contacts[slctdCntctIndex].Tasks.length - 1 > 1 ? 'tasks' : 'task' }}
             </b>
           </div>
         </div>
@@ -128,23 +128,23 @@ export default {
     taskArray() {
       this.Tasks =
         this.eventIndex === null
-          ? this.slctdCntct.Tasks.map((val, index) => {
+          ? this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
               return { ...val, RealIndex: index };
             }).sort((a, b) => b.Date.localeCompare(a.Date))
           : [
               {
-                ...this.slctdCntct.Tasks[this.eventIndex],
+                ...this.contacts[this.slctdCntctIndex].Tasks[this.eventIndex],
                 RealIndex: this.eventIndex,
               },
             ];
     },
     sortTask() {
       if (this.sortAscDesc) {
-        this.Tasks = this.slctdCntct.Tasks.map((val, index) => {
+        this.Tasks = this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
           return { ...val, RealIndex: index };
         }).sort((a, b) => b.Date.localeCompare(a.Date));
       } else {
-        this.Tasks = this.slctdCntct.Tasks.map((val, index) => {
+        this.Tasks = this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
           return { ...val, RealIndex: index };
         }).sort((a, b) => a.Date.localeCompare(b.Date));
       }
@@ -153,29 +153,45 @@ export default {
     newTask() {
       this.showAll();
       // new component task
-      this[this.column].unshift({
-        Date: this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
-        Assign: this.userData.id,
-        Create: this.userData.id,
-        Update: this.userData.id,
-        RealIndex: this.Tasks.length,
-      });
-      // new selected contact recurTask
-      this.slctdCntct[this.column].push({
-        Start: this.slctdY_m_d,
-        Recur: [this.slctdY_m_d.slice(5, 10)],
-        Freq: 'Annually',
-        Assign: this.userData.id,
-        Create: this.userData.id,
-        Update: this.userData.id,
-      });
+      const newCompTasks = [
+        {
+          Date: this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
+          Assign: this.userData.id,
+          Create: this.userData.id,
+          Update: this.userData.id,
+          RealIndex: this.Tasks.length,
+        },
+        ...this.Tasks,
+      ];
+      this.Tasks = newCompTasks;
       // new state task
-      this.contacts[this.slctdCntctIndex][this.column].push({
-        Date: this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
-        Assign: this.userData.id,
-        Create: this.userData.id,
-        Update: this.userData.id,
-      });
+      const newStateTasks = [
+        ...this.contacts[this.slctdCntctIndex].Tasks,
+        {
+          Date: this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
+          Assign: this.userData.id,
+          Create: this.userData.id,
+          Update: this.userData.id,
+          RealIndex: this.Tasks.length,
+        },
+      ];
+      this.contacts[this.slctdCntctIndex].Tasks = newStateTasks;
+      // new selected contact recurTask
+      // this.slctdCntct[this.column].push({
+      //   Start: this.slctdY_m_d,
+      //   Recur: [this.slctdY_m_d.slice(5, 10)],
+      //   Freq: 'Annually',
+      //   Assign: this.userData.id,
+      //   Create: this.userData.id,
+      //   Update: this.userData.id,
+      // });
+      // new state task
+      // this.contacts[this.slctdCntctIndex][this.column].push({
+      //   Date: this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
+      //   Assign: this.userData.id,
+      //   Create: this.userData.id,
+      //   Update: this.userData.id,
+      // });
       // new database task
       this.patchContactInfo(
         this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),

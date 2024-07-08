@@ -291,6 +291,7 @@ export default {
 }
 
 .app-grid-item1 {
+  min-height: 100vh;
   order: 3;
   overflow-y: hidden;
   background: -webkit-linear-gradient(left, #f1f1f1 49px, #999999 49px);
@@ -312,6 +313,7 @@ export default {
   }
 
   .app-grid-item1 {
+    min-height: auto;
     order: 1;
     background: #999999;
   }
