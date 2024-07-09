@@ -60,9 +60,6 @@ const useDefaultStore = Pinia.defineStore('default', {
       //   'value: ' + (event?.target?.value ? event.target.value : event)
       // );
       // console.log('================');
-      this.slctdCntct.Updated = {
-        [this.userData.id]: this.times.updtngY_m_d_H_i_s_z,
-      };
       this.contacts[this.slctdCntctIndex].Updated = {
         [this.userData.id]: this.times.updtngY_m_d_H_i_s_z,
       };
@@ -75,7 +72,7 @@ const useDefaultStore = Pinia.defineStore('default', {
             'Cache-Control': 'no-store',
           },
           body: JSON.stringify({
-            ID: this.slctdCntct.id,
+            ID: this.userSettings.selectedContactIndex,
             Column: column,
             ColumnIndex: columnIndex,
             Key: key,
@@ -95,7 +92,6 @@ const useDefaultStore = Pinia.defineStore('default', {
       // console.log('column: ' + column);
       // console.log('columnIndex: ' + columnIndex);
       if (prevConfirm || confirm(this.msg.confirmDeletion) == true) {
-        this.slctdCntct[column].splice(columnIndex, 1);
         this.contacts[this.slctdCntctIndex][column].splice(columnIndex, 1);
         try {
           const response = await fetch(servr_url + this.endPts.contacts, {
@@ -106,7 +102,7 @@ const useDefaultStore = Pinia.defineStore('default', {
               'Cache-Control': 'no-store',
             },
             body: JSON.stringify({
-              ID: this.slctdCntct.id,
+              ID: this.userSettings.selectedContactIndex,
               Column: column,
               ColumnIndex: columnIndex,
             }),
@@ -155,9 +151,9 @@ const useDefaultStore = Pinia.defineStore('default', {
       const cmptdDayNumber = state.slctdDayIndex != null ? state.slctdDayIndex : 1;
       const cmptdDayOfTheWeek = state.dayOfTheWeek == 0 ? 6 : state.dayOfTheWeek - 1;
       const cmptdNoOfWeeks = state.slctdDayIndex != null ? Math.floor(state.slctdDayIndex / 7) : 1;
-      console.log(cmptdDayNumber);
-      console.log(cmptdDayOfTheWeek);
-      console.log(cmptdNoOfWeeks);
+      // console.log(cmptdDayNumber);
+      // console.log(cmptdDayOfTheWeek);
+      // console.log(cmptdNoOfWeeks);
       return state.userSettings.calendar.filters.days == 0
         ? state.times.slctdTmstmp
         : state.userSettings.calendar.filters.days == 1

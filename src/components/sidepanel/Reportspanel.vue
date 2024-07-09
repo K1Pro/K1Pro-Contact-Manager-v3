@@ -24,8 +24,8 @@
       </div>
       <div class="reports-panel-report reports-panel-odd" @click="selectReport($event.target.innerHTML)">
         Activity log for
-        {{ slctdCntct.Members[0].First ? slctdCntct.Members[0].First : '' }}
-        {{ slctdCntct.Members[0].Name }}
+        {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
+        {{ contacts[slctdCntctIndex].Members[0].Name }}
       </div>
       <div class="reports-panel-report reports-panel-even">All tasks</div>
     </div>
@@ -37,7 +37,7 @@ export default {
   name: 'Reports Panel',
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, ['msg', 'userData', 'reports', 'appName', 'slctdCntct']),
+    ...Pinia.mapWritableState(useDefaultStore, ['msg', 'userData', 'reports', 'appName', 'slctdCntctIndex']),
   },
 
   methods: {

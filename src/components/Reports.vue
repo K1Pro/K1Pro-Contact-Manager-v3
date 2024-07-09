@@ -182,9 +182,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(log, logIndex) in slctdCntct.Log" :class="'cell' + (logIndex % 2)">
-            <td>{{ slctdCntct.Members[0].Name }}</td>
-            <td>{{ slctdCntct.Categ }}</td>
+          <tr v-for="(log, logIndex) in contacts[slctdCntctIndex].Log" :class="'cell' + (logIndex % 2)">
+            <td>{{ contacts[slctdCntctIndex].Members[0].Name }}</td>
+            <td>{{ contacts[slctdCntctIndex].Categ }}</td>
             <td>{{ log[1] }}</td>
             <td>{{ log[2] }}</td>
             <td>{{ userList[log[0]][0] }}</td>
@@ -209,7 +209,7 @@ export default {
       'contacts',
       'patchUserSettings',
       'userList',
-      'slctdCntct',
+      'slctdCntctIndex',
     ]),
     reportType() {},
   },
@@ -218,7 +218,6 @@ export default {
     selectContact(contactIndex) {
       this.activeWindow = 'calendar';
       this.activeTab = 'house-chimney-user';
-      this.slctdCntct = this.contacts[contactIndex];
       this.userSettings.selectedContactIndex = this.contacts[contactIndex].id;
       this.patchUserSettings();
     },

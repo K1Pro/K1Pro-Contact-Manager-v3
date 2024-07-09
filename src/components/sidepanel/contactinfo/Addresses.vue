@@ -1,6 +1,6 @@
 <template>
   <div class="addresses">
-    <div v-for="(address, addressIndex) in slctdCntct?.Addresses">
+    <div v-for="(address, addressIndex) in contacts[slctdCntctIndex]?.Addresses">
       <div class="address-title-grid-container">
         <div class="address-title"><i class="fa-solid fa-house"></i>&nbsp;{{ address.Type }}</div>
         <button class="address-button" @click="deleteContactInfo('Addresses', addressIndex)">
@@ -79,7 +79,7 @@
           />
         </div>
       </div>
-      <template v-if="addressIndex === slctdCntct.Addresses.length - 1">
+      <template v-if="addressIndex === contacts[slctdCntctIndex].Addresses.length - 1">
         <hr />
       </template>
     </div>
@@ -97,7 +97,6 @@ export default {
       'contacts',
       'patchContactInfo',
       'deleteContactInfo',
-      'slctdCntct',
       'slctdCntctIndex',
     ]),
   },
@@ -105,7 +104,6 @@ export default {
   methods: {
     updateAddress(event, columnIndex, key) {
       const column = 'Addresses';
-      this.slctdCntct[column][columnIndex][key] = event.target.value;
       this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },

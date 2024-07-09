@@ -6,7 +6,7 @@
           <button
             class="conn-icon"
             :style="{
-              'border-bottom': connIndex !== slctdCntct.Connections.length - 1 ? '1px solid black' : '0',
+              'border-bottom': connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '1px solid black' : '0',
             }"
             @click="connect(conn.RealIndex, connType)"
           >
@@ -16,7 +16,7 @@
             :type="connInputs.type"
             :placeholder="connInputs.placeholder"
             :style="{
-              'border-bottom': connIndex !== slctdCntct.Connections.length - 1 ? '1px solid black' : '0',
+              'border-bottom': connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '1px solid black' : '0',
             }"
             :value="connInfo"
             @change="updateConnection($event, conn.RealIndex, connType)"
@@ -26,8 +26,12 @@
           </button>
         </div>
       </div>
-      <template v-if="connIndex === slctdCntct.Connections.length - 1">
-        <input type="checkbox" v-model="slctdCntct.DNC" @change="patchContactInfo($event.target.checked, 'DNC')" />
+      <template v-if="connIndex === contacts[slctdCntctIndex].Connections.length - 1">
+        <input
+          type="checkbox"
+          v-model="contacts[slctdCntctIndex].DNC"
+          @change="patchContactInfo($event.target.checked, 'DNC')"
+        />
         Do not contact
         <hr />
       </template>
@@ -51,11 +55,10 @@ export default {
       'times',
       'patchContactInfo',
       'deleteContactInfo',
-      'slctdCntct',
       'slctdCntctIndex',
     ]),
     connections() {
-      return this.slctdCntct.Connections.map((val, index) => {
+      return this.contacts[this.slctdCntctIndex].Connections.map((val, index) => {
         return { ...val, RealIndex: index };
       }).sort((a, b) => Object.keys(b)[0].localeCompare(Object.keys(a)[0]));
     },
@@ -64,12 +67,13 @@ export default {
   methods: {
     async connect(connIndex, connType) {
       let checkDNC = true;
-      if (this.slctdCntct.DNC === true) {
+      if (this.contacts[this.slctdCntctIndex].DNC === true) {
         checkDNC = confirm('Contact is listed as "Do not contact", proceed?') ? true : false;
       }
       if (checkDNC) {
         if (connType == 'Phone') {
-          window.location.href = 'tel:' + this.slctdCntct.Connections[connIndex][connType].replace(/\D/g, '');
+          window.location.href =
+            'tel:' + this.contacts[this.slctdCntctIndex].Connections[connIndex][connType].replace(/\D/g, '');
           const columnIndex = this.slctdCntctIndex;
           try {
             const response = await fetch(servr_url + this.endPts.calls, {
@@ -80,9 +84,9 @@ export default {
                 'Cache-Control': 'no-store',
               },
               body: JSON.stringify({
-                ID: this.slctdCntct.id,
+                ID: this.userSettings.selectedContactIndex,
                 Datetime: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
-                Phone: this.slctdCntct.Connections[connIndex][connType],
+                Phone: this.contacts[this.slctdCntctIndex].Connections[connIndex][connType],
               }),
             });
             const postConnectResJSON = await response.json();
@@ -113,7 +117,6 @@ export default {
     },
     updateConnection(event, columnIndex, key) {
       const column = 'Connections';
-      this.slctdCntct[column][columnIndex][key] = event.target.value;
       this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },

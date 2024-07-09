@@ -1,13 +1,13 @@
 <template>
   <div class="assets">
-    <div v-for="(asset, assetIndex) in slctdCntct?.Assets">
+    <div v-for="(asset, assetIndex) in contacts[slctdCntctIndex]?.Assets">
       <div v-for="(assetInfo, assetType) in asset">
         <div v-for="assetInputs in accountSettings.contactInfo.keys.Assets[assetType]">
           <div v-if="assetInputs.icon" style="position: relative">
             <i class="asset-icon" :class="assetInputs.icon"></i>
             <input
               :style="{
-                'border-bottom': assetIndex !== slctdCntct.Assets.length - 1 ? '1px solid black' : '0',
+                'border-bottom': assetIndex !== contacts[slctdCntctIndex].Assets.length - 1 ? '1px solid black' : '0',
               }"
               :placeholder="assetInputs.placeholder"
               :type="assetInputs.type"
@@ -31,7 +31,7 @@
           </div>
         </div>
       </div>
-      <template v-if="assetIndex === slctdCntct.Assets.length - 1">
+      <template v-if="assetIndex === contacts[slctdCntctIndex].Assets.length - 1">
         <hr />
       </template>
     </div>
@@ -49,7 +49,6 @@ export default {
       'contacts',
       'patchContactInfo',
       'deleteContactInfo',
-      'slctdCntct',
       'slctdCntctIndex',
     ]),
   },
@@ -57,7 +56,6 @@ export default {
   methods: {
     updateAsset(event, columnIndex, key) {
       const column = 'Assets';
-      this.slctdCntct[column][columnIndex][key] = event.target.value;
       this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },

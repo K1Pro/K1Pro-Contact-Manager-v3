@@ -81,7 +81,7 @@
         </div>
 
         <div v-else-if="activeTab == 'repeat'">
-          <recurtasks></recurtasks>
+          <!-- <recurtasks></recurtasks> -->
         </div>
 
         <div v-else-if="activeTab == 'file-pen'">
@@ -112,7 +112,7 @@ export default {
   components: {
     Contactinfo,
     Tasks,
-    Recurtasks,
+    // Recurtasks,
     Notes,
     Settings,
     Custom1,

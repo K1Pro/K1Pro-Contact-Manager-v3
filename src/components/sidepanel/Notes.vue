@@ -1,12 +1,12 @@
 <template>
   <div class="notes">
-    <template v-if="slctdCntct && contacts && userSettings">
+    <template v-if="contacts && userSettings">
       <div class="notes-title">
         Notes for
-        {{ slctdCntct.Members[0].First ? slctdCntct.Members[0].First : '' }}
-        {{ slctdCntct.Members[0].Name }}
+        {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
+        {{ contacts[slctdCntctIndex].Members[0].Name }}
       </div>
-      <textarea placeholder="Notes" :value="slctdCntct.Notes" @change="updateNotes($event)"></textarea>
+      <textarea placeholder="Notes" :value="contacts[slctdCntctIndex].Notes" @change="updateNotes($event)"></textarea>
     </template>
     <template v-else> Notes </template>
   </div>
@@ -22,7 +22,6 @@ export default {
       'userSettings',
       'contacts',
       'patchContactInfo',
-      'slctdCntct',
       'slctdCntctIndex',
     ]),
   },
@@ -34,7 +33,6 @@ export default {
   methods: {
     updateNotes(event) {
       const column = 'Notes';
-      this.slctdCntct[column] = event.target.value;
       this.contacts[this.slctdCntctIndex][column] = event.target.value;
       this.patchContactInfo(event.target.value, column);
     },

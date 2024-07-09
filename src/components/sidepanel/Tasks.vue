@@ -1,6 +1,6 @@
 <template>
   <div class="tasks">
-    <template v-if="contacts[slctdCntctIndex]">
+    <template v-if="contacts[slctdCntctIndex].Tasks">
       <div class="tasks-title">
         <div class="tasks-title-grid-container">
           <div class="tasks-title-grid-item1">
@@ -10,7 +10,7 @@
           </div>
           <div class="tasks-title-grid-item2">
             <button v-if="eventIndex === null" @click="sortTask">
-              <template v-if="Tasks.length > 1">
+              <template v-if="contacts[slctdCntctIndex].Tasks.length > 1">
                 <i v-if="sortAscDesc" class="fa-solid fa-arrow-down-wide-short"></i>
                 <i v-else class="fa-solid fa-arrow-up-wide-short"></i>
               </template>
@@ -24,21 +24,25 @@
         </div>
       </div>
 
-      <template v-for="(task, taskIndex) in Tasks">
-        <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }">
-          <i class="fa-solid fa-trash" @click="deleteTask(task.RealIndex, taskIndex)"></i>
+      <template v-for="(task, taskIndex) in contacts[slctdCntctIndex].Tasks">
+        <div
+          v-show="eventIndex === null || (eventIndex !== null && taskIndex == eventIndex)"
+          class="tasks-body"
+          :style="{ 'background-color': taskIndex % 2 && eventIndex === null ? 'lightblue' : 'white' }"
+        >
+          <i class="fa-solid fa-trash" @click="deleteTask(taskIndex, taskNo)"></i>
           <span class="tasks-label">Date:</span
           ><input
             type="datetime-local"
             :value="task.Date"
-            @change="updateTask($event.target.value, task.RealIndex, taskIndex, 'Date')"
-            :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
+            @change="updateTask($event.target.value, taskNo, taskIndex, 'Date')"
+            :class="[taskIndex % 2 && eventIndex === null ? 'even-task' : 'odd-task']"
           />
           <span class="tasks-label">Tag:</span>
           <select
             :value="task.Tag"
-            @change="updateTask($event.target.value, task.RealIndex, taskIndex, 'Tag')"
-            :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
+            @change="updateTask($event.target.value, taskNo, taskIndex, 'Tag')"
+            :class="[taskIndex % 2 && eventIndex === null ? 'even-task' : 'odd-task']"
           >
             <option value="">None</option>
             <option value="fa-solid fa-phone">Call</option>
@@ -54,8 +58,8 @@
           <span class="tasks-label">Owner:</span>
           <select
             :value="task.Assign"
-            @change="updateTask($event.target.value, task.RealIndex, taskIndex, 'Assign')"
-            :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
+            @change="updateTask($event.target.value, taskNo, taskIndex, 'Assign')"
+            :class="[taskIndex % 2 && eventIndex === null ? 'even-task' : 'odd-task']"
           >
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
               {{ userInfo[0] }}
@@ -67,32 +71,33 @@
           ><input
             type="checkbox"
             :checked="task?.Status == 1"
-            @change="updateTask($event.target.checked, task.RealIndex, taskIndex, 'Status')"
+            @change="updateTask($event.target.checked, taskNo, taskIndex, 'Status')"
           />
           {{ task?.Status == 1 ? 'Yes' : 'No' }}
-          <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
+          <div class="tasks-span" :class="[taskIndex % 2 && eventIndex === null ? 'even-task' : 'odd-task']">
             <span
               spellcheck="false"
               contenteditable="plaintext-only"
-              v-on:blur="updateTask($event.target.innerHTML, task.RealIndex, taskIndex, 'Desc')"
+              v-on:blur="updateTask($event.target.innerHTM, taskNoL, taskIndex, 'Desc')"
               >{{ task?.Desc }}</span
             >
           </div>
         </div>
         <div
-          v-if="eventIndex !== null && contacts[slctdCntctIndex].Tasks.length > 1"
+          v-if="eventIndex !== null && contacts[slctdCntctIndex].Tasks.length > 1 && taskIndex == eventIndex"
           class="tasks-body"
           style="background-color: lightblue; text-align: right"
         >
           <div>
-            <b @click="showAll"
-              >Show {{ contacts[slctdCntctIndex].Tasks.length - 1 }} more
+            <b @click="showAll">
+              Show {{ contacts[slctdCntctIndex].Tasks.length - 1 }} more
               {{ contacts[slctdCntctIndex].Tasks.length - 1 > 1 ? 'tasks' : 'task' }}
             </b>
           </div>
         </div>
       </template>
-      <div v-if="Tasks.length === 0" class="tasks-body" style="background-color: white">
+
+      <div v-if="contacts[slctdCntctIndex].Tasks.length === 0" class="tasks-body" style="background-color: white">
         <div>No tasks</div>
       </div>
     </template>
@@ -113,105 +118,65 @@ export default {
       'times',
       'patchContactInfo',
       'deleteContactInfo',
-      'slctdCntct',
       'userList',
       'slctdCntctIndex',
       'slctdY_m_d',
     ]),
+    // noOfTasks() {
+    //   const numberOfTasks = [];
+    //   this.eventIndex === null
+    //     ? this.contacts[this.slctdCntctIndex].Tasks.forEach((el) => {
+    //         numberOfTasks.push(el.RealIndex);
+    //       })
+    //     : numberOfTasks.push(this.eventIndex);
+    //   return numberOfTasks;
+    // },
   },
 
   data() {
-    return { Tasks: [], column: 'Tasks', sortAscDesc: false };
+    return { column: 'Tasks', sortAscDesc: false };
   },
 
   methods: {
-    taskArray() {
-      this.Tasks =
-        this.eventIndex === null
-          ? this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
-              return { ...val, RealIndex: index };
-            }).sort((a, b) => b.Date.localeCompare(a.Date))
-          : [
-              {
-                ...this.contacts[this.slctdCntctIndex].Tasks[this.eventIndex],
-                RealIndex: this.eventIndex,
-              },
-            ];
+    initialSortTask() {
+      if (this.eventIndex === null) {
+        this.contacts[this.slctdCntctIndex].Tasks = this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
+          return !val.RealIndex ? { ...val, RealIndex: index } : { ...val };
+        }).sort((a, b) => b.Date.localeCompare(a.Date));
+      }
     },
     sortTask() {
       if (this.sortAscDesc) {
-        this.Tasks = this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
-          return { ...val, RealIndex: index };
-        }).sort((a, b) => b.Date.localeCompare(a.Date));
+        this.contacts[this.slctdCntctIndex].Tasks.sort((a, b) => b.Date.localeCompare(a.Date));
       } else {
-        this.Tasks = this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
-          return { ...val, RealIndex: index };
-        }).sort((a, b) => a.Date.localeCompare(b.Date));
+        this.contacts[this.slctdCntctIndex].Tasks.sort((a, b) => a.Date.localeCompare(b.Date));
       }
       this.sortAscDesc = !this.sortAscDesc;
     },
     newTask() {
       this.showAll();
-      // new component task
-      const newCompTasks = [
-        {
-          Date: this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
-          Assign: this.userData.id,
-          Create: this.userData.id,
-          Update: this.userData.id,
-          RealIndex: this.Tasks.length,
-        },
-        ...this.Tasks,
-      ];
-      this.Tasks = newCompTasks;
-      // new state task
-      const newStateTasks = [
+      const newTasks = [
         ...this.contacts[this.slctdCntctIndex].Tasks,
         {
           Date: this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
           Assign: this.userData.id,
           Create: this.userData.id,
           Update: this.userData.id,
-          RealIndex: this.Tasks.length,
+          RealIndex: this.contacts[this.slctdCntctIndex].Tasks.length,
         },
       ];
-      this.contacts[this.slctdCntctIndex].Tasks = newStateTasks;
-      // new selected contact recurTask
-      // this.slctdCntct[this.column].push({
-      //   Start: this.slctdY_m_d,
-      //   Recur: [this.slctdY_m_d.slice(5, 10)],
-      //   Freq: 'Annually',
-      //   Assign: this.userData.id,
-      //   Create: this.userData.id,
-      //   Update: this.userData.id,
-      // });
-      // new state task
-      // this.contacts[this.slctdCntctIndex][this.column].push({
-      //   Date: this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
-      //   Assign: this.userData.id,
-      //   Create: this.userData.id,
-      //   Update: this.userData.id,
-      // });
-      // new database task
+      this.contacts[this.slctdCntctIndex].Tasks = newTasks;
       this.patchContactInfo(
         this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
         this.column,
-        this.slctdCntct.Tasks.length,
+        this.contacts[this.slctdCntctIndex].Tasks.length,
         'Date'
       );
     },
     updateTask(event, columnIndex, taskIndex, key) {
       if (event != this.contacts[this.slctdCntctIndex][this.column][columnIndex][key]) {
-        // updating component task
-        this[this.column][taskIndex][key] = event;
-        this[this.column][taskIndex].Update = this.userData.id;
-        // updating selected contact recurTask
-        this.slctdCntct[this.column][columnIndex][key] = event;
-        this.slctdCntct[this.column][columnIndex].Update = this.userData.id;
-        // updating state task
         this.contacts[this.slctdCntctIndex][this.column][columnIndex][key] = event;
         this.contacts[this.slctdCntctIndex][this.column][columnIndex].Update = this.userData.id;
-        // updating database task
         this.patchContactInfo(event, this.column, columnIndex, key);
       }
     },
@@ -230,15 +195,17 @@ export default {
 
   watch: {
     eventIndex() {
-      this.taskArray();
+      console.log('initialSortTask watch');
+      this.initialSortTask();
     },
     slctdCntctIndex() {
-      this.taskArray();
+      console.log('initialSortTask watch');
+      this.initialSortTask();
     },
   },
 
-  mounted() {
-    this.taskArray();
+  created() {
+    this.initialSortTask();
   },
 };
 </script>

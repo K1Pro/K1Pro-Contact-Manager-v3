@@ -70,7 +70,7 @@ export default {
       'endPts',
       'times',
       'patchUserSettings',
-      'slctdCntct',
+      'slctdCntctIndex',
     ]),
 
     appGridItem2Width() {
@@ -180,16 +180,19 @@ export default {
         const getContactsResJSON = await response.json();
         if (getContactsResJSON.success && document.activeElement.tagName == 'BODY') {
           // console.log(getContactsResJSON);
-          if (this.slctdCntct.length == 0) {
-            this.slctdCntct = getContactsResJSON.data.contacts.filter(
+          if (this.contacts.length == 0) {
+            this.contacts = getContactsResJSON.data.contacts;
+          } else {
+            const slctdCntctIndx = getContactsResJSON.data.contacts.findIndex(
               (contact) => contact.id == this.userSettings.selectedContactIndex
-            )[0]
-              ? getContactsResJSON.data.contacts.filter(
-                  (contact) => contact.id == this.userSettings.selectedContactIndex
-                )[0]
-              : getContactsResJSON.data.contacts[0];
+            );
+            if (slctdCntctIndx) {
+              getContactsResJSON.data.contacts[slctdCntctIndx] = this.contacts[this.slctdCntctIndex];
+              this.contacts = getContactsResJSON.data.contacts;
+            } else {
+              this.contacts = getContactsResJSON.data.contacts;
+            }
           }
-          this.contacts = getContactsResJSON.data.contacts;
           this.currentUpdate = updateTime;
         }
       } catch (error) {

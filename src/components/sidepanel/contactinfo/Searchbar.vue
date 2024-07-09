@@ -48,7 +48,6 @@ export default {
       'userSettings',
       'contacts',
       'appName',
-      'slctdCntct',
       'patchUserSettings',
     ]),
     searchArray() {
@@ -116,7 +115,6 @@ export default {
       }
     },
     selectSearchedContact(event) {
-      this.slctdCntct = this.contacts[event.target.value];
       this.userSettings.selectedContactIndex = this.contacts[event.target.value].id;
       this.search = '';
       this.$refs.searchDropdown.size = 0;

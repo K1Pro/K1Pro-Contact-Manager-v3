@@ -1,12 +1,12 @@
 <template>
-  <template v-if="slctdCntct && userData?.AppPermissions[appName][0] == 'bundle_insurance'">
+  <template v-if="contacts[slctdCntctIndex] && userData?.AppPermissions[appName][0] == 'bundle_insurance'">
     <div class="policy-info">
       <div class="policy-info-title">
         <div class="policy-info-title-grid-container">
           <div class="policy-info-title-grid-item1">
             Policy info for
-            {{ slctdCntct.Members[0].First ? slctdCntct.Members[0].First : '' }}
-            {{ slctdCntct.Members[0].Name }}
+            {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
+            {{ contacts[slctdCntctIndex].Members[0].Name }}
           </div>
           <div class="policy-info-title-grid-item2">
             <button @click="newPolicy">
@@ -17,7 +17,7 @@
       </div>
 
       <div
-        v-for="(policyInfo, policyInfoIndex) in slctdCntct.Custom1"
+        v-for="(policyInfo, policyInfoIndex) in contacts[slctdCntctIndex].Custom1"
         class="policy-info-policy"
         :style="{
           'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white',
@@ -101,7 +101,6 @@ export default {
       'appName',
       'patchContactInfo',
       'deleteContactInfo',
-      'slctdCntct',
       'slctdCntctIndex',
     ]),
   },
@@ -109,15 +108,13 @@ export default {
   methods: {
     newPolicy() {
       const column = 'Custom1';
-      this.slctdCntct[column].push({});
       this.contacts[this.slctdCntctIndex][column].push({});
-      this.patchContactInfo('', column, this.slctdCntct.Custom1.length, 'Date');
+      this.patchContactInfo('', column, this.contacts[slctdCntctIndex].Custom1.length, 'Date');
     },
     updatePolicy(event, columnIndex, key) {
       // console.log(event);
       const column = 'Custom1';
       let custom1Value = event.target.type == 'checkbox' ? event.target.checked : event.target.value;
-      this.slctdCntct[column][columnIndex][key] = custom1Value;
       this.contacts[this.slctdCntctIndex][column][columnIndex][key] = custom1Value;
       this.patchContactInfo(custom1Value, column, columnIndex, key);
     },

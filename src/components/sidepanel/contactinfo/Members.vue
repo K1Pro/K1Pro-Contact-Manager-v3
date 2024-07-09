@@ -1,6 +1,6 @@
 <template>
   <div class="members">
-    <div v-for="(member, memberIndex) in slctdCntct?.Members">
+    <div v-for="(member, memberIndex) in contacts[slctdCntctIndex]?.Members">
       <div class="member-title-grid-container">
         <div class="member-title"><i class="fa-solid fa-user">&nbsp;</i>{{ member.Type }}</div>
         <template v-if="memberIndex === 0">
@@ -50,7 +50,7 @@
           />
         </div>
       </div>
-      <template v-if="memberIndex === slctdCntct.Members.length - 1">
+      <template v-if="memberIndex === contacts[slctdCntctIndex].Members.length - 1">
         <hr />
       </template>
     </div>
@@ -74,7 +74,6 @@ export default {
       'patchContactInfo',
       'deleteContactInfo',
       'patchUserSettings',
-      'slctdCntct',
       'slctdCntctIndex',
     ]),
     addCntctInfoDropDown() {
@@ -104,21 +103,15 @@ export default {
         if (InfoGroup != 'newContact') {
           const InfoKey = event.target.value.split('_')[1];
           event.srcElement.selectedIndex = 0;
-          const columnIndex = this.slctdCntct[InfoGroup].length;
+          const columnIndex = this.contacts[this.slctdCntctIndex][InfoGroup].length;
           if (InfoGroup == 'Members' || InfoGroup == 'Addresses') {
-            // this.slctdCntct[InfoGroup].push({ ['Type']: InfoKey }); we can delete this after further debugging
             // this.contacts[this.slctdCntctIndex][InfoGroup].push({ ['Type']: InfoKey }); we can delete this after further debugging
-            let cloneSlctdCntct = [...this.slctdCntct[InfoGroup], { Type: InfoKey }];
             let cloneContacts = [...this.contacts[this.slctdCntctIndex][InfoGroup], { Type: InfoKey }];
-            this.slctdCntct[InfoGroup] = cloneSlctdCntct;
             this.contacts[this.slctdCntctIndex][InfoGroup] = cloneContacts;
             this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type');
           } else {
-            // this.slctdCntct[InfoGroup].push({ [InfoKey]: '' }); we can delete this after further debugging
             // this.contacts[this.slctdCntctIndex][InfoGroup].push({ [InfoKey]: '' }); we can delete this after further debugging
-            let cloneSlctdCntct = [...this.slctdCntct[InfoGroup], { [InfoKey]: '' }];
             let cloneContacts = [...this.slctdCntct[InfoGroup], { [InfoKey]: '' }];
-            this.slctdCntct[InfoGroup] = cloneSlctdCntct;
             this.contacts[this.slctdCntctIndex][InfoGroup] = cloneContacts;
             this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
           }
@@ -174,7 +167,6 @@ export default {
                 Custom5: '',
               };
               console.log(newMember);
-              this.slctdCntct = newMember;
               this.contacts.push(newMember);
               this.userSettings.selectedContactIndex = newContactIndex;
               this.patchUserSettings();
@@ -193,7 +185,6 @@ export default {
     },
     updateMember(event, columnIndex, key) {
       const column = 'Members';
-      this.slctdCntct[column][columnIndex][key] = event.target.value;
       this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },

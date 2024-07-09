@@ -66,7 +66,6 @@ export default {
       'eventIndex',
       'userSettings',
       'contacts',
-      'slctdCntct',
       'patchUserSettings',
       'times',
       'days',
@@ -88,7 +87,7 @@ export default {
               Categ: contact.Categ,
               Icon: task.Status == 1 ? 'fa fa-check' : task.Tag != '' ? task.Tag : false,
               ContactIndex: contact.id,
-              EventIndex: taskIndex,
+              EventIndex: contact.RealIndex ? contact.RealIndex : taskIndex,
             };
           }
         });
@@ -126,10 +125,10 @@ export default {
 
   methods: {
     selectContact(contactIndex, tab, eventIndex) {
-      this.slctdCntct = this.contacts.filter((contact) => contact.id == contactIndex)[0];
-      this.userSettings.selectedContactIndex = this.slctdCntct.id;
-      this.activeTab = tab;
+      console.log(eventIndex);
       this.eventIndex = eventIndex;
+      this.activeTab = tab;
+      this.userSettings.selectedContactIndex = contactIndex;
       this.patchUserSettings();
     },
   },

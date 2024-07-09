@@ -1,10 +1,10 @@
 <template>
   <div class="emails">
-    <template v-if="slctdCntct && contacts && userSettings">
+    <template v-if="contacts && userSettings">
       <div class="emails-title">
         Send email to
-        {{ slctdCntct.Members[0].First ? slctdCntct.Members[0].First : '' }}
-        {{ slctdCntct.Members[0].Name }}
+        {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
+        {{ contacts[slctdCntctIndex].Members[0].Name }}
         <i @click="activeWindow = 'calendar'" class="fa-solid fa-xmark"></i>
       </div>
       <div class="emails-body">
@@ -16,7 +16,7 @@
 
         <div class="emailInputLabel">To:</div>
         <select ref="emailTo">
-          <template v-for="connection in slctdCntct.Connections">
+          <template v-for="connection in contacts[slctdCntctIndex].Connections">
             <option v-if="connection.Email" :value="connection.Email">
               {{ connection.Email }}
             </option>
@@ -68,7 +68,6 @@ export default {
       'emails',
       'endPts',
       'times',
-      'slctdCntct',
       'slctdCntctIndex',
     ]),
     templateBody() {
@@ -76,29 +75,29 @@ export default {
       if (this.slctdTemplate != 'null') {
         // prettier-ignore
         slctdTemplateBody = this.emails[this.slctdTemplate].body
-          .replaceAll('___FirstName___', this.slctdCntct.Members[0]?.First)
-          .replaceAll('___Address___', this.slctdCntct?.Addresses?.[0]?.Address_1)
-          .replaceAll('___Address2___', this.slctdCntct?.Addresses?.[0]?.Address_2)
-          .replaceAll('___City___', this.slctdCntct?.Addresses?.[0]?.City)
-          .replaceAll('___State___', this.slctdCntct?.Addresses?.[0]?.State)
-          .replaceAll('___Zip___', this.slctdCntct?.Addresses?.[0]?.Zip)
-          .replaceAll('___Phone___', this.slctdCntct?.Connections?.[0]?.Phone)
-          .replaceAll('___Car1___', this.slctdCntct?.Assets?.[0]?.Car)
-          .replaceAll('___Car2___', this.slctdCntct?.Assets?.[1]?.Car)
-          .replaceAll('___Car3___', this.slctdCntct?.Assets?.[2]?.Car)
-          .replaceAll('___Car4___', this.slctdCntct?.Assets?.[3]?.Car)
-          .replaceAll('___Policy1Type___', this.slctdCntct?.Custom1?.[0]?.Policy_Type)
-          .replaceAll('___Policy2Type___', this.slctdCntct?.Custom1?.[1]?.Policy_Type)
-          .replaceAll('___Policy3Type___', this.slctdCntct?.Custom1?.[2]?.Policy_Type)
-          .replaceAll('___Policy4Type___', this.slctdCntct?.Custom1?.[3]?.Policy_Type)
-          .replaceAll('___Policy1No___', this.slctdCntct?.Custom1?.[0]?.Policy_No)
-          .replaceAll('___Policy2No___', this.slctdCntct?.Custom1?.[1]?.Policy_No)
-          .replaceAll('___Policy3No___', this.slctdCntct?.Custom1?.[2]?.Policy_No)
-          .replaceAll('___Policy4No___', this.slctdCntct?.Custom1?.[3]?.Policy_No)
-          .replaceAll('___Policy1Date___', this.slctdCntct?.Custom1?.[0]?.Date?.slice(5,7) + '/' + this.slctdCntct?.Custom1?.[0]?.Date?.slice(8,10) + '/' + this.slctdCntct?.Custom1?.[0]?.Date?.slice(0,4))
-          .replaceAll('___Policy2Date___', this.slctdCntct?.Custom1?.[1]?.Date?.slice(5,7) + '/' + this.slctdCntct?.Custom1?.[1]?.Date?.slice(8,10) + '/' + this.slctdCntct?.Custom1?.[1]?.Date?.slice(0,4))
-          .replaceAll('___Policy3Date___', this.slctdCntct?.Custom1?.[2]?.Date?.slice(5,7) + '/' + this.slctdCntct?.Custom1?.[2]?.Date?.slice(8,10) + '/' + this.slctdCntct?.Custom1?.[2]?.Date?.slice(0,4))
-          .replaceAll('___Policy4Date___', this.slctdCntct?.Custom1?.[3]?.Date?.slice(5,7) + '/' + this.slctdCntct?.Custom1?.[3]?.Date?.slice(8,10) + '/' + this.slctdCntct?.Custom1?.[3]?.Date?.slice(0,4))
+          .replaceAll('___FirstName___', this.contacts[this.slctdCntctIndex].Members[0]?.First)
+          .replaceAll('___Address___', this.contacts[this.slctdCntctIndex]?.Addresses?.[0]?.Address_1)
+          .replaceAll('___Address2___', this.contacts[this.slctdCntctIndex]?.Addresses?.[0]?.Address_2)
+          .replaceAll('___City___', this.contacts[this.slctdCntctIndex]?.Addresses?.[0]?.City)
+          .replaceAll('___State___', this.contacts[this.slctdCntctIndex]?.Addresses?.[0]?.State)
+          .replaceAll('___Zip___', this.contacts[this.slctdCntctIndex]?.Addresses?.[0]?.Zip)
+          .replaceAll('___Phone___', this.contacts[this.slctdCntctIndex]?.Connections?.[0]?.Phone)
+          .replaceAll('___Car1___', this.contacts[this.slctdCntctIndex]?.Assets?.[0]?.Car)
+          .replaceAll('___Car2___', this.contacts[this.slctdCntctIndex]?.Assets?.[1]?.Car)
+          .replaceAll('___Car3___', this.contacts[this.slctdCntctIndex]?.Assets?.[2]?.Car)
+          .replaceAll('___Car4___', this.contacts[this.slctdCntctIndex]?.Assets?.[3]?.Car)
+          .replaceAll('___Policy1Type___', this.contacts[this.slctdCntctIndex]?.Custom1?.[0]?.Policy_Type)
+          .replaceAll('___Policy2Type___', this.contacts[this.slctdCntctIndex]?.Custom1?.[1]?.Policy_Type)
+          .replaceAll('___Policy3Type___', this.contacts[this.slctdCntctIndex]?.Custom1?.[2]?.Policy_Type)
+          .replaceAll('___Policy4Type___', this.contacts[this.slctdCntctIndex]?.Custom1?.[3]?.Policy_Type)
+          .replaceAll('___Policy1No___', this.contacts[this.slctdCntctIndex]?.Custom1?.[0]?.Policy_No)
+          .replaceAll('___Policy2No___', this.contacts[this.slctdCntctIndex]?.Custom1?.[1]?.Policy_No)
+          .replaceAll('___Policy3No___', this.contacts[this.slctdCntctIndex]?.Custom1?.[2]?.Policy_No)
+          .replaceAll('___Policy4No___', this.contacts[this.slctdCntctIndex]?.Custom1?.[3]?.Policy_No)
+          .replaceAll('___Policy1Date___', this.contacts[this.slctdCntctIndex]?.Custom1?.[0]?.Date?.slice(5,7) + '/' + this.contacts[this.slctdCntctIndex]?.Custom1?.[0]?.Date?.slice(8,10) + '/' + this.contacts[this.slctdCntctIndex]?.Custom1?.[0]?.Date?.slice(0,4))
+          .replaceAll('___Policy2Date___', this.contacts[this.slctdCntctIndex]?.Custom1?.[1]?.Date?.slice(5,7) + '/' + this.contacts[this.slctdCntctIndex]?.Custom1?.[1]?.Date?.slice(8,10) + '/' + this.contacts[this.slctdCntctIndex]?.Custom1?.[1]?.Date?.slice(0,4))
+          .replaceAll('___Policy3Date___', this.contacts[this.slctdCntctIndex]?.Custom1?.[2]?.Date?.slice(5,7) + '/' + this.contacts[this.slctdCntctIndex]?.Custom1?.[2]?.Date?.slice(8,10) + '/' + this.contacts[this.slctdCntctIndex]?.Custom1?.[2]?.Date?.slice(0,4))
+          .replaceAll('___Policy4Date___', this.contacts[this.slctdCntctIndex]?.Custom1?.[3]?.Date?.slice(5,7) + '/' + this.contacts[this.slctdCntctIndex]?.Custom1?.[3]?.Date?.slice(8,10) + '/' + this.contacts[this.slctdCntctIndex]?.Custom1?.[3]?.Date?.slice(0,4))
           .replaceAll('___Username___', this.userData.FirstName)
           .replaceAll('___Useremail___', this.userData.Email.slice(0,1).toUpperCase() + this.userData.Email.slice(1))
       } else {
@@ -126,7 +125,7 @@ export default {
         formData.append('To', this.$refs['emailTo'].value);
         formData.append('Subject', this.$refs['emailSubject'].value);
         formData.append('Body', this.$refs['emailBody'].innerHTML);
-        formData.append('id', this.slctdCntct.id);
+        formData.append('id', this.contacts[this.slctdCntctIndex].id);
         formData.append('Datetime', sendEmailDatetime);
         formData.append('CC', this.$refs['CC'].checked);
         try {
@@ -143,7 +142,7 @@ export default {
             this.msg.snackBar = 'Email sent successfully';
             console.log(sendEmailResJSON);
             this.spinLogin = false;
-            this.slctdCntct.Log.unshift([
+            this.contacts[this.slctdCntctIndex].Log.unshift([
               this.userData.id,
               sendEmailDatetime,
               'Emailed ' + this.$refs['emailTo'].value,

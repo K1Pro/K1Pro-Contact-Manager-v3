@@ -1,6 +1,6 @@
 <template>
   <div class="credentials">
-    <div v-for="(cred, credIndex) in slctdCntct?.Credentials">
+    <div v-for="(cred, credIndex) in contacts[slctdCntctIndex]?.Credentials">
       <div v-for="(credInfo, credType) in cred">
         <div v-for="credInputs in accountSettings.contactInfo.keys.Credentials[credType]">
           <div style="position: relative">
@@ -13,7 +13,8 @@
                 :value="credInfo"
                 :ref="'credInput' + credIndex"
                 :style="{
-                  'border-bottom': credIndex !== slctdCntct.Credentials.length - 1 ? '1px solid black' : '0',
+                  'border-bottom':
+                    credIndex !== contacts[slctdCntctIndex].Credentials.length - 1 ? '1px solid black' : '0',
                 }"
                 @change="updateCred($event, credIndex, credType)"
                 @focusin="revealCred(credIndex)"
@@ -28,7 +29,7 @@
           </div>
         </div>
       </div>
-      <template v-if="credIndex === slctdCntct.Credentials.length - 1">
+      <template v-if="credIndex === contacts[slctdCntctIndex].Credentials.length - 1">
         <hr />
       </template>
     </div>
@@ -46,7 +47,6 @@ export default {
       'contacts',
       'patchContactInfo',
       'deleteContactInfo',
-      'slctdCntct',
       'slctdCntctIndex',
     ]),
   },
@@ -58,7 +58,6 @@ export default {
   methods: {
     updateCred(event, columnIndex, key) {
       const column = 'Credentials';
-      this.slctdCntct[column][columnIndex][key] = event.target.value;
       this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },

@@ -1,12 +1,12 @@
 <template>
   <div class="recur-tasks">
-    <template v-if="slctdCntct">
+    <template v-if="contacts[slctdCntctIndex]">
       <div class="recur-tasks-title">
         <div class="recur-tasks-title-grid-container">
           <div class="recur-tasks-title-grid-item1">
             Recurring tasks for
-            {{ slctdCntct.Members[0].First ? slctdCntct.Members[0].First : '' }}
-            {{ slctdCntct.Members[0].Name }}
+            {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
+            {{ contacts[slctdCntctIndex].Members[0].Name }}
           </div>
           <div class="tasks-title-grid-item2">
             <button v-if="eventIndex === null" @click="sortTask">
@@ -103,14 +103,14 @@
           </div>
         </div>
         <div
-          v-if="eventIndex !== null && slctdCntct.RecurTasks.length > 1"
+          v-if="eventIndex !== null && contacts[slctdCntctIndex].RecurTasks.length > 1"
           class="recur-tasks-body"
           style="background-color: lightblue; text-align: right"
         >
           <div>
             <b @click="showAll"
-              >Show {{ slctdCntct.RecurTasks.length - 1 }} more
-              {{ slctdCntct.RecurTasks.length - 1 > 1 ? 'tasks' : 'task' }}
+              >Show {{ contacts[slctdCntctIndex].RecurTasks.length - 1 }} more
+              {{ contacts[slctdCntctIndex].RecurTasks.length - 1 > 1 ? 'tasks' : 'task' }}
             </b>
           </div>
         </div>
@@ -136,7 +136,6 @@ export default {
       'times',
       'patchContactInfo',
       'deleteContactInfo',
-      'slctdCntct',
       'userList',
       'slctdCntctIndex',
       'slctdY_m_d',
@@ -151,23 +150,23 @@ export default {
     recurTaskArray() {
       this.RecurTasks =
         this.eventIndex === null
-          ? this.slctdCntct.RecurTasks.map((val, index) => {
+          ? this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
               return { ...val, RealIndex: index };
             }).sort((a, b) => b.Start.localeCompare(a.Start))
           : [
               {
-                ...this.slctdCntct.RecurTasks[this.eventIndex],
+                ...this.contacts[this.slctdCntctIndex].RecurTasks[this.eventIndex],
                 RealIndex: this.eventIndex,
               },
             ];
     },
     sortTask() {
       if (this.sortAscDesc) {
-        this.RecurTasks = this.slctdCntct.RecurTasks.map((val, index) => {
+        this.RecurTasks = this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
           return { ...val, RealIndex: index };
         }).sort((a, b) => b.Start.localeCompare(a.Start));
       } else {
-        this.RecurTasks = this.slctdCntct.RecurTasks.map((val, index) => {
+        this.RecurTasks = this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
           return { ...val, RealIndex: index };
         }).sort((a, b) => a.Start.localeCompare(b.Start));
       }
