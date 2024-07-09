@@ -162,11 +162,11 @@ export default {
     },
     sortTask() {
       if (this.sortAscDesc) {
-        this.RecurTasks = this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
+        this.RecurTasks = this.RecurTasks.map((val, index) => {
           return { ...val, RealIndex: index };
         }).sort((a, b) => b.Start.localeCompare(a.Start));
       } else {
-        this.RecurTasks = this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
+        this.RecurTasks = this.RecurTasks.map((val, index) => {
           return { ...val, RealIndex: index };
         }).sort((a, b) => a.Start.localeCompare(b.Start));
       }
@@ -174,45 +174,43 @@ export default {
     },
     newRecurTask() {
       this.showAll();
-      // new component recurTask
-      this[this.column].unshift({
-        Start: this.slctdY_m_d,
-        Recur: [this.slctdY_m_d.slice(5, 10)],
-        Freq: 'Annually',
-        Assign: this.userData.id,
-        Create: this.userData.id,
-        Update: this.userData.id,
-        RealIndex: this.RecurTasks.length,
-      });
-      // new selected contact recurTask
-      this.slctdCntct[this.column].push({
-        Start: this.slctdY_m_d,
-        Recur: [this.slctdY_m_d.slice(5, 10)],
-        Freq: 'Annually',
-        Assign: this.userData.id,
-        Create: this.userData.id,
-        Update: this.userData.id,
-      });
-      // new state recurTask
-      this.contacts[this.slctdCntctIndex][this.column].push({
-        Start: this.slctdY_m_d,
-        Recur: [this.slctdY_m_d.slice(5, 10)],
-        Freq: 'Annually',
-        Assign: this.userData.id,
-        Create: this.userData.id,
-        Update: this.userData.id,
-      });
-      // new database recurTask
-      this.patchContactInfo(this.slctdY_m_d, this.column, this.slctdCntct.RecurTasks.length, 'Start');
+      const newCompRecurTasks = [
+        {
+          Start: this.slctdY_m_d,
+          Recur: [this.slctdY_m_d.slice(5, 10)],
+          Freq: 'Annually',
+          Assign: this.userData.id,
+          Create: this.userData.id,
+          Update: this.userData.id,
+          RealIndex: this.RecurTasks.length,
+        },
+        ...this[this.column],
+      ];
+      this[this.column] = newCompRecurTasks;
+      const newStateRecurTasks = [
+        ...this.contacts[this.slctdCntctIndex].RecurTasks,
+        {
+          Start: this.slctdY_m_d,
+          Recur: [this.slctdY_m_d.slice(5, 10)],
+          Freq: 'Annually',
+          Assign: this.userData.id,
+          Create: this.userData.id,
+          Update: this.userData.id,
+        },
+      ];
+      this.contacts[this.slctdCntctIndex].RecurTasks = newStateRecurTasks;
+      this.patchContactInfo(
+        this.slctdY_m_d,
+        this.column,
+        this.contacts[this.slctdCntctIndex].RecurTasks.length,
+        'Start'
+      );
     },
     updateRecurTask(event, columnIndex, recurTaskIndex, key) {
       if (event != this.contacts[this.slctdCntctIndex][this.column][columnIndex][key]) {
         // updating component recurTask
         this[this.column][recurTaskIndex][key] = event;
         this[this.column][recurTaskIndex].Update = this.userData.id;
-        // updating selected contact recurTask
-        this.slctdCntct[this.column][columnIndex][key] = event;
-        this.slctdCntct[this.column][columnIndex].Update = this.userData.id;
         // updating state recurTask
         this.contacts[this.slctdCntctIndex][this.column][columnIndex][key] = event;
         this.contacts[this.slctdCntctIndex][this.column][columnIndex].Update = this.userData.id;
@@ -242,11 +240,6 @@ export default {
       this[this.column][recurTaskIndex].Recur = freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
       this[this.column][recurTaskIndex].Freq = freq;
       this[this.column][recurTaskIndex].Update = this.userData.id;
-      // updating selected contact recurTask
-      this.slctdCntct[this.column][columnIndex].Start = start;
-      this.slctdCntct[this.column][columnIndex].Recur = freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
-      this.slctdCntct[this.column][columnIndex].Freq = freq;
-      this.slctdCntct[this.column][columnIndex].Update = this.userData.id;
       // updating state recurTask
       this.contacts[this.slctdCntctIndex][this.column][columnIndex].Start = start;
       this.contacts[this.slctdCntctIndex][this.column][columnIndex].Recur =
@@ -262,6 +255,11 @@ export default {
         this[this.column].splice(taskIndex, 1);
         // deleting state and database task
         this.deleteContactInfo(this.column, columnIndex, true);
+        // this.deleteContactInfo(this.column, columnIndex, true).then((url) => {
+        //   // `return` keyword added
+        //   console.log(url);
+        //   return url;
+        // });
       }
     },
     showAll() {

@@ -10,7 +10,7 @@
           </div>
           <div class="tasks-title-grid-item2">
             <button v-if="eventIndex === null" @click="sortTask">
-              <template v-if="contacts[slctdCntctIndex].Tasks.length > 1">
+              <template v-if="Tasks.length > 1">
                 <i v-if="sortAscDesc" class="fa-solid fa-arrow-down-wide-short"></i>
                 <i v-else class="fa-solid fa-arrow-up-wide-short"></i>
               </template>
@@ -24,25 +24,21 @@
         </div>
       </div>
 
-      <template v-for="(task, taskIndex) in contacts[slctdCntctIndex].Tasks">
-        <div
-          v-show="eventIndex === null || (eventIndex !== null && taskIndex == eventIndex)"
-          class="tasks-body"
-          :style="{ 'background-color': taskIndex % 2 && eventIndex === null ? 'lightblue' : 'white' }"
-        >
-          <i class="fa-solid fa-trash" @click="deleteTask(taskIndex, taskNo)"></i>
+      <template v-for="(task, taskIndex) in Tasks">
+        <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }">
+          <i class="fa-solid fa-trash" @click="deleteTask(task.RealIndex, taskIndex)"></i>
           <span class="tasks-label">Date:</span
           ><input
             type="datetime-local"
             :value="task.Date"
-            @change="updateTask($event.target.value, taskNo, taskIndex, 'Date')"
-            :class="[taskIndex % 2 && eventIndex === null ? 'even-task' : 'odd-task']"
+            @change="updateTask($event.target.value, task.RealIndex, 'Date')"
+            :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="tasks-label">Tag:</span>
           <select
             :value="task.Tag"
-            @change="updateTask($event.target.value, taskNo, taskIndex, 'Tag')"
-            :class="[taskIndex % 2 && eventIndex === null ? 'even-task' : 'odd-task']"
+            @change="updateTask($event.target.value, task.RealIndex, 'Tag')"
+            :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
           >
             <option value="">None</option>
             <option value="fa-solid fa-phone">Call</option>
@@ -58,8 +54,8 @@
           <span class="tasks-label">Owner:</span>
           <select
             :value="task.Assign"
-            @change="updateTask($event.target.value, taskNo, taskIndex, 'Assign')"
-            :class="[taskIndex % 2 && eventIndex === null ? 'even-task' : 'odd-task']"
+            @change="updateTask($event.target.value, task.RealIndex, 'Assign')"
+            :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
           >
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
               {{ userInfo[0] }}
@@ -71,33 +67,32 @@
           ><input
             type="checkbox"
             :checked="task?.Status == 1"
-            @change="updateTask($event.target.checked, taskNo, taskIndex, 'Status')"
+            @change="updateTask($event.target.checked, task.RealIndex, 'Status')"
           />
           {{ task?.Status == 1 ? 'Yes' : 'No' }}
-          <div class="tasks-span" :class="[taskIndex % 2 && eventIndex === null ? 'even-task' : 'odd-task']">
+          <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
             <span
               spellcheck="false"
               contenteditable="plaintext-only"
-              v-on:blur="updateTask($event.target.innerHTM, taskNoL, taskIndex, 'Desc')"
+              v-on:blur="updateTask($event.target.innerHTML, task.RealIndex, 'Desc')"
               >{{ task?.Desc }}</span
             >
           </div>
         </div>
         <div
-          v-if="eventIndex !== null && contacts[slctdCntctIndex].Tasks.length > 1 && taskIndex == eventIndex"
+          v-if="eventIndex !== null && contacts[slctdCntctIndex].Tasks.length > 1"
           class="tasks-body"
           style="background-color: lightblue; text-align: right"
         >
           <div>
-            <b @click="showAll">
-              Show {{ contacts[slctdCntctIndex].Tasks.length - 1 }} more
+            <b @click="showAll"
+              >Show {{ contacts[slctdCntctIndex].Tasks.length - 1 }} more
               {{ contacts[slctdCntctIndex].Tasks.length - 1 > 1 ? 'tasks' : 'task' }}
             </b>
           </div>
         </div>
       </template>
-
-      <div v-if="contacts[slctdCntctIndex].Tasks.length === 0" class="tasks-body" style="background-color: white">
+      <div v-if="Tasks.length === 0" class="tasks-body" style="background-color: white">
         <div>No tasks</div>
       </div>
     </template>
@@ -122,15 +117,22 @@ export default {
       'slctdCntctIndex',
       'slctdY_m_d',
     ]),
-    // noOfTasks() {
-    //   const numberOfTasks = [];
-    //   this.eventIndex === null
-    //     ? this.contacts[this.slctdCntctIndex].Tasks.forEach((el) => {
-    //         numberOfTasks.push(el.RealIndex);
-    //       })
-    //     : numberOfTasks.push(this.eventIndex);
-    //   return numberOfTasks;
-    // },
+    Tasks() {
+      return this.eventIndex !== null
+        ? [
+            {
+              ...this.contacts[this.slctdCntctIndex].Tasks[this.eventIndex],
+              RealIndex: this.eventIndex,
+            },
+          ]
+        : this.sortAscDesc
+        ? this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
+            return { ...val, RealIndex: index };
+          }).sort((a, b) => a.Date.localeCompare(b.Date))
+        : this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
+            return { ...val, RealIndex: index };
+          }).sort((a, b) => b.Date.localeCompare(a.Date));
+    },
   },
 
   data() {
@@ -138,23 +140,10 @@ export default {
   },
 
   methods: {
-    initialSortTask() {
-      if (this.eventIndex === null) {
-        this.contacts[this.slctdCntctIndex].Tasks = this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
-          return !val.RealIndex ? { ...val, RealIndex: index } : { ...val };
-        }).sort((a, b) => b.Date.localeCompare(a.Date));
-      }
-    },
     sortTask() {
-      if (this.sortAscDesc) {
-        this.contacts[this.slctdCntctIndex].Tasks.sort((a, b) => b.Date.localeCompare(a.Date));
-      } else {
-        this.contacts[this.slctdCntctIndex].Tasks.sort((a, b) => a.Date.localeCompare(b.Date));
-      }
       this.sortAscDesc = !this.sortAscDesc;
     },
     newTask() {
-      this.showAll();
       const newTasks = [
         ...this.contacts[this.slctdCntctIndex].Tasks,
         {
@@ -162,10 +151,10 @@ export default {
           Assign: this.userData.id,
           Create: this.userData.id,
           Update: this.userData.id,
-          RealIndex: this.contacts[this.slctdCntctIndex].Tasks.length,
         },
       ];
       this.contacts[this.slctdCntctIndex].Tasks = newTasks;
+      this.eventIndex = this.contacts[this.slctdCntctIndex].Tasks.length - 1;
       this.patchContactInfo(
         this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
         this.column,
@@ -173,7 +162,7 @@ export default {
         'Date'
       );
     },
-    updateTask(event, columnIndex, taskIndex, key) {
+    updateTask(event, columnIndex, key) {
       if (event != this.contacts[this.slctdCntctIndex][this.column][columnIndex][key]) {
         this.contacts[this.slctdCntctIndex][this.column][columnIndex][key] = event;
         this.contacts[this.slctdCntctIndex][this.column][columnIndex].Update = this.userData.id;
@@ -182,9 +171,6 @@ export default {
     },
     deleteTask(columnIndex, taskIndex) {
       if (confirm(this.msg.confirmDeletion) == true) {
-        // deleting component task
-        this[this.column].splice(taskIndex, 1);
-        // deleting state and database task
         this.deleteContactInfo(this.column, columnIndex, true);
       }
     },
@@ -193,20 +179,18 @@ export default {
     },
   },
 
-  watch: {
-    eventIndex() {
-      console.log('initialSortTask watch');
-      this.initialSortTask();
-    },
-    slctdCntctIndex() {
-      console.log('initialSortTask watch');
-      this.initialSortTask();
-    },
-  },
+  // watch: {
+  //   eventIndex() {
+  //     this.taskArray();
+  //   },
+  //   slctdCntctIndex() {
+  //     this.taskArray();
+  //   },
+  // },
 
-  created() {
-    this.initialSortTask();
-  },
+  // mounted() {
+  //   this.taskArray();
+  // },
 };
 </script>
 

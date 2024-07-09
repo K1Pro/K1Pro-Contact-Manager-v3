@@ -16,12 +16,12 @@
           :class="[
             calContactTask.Status,
             {
-              active: calContactTask.ContactIndex == userSettings.selectedContactIndex,
+              active: calContactTask.ContactID == userSettings.selectedContactIndex,
             },
             {
               activeTask:
                 calContactTask.EventIndex == eventIndex &&
-                calContactTask.ContactIndex == userSettings.selectedContactIndex &&
+                calContactTask.ContactID == userSettings.selectedContactIndex &&
                 calContactTask.Type == activeTab,
             },
           ]"
@@ -40,8 +40,8 @@
           <div
             style="overflow: hidden"
             class="prevent-select"
-            @click="selectContact(calContactTask.ContactIndex, calContactTask.Type, calContactTask.EventIndex)"
-            v-on:dblclick="selectContact(calContactTask.ContactIndex, 'house-chimney-user', null)"
+            @click="selectContact(calContactTask.ContactID, calContactTask.Type, calContactTask.EventIndex)"
+            v-on:dblclick="selectContact(calContactTask.ContactID, 'house-chimney-user', null)"
           >
             {{ calContactTask.Time != '25:00' ? calContactTask.Time : '' }}
             {{ calContactTask.Name }}
@@ -86,8 +86,8 @@ export default {
               Assign: task.Assign,
               Categ: contact.Categ,
               Icon: task.Status == 1 ? 'fa fa-check' : task.Tag != '' ? task.Tag : false,
-              ContactIndex: contact.id,
-              EventIndex: contact.RealIndex ? contact.RealIndex : taskIndex,
+              ContactID: contact.id,
+              EventIndex: taskIndex,
             };
           }
         });
@@ -111,7 +111,7 @@ export default {
               Icon: task.Review >= this.days[this.dayIndex] ? 'fa fa-check' : 'fa fa-repeat',
               Assign: task.Assign,
               Categ: contact.Categ,
-              ContactIndex: contact.id,
+              ContactID: contact.id,
               EventIndex: taskIndex,
             };
           }
@@ -124,11 +124,10 @@ export default {
   props: ['dayIndex'],
 
   methods: {
-    selectContact(contactIndex, tab, eventIndex) {
-      console.log(eventIndex);
+    selectContact(ContactID, tab, eventIndex) {
+      this.userSettings.selectedContactIndex = ContactID;
       this.eventIndex = eventIndex;
       this.activeTab = tab;
-      this.userSettings.selectedContactIndex = contactIndex;
       this.patchUserSettings();
     },
   },
