@@ -26,18 +26,18 @@
 
       <template v-for="(task, taskIndex) in Tasks">
         <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }">
-          <i class="fa-solid fa-trash" @click="deleteTask(task.RealIndex, taskIndex)"></i>
+          <i class="fa-solid fa-trash" @click="deleteTask(task.columnIndex, taskIndex)"></i>
           <span class="tasks-label">Date:</span
           ><input
             type="datetime-local"
             :value="task.Date"
-            @change="updateTask($event.target.value, task.RealIndex, 'Date')"
+            @change="updateTask($event.target.value, task.columnIndex, 'Date')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="tasks-label">Tag:</span>
           <select
             :value="task.Tag"
-            @change="updateTask($event.target.value, task.RealIndex, 'Tag')"
+            @change="updateTask($event.target.value, task.columnIndex, 'Tag')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
           >
             <option value="">None</option>
@@ -54,7 +54,7 @@
           <span class="tasks-label">Owner:</span>
           <select
             :value="task.Assign"
-            @change="updateTask($event.target.value, task.RealIndex, 'Assign')"
+            @change="updateTask($event.target.value, task.columnIndex, 'Assign')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
           >
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
@@ -67,14 +67,14 @@
           ><input
             type="checkbox"
             :checked="task?.Status == 1"
-            @change="updateTask($event.target.checked, task.RealIndex, 'Status')"
+            @change="updateTask($event.target.checked, task.columnIndex, 'Status')"
           />
           {{ task?.Status == 1 ? 'Yes' : 'No' }}
           <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
             <span
               spellcheck="false"
               contenteditable="plaintext-only"
-              v-on:blur="updateTask($event.target.innerHTML, task.RealIndex, 'Desc')"
+              v-on:blur="updateTask($event.target.innerHTML, task.columnIndex, 'Desc')"
               >{{ task?.Desc }}</span
             >
           </div>
@@ -122,15 +122,15 @@ export default {
         ? [
             {
               ...this.contacts[this.slctdCntctIndex].Tasks[this.eventIndex],
-              RealIndex: this.eventIndex,
+              columnIndex: this.eventIndex,
             },
           ]
         : this.sortAscDesc
         ? this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
-            return { ...val, RealIndex: index };
+            return { ...val, columnIndex: index };
           }).sort((a, b) => a.Date.localeCompare(b.Date))
         : this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
-            return { ...val, RealIndex: index };
+            return { ...val, columnIndex: index };
           }).sort((a, b) => b.Date.localeCompare(a.Date));
     },
   },
@@ -140,6 +140,9 @@ export default {
   },
 
   methods: {
+    showAll() {
+      this.eventIndex = null;
+    },
     sortTask() {
       this.sortAscDesc = !this.sortAscDesc;
     },
@@ -169,28 +172,12 @@ export default {
         this.patchContactInfo(event, this.column, columnIndex, key);
       }
     },
-    deleteTask(columnIndex, taskIndex) {
+    deleteTask(columnIndex) {
       if (confirm(this.msg.confirmDeletion) == true) {
         this.deleteContactInfo(this.column, columnIndex, true);
       }
     },
-    showAll() {
-      this.eventIndex = null;
-    },
   },
-
-  // watch: {
-  //   eventIndex() {
-  //     this.taskArray();
-  //   },
-  //   slctdCntctIndex() {
-  //     this.taskArray();
-  //   },
-  // },
-
-  // mounted() {
-  //   this.taskArray();
-  // },
 };
 </script>
 
@@ -256,9 +243,11 @@ export default {
   font-size: 14px;
 }
 .tasks-span span[contenteditable] {
+  min-height: 32px;
   display: block; /* not sure if this is needed */
 }
 .tasks-span span[contenteditable]:empty::before {
+  min-height: 32px;
   content: 'Enter task description';
   display: inline-block;
   color: grey;
