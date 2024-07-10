@@ -9,7 +9,7 @@
             {{ contacts[slctdCntctIndex].Members[0].Name }}
           </div>
           <div class="tasks-title-grid-item2">
-            <button v-if="eventIndex === null" @click="sortTask">
+            <button v-if="eventIndex === null" @click="sortAscDesc = !sortAscDesc">
               <template v-if="Tasks.length > 1">
                 <i v-if="sortAscDesc" class="fa-solid fa-arrow-down-wide-short"></i>
                 <i v-else class="fa-solid fa-arrow-up-wide-short"></i>
@@ -26,7 +26,7 @@
 
       <template v-for="(task, taskIndex) in Tasks">
         <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }">
-          <i class="fa-solid fa-trash" @click="deleteTask(task.columnIndex, taskIndex)"></i>
+          <i class="fa-solid fa-trash" @click="deleteTask(task.columnIndex)"></i>
           <span class="tasks-label">Date:</span
           ><input
             type="datetime-local"
@@ -85,7 +85,7 @@
           style="background-color: lightblue; text-align: right"
         >
           <div>
-            <b @click="showAll"
+            <b @click="eventIndex = null"
               >Show {{ contacts[slctdCntctIndex].Tasks.length - 1 }} more
               {{ contacts[slctdCntctIndex].Tasks.length - 1 > 1 ? 'tasks' : 'task' }}
             </b>
@@ -108,7 +108,6 @@ export default {
       'msg',
       'eventIndex',
       'userData',
-      'userSettings',
       'contacts',
       'times',
       'patchContactInfo',
@@ -140,12 +139,6 @@ export default {
   },
 
   methods: {
-    showAll() {
-      this.eventIndex = null;
-    },
-    sortTask() {
-      this.sortAscDesc = !this.sortAscDesc;
-    },
     newTask() {
       const newTasks = [
         ...this.contacts[this.slctdCntctIndex].Tasks,
@@ -175,6 +168,7 @@ export default {
     deleteTask(columnIndex) {
       if (confirm(this.msg.confirmDeletion) == true) {
         this.deleteContactInfo(this.column, columnIndex, true);
+        this.eventIndex = null;
       }
     },
   },

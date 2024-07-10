@@ -1,6 +1,6 @@
 <template>
   <div class="recur-tasks">
-    <template v-if="contacts[slctdCntctIndex]">
+    <template v-if="contacts[slctdCntctIndex].RecurTasks">
       <div class="recur-tasks-title">
         <div class="recur-tasks-title-grid-container">
           <div class="recur-tasks-title-grid-item1">
@@ -9,7 +9,7 @@
             {{ contacts[slctdCntctIndex].Members[0].Name }}
           </div>
           <div class="tasks-title-grid-item2">
-            <button v-if="eventIndex === null" @click="sortTask">
+            <button v-if="eventIndex === null" @click="sortAscDesc = !sortAscDesc">
               <template v-if="RecurTasks.length > 1">
                 <i v-if="sortAscDesc" class="fa-solid fa-arrow-down-wide-short"></i>
                 <i v-else class="fa-solid fa-arrow-up-wide-short"></i>
@@ -31,32 +31,32 @@
             'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white',
           }"
         >
-          <i class="fa-solid fa-trash" @click="deleteRecurTask(recurTask.RealIndex, recurTaskIndex)"></i>
+          <i class="fa-solid fa-trash" @click="deleteRecurTask(recurTask.columnIndex)"></i>
           <span class="recur-tasks-label">Start:</span
           ><input
             type="date"
             :value="recurTask.Start"
-            @change="updateRecurTaskFreq(recurTask.RealIndex, recurTaskIndex, $event.target.value, recurTask.Freq)"
+            @change="updateRecurTaskFreq(recurTask.columnIndex, $event.target.value, recurTask.Freq)"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="recur-tasks-label">End:</span
           ><input
             type="date"
             :value="recurTask.End"
-            @change="updateRecurTask($event.target.value, recurTask.RealIndex, recurTaskIndex, 'End')"
+            @change="updateRecurTask($event.target.value, recurTask.columnIndex, 'End')"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="recur-tasks-label">Time:</span
           ><input
             type="time"
             :value="recurTask.Time"
-            @change="updateRecurTask($event.target.value, recurTask.RealIndex, recurTaskIndex, 'Time')"
+            @change="updateRecurTask($event.target.value, recurTask.columnIndex, 'Time')"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="recur-tasks-label">Recur:</span>
           <select
             :value="recurTask.Freq"
-            @change="updateRecurTaskFreq(recurTask.RealIndex, recurTaskIndex, recurTask.Start, $event.target.value)"
+            @change="updateRecurTaskFreq(recurTask.columnIndex, recurTask.Start, $event.target.value)"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           >
             <option>Annually</option>
@@ -68,7 +68,7 @@
           <span class="recur-tasks-label">Owner:</span>
           <select
             :value="recurTask.Assign"
-            @change="updateRecurTask($event.target.value, recurTask.RealIndex, recurTaskIndex, 'Assign')"
+            @change="updateRecurTask($event.target.value, recurTask.columnIndex, 'Assign')"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           >
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
@@ -78,11 +78,7 @@
             <option disabled>Created by {{ userList[recurTask.Create][0] }}</option>
           </select>
           <span class="recur-tasks-label">Finished:</span>
-          <button
-            @click="
-              updateRecurTask(times.updtngY_m_d_H_i_s_z.slice(0, 10), recurTask.RealIndex, recurTaskIndex, 'Review')
-            "
-          >
+          <button @click="updateRecurTask(times.updtngY_m_d_H_i_s_z.slice(0, 10), recurTask.columnIndex, 'Review')">
             {{
               recurTask.Review
                 ? recurTask.Review.slice(5, 7) +
@@ -97,7 +93,7 @@
             <span
               spellcheck="false"
               contenteditable="plaintext-only"
-              v-on:blur="updateRecurTask($event.target.innerHTML, recurTask.RealIndex, recurTaskIndex, 'Desc')"
+              v-on:blur="updateRecurTask($event.target.innerHTML, recurTask.columnIndex, 'Desc')"
               >{{ recurTask.Desc }}</span
             >
           </div>
@@ -108,7 +104,7 @@
           style="background-color: lightblue; text-align: right"
         >
           <div>
-            <b @click="showAll"
+            <b @click="eventIndex = null"
               >Show {{ contacts[slctdCntctIndex].RecurTasks.length - 1 }} more
               {{ contacts[slctdCntctIndex].RecurTasks.length - 1 > 1 ? 'tasks' : 'task' }}
             </b>
@@ -131,7 +127,6 @@ export default {
       'msg',
       'eventIndex',
       'userData',
-      'userSettings',
       'contacts',
       'times',
       'patchContactInfo',
@@ -140,54 +135,31 @@ export default {
       'slctdCntctIndex',
       'slctdY_m_d',
     ]),
+    RecurTasks() {
+      return this.eventIndex !== null
+        ? [
+            {
+              ...this.contacts[this.slctdCntctIndex].RecurTasks[this.eventIndex],
+              columnIndex: this.eventIndex,
+            },
+          ]
+        : this.sortAscDesc
+        ? this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
+            return { ...val, columnIndex: index };
+          }).sort((a, b) => a.Start.localeCompare(b.Start))
+        : this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
+            return { ...val, columnIndex: index };
+          }).sort((a, b) => b.Start.localeCompare(a.Start));
+    },
   },
 
   data() {
-    return { RecurTasks: [], column: 'RecurTasks', sortAscDesc: false };
+    return { column: 'RecurTasks', sortAscDesc: false };
   },
 
   methods: {
-    recurTaskArray() {
-      this.RecurTasks =
-        this.eventIndex === null
-          ? this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
-              return { ...val, RealIndex: index };
-            }).sort((a, b) => b.Start.localeCompare(a.Start))
-          : [
-              {
-                ...this.contacts[this.slctdCntctIndex].RecurTasks[this.eventIndex],
-                RealIndex: this.eventIndex,
-              },
-            ];
-    },
-    sortTask() {
-      if (this.sortAscDesc) {
-        this.RecurTasks = this.RecurTasks.map((val, index) => {
-          return { ...val, RealIndex: index };
-        }).sort((a, b) => b.Start.localeCompare(a.Start));
-      } else {
-        this.RecurTasks = this.RecurTasks.map((val, index) => {
-          return { ...val, RealIndex: index };
-        }).sort((a, b) => a.Start.localeCompare(b.Start));
-      }
-      this.sortAscDesc = !this.sortAscDesc;
-    },
     newRecurTask() {
-      this.showAll();
-      const newCompRecurTasks = [
-        {
-          Start: this.slctdY_m_d,
-          Recur: [this.slctdY_m_d.slice(5, 10)],
-          Freq: 'Annually',
-          Assign: this.userData.id,
-          Create: this.userData.id,
-          Update: this.userData.id,
-          RealIndex: this.RecurTasks.length,
-        },
-        ...this[this.column],
-      ];
-      this[this.column] = newCompRecurTasks;
-      const newStateRecurTasks = [
+      const newRecurTasks = [
         ...this.contacts[this.slctdCntctIndex].RecurTasks,
         {
           Start: this.slctdY_m_d,
@@ -198,7 +170,8 @@ export default {
           Update: this.userData.id,
         },
       ];
-      this.contacts[this.slctdCntctIndex].RecurTasks = newStateRecurTasks;
+      this.contacts[this.slctdCntctIndex].RecurTasks = newRecurTasks;
+      this.eventIndex = this.contacts[this.slctdCntctIndex].RecurTasks.length - 1;
       this.patchContactInfo(
         this.slctdY_m_d,
         this.column,
@@ -206,19 +179,14 @@ export default {
         'Start'
       );
     },
-    updateRecurTask(event, columnIndex, recurTaskIndex, key) {
+    updateRecurTask(event, columnIndex, key) {
       if (event != this.contacts[this.slctdCntctIndex][this.column][columnIndex][key]) {
-        // updating component recurTask
-        this[this.column][recurTaskIndex][key] = event;
-        this[this.column][recurTaskIndex].Update = this.userData.id;
-        // updating state recurTask
         this.contacts[this.slctdCntctIndex][this.column][columnIndex][key] = event;
         this.contacts[this.slctdCntctIndex][this.column][columnIndex].Update = this.userData.id;
-        // updating database recurTask
         this.patchContactInfo(event, this.column, columnIndex, key);
       }
     },
-    updateRecurTaskFreq(columnIndex, recurTaskIndex, start, freq) {
+    updateRecurTaskFreq(columnIndex, start, freq) {
       let recurTaskEvent, newRecurTask;
       if (freq == 'Annually') {
         recurTaskEvent = start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28';
@@ -235,49 +203,19 @@ export default {
       } else if (freq == 'Daily') {
         recurTaskEvent = 'everyday';
       }
-      // updating component recurTask
-      this[this.column][recurTaskIndex].Start = start;
-      this[this.column][recurTaskIndex].Recur = freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
-      this[this.column][recurTaskIndex].Freq = freq;
-      this[this.column][recurTaskIndex].Update = this.userData.id;
-      // updating state recurTask
       this.contacts[this.slctdCntctIndex][this.column][columnIndex].Start = start;
       this.contacts[this.slctdCntctIndex][this.column][columnIndex].Recur =
         freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
       this.contacts[this.slctdCntctIndex][this.column][columnIndex].Freq = freq;
       this.contacts[this.slctdCntctIndex][this.column][columnIndex].Update = this.userData.id;
-      // updating database recurTask
       this.patchContactInfo(freq + '+' + start + '+' + recurTaskEvent, this.column, columnIndex, 'Freq');
     },
-    deleteRecurTask(columnIndex, taskIndex) {
+    deleteRecurTask(columnIndex) {
       if (confirm(this.msg.confirmDeletion) == true) {
-        // deleting component task
-        this[this.column].splice(taskIndex, 1);
-        // deleting state and database task
         this.deleteContactInfo(this.column, columnIndex, true);
-        // this.deleteContactInfo(this.column, columnIndex, true).then((url) => {
-        //   // `return` keyword added
-        //   console.log(url);
-        //   return url;
-        // });
+        this.eventIndex = null;
       }
     },
-    showAll() {
-      this.eventIndex = null;
-    },
-  },
-
-  watch: {
-    eventIndex() {
-      this.recurTaskArray();
-    },
-    slctdCntctIndex() {
-      this.recurTaskArray();
-    },
-  },
-
-  mounted() {
-    this.recurTaskArray();
   },
 };
 </script>
@@ -343,9 +281,11 @@ export default {
   font-size: 14px;
 }
 .recur-tasks-span span[contenteditable] {
+  min-height: 32px;
   display: block; /* not sure if this is needed */
 }
 .recur-tasks-span span[contenteditable]:empty::before {
+  min-height: 32px;
   content: 'Enter task description';
   display: inline-block;
   color: grey;

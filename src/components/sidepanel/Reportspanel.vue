@@ -37,7 +37,14 @@ export default {
   name: 'Reports Panel',
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, ['msg', 'userData', 'reports', 'appName', 'slctdCntctIndex']),
+    ...Pinia.mapWritableState(useDefaultStore, [
+      'msg',
+      'userData',
+      'contacts',
+      'reports',
+      'appName',
+      'slctdCntctIndex',
+    ]),
   },
 
   methods: {

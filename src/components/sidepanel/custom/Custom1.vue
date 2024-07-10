@@ -1,5 +1,5 @@
 <template>
-  <template v-if="contacts[slctdCntctIndex] && userData?.AppPermissions[appName][0] == 'bundle_insurance'">
+  <template v-if="contacts[slctdCntctIndex].Custom1 && userData?.AppPermissions[appName][0] == 'bundle_insurance'">
     <div class="policy-info">
       <div class="policy-info-title">
         <div class="policy-info-title-grid-container">
@@ -105,18 +105,21 @@ export default {
     ]),
   },
 
+  data() {
+    return { column: 'Custom1' };
+  },
+
   methods: {
     newPolicy() {
-      const column = 'Custom1';
-      this.contacts[this.slctdCntctIndex][column].push({});
-      this.patchContactInfo('', column, this.contacts[slctdCntctIndex].Custom1.length, 'Date');
+      const newCustom1 = [...this.contacts[this.slctdCntctIndex][this.column], {}];
+      this.contacts[this.slctdCntctIndex][this.column] = newCustom1;
+      this.patchContactInfo('', this.column, this.contacts[this.slctdCntctIndex][this.column].length, 'Date');
     },
     updatePolicy(event, columnIndex, key) {
-      // console.log(event);
-      const column = 'Custom1';
       let custom1Value = event.target.type == 'checkbox' ? event.target.checked : event.target.value;
-      this.contacts[this.slctdCntctIndex][column][columnIndex][key] = custom1Value;
-      this.patchContactInfo(custom1Value, column, columnIndex, key);
+      this.contacts[this.slctdCntctIndex][this.column][columnIndex][key] = custom1Value;
+      this.contacts[this.slctdCntctIndex][this.column][columnIndex].Update = this.userData.id;
+      this.patchContactInfo(custom1Value, this.column, columnIndex, key);
     },
   },
 };
