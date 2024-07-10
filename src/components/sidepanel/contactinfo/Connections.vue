@@ -92,16 +92,10 @@ export default {
             const postConnectResJSON = await response.json();
             if (postConnectResJSON.success) {
               // this.msg.snackBar = 'Updated ';
-              console.log(postConnectResJSON);
-              this.slctdCntct.Log.unshift([
-                this.userData.id,
-                this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
-                'Called ' + this.slctdCntct.Connections[connIndex][connType],
-              ]);
               this.contacts[columnIndex].Log.unshift([
                 this.userData.id,
                 this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
-                'Called ' + this.slctdCntct.Connections[connIndex][connType],
+                'Called ' + this.contacts[this.slctdCntctIndex].Connections[connIndex][connType],
               ]);
             } else {
             }
