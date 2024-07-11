@@ -4,7 +4,6 @@
       <table>
         <thead>
           <tr>
-            <th>id</th>
             <th>Contact</th>
             <th>Address</th>
             <th>Assets</th>
@@ -13,11 +12,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(contact, contactIndex) in contacts" :class="'cell' + (contactIndex % 2)">
-            <td class="cellHover" @click="selectContact(contactIndex)">
-              {{ contact.id }}
-            </td>
-            <td>
+          <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+            <td class="cellHover" @click="selectContact(contact.id)">
               <div v-for="contactInfo in contact.Members">{{ contactInfo.First }} {{ contactInfo.Name }}</div>
             </td>
             <td>
@@ -56,7 +52,6 @@
       <table>
         <thead>
           <tr>
-            <th>id</th>
             <th>Contact</th>
             <th>Address</th>
             <th>Assets</th>
@@ -65,11 +60,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(contact, contactIndex) in contacts" :class="'cell' + (contactIndex % 2)">
-            <td class="cellHover" @click="selectContact(contactIndex)">
-              {{ contact.id }}
-            </td>
-            <td>{{ Object.values(contact.Members)[0].Name }}</td>
+          <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0].Name }}</td>
             <td>{{ Object.values(contact.Addresses)?.[0]?.Address_1 }}</td>
             <td>
               {{ Object.values(contact.Assets)[0] ? Object.values(Object.values(contact.Assets)[0])[0] : '' }}
@@ -86,7 +78,6 @@
       <table>
         <thead>
           <tr>
-            <th>id</th>
             <th>Contact</th>
             <th>Carriers</th>
             <th>Policy Types</th>
@@ -96,11 +87,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(contact, contactIndex) in contacts" :class="'cell' + (contactIndex % 2)">
-            <td class="cellHover" @click="selectContact(contactIndex)">
-              {{ contact.id }}
-            </td>
-            <td>{{ Object.values(contact.Members)[0].Name }}</td>
+          <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0].Name }}</td>
             <td>
               <div v-for="custom1Info in contact.Custom1">
                 {{ custom1Info.Carrier }}
@@ -130,7 +118,6 @@
       <table>
         <thead>
           <tr>
-            <th>id</th>
             <th>Contact</th>
             <th>Carriers</th>
             <th>Policy Types</th>
@@ -140,11 +127,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(contact, contactIndex) in contacts" :class="'cell' + (contactIndex % 2)">
-            <td class="cellHover" @click="selectContact(contactIndex)">
-              {{ contact.id }}
-            </td>
-            <td>{{ Object.values(contact.Members)[0].Name }}</td>
+          <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0].Name }}</td>
             <td>
               <div v-for="custom1Info in contact.Custom1">
                 {{ custom1Info.Carrier }}
@@ -182,7 +166,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(log, logIndex) in contacts[slctdCntctIndex].Log" :class="'cell' + (logIndex % 2)">
+          <tr v-for="(log, logIndex) in srtdCntcts[slctdCntctIndex].Log" :class="'cell' + (logIndex % 2)">
             <td>{{ contacts[slctdCntctIndex].Members[0].Name }}</td>
             <td>{{ contacts[slctdCntctIndex].Categ }}</td>
             <td>{{ log[1] }}</td>
@@ -211,14 +195,29 @@ export default {
       'userList',
       'slctdCntctIndex',
     ]),
-    reportType() {},
+    srtdCntcts() {
+      let clonedCntcts = this.contacts;
+      let newSrtdCntcts;
+      if (this.reports == 'Policy info for all Contacts') {
+        newSrtdCntcts = clonedCntcts
+          .filter((cntct) => cntct.Custom1.length > 0)
+          .sort((a, b) => a.Members[0].Name.localeCompare(b.Members[0].Name));
+      } else if (this.reports == 'Policy info for Contacts with active policies') {
+        newSrtdCntcts = clonedCntcts
+          .filter((cntct) => cntct.Categ == 'Customer')
+          .sort((a, b) => a.Members[0].Name.localeCompare(b.Members[0].Name));
+      } else {
+        newSrtdCntcts = clonedCntcts.sort((a, b) => a.Members[0].Name.localeCompare(b.Members[0].Name));
+      }
+      return newSrtdCntcts;
+    },
   },
 
   methods: {
-    selectContact(contactIndex) {
+    selectContact(contactID) {
       this.activeWindow = 'calendar';
       this.activeTab = 'house-chimney-user';
-      this.userSettings.selectedContactIndex = this.contacts[contactIndex].id;
+      this.userSettings.selectedContactIndex = contactID;
       this.patchUserSettings();
     },
   },
@@ -240,6 +239,9 @@ export default {
   border: 0px;
   border-collapse: collapse;
   width: 100%;
+}
+.reports thead {
+  height: 30px;
 }
 .reports th {
   position: sticky;
