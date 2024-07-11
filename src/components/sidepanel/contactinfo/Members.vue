@@ -105,13 +105,11 @@ export default {
           event.srcElement.selectedIndex = 0;
           const columnIndex = this.contacts[this.slctdCntctIndex][InfoGroup].length;
           if (InfoGroup == 'Members' || InfoGroup == 'Addresses') {
-            // this.contacts[this.slctdCntctIndex][InfoGroup].push({ ['Type']: InfoKey }); we can delete this after further debugging
             let cloneContacts = [...this.contacts[this.slctdCntctIndex][InfoGroup], { Type: InfoKey }];
             this.contacts[this.slctdCntctIndex][InfoGroup] = cloneContacts;
             this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type');
           } else {
-            // this.contacts[this.slctdCntctIndex][InfoGroup].push({ [InfoKey]: '' }); we can delete this after further debugging
-            let cloneContacts = [...this.slctdCntct[InfoGroup], { [InfoKey]: '' }];
+            let cloneContacts = [...this.contacts[this.slctdCntctIndex][InfoGroup], { [InfoKey]: '' }];
             this.contacts[this.slctdCntctIndex][InfoGroup] = cloneContacts;
             this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
           }

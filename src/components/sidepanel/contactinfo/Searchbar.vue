@@ -15,6 +15,7 @@
       v-show="search.length > 2 && appActiveElement == 'Search Input'"
       ref="searchDropdown"
       @change="selectSearchedContact"
+      v-on:select="selectSearchedContact"
       :style="{ overflow: searchArray.length < 10 ? 'hidden' : 'auto' }"
     >
       <option disabled selected="true">
@@ -25,7 +26,12 @@
         {{ searchResult.split('_')[0] }}
       </option>
     </select>
-    <select class="search-bar-mobile" style="height: 42px" @change="selectSearchedContact">
+    <select
+      class="search-bar-mobile"
+      style="height: 42px"
+      @change="selectSearchedContact"
+      v-on:select="selectSearchedContact"
+    >
       <option disabled selected="true">
         Found {{ searchArray.length }}
         {{ searchArray.length != 1 ? 'contacts' : 'contact' }}

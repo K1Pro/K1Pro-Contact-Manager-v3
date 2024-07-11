@@ -143,16 +143,9 @@ const useDefaultStore = Pinia.defineStore('default', {
   },
   getters: {
     firstDayTmstmp(state) {
-      // // const cmptdDayNumber = state.slctdDayIndex != null ? state.slctdDayIndex : 1;
-      // const cmptdDayOfTheWeek = state.dayOfTheWeek == 0 ? 6 : state.dayOfTheWeek - 1;
-      // // const cmptdNoOfWeeks = state.slctdDayIndex != null ? Math.floor(state.slctdDayIndex / 7) : 1;
-      // return state.times.slctdTmstmp - 604800000 - cmptdDayOfTheWeek * 86400000;
       const cmptdDayNumber = state.slctdDayIndex != null ? state.slctdDayIndex : 1;
       const cmptdDayOfTheWeek = state.dayOfTheWeek == 0 ? 6 : state.dayOfTheWeek - 1;
       const cmptdNoOfWeeks = state.slctdDayIndex != null ? Math.floor(state.slctdDayIndex / 7) : 1;
-      // console.log(cmptdDayNumber);
-      // console.log(cmptdDayOfTheWeek);
-      // console.log(cmptdNoOfWeeks);
       return state.userSettings.calendar.filters.days == 0
         ? state.times.slctdTmstmp
         : state.userSettings.calendar.filters.days == 1
@@ -162,22 +155,12 @@ const useDefaultStore = Pinia.defineStore('default', {
         : state.times.slctdTmstmp - cmptdNoOfWeeks * 604800000 - cmptdDayOfTheWeek * 86400000;
     },
     firstDayY_m_d(state) {
-      return (
-        new Date(state.firstDayTmstmp).getFullYear() +
-        '-' +
-        (new Date(state.firstDayTmstmp).getMonth() + 1).toString().padStart(2, '0') +
-        '-' +
-        new Date(state.firstDayTmstmp).getDate().toString().padStart(2, '0')
-      );
+      // prettier-ignore
+      return (new Date(state.firstDayTmstmp).getFullYear() + '-' + (new Date(state.firstDayTmstmp).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(state.firstDayTmstmp).getDate().toString().padStart(2, '0'));
     },
     slctdY_m_d(state) {
-      return (
-        new Date(state.times.slctdTmstmp).getFullYear() +
-        '-' +
-        (new Date(state.times.slctdTmstmp).getMonth() + 1).toString().padStart(2, '0') +
-        '-' +
-        new Date(state.times.slctdTmstmp).getDate().toString().padStart(2, '0')
-      );
+      // prettier-ignore
+      return (new Date(state.times.slctdTmstmp).getFullYear() + '-' + (new Date(state.times.slctdTmstmp).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(state.times.slctdTmstmp).getDate().toString().padStart(2, '0'));
     },
     slctdCntctIndex(state) {
       return state.contacts.findIndex((contact) => contact.id == state.userSettings.selectedContactIndex);
@@ -196,19 +179,6 @@ const useDefaultStore = Pinia.defineStore('default', {
       let dateArray = [];
       let currentDate = new Date(state.firstDayTmstmp);
       while (dateRangeStart <= state.daysRangeArr[state.userSettings.calendar.filters.days]) {
-        // prettier-ignore
-        dateArray.push(currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' + currentDate.getDate().toString().padStart(2, '0'));
-        currentDate.setDate(currentDate.getDate() + 1);
-        dateRangeStart++;
-      }
-      return dateArray;
-    },
-    allDays(state) {
-      let dateRangeStart = 1;
-      let dateRangeEnd = 28;
-      let dateArray = [];
-      let currentDate = new Date(state.firstDayTmstmp);
-      while (dateRangeStart <= dateRangeEnd) {
         // prettier-ignore
         dateArray.push(currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' + currentDate.getDate().toString().padStart(2, '0'));
         currentDate.setDate(currentDate.getDate() + 1);
