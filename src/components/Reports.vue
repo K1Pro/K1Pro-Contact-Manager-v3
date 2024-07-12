@@ -1,6 +1,32 @@
 <template>
   <div class="reports">
-    <template v-if="reports == 'Contacts with expanded info'">
+    <template v-if="reports.includes('All contacts with min. info')">
+      <table>
+        <thead>
+          <tr>
+            <th>Contact</th>
+            <th>Address</th>
+            <th>Assets</th>
+            <th>Connections</th>
+            <th>Category</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0].Name }}</td>
+            <td>{{ Object.values(contact.Addresses)?.[0]?.Address_1 }}</td>
+            <td>
+              {{ Object.values(contact.Assets)[0] ? Object.values(Object.values(contact.Assets)[0])[0] : '' }}
+            </td>
+            <td>
+              {{ Object.values(contact.Connections)[0] ? Object.values(Object.values(contact.Connections)[0])[0] : '' }}
+            </td>
+            <td>{{ contact.Categ }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
+    <template v-if="reports.includes('All contacts with more info')">
       <table>
         <thead>
           <tr>
@@ -48,7 +74,7 @@
         </tbody>
       </table>
     </template>
-    <template v-if="reports == 'Contacts with minimum info'">
+    <template v-if="reports.includes('All tasks')">
       <table>
         <thead>
           <tr>
@@ -61,15 +87,37 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
-            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0].Name }}</td>
-            <td>{{ Object.values(contact.Addresses)?.[0]?.Address_1 }}</td>
-            <td>
-              {{ Object.values(contact.Assets)[0] ? Object.values(Object.values(contact.Assets)[0])[0] : '' }}
+            <td class="cellHover" @click="selectContact(contact.id)">
+              <div v-for="contactInfo in contact.Members">{{ contactInfo.First }} {{ contactInfo.Name }}</div>
             </td>
             <td>
-              {{ Object.values(contact.Connections)[0] ? Object.values(Object.values(contact.Connections)[0])[0] : '' }}
+              <template v-for="contactInfo in contact.Addresses">
+                <div>{{ contactInfo.Address_1 }} {{ contactInfo.Address_2 }}</div>
+                <div>
+                  {{ contactInfo.City }} {{ contactInfo.State }}
+                  {{ contactInfo.Zip }}
+                </div>
+              </template>
             </td>
-            <td>{{ contact.Categ }}</td>
+            <td>
+              <template v-for="contactInfo in contact.Assets">
+                <div v-for="infoItem in contactInfo">
+                  {{ infoItem }}
+                </div>
+              </template>
+            </td>
+            <td>
+              <template v-for="contactInfo in contact.Connections">
+                <div v-for="infoItem in contactInfo">
+                  {{ infoItem }}
+                </div>
+              </template>
+            </td>
+            <td>
+              <div>
+                {{ contact.Categ }}
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>

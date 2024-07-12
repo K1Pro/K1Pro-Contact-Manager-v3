@@ -69,6 +69,7 @@ export default {
       'emails',
       'endPts',
       'times',
+      'updating',
       'patchUserSettings',
       'slctdCntctIndex',
     ]),
@@ -178,7 +179,9 @@ export default {
           },
         });
         const getContactsResJSON = await response.json();
-        if (getContactsResJSON.success && document.activeElement.tagName == 'BODY') {
+        if (document.activeElement.tagName != 'BODY') console.log('something is in focus');
+        if (this.updating) console.log('something is being updated');
+        if (getContactsResJSON.success && document.activeElement.tagName == 'BODY' && !this.updating) {
           // console.log(getContactsResJSON);
           if (this.contacts.length == 0) {
             this.contacts = getContactsResJSON.data.contacts;

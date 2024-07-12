@@ -15,6 +15,34 @@
       >
       </i>
     </div>
+    <div
+      v-if="contacts[slctdCntctIndex].Tasks && contacts[slctdCntctIndex]?.Tasks.length > 0"
+      class="side-panel-badge"
+      :style="{ top: windowWidth > 768 ? '82px' : 'calc(100vh + 82px)', left: sidePanelOpen ? '189px' : '39px' }"
+    >
+      {{ contacts[slctdCntctIndex].Tasks.length }}
+    </div>
+    <div
+      v-if="contacts[slctdCntctIndex].RecurTasks && contacts[slctdCntctIndex]?.RecurTasks.length > 0"
+      class="side-panel-badge"
+      :style="{ top: windowWidth > 768 ? '150px' : 'calc(100vh + 150px)', left: sidePanelOpen ? '189px' : '39px' }"
+    >
+      {{ contacts[slctdCntctIndex].RecurTasks.length }}
+    </div>
+    <div
+      v-if="contacts[slctdCntctIndex].Notes && contacts[slctdCntctIndex]?.Notes.length > 0"
+      class="side-panel-badge"
+      :style="{ top: windowWidth > 768 ? '218px' : 'calc(100vh + 218px)', left: sidePanelOpen ? '189px' : '39px' }"
+    >
+      {{ 1 }}
+    </div>
+    <div
+      v-if="contacts[slctdCntctIndex].Custom1 && contacts[slctdCntctIndex]?.Custom1.length > 0"
+      class="side-panel-badge"
+      :style="{ top: windowWidth > 768 ? '286px' : 'calc(100vh + 286px)', left: sidePanelOpen ? '189px' : '39px' }"
+    >
+      {{ contacts[slctdCntctIndex].Custom1.length }}
+    </div>
 
     <div class="tab-body-container">
       <div
@@ -138,8 +166,10 @@ export default {
       'eventIndex',
       'userData',
       'accountSettings',
+      'contacts',
       'endPts',
       'appName',
+      'slctdCntctIndex',
     ]),
   },
 
@@ -200,14 +230,27 @@ export default {
 .side-panel-toggle i {
   position: absolute;
   z-index: 5;
-  top: 58px;
+  /*top: 58px;*/
+  top: 14px;
   font-size: 8px;
   padding: 6px 7.5px 6px 7.5px;
   border-radius: 50%;
   color: white;
   background-color: black;
   cursor: pointer;
-
+  transition: all 0.3s ease;
+}
+.side-panel-badge {
+  position: absolute;
+  z-index: 5;
+  font-size: 10px;
+  padding-top: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  text-align: center;
+  background-color: #417cd9;
+  color: white;
   transition: all 0.3s ease;
 }
 .tab-title-container {
@@ -260,7 +303,7 @@ export default {
   height: auto;
   width: calc(100% - 50px);
   border-style: solid;
-  border-width: 10px 10px 10px 10px;
+  border-width: 10px 10px 10px 20px;
   border-color: #00000000;
   /* background-color: green; */
   background-clip: content-box;
@@ -271,7 +314,7 @@ export default {
     height: 100vh;
     overflow-y: auto;
     border-style: solid;
-    border-width: 10px 0px 10px 60px;
+    border-width: 10px 0px 10px 70px;
     border-color: #00000000;
   }
 }

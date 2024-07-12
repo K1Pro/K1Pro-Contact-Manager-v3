@@ -3,10 +3,10 @@
     <div class="reports-panel-title">Select a report</div>
     <div class="reports-panel-body">
       <div class="reports-panel-report reports-panel-odd" @click="selectReport($event.target.innerHTML)">
-        Contacts with minimum info
+        All contacts with min. info ({{ contacts.length }})
       </div>
       <div class="reports-panel-report reports-panel-even" @click="selectReport($event.target.innerHTML)">
-        Contacts with expanded info
+        All contacts with more info ({{ contacts.length }})
       </div>
       <div
         v-if="userData?.AppPermissions[appName][0] == 'bundle_insurance'"

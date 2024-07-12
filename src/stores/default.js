@@ -20,7 +20,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       tempFiltersDays: null,
       contacts: [],
       emails: [],
-      reports: 'Contacts with minimum info',
+      reports: 'All contacts with min. info',
       endPts: {
         url: url,
         accountLoginURL: accountlogin_url,
@@ -45,20 +45,13 @@ const useDefaultStore = Pinia.defineStore('default', {
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       appName: app_name,
       slctdDayIndex: null,
+      updating: 0,
     };
   },
   actions: {
     async patchContactInfo(event, column, columnIndex, key) {
-      // console.log(
-      //   'id: ' + this.contacts[this.slctdCntctIndex].id
-      // );
-      // console.log('column: ' + column);
-      // console.log('columnIndex: ' + columnIndex);
-      // console.log('key: ' + key);
-      // console.log(
-      //   'value: ' + (event?.target?.value ? event.target.value : event)
-      // );
-      // console.log('================');
+      let cloneUpdating = this.updating;
+      this.updating = cloneUpdating + 1;
       this.contacts[this.slctdCntctIndex].Updated = {
         [this.userData.id]: this.times.updtngY_m_d_H_i_s_z,
       };
@@ -80,16 +73,23 @@ const useDefaultStore = Pinia.defineStore('default', {
         });
         const patchContactInfoResJSON = await response.json();
         if (patchContactInfoResJSON.success) {
-          // this.msg.snackBar = 'Updated ';
-          // console.log(patchContactInfoResJSON);
+          cloneUpdating = this.updating;
+          this.updating = cloneUpdating - 1;
+        } else {
+          this.msg.snackBar = 'Update error';
+          cloneUpdating = this.updating;
+          this.updating = cloneUpdating - 1;
         }
       } catch (error) {
-        this.msg.snackBar = error.toString();
+        this.msg.snackBar = 'Update error';
+        cloneUpdating = this.updating;
+        this.updating = cloneUpdating - 1;
+        // this.msg.snackBar = error.toString();
       }
     },
     async deleteContactInfo(column, columnIndex, prevConfirm) {
-      // console.log('column: ' + column);
-      // console.log('columnIndex: ' + columnIndex);
+      let cloneUpdating = this.updating;
+      this.updating = cloneUpdating + 1;
       if (prevConfirm || confirm(this.msg.confirmDeletion) == true) {
         this.contacts[this.slctdCntctIndex][column].splice(columnIndex, 1);
         try {
@@ -106,13 +106,20 @@ const useDefaultStore = Pinia.defineStore('default', {
               ColumnIndex: columnIndex,
             }),
           });
-          const patchContactInfoResJSON = await response.json();
-          if (patchContactInfoResJSON.success) {
-            // this.msg.snackBar = 'Updated ';
-            // console.log(patchContactInfoResJSON);
+          const deleteContactInfoResJSON = await response.json();
+          if (deleteContactInfoResJSON.success) {
+            cloneUpdating = this.updating;
+            this.updating = cloneUpdating - 1;
+          } else {
+            this.msg.snackBar = 'Delete error';
+            cloneUpdating = this.updating;
+            this.updating = cloneUpdating - 1;
           }
         } catch (error) {
-          this.msg.snackBar = error.toString();
+          this.msg.snackBar = 'Delete error';
+          cloneUpdating = this.updating;
+          this.updating = cloneUpdating - 1;
+          // this.msg.snackBar = error.toString();
         }
       }
     },
@@ -130,14 +137,16 @@ const useDefaultStore = Pinia.defineStore('default', {
           }),
         });
         const patchUserSettingsResJSON = await response.json();
-        console.log(patchUserSettingsResJSON);
-        if (!patchUserSettingsResJSON.success) {
+        if (patchUserSettingsResJSON.success) {
           // console.log(patchUserSettingsResJSON);
           // this.msg.snackBar = patchUserSettingsResJSON.messages[0];
+        } else {
+          this.msg.snackBar = 'Settings update error';
         }
       } catch (error) {
         console.log(error.toString());
-        this.msg.snackBar = error.toString();
+        this.msg.snackBar = 'Settings update error';
+        // this.msg.snackBar = error.toString();
       }
     },
   },
