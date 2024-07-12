@@ -8,6 +8,14 @@
       <div class="reports-panel-report reports-panel-even" @click="selectReport($event.target.innerHTML)">
         All contacts with more info ({{ contacts.length }})
       </div>
+      <div class="reports-panel-report reports-panel-odd" @click="selectReport($event.target.innerHTML)">
+        All contact tasks
+      </div>
+      <div class="reports-panel-report reports-panel-even" @click="selectReport($event.target.innerHTML)">
+        Activity log for
+        {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
+        {{ contacts[slctdCntctIndex].Members[0].Name }}
+      </div>
       <div
         v-if="userData?.AppPermissions[appName][0] == 'bundle_insurance'"
         class="reports-panel-report reports-panel-odd"
@@ -22,12 +30,6 @@
       >
         Policy info for Contacts with active policies
       </div>
-      <div class="reports-panel-report reports-panel-odd" @click="selectReport($event.target.innerHTML)">
-        Activity log for
-        {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
-        {{ contacts[slctdCntctIndex].Members[0].Name }}
-      </div>
-      <div class="reports-panel-report reports-panel-even">All tasks</div>
     </div>
   </div>
 </template>

@@ -74,49 +74,27 @@
         </tbody>
       </table>
     </template>
-    <template v-if="reports.includes('All tasks')">
+    <template v-if="reports.includes('All contact tasks')">
       <table>
         <thead>
           <tr>
             <th>Contact</th>
-            <th>Address</th>
-            <th>Assets</th>
-            <th>Connections</th>
-            <th>Category</th>
+            <th>Date</th>
+            <th>Owner</th>
+            <th>Description</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
-            <td class="cellHover" @click="selectContact(contact.id)">
-              <div v-for="contactInfo in contact.Members">{{ contactInfo.First }} {{ contactInfo.Name }}</div>
+          <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'taskCell' + (contactIndex % 2) + contact[1]">
+            <td class="cellHover" @click="selectContact(contact[0])">{{ contact[2] }}</td>
+            <td>
+              <div style="width: 125px">{{ contact[3] }}</div>
             </td>
             <td>
-              <template v-for="contactInfo in contact.Addresses">
-                <div>{{ contactInfo.Address_1 }} {{ contactInfo.Address_2 }}</div>
-                <div>
-                  {{ contactInfo.City }} {{ contactInfo.State }}
-                  {{ contactInfo.Zip }}
-                </div>
-              </template>
+              <div>{{ contact[4] }}</div>
             </td>
             <td>
-              <template v-for="contactInfo in contact.Assets">
-                <div v-for="infoItem in contactInfo">
-                  {{ infoItem }}
-                </div>
-              </template>
-            </td>
-            <td>
-              <template v-for="contactInfo in contact.Connections">
-                <div v-for="infoItem in contactInfo">
-                  {{ infoItem }}
-                </div>
-              </template>
-            </td>
-            <td>
-              <div>
-                {{ contact.Categ }}
-              </div>
+              <div>{{ contact[5] }}</div>
             </td>
           </tr>
         </tbody>
@@ -245,7 +223,7 @@ export default {
     ]),
     srtdCntcts() {
       let clonedCntcts = this.contacts;
-      let newSrtdCntcts;
+      let newSrtdCntcts = [];
       if (this.reports == 'Policy info for all Contacts') {
         newSrtdCntcts = clonedCntcts
           .filter((cntct) => cntct.Custom1.length > 0)
@@ -254,13 +232,32 @@ export default {
         newSrtdCntcts = clonedCntcts
           .filter((cntct) => cntct.Categ == 'Customer')
           .sort((a, b) => a.Members[0].Name.localeCompare(b.Members[0].Name));
+      } else if (this.reports == 'All contact tasks') {
+        clonedCntcts.forEach((contact) => {
+          contact.Tasks.forEach((task) => {
+            if (task.Date)
+              newSrtdCntcts.push([
+                contact?.id,
+                task?.Status ? 1 : 0,
+                contact?.Members?.[0]?.Name,
+                task?.Date,
+                this.userList[task?.Update]?.[0],
+                task?.Desc,
+              ]);
+          });
+        });
+        newSrtdCntcts.sort((a, b) => b[3].localeCompare(a[3]));
       } else {
         newSrtdCntcts = clonedCntcts.sort((a, b) => a.Members[0].Name.localeCompare(b.Members[0].Name));
       }
       return newSrtdCntcts;
     },
   },
-
+  // <th>Contact</th>
+  // <th>Date</th>
+  // <th>Tag</th>
+  // <th>Owner</th>
+  // <th>Description</th>
   methods: {
     selectContact(contactID) {
       this.activeWindow = 'calendar';
@@ -307,6 +304,18 @@ export default {
 }
 .cell1 {
   background-color: lightgray;
+}
+.taskCell00 {
+  background-color: rgb(255, 230, 230);
+}
+.taskCell10 {
+  background-color: rgb(255, 205, 205);
+}
+.taskCell11 {
+  background-color: rgb(230, 255, 230);
+}
+.taskCell01 {
+  background-color: rgb(205, 255, 205);
 }
 .cellHover {
   cursor: pointer;
