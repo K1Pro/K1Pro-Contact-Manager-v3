@@ -238,7 +238,7 @@ export default {
             if (task.Date)
               newSrtdCntcts.push([
                 contact?.id,
-                task?.Status ? 1 : 0,
+                task?.Status == '1' ? 1 : 0,
                 contact?.Members?.[0]?.Name,
                 task?.Date,
                 this.userList[task?.Update]?.[0],

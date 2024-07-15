@@ -24,14 +24,14 @@
         </div>
       </div>
 
-      <template v-for="(task, taskIndex) in Tasks">
+      <template v-for="(task, taskIndex) in Tasks" v-memo="[taskMemo]">
         <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }">
           <i class="fa-solid fa-trash" @click="deleteTask(task.columnIndex)"></i>
           <span class="tasks-label">Date:</span
           ><input
             type="datetime-local"
             :value="task.Date"
-            @change="updateTask($event.target.value, task.columnIndex, 'Date')"
+            v-on:blur="updateTask($event.target.value, task.columnIndex, 'Date')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="tasks-label">Tag:</span>
@@ -85,7 +85,7 @@
           style="background-color: lightblue; text-align: right"
         >
           <div>
-            <b @click="eventIndex = null"
+            <b @click="showAllTasks()"
               >Show {{ contacts[slctdCntctIndex].Tasks.length - 1 }} more
               {{ contacts[slctdCntctIndex].Tasks.length - 1 > 1 ? 'tasks' : 'task' }}
             </b>
@@ -135,7 +135,7 @@ export default {
   },
 
   data() {
-    return { column: 'Tasks', sortAscDesc: false };
+    return { column: 'Tasks', sortAscDesc: false, taskMemo: false };
   },
 
   methods: {
@@ -157,6 +157,7 @@ export default {
         this.contacts[this.slctdCntctIndex].Tasks.length,
         'Date'
       );
+      this.taskMemo = !this.taskMemo;
     },
     updateTask(event, columnIndex, key) {
       if (event != this.contacts[this.slctdCntctIndex][this.column][columnIndex][key]) {
@@ -168,8 +169,12 @@ export default {
     deleteTask(columnIndex) {
       if (confirm(this.msg.confirmDeletion) == true) {
         this.deleteContactInfo(this.column, columnIndex, true);
-        this.eventIndex = null;
+        this.showAllTasks();
       }
+    },
+    showAllTasks() {
+      this.eventIndex = null;
+      this.taskMemo = !this.taskMemo;
     },
   },
 };

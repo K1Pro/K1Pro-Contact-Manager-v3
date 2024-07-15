@@ -24,7 +24,7 @@
         </div>
       </div>
 
-      <template v-for="(recurTask, recurTaskIndex) in RecurTasks">
+      <template v-for="(recurTask, recurTaskIndex) in RecurTasks" v-memo="[recurTaskMemo]">
         <div
           class="recur-tasks-body"
           :style="{
@@ -36,21 +36,21 @@
           ><input
             type="date"
             :value="recurTask.Start"
-            @change="updateRecurTaskFreq(recurTask.columnIndex, $event.target.value, recurTask.Freq)"
+            v-on:blur="updateRecurTaskFreq(recurTask.columnIndex, $event.target.value, recurTask.Freq)"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="recur-tasks-label">End:</span
           ><input
             type="date"
             :value="recurTask.End"
-            @change="updateRecurTask($event.target.value, recurTask.columnIndex, 'End')"
+            v-on:blur="updateRecurTask($event.target.value, recurTask.columnIndex, 'End')"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="recur-tasks-label">Time:</span
           ><input
             type="time"
             :value="recurTask.Time"
-            @change="updateRecurTask($event.target.value, recurTask.columnIndex, 'Time')"
+            v-on:blur="updateRecurTask($event.target.value, recurTask.columnIndex, 'Time')"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="recur-tasks-label">Recur:</span>
@@ -61,6 +61,7 @@
           >
             <option>Annually</option>
             <option>Semiannually</option>
+            <option>Quarterly</option>
             <option>Monthly</option>
             <option>Weekly</option>
             <option>Daily</option>
@@ -104,7 +105,7 @@
           style="background-color: lightblue; text-align: right"
         >
           <div>
-            <b @click="eventIndex = null"
+            <b @click="showAllRecurTasks()"
               >Show {{ contacts[slctdCntctIndex].RecurTasks.length - 1 }} more
               {{ contacts[slctdCntctIndex].RecurTasks.length - 1 > 1 ? 'tasks' : 'task' }}
             </b>
@@ -154,7 +155,7 @@ export default {
   },
 
   data() {
-    return { column: 'RecurTasks', sortAscDesc: false };
+    return { column: 'RecurTasks', sortAscDesc: false, recurTaskMemo: false };
   },
 
   methods: {
@@ -178,6 +179,7 @@ export default {
         this.contacts[this.slctdCntctIndex].RecurTasks.length,
         'Start'
       );
+      this.recurTaskMemo = !this.recurTaskMemo;
     },
     updateRecurTask(event, columnIndex, key) {
       if (event != this.contacts[this.slctdCntctIndex][this.column][columnIndex][key]) {
@@ -196,6 +198,14 @@ export default {
         recurTaskEvent = (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28') + '_' + new Date(halfYearLater).toISOString().slice(5, 10);
         // prettier-ignore
         newRecurTask = [(start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28'), new Date(halfYearLater).toISOString().slice(5, 10),];
+      } else if (freq == 'Quarterly') {
+        const quarterYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 3);
+        const halfYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 6);
+        const thirdYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 9);
+        // prettier-ignore
+        recurTaskEvent = (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28') + '_' + new Date(quarterYearLater).toISOString().slice(5, 10) + '_' + new Date(halfYearLater).toISOString().slice(5, 10) + '_' + new Date(thirdYearLater).toISOString().slice(5, 10);
+        // prettier-ignore
+        newRecurTask = [(start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28'), new Date(quarterYearLater).toISOString().slice(5, 10), new Date(halfYearLater).toISOString().slice(5, 10), new Date(thirdYearLater).toISOString().slice(5, 10),];
       } else if (freq == 'Monthly') {
         recurTaskEvent = start.slice(8, 10);
       } else if (freq == 'Weekly') {
@@ -203,9 +213,10 @@ export default {
       } else if (freq == 'Daily') {
         recurTaskEvent = 'everyday';
       }
+
       this.contacts[this.slctdCntctIndex][this.column][columnIndex].Start = start;
       this.contacts[this.slctdCntctIndex][this.column][columnIndex].Recur =
-        freq == 'Semiannually' ? newRecurTask : [recurTaskEvent];
+        freq == 'Semiannually' || freq == 'Quarterly' ? newRecurTask : [recurTaskEvent];
       this.contacts[this.slctdCntctIndex][this.column][columnIndex].Freq = freq;
       this.contacts[this.slctdCntctIndex][this.column][columnIndex].Update = this.userData.id;
       this.patchContactInfo(freq + '+' + start + '+' + recurTaskEvent, this.column, columnIndex, 'Freq');
@@ -213,8 +224,12 @@ export default {
     deleteRecurTask(columnIndex) {
       if (confirm(this.msg.confirmDeletion) == true) {
         this.deleteContactInfo(this.column, columnIndex, true);
-        this.eventIndex = null;
+        this.showAllRecurTasks();
       }
+    },
+    showAllRecurTasks() {
+      this.eventIndex = null;
+      this.recurTaskMemo = !this.recurTaskMemo;
     },
   },
 };
