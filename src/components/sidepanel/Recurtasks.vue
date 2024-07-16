@@ -9,7 +9,13 @@
             {{ contacts[slctdCntctIndex].Members[0].Name }}
           </div>
           <div class="tasks-title-grid-item2">
-            <button v-if="eventIndex === null" @click="sortAscDesc = !sortAscDesc">
+            <button
+              v-if="eventIndex === null"
+              @click="
+                sortAscDesc = !sortAscDesc;
+                recurTaskMemo = recurTaskMemo + 1;
+              "
+            >
               <template v-if="RecurTasks.length > 1">
                 <i v-if="sortAscDesc" class="fa-solid fa-arrow-down-wide-short"></i>
                 <i v-else class="fa-solid fa-arrow-up-wide-short"></i>
