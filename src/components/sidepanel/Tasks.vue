@@ -79,19 +79,20 @@
             >
           </div>
         </div>
-        <div
-          v-if="eventIndex !== null && contacts[slctdCntctIndex].Tasks.length > 1"
-          class="tasks-body"
-          style="background-color: lightblue; text-align: right"
-        >
-          <div>
-            <b @click="showAllTasks()"
-              >Show {{ contacts[slctdCntctIndex].Tasks.length - 1 }} more
-              {{ contacts[slctdCntctIndex].Tasks.length - 1 > 1 ? 'tasks' : 'task' }}
-            </b>
-          </div>
-        </div>
       </template>
+      <div
+        v-if="eventIndex !== null && contacts[slctdCntctIndex].Tasks.length > 1"
+        class="tasks-body"
+        style="background-color: lightblue; text-align: right"
+      >
+        <div>
+          <b @click="showAllTasks()"
+            >Show {{ contacts[slctdCntctIndex].Tasks.length - 1 }} more
+            {{ contacts[slctdCntctIndex].Tasks.length - 1 > 1 ? 'tasks' : 'task' }}
+          </b>
+        </div>
+      </div>
+
       <div v-if="Tasks.length === 0" class="tasks-body" style="background-color: white">
         <div>No tasks</div>
       </div>
@@ -157,7 +158,7 @@ export default {
         this.contacts[this.slctdCntctIndex].Tasks.length,
         'Date'
       );
-      this.taskMemo = !this.taskMemo;
+      this.taskMemo = this.taskMemo + 1;
     },
     updateTask(event, columnIndex, key) {
       if (event != this.contacts[this.slctdCntctIndex][this.column][columnIndex][key]) {
@@ -174,7 +175,16 @@ export default {
     },
     showAllTasks() {
       this.eventIndex = null;
-      this.taskMemo = !this.taskMemo;
+      this.taskMemo = this.taskMemo + 1;
+    },
+  },
+
+  watch: {
+    eventIndex() {
+      this.taskMemo = this.taskMemo + 1;
+    },
+    slctdCntctIndex() {
+      this.taskMemo = this.taskMemo + 1;
     },
   },
 };

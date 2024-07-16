@@ -79,7 +79,12 @@
             <option disabled>Created by {{ userList[recurTask.Create][0] }}</option>
           </select>
           <span class="recur-tasks-label">Finished:</span>
-          <button @click="updateRecurTask(times.updtngY_m_d_H_i_s_z.slice(0, 10), recurTask.columnIndex, 'Review')">
+          <button
+            @click="
+              updateRecurTask(times.updtngY_m_d_H_i_s_z.slice(0, 10), recurTask.columnIndex, 'Review');
+              recurTaskMemo = recurTaskMemo + 1;
+            "
+          >
             {{
               recurTask.Review
                 ? recurTask.Review.slice(5, 7) +
@@ -99,19 +104,20 @@
             >
           </div>
         </div>
-        <div
-          v-if="eventIndex !== null && contacts[slctdCntctIndex].RecurTasks.length > 1"
-          class="recur-tasks-body"
-          style="background-color: lightblue; text-align: right"
-        >
-          <div>
-            <b @click="showAllRecurTasks()"
-              >Show {{ contacts[slctdCntctIndex].RecurTasks.length - 1 }} more
-              {{ contacts[slctdCntctIndex].RecurTasks.length - 1 > 1 ? 'tasks' : 'task' }}
-            </b>
-          </div>
-        </div>
       </template>
+      <div
+        v-if="eventIndex !== null && contacts[slctdCntctIndex].RecurTasks.length > 1"
+        class="recur-tasks-body"
+        style="background-color: lightblue; text-align: right"
+      >
+        <div>
+          <b @click="showAllRecurTasks()"
+            >Show {{ contacts[slctdCntctIndex].RecurTasks.length - 1 }} more
+            {{ contacts[slctdCntctIndex].RecurTasks.length - 1 > 1 ? 'tasks' : 'task' }}
+          </b>
+        </div>
+      </div>
+
       <div v-if="RecurTasks.length === 0" class="recur-tasks-body" style="background-color: white">
         <div>No recurring tasks</div>
       </div>
@@ -155,7 +161,7 @@ export default {
   },
 
   data() {
-    return { column: 'RecurTasks', sortAscDesc: false, recurTaskMemo: false };
+    return { column: 'RecurTasks', sortAscDesc: false, recurTaskMemo: 0 };
   },
 
   methods: {
@@ -179,7 +185,7 @@ export default {
         this.contacts[this.slctdCntctIndex].RecurTasks.length,
         'Start'
       );
-      this.recurTaskMemo = !this.recurTaskMemo;
+      this.recurTaskMemo = this.recurTaskMemo + 1;
     },
     updateRecurTask(event, columnIndex, key) {
       if (event != this.contacts[this.slctdCntctIndex][this.column][columnIndex][key]) {
@@ -229,7 +235,16 @@ export default {
     },
     showAllRecurTasks() {
       this.eventIndex = null;
-      this.recurTaskMemo = !this.recurTaskMemo;
+      this.recurTaskMemo = this.recurTaskMemo + 1;
+    },
+  },
+
+  watch: {
+    eventIndex() {
+      this.recurTaskMemo = this.recurTaskMemo + 1;
+    },
+    slctdCntctIndex() {
+      this.recurTaskMemo = this.recurTaskMemo + 1;
     },
   },
 };
