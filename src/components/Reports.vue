@@ -100,7 +100,7 @@
         </tbody>
       </table>
     </template>
-    <template v-if="reports == 'Policy info for all Contacts'">
+    <template v-if="reports == 'All policies'">
       <table>
         <thead>
           <tr>
@@ -224,6 +224,78 @@
         </tbody>
       </table>
     </template>
+    <template v-if="reports == 'New business'">
+      <table>
+        <thead>
+          <tr>
+            <th>Contact</th>
+            <th>Carrier</th>
+            <th>Policy Type</th>
+            <th>Policy Number</th>
+            <th>Effective Date</th>
+            <th>Premium</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+            <td class="cellHover" @click="selectContact(contact[0])">{{ contact[1] }}</td>
+            <td>
+              <div>
+                {{ contact[2] }}
+              </div>
+            </td>
+            <td>
+              <div>
+                {{ contact[3] }}
+              </div>
+            </td>
+            <td>
+              <div>
+                {{ contact[4] }}
+              </div>
+            </td>
+            <td>
+              <div>
+                {{ contact[5] }}
+              </div>
+            </td>
+            <td>
+              <div>
+                {{ contact[6] }}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
+    <template v-if="reports == 'Erie leads'">
+      <table>
+        <thead>
+          <tr>
+            <th>Contact</th>
+            <th>Address</th>
+            <th>Assets</th>
+            <th>Connections</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0].Name }}</td>
+            <td>{{ Object.values(contact.Addresses)?.[0]?.Address_1 }}</td>
+            <td>
+              {{ Object.values(contact.Assets)[0] ? Object.values(Object.values(contact.Assets)[0])[0] : '' }}
+            </td>
+            <td>
+              {{ Object.values(contact.Connections)[0] ? Object.values(Object.values(contact.Connections)[0])[0] : '' }}
+            </td>
+            <td>
+              {{ Object.values(contact.Created)[0] ? Object.values(contact.Created)[0].replace('T', ' ') : '' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
     <template v-if="reports.includes('Activity log for')">
       <table>
         <thead>
@@ -269,7 +341,7 @@ export default {
     srtdCntcts() {
       let clonedCntcts = this.contacts;
       let newSrtdCntcts = [];
-      if (this.reports == 'Policy info for all Contacts') {
+      if (this.reports == 'All policies') {
         newSrtdCntcts = clonedCntcts
           .filter((cntct) => cntct.Custom1.length > 0)
           .sort((a, b) => a.Members[0].Name.localeCompare(b.Members[0].Name));
@@ -339,6 +411,27 @@ export default {
           });
         });
         newSrtdCntcts.sort((a, b) => b[3].localeCompare(a[3]));
+      } else if (this.reports == 'New business') {
+        clonedCntcts.forEach((contact) => {
+          if (contact.Categ == 'Customer') {
+            contact.Custom1.forEach((custom1) => {
+              newSrtdCntcts.push([
+                contact?.id,
+                contact?.Members?.[0]?.Name,
+                custom1?.Carrier ? custom1?.Carrier : '',
+                custom1?.Policy_Type ? custom1?.Policy_Type : '',
+                custom1?.Policy_No ? custom1?.Policy_No : '',
+                custom1?.Date ? custom1?.Date : '',
+                custom1?.Premium ? custom1?.Premium : '',
+              ]);
+            });
+          }
+        });
+        newSrtdCntcts.sort((a, b) => b[5].localeCompare(a[5]));
+      } else if (this.reports == 'Erie leads') {
+        newSrtdCntcts = clonedCntcts
+          .filter((cntct) => cntct.Categ == 'Erie lead')
+          .sort((a, b) => Object.values(b.Created)[0].localeCompare(Object.values(a.Created)[0]));
       } else {
         newSrtdCntcts = clonedCntcts.sort((a, b) => a.Members[0].Name.localeCompare(b.Members[0].Name));
       }

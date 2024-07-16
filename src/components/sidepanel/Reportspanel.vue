@@ -21,7 +21,7 @@
         class="reports-panel-report reports-panel-odd"
         @click="selectReport($event.target.innerHTML)"
       >
-        Policy info for all Contacts
+        All policies
       </div>
       <div
         v-if="userData?.AppPermissions[appName][0] == 'bundle_insurance'"
@@ -35,7 +35,21 @@
         class="reports-panel-report reports-panel-odd"
         @click="selectReport($event.target.innerHTML)"
       >
+        New business
+      </div>
+      <div
+        v-if="userData?.AppPermissions[appName][0] == 'bundle_insurance'"
+        class="reports-panel-report reports-panel-even"
+        @click="selectReport($event.target.innerHTML)"
+      >
         Renewals
+      </div>
+      <div
+        v-if="userData?.AppPermissions[appName][0] == 'bundle_insurance'"
+        class="reports-panel-report reports-panel-odd"
+        @click="selectReport($event.target.innerHTML)"
+      >
+        Erie leads
       </div>
     </div>
   </div>
