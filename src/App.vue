@@ -117,7 +117,8 @@ export default {
           }
         }
       } catch (error) {
-        this.msg.snackBar = error.toString();
+        this.msg.snackBar = 'Network issue';
+        console.log(error.toString());
       }
     },
 
@@ -165,7 +166,8 @@ export default {
           this.sessionID = undefined;
         }
       } catch (error) {
-        this.msg.snackBar = error.toString();
+        this.msg.snackBar = 'Network issue';
+        console.log(error.toString());
       }
     },
 
@@ -199,7 +201,7 @@ export default {
           this.currentUpdate = updateTime;
         }
       } catch (error) {
-        this.msg.snackBar = error.toString();
+        this.msg.snackBar = 'Network issue';
         console.log(error.toString());
       }
     },
@@ -219,7 +221,7 @@ export default {
           this.emails = getEmailSettingsResJSON.data.emailSettings;
         }
       } catch (error) {
-        this.msg.snackBar = error.toString();
+        this.msg.snackBar = 'Network issue';
         console.log(error.toString());
       }
     },

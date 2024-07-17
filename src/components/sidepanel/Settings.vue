@@ -3,25 +3,17 @@
     <div class="settings-title">Settings for {{ userData.FirstName }}</div>
     <div class="settings-body">
       <div class="settings-body-label">Days:</div>
-      <input
-        v-if="windowWidth > 768"
-        type="range"
-        min="0"
-        max="5"
-        v-model="userSettings.calendar.filters.days"
-        @input="daysRangeInput"
-        @change="daysRangeChange"
-      />
-      <input
-        v-if="windowWidth < 768"
-        type="range"
-        min="0"
-        max="1"
-        v-model="userSettings.calendar.filters.days"
-        @input="daysRangeInput"
-        @change="daysRangeChange"
-      />
-      <span>{{ daysRangeArr[userSettings.calendar.filters.days] }}</span>
+      <select v-model="userSettings.calendar.filters.days" @change="daysRangeChange">
+        <template v-if="windowWidth > 768">
+          <option v-for="(daysRange, daysRangeIndex) in daysRangeArr" :value="daysRangeIndex">
+            {{ daysRange }}
+          </option>
+        </template>
+        <template v-else>
+          <option value="0">1</option>
+          <option value="1">3</option>
+        </template>
+      </select>
       <div class="settings-body-label">Owners:</div>
       <select v-model="userSettings.calendar.filters.owners" @change="ownersChange">
         <option value="">All</option>
@@ -60,7 +52,6 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'msg',
       'windowWidth',
       'userData',
       'accountSettings',
@@ -69,19 +60,12 @@ export default {
       'daysRangeArr',
       'slctdDayIndex',
       'patchUserSettings',
-      'dayIndex',
       'userList',
     ]),
   },
 
   methods: {
-    daysRangeInput(event) {
-      this.userSettings.calendar.filters.days = event.target.value;
-      this.tempFiltersDays = event.target.value;
-      this.slctdDayIndex = null;
-    },
     daysRangeChange(event) {
-      this.userSettings.calendar.filters.days = event.target.value;
       this.tempFiltersDays = event.target.value;
       this.slctdDayIndex = null;
       this.patchUserSettings();
