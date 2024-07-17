@@ -38,10 +38,11 @@
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
-      <div
-        :class="'member-grid-container' + Object.values(accountSettings.contactInfo.keys.Members[member.Type]).length"
-      >
-        <div class="member-grid-item" v-for="memberInputs in accountSettings.contactInfo.keys.Members[member.Type]">
+      <div class="member-grid-container">
+        <div
+          v-for="memberInputs in accountSettings.contactInfo.keys.Members[member.Type]"
+          :style="{ flex: '1 0 ' + memberInputsWidth + 'px' }"
+        >
           <input
             :type="memberInputs.type"
             :placeholder="memberInputs.placeholder"
@@ -50,6 +51,7 @@
           />
         </div>
       </div>
+
       <template v-if="memberIndex === contacts[slctdCntctIndex].Members.length - 1">
         <hr />
       </template>
@@ -75,6 +77,7 @@ export default {
       'deleteContactInfo',
       'patchUserSettings',
       'slctdCntctIndex',
+      'tabContentWidth',
     ]),
     addCntctInfoDropDown() {
       const cntctInfoDropDown = [];
@@ -89,6 +92,9 @@ export default {
         });
       });
       return cntctInfoDropDown;
+    },
+    memberInputsWidth() {
+      return this.tabContentWidth > 120 ? 120 : this.tabContentWidth;
     },
   },
 
@@ -210,35 +216,14 @@ export default {
 .member-button:hover {
   color: DimGrey;
 }
-.member-grid-container1 {
-  display: grid;
-  grid-template-columns: 100%;
+.member-grid-container {
+  display: flex;
+  flex-wrap: wrap;
 }
-.member-grid-container2 {
-  display: grid;
-  grid-template-columns: 50% 50%;
-}
-.member-grid-container3 {
-  display: grid;
-  grid-template-columns: 33% 33% 33%;
-}
-.member-grid-item {
-}
-.member-grid-item input[type='text'] {
-  border-top: 1px;
-  border-right: 0px;
-  border-bottom: 1px;
-  border-left: 0px;
-  padding: 5px;
-  width: 100%;
-  height: 100%;
-}
-.member-grid-item input[type='date'] {
+.member-grid-container input {
   font-family: 'Helvetica', sans-serif;
-  border-top: 1px;
-  border-right: 0px;
-  border-bottom: 1px;
-  border-left: 0px;
+  border: 1px solid lightgray;
+  border-radius: 0px;
   padding: 5px;
   width: 100%;
   height: 100%;

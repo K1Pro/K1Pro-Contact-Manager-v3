@@ -9,8 +9,8 @@
       </div>
       <div class="address-grid-container">
         <div
-          :class="'address-grid-item' + addressInputIndex"
-          v-for="(addressInputs, addressInputIndex) in accountSettings.contactInfo.keys.Addresses[address.Type]"
+          v-for="addressInputs in accountSettings.contactInfo.keys.Addresses[address.Type]"
+          :style="{ flex: '1 0 ' + addressInputsWidth + 'px' }"
         >
           <select
             v-if="addressInputs.value == 'State'"
@@ -98,7 +98,11 @@ export default {
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntctIndex',
+      'tabContentWidth',
     ]),
+    addressInputsWidth() {
+      return this.tabContentWidth > 120 ? 120 : this.tabContentWidth;
+    },
   },
 
   methods: {
@@ -132,49 +136,16 @@ export default {
   color: DimGrey;
 }
 .address-grid-container {
-  margin-top: 2px;
-  display: grid;
-  grid-template-columns: 33% 33% 33%;
-  grid-template-rows: 28px 28px;
+  display: flex;
+  flex-wrap: wrap;
 }
-.address-grid-item0 {
-  grid-column-start: 1;
-  grid-column-end: 3;
-  grid-row-start: 1;
-  grid-row-end: 1;
-}
-
-.address-grid-item2 {
-  grid-column-start: 1;
-  grid-row-start: 2;
-  grid-row-end: 2;
-}
-.address-grid-item0 input[type='text'],
-.address-grid-item1 input[type='text'],
-.address-grid-item2 input[type='text'],
-.address-grid-item3 input[type='text'],
-.address-grid-item4 input[type='text'],
-.address-grid-item0 input[type='number'],
-.address-grid-item1 input[type='number'],
-.address-grid-item2 input[type='number'],
-.address-grid-item3 input[type='number'],
-.address-grid-item4 input[type='number'],
-.address-grid-item0 select,
-.address-grid-item1 select,
-.address-grid-item2 select,
-.address-grid-item3 select,
-.address-grid-item4 select {
-  border-style: solid;
-  border-color: black;
-  border-top: 2px;
-  border-right: 0px;
-  border-bottom: 2px;
-  border-left: 0px;
+.address-grid-container input,
+.address-grid-container select {
+  font-family: 'Helvetica', sans-serif;
+  border: 1px solid lightgray;
+  border-radius: 0px;
   padding: 5px;
   width: 100%;
   height: 100%;
-}
-.address {
-  text-align: left;
 }
 </style>

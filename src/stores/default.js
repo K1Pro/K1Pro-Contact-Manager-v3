@@ -198,5 +198,10 @@ const useDefaultStore = Pinia.defineStore('default', {
     userList(state) {
       return { ...state.activeUserList, ...state.accountSettings.userList };
     },
+    tabContentWidth(state) {
+      return state.windowWidth > 768
+        ? Math.round((state.windowWidth * (state.userSettings?.layout?.['grid-size'] / 100) - 75.02) * 100) / 100
+        : Math.round((state.windowWidth - 75.02) * 100) / 100;
+    },
   },
 });
