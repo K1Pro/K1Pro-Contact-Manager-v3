@@ -290,7 +290,8 @@ export default {
   font-weight: normal;
   font-family: 'Helvetica', sans-serif;
 }
-.tab button:hover:not(.tab-active) {
+/* .tab button:hover:not(.tab-active) { */
+.tab button:hover {
   background-color: #ddd;
   cursor: pointer;
 }
