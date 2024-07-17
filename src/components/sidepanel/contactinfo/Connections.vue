@@ -6,7 +6,8 @@
           <button
             class="conn-icon"
             :style="{
-              'border-bottom': connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '1px solid black' : '0',
+              'border-bottom':
+                connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '2px solid lightgray' : '0',
             }"
             @click="connect(conn.RealIndex, connType)"
           >
@@ -16,7 +17,8 @@
             :type="connInputs.type"
             :placeholder="connInputs.placeholder"
             :style="{
-              'border-bottom': connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '1px solid black' : '0',
+              'border-bottom':
+                connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '2px solid lightgray' : '0',
             }"
             :value="connInfo"
             @change="updateConnection($event, conn.RealIndex, connType)"

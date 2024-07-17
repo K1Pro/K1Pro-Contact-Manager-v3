@@ -7,7 +7,8 @@
             <i class="asset-icon" :class="assetInputs.icon"></i>
             <input
               :style="{
-                'border-bottom': assetIndex !== contacts[slctdCntctIndex].Assets.length - 1 ? '1px solid black' : '0',
+                'border-bottom':
+                  assetIndex !== contacts[slctdCntctIndex].Assets.length - 1 ? '2px solid lightgray' : '0',
               }"
               :placeholder="assetInputs.placeholder"
               :type="assetInputs.type"
