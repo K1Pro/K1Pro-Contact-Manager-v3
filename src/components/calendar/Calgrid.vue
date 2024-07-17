@@ -55,7 +55,7 @@ export default {
 
   methods: {
     changeDate(slctdY_m_d, slctdDayIndex) {
-      this.times.slctdTmstmp = new Date(slctdY_m_d).getTime();
+      this.times.slctdTmstmp = new Date(slctdY_m_d + 'T00:00:00').getTime();
       this.slctdDayIndex = slctdDayIndex;
     },
   },
