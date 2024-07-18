@@ -4,6 +4,7 @@
       <table>
         <thead>
           <tr>
+            <th>#</th>
             <th>Contact</th>
             <th>Address</th>
             <th>Assets</th>
@@ -13,6 +14,7 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+            <td>{{ contactIndex + 1 }}</td>
             <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0].Name }}</td>
             <td>{{ Object.values(contact.Addresses)?.[0]?.Address_1 }}</td>
             <td>
@@ -30,6 +32,7 @@
       <table>
         <thead>
           <tr>
+            <th>#</th>
             <th>Contact</th>
             <th>Address</th>
             <th>Assets</th>
@@ -39,6 +42,7 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+            <td>{{ contactIndex + 1 }}</td>
             <td class="cellHover" @click="selectContact(contact.id)">
               <div v-for="contactInfo in contact.Members">{{ contactInfo.First }} {{ contactInfo.Name }}</div>
             </td>
@@ -78,6 +82,7 @@
       <table>
         <thead>
           <tr>
+            <th>#</th>
             <th>Contact</th>
             <th>Date</th>
             <th>Owner</th>
@@ -86,6 +91,7 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'taskCell' + (contactIndex % 2) + contact[1]">
+            <td>{{ srtdCntcts.length - contactIndex }}</td>
             <td class="cellHover" @click="selectContact(contact[0])">{{ contact[2] }}</td>
             <td>
               <div style="width: 125px">{{ contact[3] }}</div>
@@ -104,6 +110,7 @@
       <table>
         <thead>
           <tr>
+            <th>#</th>
             <th>Contact</th>
             <th>Carriers</th>
             <th>Policy Types</th>
@@ -114,6 +121,7 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+            <td>{{ contactIndex + 1 }}</td>
             <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0].Name }}</td>
             <td>
               <div v-for="custom1Info in contact.Custom1">
@@ -144,6 +152,7 @@
       <table>
         <thead>
           <tr>
+            <th>#</th>
             <th>Contact</th>
             <th>Carriers</th>
             <th>Policy Types</th>
@@ -154,6 +163,7 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+            <td>{{ contactIndex + 1 }}</td>
             <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0].Name }}</td>
             <td>
               <div v-for="custom1Info in contact.Custom1">
@@ -184,6 +194,7 @@
       <table>
         <thead>
           <tr>
+            <th>#</th>
             <th>Contact</th>
             <th>Carrier</th>
             <th>Policy Type</th>
@@ -194,6 +205,7 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'taskCell' + (contactIndex % 2) + contact[7]">
+            <td>{{ contactIndex + 1 }}</td>
             <td class="cellHover" @click="selectContact(contact[0])">{{ contact[1] }}</td>
             <td>
               <div>
@@ -228,6 +240,7 @@
       <table>
         <thead>
           <tr>
+            <th>#</th>
             <th>Contact</th>
             <th>Carrier</th>
             <th>Policy Type</th>
@@ -238,6 +251,7 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+            <td>{{ srtdCntcts.length - contactIndex }}</td>
             <td class="cellHover" @click="selectContact(contact[0])">{{ contact[1] }}</td>
             <td>
               <div>
@@ -272,6 +286,7 @@
       <table>
         <thead>
           <tr>
+            <th>#</th>
             <th>Contact</th>
             <th>Address</th>
             <th>Assets</th>
@@ -281,6 +296,7 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+            <td>{{ srtdCntcts.length - contactIndex }}</td>
             <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0].Name }}</td>
             <td>{{ Object.values(contact.Addresses)?.[0]?.Address_1 }}</td>
             <td>
@@ -296,10 +312,11 @@
         </tbody>
       </table>
     </template>
-    <template v-if="reports.includes('Activity log for')">
+    <template v-if="reports.includes('Activity log for contact:')">
       <table>
         <thead>
           <tr>
+            <th>#</th>
             <th>Contact</th>
             <th>Category</th>
             <th>Date</th>
@@ -309,6 +326,31 @@
         </thead>
         <tbody>
           <tr v-for="(log, logIndex) in srtdCntcts[slctdCntctIndex].Log" :class="'cell' + (logIndex % 2)">
+            <td>{{ srtdCntcts[slctdCntctIndex].Log.length - logIndex }}</td>
+            <td>{{ contacts[slctdCntctIndex].Members[0].Name }}</td>
+            <td>{{ contacts[slctdCntctIndex].Categ }}</td>
+            <td>{{ log[1] }}</td>
+            <td>{{ log[2] }}</td>
+            <td>{{ userList[log[0]][0] }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
+    <template v-if="reports.includes('Activity log for user:')">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Contact</th>
+            <th>Category</th>
+            <th>Date</th>
+            <th>Activity</th>
+            <th>Owner</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(log, logIndex) in srtdCntcts[slctdCntctIndex].Log" :class="'cell' + (logIndex % 2)">
+            <td>{{ srtdCntcts[slctdCntctIndex].Log.length - logIndex }}</td>
             <td>{{ contacts[slctdCntctIndex].Members[0].Name }}</td>
             <td>{{ contacts[slctdCntctIndex].Categ }}</td>
             <td>{{ log[1] }}</td>
