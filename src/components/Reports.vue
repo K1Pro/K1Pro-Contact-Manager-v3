@@ -413,8 +413,8 @@ export default {
             contact.Custom1.forEach((custom1) => {
               if (
                 custom1?.Active == '1' &&
-                custom1?.Date?.slice(5, 10) > rnwlStartY_m_d &&
-                custom1?.Date?.slice(5, 10) < rnwlStoptY_m_d &&
+                (custom1?.Date?.slice(5, 10) > rnwlStartY_m_d || custom1?.Date2?.slice(5, 10) > rnwlStartY_m_d) &&
+                (custom1?.Date?.slice(5, 10) < rnwlStoptY_m_d || custom1?.Date2?.slice(5, 10) < rnwlStoptY_m_d) &&
                 custom1?.Date < rnwlDateHalfYearAgoY_m_d
               ) {
                 let custom1Review = 0;
@@ -436,7 +436,9 @@ export default {
                   custom1?.Carrier ? custom1?.Carrier : '',
                   custom1?.Policy_Type ? custom1?.Policy_Type : '',
                   custom1?.Policy_No ? custom1?.Policy_No : '',
-                  custom1?.Date ? custom1?.Date : '',
+                  custom1?.Date?.slice(5, 10) > rnwlStartY_m_d && custom1?.Date?.slice(5, 10) < rnwlStoptY_m_d
+                    ? custom1?.Date
+                    : custom1?.Date2,
                   custom1?.Premium ? custom1?.Premium : '',
                   custom1Review,
                 ]);
