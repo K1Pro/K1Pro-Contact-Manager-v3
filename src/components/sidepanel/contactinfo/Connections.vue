@@ -113,8 +113,15 @@ export default {
     },
     updateConnection(event, columnIndex, key) {
       const column = 'Connections';
-      this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
-      this.patchContactInfo(event.target.value, column, columnIndex, key);
+      if (this.contacts[this.slctdCntctIndex][column][columnIndex][key] != event.target.value) {
+        console.log(event.target.value);
+        console.log(columnIndex);
+        console.log(key);
+        console.log(column);
+        console.log('===========');
+        this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
+        this.patchContactInfo(event.target.value, column, columnIndex, key);
+      }
     },
   },
 };

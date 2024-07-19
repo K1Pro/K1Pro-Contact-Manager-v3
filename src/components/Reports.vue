@@ -342,16 +342,16 @@
           <tr>
             <th>Date</th>
             <th>Stats</th>
-            <th style="width: 75%">Graph</th>
+            <th style="width: 70%">Graph</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
             <td>{{ contact[0] }}</td>
             <td>
-              <div>{{ contact[1] }} {{ contact[1] != 1 ? 'emails' : 'email' }}</div>
-              <div>{{ contact[2] }} {{ contact[2] != 1 ? 'calls' : 'call' }}</div>
-              <div>{{ contact[3] }} {{ contact[3] != 1 ? 'tasks' : 'task' }}</div>
+              <div style="white-space: nowrap">{{ contact[1] }} {{ contact[1] != 1 ? 'emails' : 'email' }}</div>
+              <div style="white-space: nowrap">{{ contact[2] }} {{ contact[2] != 1 ? 'calls' : 'call' }}</div>
+              <div style="white-space: nowrap">{{ contact[3] }} {{ contact[3] != 1 ? 'tasks' : 'task' }}</div>
             </td>
             <td>
               <div

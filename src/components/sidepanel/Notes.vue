@@ -33,8 +33,10 @@ export default {
   methods: {
     updateNotes(event) {
       const column = 'Notes';
-      this.contacts[this.slctdCntctIndex][column] = event.target.value;
-      this.patchContactInfo(event.target.value, column);
+      if (event.target.value != this.contacts[this.slctdCntctIndex][column]) {
+        this.contacts[this.slctdCntctIndex][column] = event.target.value;
+        this.patchContactInfo(event.target.value, column);
+      }
     },
   },
 };

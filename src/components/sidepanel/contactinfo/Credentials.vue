@@ -58,8 +58,15 @@ export default {
   methods: {
     updateCred(event, columnIndex, key) {
       const column = 'Credentials';
-      this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
-      this.patchContactInfo(event.target.value, column, columnIndex, key);
+      if (event.target.value != this.contacts[this.slctdCntctIndex][column][columnIndex][key]) {
+        console.log(event.target.value);
+        console.log(columnIndex);
+        console.log(key);
+        console.log(column);
+        console.log('===========');
+        this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
+        this.patchContactInfo(event.target.value, column, columnIndex, key);
+      }
     },
     toggleCred(credIndex) {
       if (this.$refs['credInput' + credIndex][0].type == 'password') {
