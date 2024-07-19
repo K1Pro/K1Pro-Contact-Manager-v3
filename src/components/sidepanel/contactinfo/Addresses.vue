@@ -3,9 +3,16 @@
     <div v-for="(address, addressIndex) in contacts[slctdCntctIndex]?.Addresses">
       <div class="address-title-grid-container">
         <div class="address-title">
-          <i class="fa-solid fa-house"></i>&nbsp;{{
-            address.Type ? address.Type : Object.keys(this.accountSettings.contactInfo.keys.Addresses)[0]
-          }}
+          <i class="fa-solid fa-house"></i>
+          <select
+            style="border: none; background-color: transparent"
+            :value="address.Type"
+            @change="updateAddress($event, addressIndex, 'Type')"
+          >
+            <option v-for="address in Object.keys(accountSettings.contactInfo.keys.Addresses)" :value="address">
+              {{ address }}
+            </option>
+          </select>
         </div>
         <button class="address-button" @click="deleteContactInfo('Addresses', addressIndex)">
           <i class="fa-solid fa-trash"></i>
