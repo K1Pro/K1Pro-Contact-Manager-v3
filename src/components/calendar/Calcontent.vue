@@ -62,6 +62,7 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
+      'windowWidth',
       'activeTab',
       'eventIndex',
       'userSettings',
@@ -129,6 +130,9 @@ export default {
       this.eventIndex = eventIndex;
       this.activeTab = tab;
       this.patchUserSettings();
+      if (this.windowWidth < 768) {
+        window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+      }
     },
   },
 };

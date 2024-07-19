@@ -98,6 +98,7 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
+      'windowWidth',
       'userData',
       'contacts',
       'reports',
@@ -109,6 +110,9 @@ export default {
   methods: {
     selectReport(event) {
       this.reports = event.trim();
+      if (this.windowWidth < 768) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     },
   },
 };
