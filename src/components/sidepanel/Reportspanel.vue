@@ -131,8 +131,11 @@ export default {
   height: calc(100vh - 50px);
 }
 .reports-panel-report {
+  height: 29px;
   padding: 5px;
   cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .reports-panel-odd {
   background-color: white;

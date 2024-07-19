@@ -78,7 +78,7 @@
               }"
               :type="policyInfoInputs.type"
               :value="policyInfo[policyInfoInputs.value]"
-              @change="updatePolicy($event, policyInfoIndex, policyInfoInputs.value)"
+              v-on:blur="updatePolicy($event, policyInfoIndex, policyInfoInputs.value)"
             />
           </template>
         </div>

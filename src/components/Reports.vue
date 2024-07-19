@@ -14,8 +14,8 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
-            <td>{{ contactIndex + 1 }}</td>
-            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0]?.Name }}</td>
+            <td class="cellHover" @click="selectContact(contact.id)">{{ contactIndex + 1 }}</td>
+            <td>{{ Object.values(contact.Members)[0]?.Name }}</td>
             <td>{{ Object.values(contact.Addresses)?.[0]?.Address_1 }}</td>
             <td>
               {{ Object.values(contact.Assets)[0] ? Object.values(Object.values(contact.Assets)[0])[0] : '' }}
@@ -42,8 +42,8 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
-            <td>{{ contactIndex + 1 }}</td>
-            <td class="cellHover" @click="selectContact(contact.id)">
+            <td class="cellHover" @click="selectContact(contact.id)">{{ contactIndex + 1 }}</td>
+            <td>
               <div v-for="contactInfo in contact.Members">{{ contactInfo.First }} {{ contactInfo?.Name }}</div>
             </td>
             <td>
@@ -325,8 +325,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(log, logIndex) in srtdCntcts[slctdCntctIndex].Log" :class="'cell' + (logIndex % 2)">
-            <td>{{ srtdCntcts[slctdCntctIndex].Log.length - logIndex }}</td>
+          <tr v-for="(log, logIndex) in contacts[slctdCntctIndex].Log" :class="'cell' + (logIndex % 2)">
+            <td>{{ contacts[slctdCntctIndex].Log.length - logIndex }}</td>
             <td>{{ contacts[slctdCntctIndex].Members[0]?.Name }}</td>
             <td>{{ contacts[slctdCntctIndex].Categ }}</td>
             <td>{{ log[1] }}</td>
@@ -393,11 +393,11 @@ export default {
       if (this.reports == 'All policies') {
         newSrtdCntcts = clonedCntcts
           .filter((cntct) => cntct.Custom1.length > 0)
-          .sort((a, b) => a.Members[0]?.Name.localeCompare(b.Members[0]?.Name));
+          .sort((a, b) => a.Members[0]?.Name?.localeCompare(b.Members[0]?.Name));
       } else if (this.reports == 'Active policies') {
         newSrtdCntcts = clonedCntcts
           .filter((cntct) => cntct.Categ == 'Customer')
-          .sort((a, b) => a.Members[0]?.Name.localeCompare(b.Members[0]?.Name));
+          .sort((a, b) => a.Members[0]?.Name?.localeCompare(b.Members[0]?.Name));
       } else if (this.reports == 'Renewals') {
         const rnwlStart = new Date(this.times.initialUsrTmstmp - 2592000000);
         const rnwlStop = new Date(this.times.initialUsrTmstmp + 3456000000);
@@ -509,7 +509,13 @@ export default {
           .filter((cntct) => cntct.Categ == 'Erie lead')
           .sort((a, b) => Object.values(b.Created)[0].localeCompare(Object.values(a.Created)[0]));
       } else {
-        newSrtdCntcts = clonedCntcts.sort((a, b) => a.Members[0]?.Name.localeCompare(b.Members[0]?.Name));
+        clonedCntcts = this.contacts;
+        newSrtdCntcts = clonedCntcts
+          .map((contact) => {
+            if (!contact.Members[0].Name) contact.Members[0].Name = null;
+            return contact;
+          })
+          .sort((a, b) => a.Members[0].Name.localeCompare(b.Members[0].Name));
       }
       return newSrtdCntcts;
     },
