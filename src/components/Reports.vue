@@ -91,8 +91,8 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'taskCell' + (contactIndex % 2) + contact[1]">
-            <td>{{ srtdCntcts.length - contactIndex }}</td>
-            <td class="cellHover" @click="selectContact(contact[0])">{{ contact[2] }}</td>
+            <td class="cellHover" @click="selectContact(contact[0])">{{ srtdCntcts.length - contactIndex }}</td>
+            <td>{{ contact[2] }}</td>
             <td>
               <div style="width: 125px">{{ contact[3] }}</div>
             </td>
@@ -121,8 +121,8 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
-            <td>{{ contactIndex + 1 }}</td>
-            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0]?.Name }}</td>
+            <td class="cellHover" @click="selectContact(contact.id)">{{ contactIndex + 1 }}</td>
+            <td>{{ Object.values(contact.Members)[0]?.Name }}</td>
             <td>
               <div v-for="custom1Info in contact.Custom1">
                 {{ custom1Info.Carrier }}
@@ -140,7 +140,7 @@
             </td>
             <td>
               <div v-for="custom1Info in contact.Custom1">
-                {{ custom1Info.Date }}
+                {{ usaDateFrmt(custom1Info.Date) }}
               </div>
             </td>
             <td>{{ contact.Categ }}</td>
@@ -163,8 +163,8 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
-            <td>{{ contactIndex + 1 }}</td>
-            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0]?.Name }}</td>
+            <td class="cellHover" @click="selectContact(contact.id)">{{ contactIndex + 1 }}</td>
+            <td>{{ Object.values(contact.Members)[0]?.Name }}</td>
             <td>
               <div v-for="custom1Info in contact.Custom1">
                 {{ custom1Info.Carrier }}
@@ -182,7 +182,7 @@
             </td>
             <td>
               <div v-for="custom1Info in contact.Custom1">
-                {{ custom1Info.Date }}
+                {{ usaDateFrmt(custom1Info.Date) }}
               </div>
             </td>
             <td>{{ contact.Categ }}</td>
@@ -205,8 +205,8 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'taskCell' + (contactIndex % 2) + contact[7]">
-            <td>{{ contactIndex + 1 }}</td>
-            <td class="cellHover" @click="selectContact(contact[0])">{{ contact[1] }}</td>
+            <td class="cellHover" @click="selectContact(contact[0])">{{ contactIndex + 1 }}</td>
+            <td>{{ contact[1] }}</td>
             <td>
               <div>
                 {{ contact[2] }}
@@ -224,7 +224,7 @@
             </td>
             <td>
               <div>
-                {{ contact[5] }}
+                {{ usaDateFrmt(contact[5]) }}
               </div>
             </td>
             <td>
@@ -251,8 +251,8 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
-            <td>{{ srtdCntcts.length - contactIndex }}</td>
-            <td class="cellHover" @click="selectContact(contact[0])">{{ contact[1] }}</td>
+            <td class="cellHover" @click="selectContact(contact[0])">{{ srtdCntcts.length - contactIndex }}</td>
+            <td>{{ contact[1] }}</td>
             <td>
               <div>
                 {{ contact[2] }}
@@ -270,7 +270,7 @@
             </td>
             <td>
               <div>
-                {{ contact[5] }}
+                {{ usaDateFrmt(contact[5]) }}
               </div>
             </td>
             <td>
@@ -296,8 +296,8 @@
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
-            <td>{{ srtdCntcts.length - contactIndex }}</td>
-            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0]?.Name }}</td>
+            <td class="cellHover" @click="selectContact(contact.id)">{{ srtdCntcts.length - contactIndex }}</td>
+            <td>{{ Object.values(contact.Members)[0]?.Name }}</td>
             <td>{{ Object.values(contact.Addresses)?.[0]?.Address_1 }}</td>
             <td>
               {{ Object.values(contact.Assets)[0] ? Object.values(Object.values(contact.Assets)[0])[0] : '' }}
@@ -341,25 +341,30 @@
         <thead>
           <tr>
             <th>Date</th>
-            <th>Emails/ Calls</th>
-            <th style="width: 80%">Graph</th>
+            <th>Stats</th>
+            <th style="width: 75%">Graph</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
             <td>{{ contact[0] }}</td>
             <td>
-              <div>{{ contact[1] }} emails</div>
-              <div>{{ contact[2] }} calls</div>
+              <div>{{ contact[1] }} {{ contact[1] != 1 ? 'emails' : 'email' }}</div>
+              <div>{{ contact[2] }} {{ contact[2] != 1 ? 'calls' : 'call' }}</div>
+              <div>{{ contact[3] }} {{ contact[3] != 1 ? 'tasks' : 'task' }}</div>
             </td>
             <td>
               <div
                 style="height: 15px; background-color: lightskyblue"
-                :style="{ width: (contact[1] / srtdCntcts[srtdCntcts.length - 1][3]) * 100 + '%' }"
+                :style="{ width: (contact[1] / srtdCntcts[srtdCntcts.length - 1][4]) * 100 + '%' }"
               ></div>
               <div
                 style="height: 15px; background-color: lightcoral"
-                :style="{ width: (contact[2] / srtdCntcts[srtdCntcts.length - 1][3]) * 100 + '%' }"
+                :style="{ width: (contact[2] / srtdCntcts[srtdCntcts.length - 1][4]) * 100 + '%' }"
+              ></div>
+              <div
+                style="height: 15px; background-color: lightgreen"
+                :style="{ width: (contact[3] / srtdCntcts[srtdCntcts.length - 1][4]) * 100 + '%' }"
               ></div>
             </td>
           </tr>
@@ -384,6 +389,7 @@ export default {
       'times',
       'contacts',
       'patchUserSettings',
+      'usaDateFrmt',
       'userList',
       'slctdCntctIndex',
     ]),
@@ -465,13 +471,14 @@ export default {
       } else if (this.reports.includes('Activity log for user:')) {
         let currentDate = new Date(this.times.initialUsrTmstmp);
         let decreasingDate;
-        let emailCount, callCount;
+        let emailCount, callCount, taskCount;
         let emailCallCountArray = [];
         for (let i = 0; i <= 30; i++) {
           // prettier-ignore
           decreasingDate = currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' + currentDate.getDate().toString().padStart(2, '0');
           emailCount = 0;
           callCount = 0;
+          taskCount = 0;
           clonedCntcts.forEach((contact) => {
             contact.Log.forEach((log) => {
               if (log[0] == this.userData.id && log[1].includes(decreasingDate) && log[2].includes('Emailed')) {
@@ -481,10 +488,22 @@ export default {
                 callCount += 1;
               }
             });
+            contact.Tasks.forEach((task) => {
+              if (task?.Date.includes(decreasingDate) && task?.Update == this.userData.id && task?.Status == 1) {
+                taskCount += 1;
+              }
+            });
           });
           emailCallCountArray.push(emailCount);
           emailCallCountArray.push(callCount);
-          newSrtdCntcts.push([decreasingDate, emailCount, callCount, Math.max(...emailCallCountArray)]);
+          emailCallCountArray.push(taskCount);
+          newSrtdCntcts.push([
+            this.usaDateFrmt(decreasingDate),
+            emailCount,
+            callCount,
+            taskCount,
+            Math.max(...emailCallCountArray),
+          ]);
           currentDate.setDate(currentDate.getDate() - 1);
         }
       } else if (this.reports == 'New business') {

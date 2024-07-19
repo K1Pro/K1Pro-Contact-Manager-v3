@@ -149,6 +149,11 @@ const useDefaultStore = Pinia.defineStore('default', {
         // this.msg.snackBar = error.toString();
       }
     },
+    usaDateFrmt(dateString) {
+      return dateString
+        ? dateString.slice(5, 7) + '/' + dateString.slice(8, 10) + '/' + dateString.slice(0, 4)
+        : dateString;
+    },
   },
   getters: {
     firstDayTmstmp(state) {

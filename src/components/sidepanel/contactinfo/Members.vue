@@ -3,8 +3,16 @@
     <div v-for="(member, memberIndex) in contacts[slctdCntctIndex]?.Members">
       <div class="member-title-grid-container">
         <div class="member-title">
-          <i class="fa-solid fa-user">&nbsp;</i
-          >{{ member.Type ? member.Type : Object.keys(this.accountSettings.contactInfo.keys.Members)[0] }}
+          <i class="fa-solid fa-user"></i>
+          <select
+            style="border: none; background-color: transparent"
+            :value="member.Type"
+            @change="updateMember($event, memberIndex, 'Type')"
+          >
+            <option v-for="member in Object.keys(accountSettings.contactInfo.keys.Members)" :value="member">
+              {{ member }}
+            </option>
+          </select>
         </div>
         <template v-if="memberIndex === 0">
           <i
@@ -52,7 +60,7 @@
             :type="memberInputs.type"
             :placeholder="memberInputs.placeholder"
             :value="member[memberInputs.value]"
-            @change="updateMember($event, memberIndex, memberInputs.value)"
+            v-on:blur="updateMember($event, memberIndex, memberInputs.value)"
           />
         </div>
       </div>
