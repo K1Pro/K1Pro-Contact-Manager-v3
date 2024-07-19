@@ -2,7 +2,10 @@
   <div class="members">
     <div v-for="(member, memberIndex) in contacts[slctdCntctIndex]?.Members">
       <div class="member-title-grid-container">
-        <div class="member-title"><i class="fa-solid fa-user">&nbsp;</i>{{ member.Type }}</div>
+        <div class="member-title">
+          <i class="fa-solid fa-user">&nbsp;</i
+          >{{ member.Type ? member.Type : Object.keys(this.accountSettings.contactInfo.keys.Members)[0] }}
+        </div>
         <template v-if="memberIndex === 0">
           <i
             v-if="spinLogin"
@@ -40,7 +43,9 @@
       </div>
       <div class="member-grid-container">
         <div
-          v-for="memberInputs in accountSettings.contactInfo.keys.Members[member.Type]"
+          v-for="memberInputs in accountSettings.contactInfo.keys.Members[
+            member.Type ? member.Type : Object.keys(this.accountSettings.contactInfo.keys.Members)[0]
+          ]"
           :style="{ flex: '1 0 ' + memberInputsWidth + 'px' }"
         >
           <input
@@ -122,6 +127,7 @@ export default {
         } else {
           event.srcElement.selectedIndex = 0;
           this.spinLogin = true;
+          console.log(Object.keys(this.accountSettings.contactInfo.keys.Members)[0]);
           try {
             const response = await fetch(servr_url + this.endPts.contacts, {
               method: 'POST',
@@ -171,17 +177,19 @@ export default {
                 Custom5: '',
               };
               console.log(newMember);
-              this.contacts.push(newMember);
+              // this.contacts.push(newMember); delete this after 7/19/24 if everything is working fine
+              let clonedCntcts = this.contacts;
+              this.contacts = [...clonedCntcts, newMember];
               this.userSettings.selectedContactIndex = newContactIndex;
               this.patchUserSettings();
-
               this.spinLogin = false;
             } else {
               this.spinLogin = false;
+              this.msg.snackBar = 'Failed to create new contact';
             }
           } catch (error) {
             this.spinLogin = false;
-            this.msg.snackBar = error.toString();
+            this.msg.snackBar = 'Failed to create new contact';
             console.log(error.toString());
           }
         }
@@ -192,6 +200,19 @@ export default {
       this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
       this.patchContactInfo(event.target.value, column, columnIndex, key);
     },
+  },
+  mounted() {
+    this.contacts[this.slctdCntctIndex].Members.forEach((member, columnIndex) => {
+      if (!member.Type) {
+        console.log(`member ${columnIndex} does not have type`);
+        this.patchContactInfo(
+          Object.keys(this.accountSettings.contactInfo.keys.Members)[0],
+          'Members',
+          columnIndex,
+          'Type'
+        );
+      }
+    });
   },
 };
 </script>

@@ -63,9 +63,9 @@ export default {
           if (contact.includes(this.search.trim().toLowerCase().replaceAll('-', ''))) {
             this.contacts[contactIndex].Members.forEach((member) => {
               let fullName;
-              if (member.First && !member.Name) fullName = member.First;
-              if (member.Name && !member.First) fullName = member.Name;
-              if (member.First && member.Name) fullName = member.First + ' ' + member.Name;
+              if (member.First && !member?.Name) fullName = member.First;
+              if (member?.Name && !member.First) fullName = member?.Name;
+              if (member.First && member?.Name) fullName = member.First + ' ' + member?.Name;
               searchResultArray.push(`${fullName}_${contactIndex}`);
             });
           }
@@ -80,9 +80,9 @@ export default {
         stringArray[contactIndex] = [];
         contact.Members.forEach((member) => {
           let fullName;
-          if (member.First && !member.Name) fullName = member.First;
-          if (member.Name && !member.First) fullName = member.Name;
-          if (member.First && member.Name) fullName = member.First + ' ' + member.Name;
+          if (member.First && !member?.Name) fullName = member.First;
+          if (member?.Name && !member.First) fullName = member?.Name;
+          if (member.First && member?.Name) fullName = member.First + ' ' + member?.Name;
           stringArray[contactIndex] += (fullName + ' ').toLowerCase();
         });
 

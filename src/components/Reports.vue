@@ -15,7 +15,7 @@
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
             <td>{{ contactIndex + 1 }}</td>
-            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0].Name }}</td>
+            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0]?.Name }}</td>
             <td>{{ Object.values(contact.Addresses)?.[0]?.Address_1 }}</td>
             <td>
               {{ Object.values(contact.Assets)[0] ? Object.values(Object.values(contact.Assets)[0])[0] : '' }}
@@ -44,7 +44,7 @@
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
             <td>{{ contactIndex + 1 }}</td>
             <td class="cellHover" @click="selectContact(contact.id)">
-              <div v-for="contactInfo in contact.Members">{{ contactInfo.First }} {{ contactInfo.Name }}</div>
+              <div v-for="contactInfo in contact.Members">{{ contactInfo.First }} {{ contactInfo?.Name }}</div>
             </td>
             <td>
               <template v-for="contactInfo in contact.Addresses">
@@ -122,7 +122,7 @@
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
             <td>{{ contactIndex + 1 }}</td>
-            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0].Name }}</td>
+            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0]?.Name }}</td>
             <td>
               <div v-for="custom1Info in contact.Custom1">
                 {{ custom1Info.Carrier }}
@@ -164,7 +164,7 @@
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
             <td>{{ contactIndex + 1 }}</td>
-            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0].Name }}</td>
+            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0]?.Name }}</td>
             <td>
               <div v-for="custom1Info in contact.Custom1">
                 {{ custom1Info.Carrier }}
@@ -297,7 +297,7 @@
         <tbody>
           <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
             <td>{{ srtdCntcts.length - contactIndex }}</td>
-            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0].Name }}</td>
+            <td class="cellHover" @click="selectContact(contact.id)">{{ Object.values(contact.Members)[0]?.Name }}</td>
             <td>{{ Object.values(contact.Addresses)?.[0]?.Address_1 }}</td>
             <td>
               {{ Object.values(contact.Assets)[0] ? Object.values(Object.values(contact.Assets)[0])[0] : '' }}
@@ -327,11 +327,11 @@
         <tbody>
           <tr v-for="(log, logIndex) in srtdCntcts[slctdCntctIndex].Log" :class="'cell' + (logIndex % 2)">
             <td>{{ srtdCntcts[slctdCntctIndex].Log.length - logIndex }}</td>
-            <td>{{ contacts[slctdCntctIndex].Members[0].Name }}</td>
+            <td>{{ contacts[slctdCntctIndex].Members[0]?.Name }}</td>
             <td>{{ contacts[slctdCntctIndex].Categ }}</td>
             <td>{{ log[1] }}</td>
             <td>{{ log[2] }}</td>
-            <td>{{ userList[log[0]][0] }}</td>
+            <td>{{ userList?.[log?.[0]]?.[0] }}</td>
           </tr>
         </tbody>
       </table>
@@ -340,22 +340,28 @@
       <table>
         <thead>
           <tr>
-            <th>#</th>
-            <th>Contact</th>
-            <th>Category</th>
             <th>Date</th>
-            <th>Activity</th>
-            <th>Owner</th>
+            <th>Emails/ Calls</th>
+            <th style="width: 80%">Graph</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(log, logIndex) in srtdCntcts[slctdCntctIndex].Log" :class="'cell' + (logIndex % 2)">
-            <td>{{ srtdCntcts[slctdCntctIndex].Log.length - logIndex }}</td>
-            <td>{{ contacts[slctdCntctIndex].Members[0].Name }}</td>
-            <td>{{ contacts[slctdCntctIndex].Categ }}</td>
-            <td>{{ log[1] }}</td>
-            <td>{{ log[2] }}</td>
-            <td>{{ userList[log[0]][0] }}</td>
+          <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+            <td>{{ contact[0] }}</td>
+            <td>
+              <div>{{ contact[1] }} emails</div>
+              <div>{{ contact[2] }} calls</div>
+            </td>
+            <td>
+              <div
+                style="height: 15px; background-color: lightskyblue"
+                :style="{ width: (contact[1] / srtdCntcts[srtdCntcts.length - 1][3]) * 100 + '%' }"
+              ></div>
+              <div
+                style="height: 15px; background-color: lightcoral"
+                :style="{ width: (contact[2] / srtdCntcts[srtdCntcts.length - 1][3]) * 100 + '%' }"
+              ></div>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -372,6 +378,7 @@ export default {
       'msg',
       'activeTab',
       'activeWindow',
+      'userData',
       'userSettings',
       'reports',
       'times',
@@ -386,11 +393,11 @@ export default {
       if (this.reports == 'All policies') {
         newSrtdCntcts = clonedCntcts
           .filter((cntct) => cntct.Custom1.length > 0)
-          .sort((a, b) => a.Members[0].Name.localeCompare(b.Members[0].Name));
+          .sort((a, b) => a.Members[0]?.Name.localeCompare(b.Members[0]?.Name));
       } else if (this.reports == 'Active policies') {
         newSrtdCntcts = clonedCntcts
           .filter((cntct) => cntct.Categ == 'Customer')
-          .sort((a, b) => a.Members[0].Name.localeCompare(b.Members[0].Name));
+          .sort((a, b) => a.Members[0]?.Name.localeCompare(b.Members[0]?.Name));
       } else if (this.reports == 'Renewals') {
         const rnwlStart = new Date(this.times.initialUsrTmstmp - 2592000000);
         const rnwlStop = new Date(this.times.initialUsrTmstmp + 3456000000);
@@ -453,6 +460,31 @@ export default {
           });
         });
         newSrtdCntcts.sort((a, b) => b[3].localeCompare(a[3]));
+      } else if (this.reports.includes('Activity log for user:')) {
+        let currentDate = new Date(this.times.initialUsrTmstmp);
+        let decreasingDate;
+        let emailCount, callCount;
+        let emailCallCountArray = [];
+        for (let i = 0; i <= 30; i++) {
+          // prettier-ignore
+          decreasingDate = currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' + currentDate.getDate().toString().padStart(2, '0');
+          emailCount = 0;
+          callCount = 0;
+          clonedCntcts.forEach((contact) => {
+            contact.Log.forEach((log) => {
+              if (log[0] == this.userData.id && log[1].includes(decreasingDate) && log[2].includes('Emailed')) {
+                emailCount += 1;
+              }
+              if (log[0] == this.userData.id && log[1].includes(decreasingDate) && log[2].includes('Called')) {
+                callCount += 1;
+              }
+            });
+          });
+          emailCallCountArray.push(emailCount);
+          emailCallCountArray.push(callCount);
+          newSrtdCntcts.push([decreasingDate, emailCount, callCount, Math.max(...emailCallCountArray)]);
+          currentDate.setDate(currentDate.getDate() - 1);
+        }
       } else if (this.reports == 'New business') {
         clonedCntcts.forEach((contact) => {
           if (contact.Categ == 'Customer') {
@@ -475,7 +507,7 @@ export default {
           .filter((cntct) => cntct.Categ == 'Erie lead')
           .sort((a, b) => Object.values(b.Created)[0].localeCompare(Object.values(a.Created)[0]));
       } else {
-        newSrtdCntcts = clonedCntcts.sort((a, b) => a.Members[0].Name.localeCompare(b.Members[0].Name));
+        newSrtdCntcts = clonedCntcts.sort((a, b) => a.Members[0]?.Name.localeCompare(b.Members[0]?.Name));
       }
       return newSrtdCntcts;
     },

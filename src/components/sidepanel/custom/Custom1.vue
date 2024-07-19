@@ -6,7 +6,7 @@
           <div class="policy-info-title-grid-item1">
             Policy info for
             {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
-            {{ contacts[slctdCntctIndex].Members[0].Name }}
+            {{ contacts[slctdCntctIndex].Members[0]?.Name }}
           </div>
           <div class="policy-info-title-grid-item2">
             <button @click="newPolicy">

@@ -30,7 +30,7 @@
       >
         Activity log for contact:
         {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
-        {{ contacts[slctdCntctIndex].Members[0].Name }}
+        {{ contacts[slctdCntctIndex].Members[0]?.Name }}
       </div>
       <div
         class="reports-panel-report reports-panel-odd"

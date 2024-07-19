@@ -4,7 +4,7 @@
       <div class="notes-title">
         Notes for
         {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
-        {{ contacts[slctdCntctIndex].Members[0].Name }}
+        {{ contacts[slctdCntctIndex].Members[0]?.Name }}
       </div>
       <textarea placeholder="Notes" :value="contacts[slctdCntctIndex].Notes" @change="updateNotes($event)"></textarea>
     </template>

@@ -2,14 +2,20 @@
   <div class="addresses">
     <div v-for="(address, addressIndex) in contacts[slctdCntctIndex]?.Addresses">
       <div class="address-title-grid-container">
-        <div class="address-title"><i class="fa-solid fa-house"></i>&nbsp;{{ address.Type }}</div>
+        <div class="address-title">
+          <i class="fa-solid fa-house"></i>&nbsp;{{
+            address.Type ? address.Type : Object.keys(this.accountSettings.contactInfo.keys.Addresses)[0]
+          }}
+        </div>
         <button class="address-button" @click="deleteContactInfo('Addresses', addressIndex)">
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
       <div class="address-grid-container">
         <div
-          v-for="addressInputs in accountSettings.contactInfo.keys.Addresses[address.Type]"
+          v-for="addressInputs in accountSettings.contactInfo.keys.Addresses[
+            address.Type ? address.Type : Object.keys(this.accountSettings.contactInfo.keys.Addresses)[0]
+          ]"
           :style="{ flex: '1 0 ' + addressInputsWidth + 'px' }"
         >
           <select

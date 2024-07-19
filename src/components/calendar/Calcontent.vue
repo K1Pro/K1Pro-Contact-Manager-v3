@@ -44,7 +44,7 @@
             v-on:dblclick="selectContact(calContactTask.ContactID, 'house-chimney-user', null)"
           >
             {{ calContactTask.Time != '25:00' ? calContactTask.Time : '' }}
-            {{ calContactTask.Name }}
+            {{ calContactTask?.Name }}
           </div>
           <div style="text-align: center" class="prevent-select" v-if="calContactTask.Icon">
             <i :class="calContactTask.Icon"></i>
@@ -79,7 +79,7 @@ export default {
           calDay = task?.Date?.split('T')[0];
           if (this.days[this.dayIndex] == calDay) {
             contactArray[contactIndex + 'Task' + taskIndex] = {
-              Name: contact.Members[0].Name,
+              Name: contact.Members[0]?.Name,
               Time: task.Date.split('T')[1],
               Type: 'list-check',
               Status: task.Status == 1 ? 'compltd' : 'not-compltd',
@@ -104,7 +104,7 @@ export default {
               (task?.Recur.includes('everyday') && task?.Freq == 'Daily'))
           ) {
             contactArray[contactIndex + 'Recur' + taskIndex] = {
-              Name: contact.Members[0].Name,
+              Name: contact.Members[0]?.Name,
               Time: task.Time ? task.Time : '25:00',
               Type: 'repeat',
               Status: task.Review >= this.days[this.dayIndex] ? 'compltd' : 'renewal',

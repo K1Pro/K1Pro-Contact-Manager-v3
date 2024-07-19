@@ -6,7 +6,7 @@
           <div class="tasks-title-grid-item1">
             Tasks for
             {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
-            {{ contacts[slctdCntctIndex].Members[0].Name }}
+            {{ contacts[slctdCntctIndex].Members[0]?.Name }}
           </div>
           <div class="tasks-title-grid-item2">
             <button

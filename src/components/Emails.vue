@@ -4,7 +4,7 @@
       <div class="emails-title">
         Send email to
         {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
-        {{ contacts[slctdCntctIndex].Members[0].Name }}
+        {{ contacts[slctdCntctIndex].Members[0]?.Name }}
         <i @click="activeWindow = 'calendar'" class="fa-solid fa-xmark"></i>
       </div>
       <div class="emails-body">
@@ -24,7 +24,7 @@
         </select>
 
         <div class="emailInputLabel">Template:</div>
-        <select v-model="slctdTemplate">
+        <select v-model="slctdTemplate" ref="emailTemplate">
           <option value="null">None</option>
           <option v-for="(email, emailIndex) in emails" :value="emailIndex">
             {{ email.placeholder }}
@@ -73,6 +73,7 @@ export default {
     templateBody() {
       let slctdTemplateBody;
       if (this.slctdTemplate != 'null') {
+        console.log(this.emails);
         // prettier-ignore
         slctdTemplateBody = this.emails[this.slctdTemplate].body
           .replaceAll('___FirstName___', this.contacts[this.slctdCntctIndex].Members[0]?.First)
@@ -117,6 +118,10 @@ export default {
       if (confirm(confirmSendEmail) == true) {
         this.spinLogin = true;
         const columnIndex = this.slctdCntctIndex;
+        const emailTemplate =
+          this.$refs['emailTemplate'].value == 'null'
+            ? ''
+            : '"' + this.emails[this.slctdTemplate].placeholder.toLowerCase() + '" to ';
         const sendEmailDatetime = this.times.updtngY_m_d_H_i_s_z.slice(0, 16);
         let formData = new FormData();
         Object.values(this.$refs['emailAttachment'].files).forEach((file) => {
@@ -124,6 +129,7 @@ export default {
         });
         formData.append('To', this.$refs['emailTo'].value);
         formData.append('Subject', this.$refs['emailSubject'].value);
+        formData.append('Template', emailTemplate);
         formData.append('Body', this.$refs['emailBody'].innerHTML);
         formData.append('id', this.contacts[this.slctdCntctIndex].id);
         formData.append('Datetime', sendEmailDatetime);
@@ -142,15 +148,10 @@ export default {
             this.msg.snackBar = 'Email sent successfully';
             console.log(sendEmailResJSON);
             this.spinLogin = false;
-            this.contacts[this.slctdCntctIndex].Log.unshift([
-              this.userData.id,
-              sendEmailDatetime,
-              'Emailed ' + this.$refs['emailTo'].value,
-            ]);
             this.contacts[columnIndex].Log.unshift([
               this.userData.id,
               sendEmailDatetime,
-              'Emailed ' + this.$refs['emailTo'].value,
+              'Emailed ' + emailTemplate + this.$refs['emailTo'].value,
             ]);
           } else {
             this.msg.snackBar = 'Email error';
