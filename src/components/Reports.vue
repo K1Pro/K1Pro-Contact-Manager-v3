@@ -381,6 +381,7 @@ export default {
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
+      'windowWidth',
       'activeTab',
       'activeWindow',
       'userData',
@@ -545,6 +546,9 @@ export default {
       this.activeTab = 'house-chimney-user';
       this.userSettings.selectedContactIndex = contactID;
       this.patchUserSettings();
+      if (this.windowWidth < 768) {
+        window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+      }
     },
   },
 };
