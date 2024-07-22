@@ -167,7 +167,10 @@ export default {
       this.taskMemo = this.taskMemo + 1;
     },
     updateTask(event, clmnIndex, key) {
-      if (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key]) {
+      if (
+        (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
+        (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
+      ) {
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
         this.patchContactInfo(event, this.clmn, clmnIndex, key);

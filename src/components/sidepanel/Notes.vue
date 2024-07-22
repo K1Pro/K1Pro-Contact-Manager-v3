@@ -32,7 +32,10 @@ export default {
 
   methods: {
     updateNotes(event) {
-      if (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn]) {
+      if (
+        (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn] && event.target.value != '') ||
+        (event.target.value == '' && this.contacts[this.slctdCntctIndex][this.clmn])
+      ) {
         this.contacts[this.slctdCntctIndex][this.clmn] = event.target.value;
         this.patchContactInfo(event.target.value, this.clmn);
       }

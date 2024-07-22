@@ -202,7 +202,16 @@ export default {
       }
     },
     updateMember(event, clmnIndex, key) {
-      if (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key]) {
+      if (
+        (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] &&
+          event.target.value != '') ||
+        (event.target.value == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
+      ) {
+        console.log(event.target.value);
+        console.log(this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key]);
+        console.log(event.target.value != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key]);
+        console.log(event.target.value == '');
+        console.log(this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key]);
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event.target.value;
         this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key);
       }

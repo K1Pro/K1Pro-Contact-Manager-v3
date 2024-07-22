@@ -116,7 +116,10 @@ export default {
       this.patchContactInfo('', this.clmn, this.contacts[this.slctdCntctIndex][this.clmn].length, 'Date');
     },
     updatePolicy(inptVal, clmnIndex, key) {
-      if (inptVal != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key]) {
+      if (
+        (inptVal != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && inptVal != '') ||
+        (inptVal == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
+      ) {
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = inptVal;
         this.patchContactInfo(inptVal, this.clmn, clmnIndex, key);
       }
