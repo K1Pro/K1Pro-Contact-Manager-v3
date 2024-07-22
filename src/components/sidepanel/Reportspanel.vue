@@ -141,6 +141,9 @@ export default {
   overflow: hidden;
   white-space: nowrap;
 }
+.reports-panel-report:hover {
+  text-decoration: underline;
+}
 .reports-panel-odd {
   background-color: white;
 }

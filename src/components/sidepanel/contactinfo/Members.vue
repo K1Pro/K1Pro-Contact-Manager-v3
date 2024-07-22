@@ -112,7 +112,7 @@ export default {
   },
 
   data() {
-    return { spinLogin: false };
+    return { clmn: 'Members', spinLogin: false };
   },
 
   methods: {
@@ -122,15 +122,15 @@ export default {
         if (InfoGroup != 'newContact') {
           const InfoKey = event.target.value.split('_')[1];
           event.srcElement.selectedIndex = 0;
-          const columnIndex = this.contacts[this.slctdCntctIndex][InfoGroup].length;
+          const clmnIndex = this.contacts[this.slctdCntctIndex][InfoGroup].length;
           if (InfoGroup == 'Members' || InfoGroup == 'Addresses') {
             let cloneContacts = [...this.contacts[this.slctdCntctIndex][InfoGroup], { Type: InfoKey }];
             this.contacts[this.slctdCntctIndex][InfoGroup] = cloneContacts;
-            this.patchContactInfo(InfoKey, InfoGroup, columnIndex, 'Type');
+            this.patchContactInfo(InfoKey, InfoGroup, clmnIndex, 'Type');
           } else {
             let cloneContacts = [...this.contacts[this.slctdCntctIndex][InfoGroup], { [InfoKey]: '' }];
             this.contacts[this.slctdCntctIndex][InfoGroup] = cloneContacts;
-            this.patchContactInfo('', InfoGroup, columnIndex, InfoKey);
+            this.patchContactInfo('', InfoGroup, clmnIndex, InfoKey);
           }
         } else {
           event.srcElement.selectedIndex = 0;
@@ -184,8 +184,6 @@ export default {
                 Custom4: '',
                 Custom5: '',
               };
-              console.log(newMember);
-              // this.contacts.push(newMember); delete this after 7/19/24 if everything is working fine
               let clonedCntcts = this.contacts;
               this.contacts = [...clonedCntcts, newMember];
               this.userSettings.selectedContactIndex = newContactIndex;
@@ -203,31 +201,12 @@ export default {
         }
       }
     },
-    updateMember(event, columnIndex, key) {
-      const column = 'Members';
-      if (event.target.value != this.contacts[this.slctdCntctIndex][column][columnIndex][key]) {
-        console.log(event.target.value);
-        console.log(columnIndex);
-        console.log(key);
-        console.log(column);
-        console.log('===========');
-        this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
-        this.patchContactInfo(event.target.value, column, columnIndex, key);
+    updateMember(event, clmnIndex, key) {
+      if (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key]) {
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event.target.value;
+        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key);
       }
     },
-  },
-  mounted() {
-    this.contacts[this.slctdCntctIndex].Members.forEach((member, columnIndex) => {
-      if (!member.Type) {
-        console.log(`member ${columnIndex} does not have type`);
-        this.patchContactInfo(
-          Object.keys(this.accountSettings.contactInfo.keys.Members)[0],
-          'Members',
-          columnIndex,
-          'Type'
-        );
-      }
-    });
   },
 };
 </script>

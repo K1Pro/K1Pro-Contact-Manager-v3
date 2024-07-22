@@ -601,4 +601,7 @@ export default {
 .cellHover {
   cursor: pointer;
 }
+.cellHover:hover {
+  text-decoration: underline;
+}
 </style>

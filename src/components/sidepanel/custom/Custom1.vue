@@ -30,7 +30,7 @@
           >
           <template v-if="policyInfoInputs.type == 'select'">
             <select
-              @change="updatePolicy($event, policyInfoIndex, policyInfoInputs.value)"
+              @change="updatePolicy($event.target.value, policyInfoIndex, policyInfoInputs.value)"
               :style="{
                 'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white',
                 border: policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray',
@@ -49,7 +49,7 @@
             <input
               :type="policyInfoInputs.type"
               :checked="policyInfo[policyInfoInputs.value] == 1"
-              @change="updatePolicy($event, policyInfoIndex, policyInfoInputs.value)"
+              @change="updatePolicy($event.target.checked, policyInfoIndex, policyInfoInputs.value)"
             />
             {{ policyInfo[policyInfoInputs.value] == 1 ? 'Yes' : 'No' }}
           </template>
@@ -66,7 +66,7 @@
               }"
               :type="policyInfoInputs.type"
               :value="policyInfo[policyInfoInputs.value]"
-              @change="updatePolicy($event, policyInfoIndex, policyInfoInputs.value)"
+              @change="updatePolicy($event.target.value, policyInfoIndex, policyInfoInputs.value)"
             />
           </template>
           <template v-else>
@@ -78,7 +78,7 @@
               }"
               :type="policyInfoInputs.type"
               :value="policyInfo[policyInfoInputs.value]"
-              v-on:blur="updatePolicy($event, policyInfoIndex, policyInfoInputs.value)"
+              v-on:blur="updatePolicy($event.target.value, policyInfoIndex, policyInfoInputs.value)"
             />
           </template>
         </div>
@@ -106,20 +106,20 @@ export default {
   },
 
   data() {
-    return { column: 'Custom1' };
+    return { clmn: 'Custom1' };
   },
 
   methods: {
     newPolicy() {
-      const newCustom1 = [...this.contacts[this.slctdCntctIndex][this.column], {}];
-      this.contacts[this.slctdCntctIndex][this.column] = newCustom1;
-      this.patchContactInfo('', this.column, this.contacts[this.slctdCntctIndex][this.column].length, 'Date');
+      const newCustom1 = [...this.contacts[this.slctdCntctIndex][this.clmn], {}];
+      this.contacts[this.slctdCntctIndex][this.clmn] = newCustom1;
+      this.patchContactInfo('', this.clmn, this.contacts[this.slctdCntctIndex][this.clmn].length, 'Date');
     },
-    updatePolicy(event, columnIndex, key) {
-      let custom1Value = event.target.type == 'checkbox' ? event.target.checked : event.target.value;
-      this.contacts[this.slctdCntctIndex][this.column][columnIndex][key] = custom1Value;
-      this.contacts[this.slctdCntctIndex][this.column][columnIndex].Update = this.userData.id;
-      this.patchContactInfo(custom1Value, this.column, columnIndex, key);
+    updatePolicy(inptVal, clmnIndex, key) {
+      if (inptVal != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key]) {
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = inptVal;
+        this.patchContactInfo(inptVal, this.clmn, clmnIndex, key);
+      }
     },
   },
 };

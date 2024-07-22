@@ -66,6 +66,10 @@ export default {
     },
   },
 
+  data() {
+    return { clmn: 'Connections' };
+  },
+
   methods: {
     async connect(connIndex, connType) {
       let checkDNC = true;
@@ -76,7 +80,7 @@ export default {
         if (connType == 'Phone') {
           window.location.href =
             'tel:' + this.contacts[this.slctdCntctIndex].Connections[connIndex][connType].replace(/\D/g, '');
-          const columnIndex = this.slctdCntctIndex;
+          const clmnIndex = this.slctdCntctIndex;
           try {
             const response = await fetch(servr_url + this.endPts.calls, {
               method: 'POST',
@@ -94,10 +98,10 @@ export default {
             const postConnectResJSON = await response.json();
             if (postConnectResJSON.success) {
               // this.msg.snackBar = 'Updated ';
-              this.contacts[columnIndex].Log.unshift([
+              this.contacts[clmnIndex].Log.unshift([
                 this.userData.id,
                 this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
-                'Called ' + this.contacts[columnIndex].Connections[connIndex][connType],
+                'Called ' + this.contacts[clmnIndex].Connections[connIndex][connType],
               ]);
             } else {
             }
@@ -111,16 +115,10 @@ export default {
         }
       }
     },
-    updateConnection(event, columnIndex, key) {
-      const column = 'Connections';
-      if (this.contacts[this.slctdCntctIndex][column][columnIndex][key] != event.target.value) {
-        console.log(event.target.value);
-        console.log(columnIndex);
-        console.log(key);
-        console.log(column);
-        console.log('===========');
-        this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
-        this.patchContactInfo(event.target.value, column, columnIndex, key);
+    updateConnection(event, clmnIndex, key) {
+      if (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key]) {
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event.target.value;
+        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key);
       }
     },
   },

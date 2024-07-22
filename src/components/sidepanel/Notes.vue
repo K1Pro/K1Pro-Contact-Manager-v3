@@ -27,15 +27,14 @@ export default {
   },
 
   data() {
-    return {};
+    return { clmn: 'Notes' };
   },
 
   methods: {
     updateNotes(event) {
-      const column = 'Notes';
-      if (event.target.value != this.contacts[this.slctdCntctIndex][column]) {
-        this.contacts[this.slctdCntctIndex][column] = event.target.value;
-        this.patchContactInfo(event.target.value, column);
+      if (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn]) {
+        this.contacts[this.slctdCntctIndex][this.clmn] = event.target.value;
+        this.patchContactInfo(event.target.value, this.clmn);
       }
     },
   },

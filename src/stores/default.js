@@ -73,7 +73,7 @@ const useDefaultStore = Pinia.defineStore('default', {
         });
         const patchContactInfoResJSON = await response.json();
         if (patchContactInfoResJSON.success) {
-          console.log(patchContactInfoResJSON);
+          // console.log(patchContactInfoResJSON.data);
           cloneUpdating = this.updating;
           this.updating = cloneUpdating - 1;
         } else {

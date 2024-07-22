@@ -37,32 +37,32 @@
             'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white',
           }"
         >
-          <i class="fa-solid fa-trash" @click="deleteRecurTask(recurTask.columnIndex)"></i>
+          <i class="fa-solid fa-trash" @click="deleteRecurTask(recurTask.clmnIndex)"></i>
           <span class="recur-tasks-label">Start:</span
           ><input
             type="date"
             :value="recurTask.Start"
-            v-on:blur="updateRecurTaskFreq(recurTask.columnIndex, $event.target.value, recurTask.Freq)"
+            v-on:blur="updateRecurTaskFreq(recurTask.clmnIndex, $event.target.value, recurTask.Freq)"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="recur-tasks-label">End:</span
           ><input
             type="date"
             :value="recurTask.End"
-            v-on:blur="updateRecurTask($event.target.value, recurTask.columnIndex, 'End')"
+            v-on:blur="updateRecurTask($event.target.value, recurTask.clmnIndex, 'End')"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="recur-tasks-label">Time:</span
           ><input
             type="time"
             :value="recurTask.Time"
-            v-on:blur="updateRecurTask($event.target.value, recurTask.columnIndex, 'Time')"
+            v-on:blur="updateRecurTask($event.target.value, recurTask.clmnIndex, 'Time')"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="recur-tasks-label">Recur:</span>
           <select
             :value="recurTask.Freq"
-            @change="updateRecurTaskFreq(recurTask.columnIndex, recurTask.Start, $event.target.value)"
+            @change="updateRecurTaskFreq(recurTask.clmnIndex, recurTask.Start, $event.target.value)"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           >
             <option>Annually</option>
@@ -75,7 +75,7 @@
           <span class="recur-tasks-label">Owner:</span>
           <select
             :value="recurTask.Assign"
-            @change="updateRecurTask($event.target.value, recurTask.columnIndex, 'Assign')"
+            @change="updateRecurTask($event.target.value, recurTask.clmnIndex, 'Assign')"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           >
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
@@ -87,7 +87,7 @@
           <span class="recur-tasks-label">Finished:</span>
           <button
             @click="
-              updateRecurTask(times.updtngY_m_d_H_i_s_z.slice(0, 10), recurTask.columnIndex, 'Review');
+              updateRecurTask(times.updtngY_m_d_H_i_s_z.slice(0, 10), recurTask.clmnIndex, 'Review');
               recurTaskMemo = recurTaskMemo + 1;
             "
           >
@@ -105,7 +105,7 @@
             <span
               spellcheck="false"
               contenteditable="plaintext-only"
-              v-on:blur="updateRecurTask($event.target.innerHTML, recurTask.columnIndex, 'Desc')"
+              v-on:blur="updateRecurTask($event.target.innerHTML, recurTask.clmnIndex, 'Desc')"
               >{{ recurTask.Desc }}</span
             >
           </div>
@@ -153,21 +153,21 @@ export default {
         ? [
             {
               ...this.contacts[this.slctdCntctIndex].RecurTasks[this.eventIndex],
-              columnIndex: this.eventIndex,
+              clmnIndex: this.eventIndex,
             },
           ]
         : this.sortAscDesc
         ? this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
-            return { ...val, columnIndex: index };
+            return { ...val, clmnIndex: index };
           }).sort((a, b) => a.Start.localeCompare(b.Start))
         : this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
-            return { ...val, columnIndex: index };
+            return { ...val, clmnIndex: index };
           }).sort((a, b) => b.Start.localeCompare(a.Start));
     },
   },
 
   data() {
-    return { column: 'RecurTasks', sortAscDesc: false, recurTaskMemo: 0 };
+    return { clmn: 'RecurTasks', sortAscDesc: false, recurTaskMemo: 0 };
   },
 
   methods: {
@@ -185,57 +185,57 @@ export default {
       ];
       this.contacts[this.slctdCntctIndex].RecurTasks = newRecurTasks;
       this.eventIndex = this.contacts[this.slctdCntctIndex].RecurTasks.length - 1;
-      this.patchContactInfo(
-        this.slctdY_m_d,
-        this.column,
-        this.contacts[this.slctdCntctIndex].RecurTasks.length,
-        'Start'
-      );
+      this.patchContactInfo(this.slctdY_m_d, this.clmn, this.contacts[this.slctdCntctIndex].RecurTasks.length, 'Start');
       this.recurTaskMemo = this.recurTaskMemo + 1;
     },
-    updateRecurTask(event, columnIndex, key) {
-      if (event != this.contacts[this.slctdCntctIndex][this.column][columnIndex][key]) {
-        this.contacts[this.slctdCntctIndex][this.column][columnIndex][key] = event;
-        this.contacts[this.slctdCntctIndex][this.column][columnIndex].Update = this.userData.id;
-        this.patchContactInfo(event, this.column, columnIndex, key);
+    updateRecurTask(event, clmnIndex, key) {
+      if (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key]) {
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
+        this.patchContactInfo(event, this.clmn, clmnIndex, key);
       }
     },
-    updateRecurTaskFreq(columnIndex, start, freq) {
-      let recurTaskEvent, newRecurTask;
-      if (freq == 'Annually') {
-        recurTaskEvent = start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28';
-      } else if (freq == 'Semiannually') {
-        const halfYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 6);
-        // prettier-ignore
-        recurTaskEvent = (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28') + '_' + new Date(halfYearLater).toISOString().slice(5, 10);
-        // prettier-ignore
-        newRecurTask = [(start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28'), new Date(halfYearLater).toISOString().slice(5, 10),];
-      } else if (freq == 'Quarterly') {
-        const quarterYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 3);
-        const halfYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 6);
-        const thirdYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 9);
-        // prettier-ignore
-        recurTaskEvent = (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28') + '_' + new Date(quarterYearLater).toISOString().slice(5, 10) + '_' + new Date(halfYearLater).toISOString().slice(5, 10) + '_' + new Date(thirdYearLater).toISOString().slice(5, 10);
-        // prettier-ignore
-        newRecurTask = [(start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28'), new Date(quarterYearLater).toISOString().slice(5, 10), new Date(halfYearLater).toISOString().slice(5, 10), new Date(thirdYearLater).toISOString().slice(5, 10),];
-      } else if (freq == 'Monthly') {
-        recurTaskEvent = start.slice(8, 10);
-      } else if (freq == 'Weekly') {
-        recurTaskEvent = new Date(start + 'T00:00:00').getDay().toString();
-      } else if (freq == 'Daily') {
-        recurTaskEvent = 'everyday';
-      }
+    updateRecurTaskFreq(clmnIndex, start, freq) {
+      if (
+        start != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Start ||
+        freq != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Freq
+      ) {
+        let recurTaskEvent, newRecurTask;
+        if (freq == 'Annually') {
+          recurTaskEvent = start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28';
+        } else if (freq == 'Semiannually') {
+          const halfYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 6);
+          // prettier-ignore
+          recurTaskEvent = (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28') + '_' + new Date(halfYearLater).toISOString().slice(5, 10);
+          // prettier-ignore
+          newRecurTask = [(start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28'), new Date(halfYearLater).toISOString().slice(5, 10),];
+        } else if (freq == 'Quarterly') {
+          const quarterYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 3);
+          const halfYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 6);
+          const thirdYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 9);
+          // prettier-ignore
+          recurTaskEvent = (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28') + '_' + new Date(quarterYearLater).toISOString().slice(5, 10) + '_' + new Date(halfYearLater).toISOString().slice(5, 10) + '_' + new Date(thirdYearLater).toISOString().slice(5, 10);
+          // prettier-ignore
+          newRecurTask = [(start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28'), new Date(quarterYearLater).toISOString().slice(5, 10), new Date(halfYearLater).toISOString().slice(5, 10), new Date(thirdYearLater).toISOString().slice(5, 10),];
+        } else if (freq == 'Monthly') {
+          recurTaskEvent = start.slice(8, 10);
+        } else if (freq == 'Weekly') {
+          recurTaskEvent = new Date(start + 'T00:00:00').getDay().toString();
+        } else if (freq == 'Daily') {
+          recurTaskEvent = 'everyday';
+        }
 
-      this.contacts[this.slctdCntctIndex][this.column][columnIndex].Start = start;
-      this.contacts[this.slctdCntctIndex][this.column][columnIndex].Recur =
-        freq == 'Semiannually' || freq == 'Quarterly' ? newRecurTask : [recurTaskEvent];
-      this.contacts[this.slctdCntctIndex][this.column][columnIndex].Freq = freq;
-      this.contacts[this.slctdCntctIndex][this.column][columnIndex].Update = this.userData.id;
-      this.patchContactInfo(freq + '+' + start + '+' + recurTaskEvent, this.column, columnIndex, 'Freq');
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Start = start;
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Recur =
+          freq == 'Semiannually' || freq == 'Quarterly' ? newRecurTask : [recurTaskEvent];
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Freq = freq;
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
+        this.patchContactInfo(freq + '+' + start + '+' + recurTaskEvent, this.clmn, clmnIndex, 'Freq');
+      }
     },
-    deleteRecurTask(columnIndex) {
+    deleteRecurTask(clmnIndex) {
       if (confirm(this.msg.confirmDeletion) == true) {
-        this.deleteContactInfo(this.column, columnIndex, true);
+        this.deleteContactInfo(this.clmn, clmnIndex, true);
         this.showAllRecurTasks();
       }
     },

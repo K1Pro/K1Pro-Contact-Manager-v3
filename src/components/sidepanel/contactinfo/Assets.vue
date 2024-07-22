@@ -54,17 +54,15 @@ export default {
     ]),
   },
 
+  data() {
+    return { clmn: 'Assets' };
+  },
+
   methods: {
-    updateAsset(event, columnIndex, key) {
-      const column = 'Assets';
-      if (event.target.value != this.contacts[this.slctdCntctIndex][column][columnIndex][key]) {
-        console.log(event.target.value);
-        console.log(columnIndex);
-        console.log(key);
-        console.log(column);
-        console.log('===========');
-        this.contacts[this.slctdCntctIndex][column][columnIndex][key] = event.target.value;
-        this.patchContactInfo(event.target.value, column, columnIndex, key);
+    updateAsset(event, clmnIndex, key) {
+      if (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key]) {
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event.target.value;
+        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key);
       }
     },
   },

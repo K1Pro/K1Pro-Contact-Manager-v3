@@ -181,8 +181,8 @@ export default {
           },
         });
         const getContactsResJSON = await response.json();
-        if (document.activeElement.tagName != 'BODY') console.log('something is in focus');
-        if (this.updating) console.log('something is being updated');
+        // if (document.activeElement.tagName != 'BODY') console.log('something is in focus');
+        // if (this.updating) console.log('something is being updated');
         if (getContactsResJSON.success && document.activeElement.tagName == 'BODY' && !this.updating) {
           // console.log(getContactsResJSON);
           if (this.contacts.length == 0) {
@@ -191,7 +191,7 @@ export default {
             const slctdCntctIndx = getContactsResJSON.data.contacts.findIndex(
               (contact) => contact.id == this.userSettings.selectedContactIndex
             );
-            if (slctdCntctIndx) {
+            if (slctdCntctIndx != null && slctdCntctIndx != undefined) {
               getContactsResJSON.data.contacts[slctdCntctIndx] = this.contacts[this.slctdCntctIndex];
               this.contacts = getContactsResJSON.data.contacts;
             } else {
