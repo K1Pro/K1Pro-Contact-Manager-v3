@@ -32,13 +32,15 @@
         {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
         {{ contacts[slctdCntctIndex].Members[0]?.Name }}
       </div>
-      <div
-        class="reports-panel-report reports-panel-odd"
-        :style="{ 'font-weight': reports.includes('Activity log for user:') ? 'bold' : 'normal' }"
-        @click="selectReport($event.target.innerHTML)"
-      >
-        Activity log for user: {{ userData.FirstName }}
-      </div>
+      <template v-for="activeUser in Object.entries(activeUserList)">
+        <div
+          class="reports-panel-report reports-panel-odd"
+          :style="{ 'font-weight': reports.includes('Activity log for user:' + activeUser[0]) ? 'bold' : 'normal' }"
+          @click="selectReport('Activity log for user:' + activeUser[0])"
+        >
+          Activity log for user: {{ activeUser[1][0] }}
+        </div>
+      </template>
       <div
         v-if="userData?.AppPermissions[appName][0] == 'bundle_insurance'"
         class="reports-panel-report reports-panel-even"
@@ -100,6 +102,7 @@ export default {
       'msg',
       'windowWidth',
       'userData',
+      'activeUserList',
       'contacts',
       'reports',
       'appName',

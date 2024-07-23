@@ -470,6 +470,7 @@ export default {
         });
         newSrtdCntcts.sort((a, b) => b[3].localeCompare(a[3]));
       } else if (this.reports.includes('Activity log for user:')) {
+        let userID = this.reports.split(':')[1];
         let currentDate = new Date(this.times.initialUsrTmstmp);
         let decreasingDate;
         let emailCount, callCount, taskCount;
@@ -482,15 +483,15 @@ export default {
           taskCount = 0;
           clonedCntcts.forEach((contact) => {
             contact.Log.forEach((log) => {
-              if (log[0] == this.userData.id && log[1].includes(decreasingDate) && log[2].includes('Emailed')) {
+              if (log[0] == userID && log[1].includes(decreasingDate) && log[2].includes('Emailed')) {
                 emailCount += 1;
               }
-              if (log[0] == this.userData.id && log[1].includes(decreasingDate) && log[2].includes('Called')) {
+              if (log[0] == userID && log[1].includes(decreasingDate) && log[2].includes('Called')) {
                 callCount += 1;
               }
             });
             contact.Tasks.forEach((task) => {
-              if (task?.Date.includes(decreasingDate) && task?.Update == this.userData.id && task?.Status == 1) {
+              if (task?.Date.includes(decreasingDate) && task?.Update == userID && task?.Status == 1) {
                 taskCount += 1;
               }
             });
