@@ -138,7 +138,7 @@ export default {
           this.times.initialUsrTmstmp = new Date(userDataResJSON.data.date_Y_m_d_H_i_s_z).getTime();
           this.times.updtngY_m_d_H_i_s_z = userDataResJSON.data.date_Y_m_d_H_i_s_z;
           this.times.slctdTmstmp = new Date(this.times.updtngY_m_d_H_i_s_z).getTime();
-
+          testReport = 'This would be the backend report';
           setInterval(() => {
             this.updateTime();
           }, 6000);

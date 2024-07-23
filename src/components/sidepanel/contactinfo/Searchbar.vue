@@ -12,11 +12,11 @@
     />
     <select
       class="search-bar-full"
-      v-show="search.length > 2 && appActiveElement == 'Search Input'"
+      v-if="search.length > 2 && appActiveElement == 'Search Input'"
       ref="searchDropdown"
       @change="selectSearchedContact"
-      v-on:select="selectSearchedContact"
       :style="{ overflow: searchArray.length < 10 ? 'hidden' : 'auto' }"
+      required
     >
       <option disabled selected="true">
         Found {{ searchArray.length }}
@@ -30,7 +30,8 @@
       class="search-bar-mobile"
       style="height: 42px"
       @change="selectSearchedContact"
-      v-on:select="selectSearchedContact"
+      :style="{ appearance: searchArray.length > 0 ? 'auto' : 'none' }"
+      :disabled="search.length <= 2"
     >
       <option disabled selected="true">
         Found {{ searchArray.length }}
