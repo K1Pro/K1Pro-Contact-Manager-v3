@@ -512,15 +512,16 @@ export default {
         clonedCntcts.forEach((contact) => {
           if (contact.Categ == 'Customer') {
             contact.Custom1.forEach((custom1) => {
-              newSrtdCntcts.push([
-                contact?.id,
-                contact?.Members?.[0]?.Name,
-                custom1?.Carrier ? custom1?.Carrier : '',
-                custom1?.Policy_Type ? custom1?.Policy_Type : '',
-                custom1?.Policy_No ? custom1?.Policy_No : '',
-                custom1?.Date ? custom1?.Date : '',
-                custom1?.Premium ? custom1?.Premium : '',
-              ]);
+              if (custom1?.Active == '1')
+                newSrtdCntcts.push([
+                  contact?.id,
+                  contact?.Members?.[0]?.Name,
+                  custom1?.Carrier ? custom1?.Carrier : '',
+                  custom1?.Policy_Type ? custom1?.Policy_Type : '',
+                  custom1?.Policy_No ? custom1?.Policy_No : '',
+                  custom1?.Date ? custom1?.Date : '',
+                  custom1?.Premium ? custom1?.Premium : '',
+                ]);
             });
           }
         });
