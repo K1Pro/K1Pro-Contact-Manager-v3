@@ -1,7 +1,6 @@
 <template>
+  <php_custom_component_name_reports></php_custom_component_name_reports>
   <div class="reports">
-    {{ userData?.AppPermissions[appName][0].replace('_', '') }}
-    <component :is="userData?.AppPermissions[appName][0].replace('_', '')"></component>
     <template v-if="reports.includes('All contacts with min. info')">
       <table>
         <thead>
@@ -381,9 +380,7 @@ export default {
   name: 'Reports',
 
   components: {
-    [this.userData?.AppPermissions[this.appName][0].replace('_', '')]: this.userData?.AppPermissions[
-      this.appName
-    ][0].replace('_', ''),
+    php_custom_component_name_reports,
   },
 
   computed: {
@@ -571,7 +568,7 @@ export default {
   background-color: white;
   width: calc(100% - 10px);
   height: calc(100vh - 20px);
-  margin: 10px 0px 0px 0px;
+  margin: 10px 0px 0px 10px;
   font-size: 12px;
   padding: 0px;
   overflow: scroll scroll;
@@ -618,5 +615,10 @@ export default {
 }
 .cellHover:hover {
   text-decoration: underline;
+}
+@media only screen and (min-width: 768px) {
+  .reports {
+    margin: 10px 0px 0px 0px;
+  }
 }
 </style>

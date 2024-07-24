@@ -1,5 +1,5 @@
 <template>
-  <div>Test again, get the fuck outta here</div>
+  <div>K1Pro custom reports</div>
 </template>
 
 <script>

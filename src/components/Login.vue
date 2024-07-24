@@ -2,9 +2,7 @@
   <div class="login">
     <div class="login-title">
       <i style="font-size: 30px" class="ba-icons ba-k1pro-regular"></i>
-      <span style="font-size: 18px"
-        >Pro {{ appName.replace(/([a-z])([A-Z])/g, '$1 $2').trim() }}</span
-      >
+      <span style="font-size: 18px">Pro {{ appName.replace(/([a-z])([A-Z])/g, '$1 $2').trim() }}</span>
     </div>
 
     <div class="login-body">
@@ -34,14 +32,8 @@
           @keyup.enter="loginFn"
         />
         <button @click="passwordReveal" style="color: grey">
-          <span
-            v-if="loginPasswordInputType == 'password'"
-            class="fa-solid fa-eye"
-          ></span>
-          <span
-            v-if="loginPasswordInputType == 'text'"
-            class="fa-solid fa-eye-slash"
-          ></span>
+          <span v-if="loginPasswordInputType == 'password'" class="fa-solid fa-eye"></span>
+          <span v-if="loginPasswordInputType == 'text'" class="fa-solid fa-eye-slash"></span>
         </button>
       </div>
 
@@ -57,9 +49,7 @@
         <!-- <button @click="goToURL" type="button">Reset</button>-->
       </form>
 
-      <div class="login-remember">
-        <input type="checkbox" name="remember" />Remember me?
-      </div>
+      <div class="login-remember"><input type="checkbox" name="remember" />Remember me?</div>
 
       <div
         class="validation-message"
@@ -71,9 +61,7 @@
         {{ msg.login ? msg.login : '' }}
       </div>
 
-      <div class="login-copyright">
-        © {{ new Date().getFullYear() }} K1Pro | All Rights Reserved
-      </div>
+      <div class="login-copyright">© {{ new Date().getFullYear() }} K1Pro | All Rights Reserved</div>
     </div>
   </div>
 </template>
@@ -92,22 +80,12 @@ export default {
   },
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'accessToken',
-      'sessionID',
-      'msg',
-      'endPts',
-      'appName',
-    ]),
+    ...Pinia.mapWritableState(useDefaultStore, ['accessToken', 'sessionID', 'msg', 'endPts', 'appName']),
   },
 
   methods: {
     async loginFn() {
-      if (
-        this.username != '' &&
-        this.password != '' &&
-        this.password.length < 20
-      ) {
+      if (this.username != '' && this.password != '' && this.password.length < 20) {
         this.msg.login = '';
         this.spinLogin = true;
         this.postLogin();
@@ -116,8 +94,7 @@ export default {
         for (let loginInpt of document.getElementsByClassName('loginInpts')) {
           loginInpt.classList.remove('invalid');
           if (loginInpt.value == '') {
-            if (firstEl == 0)
-              this.msg.login = loginInpt.placeholder + ' cannot be blank';
+            if (firstEl == 0) this.msg.login = loginInpt.placeholder + ' cannot be blank';
             loginInpt.classList.add('invalid');
             firstEl++;
           }
@@ -143,18 +120,15 @@ export default {
         });
         const logInResJSON = await response.json();
         if (logInResJSON.success) {
-          this.accessToken = logInResJSON.data.accesstoken;
-          this.sessionID = logInResJSON.data.session_id;
           const tomorrow = new Date();
           tomorrow.setDate(tomorrow.getDate() + 1);
-          document.cookie = `_a_t=${
-            logInResJSON.data.accesstoken
-          }; expires=${tomorrow.toString()};`;
-          document.cookie = `_s_i=${
-            logInResJSON.data.session_id
-          }; expires=${tomorrow.toString()};`;
-          this.msg.login = '';
-          this.msg.snackBar = 'Logged in';
+          document.cookie = `_a_t=${logInResJSON.data.accesstoken}; expires=${tomorrow.toString()};`;
+          document.cookie = `_s_i=${logInResJSON.data.session_id}; expires=${tomorrow.toString()};`;
+          location.reload();
+          // this.accessToken = logInResJSON.data.accesstoken;
+          // this.sessionID = logInResJSON.data.session_id;
+          // this.msg.login = '';
+          // this.msg.snackBar = 'Logged in';
         } else {
           this.msg.login = logInResJSON.messages[0];
           this.msg.snackBar = logInResJSON.messages[0];
@@ -163,7 +137,7 @@ export default {
             this.password = '';
           }
         }
-        this.spinLogin = false;
+        // this.spinLogin = false;
       } catch (error) {
         console.log(error);
         this.msg.snackBar = 'Login error';
