@@ -1,5 +1,7 @@
 <template>
   <div class="reports">
+    {{ userData?.AppPermissions[appName][0].replace('_', '') }}
+    <component :is="userData?.AppPermissions[appName][0].replace('_', '')"></component>
     <template v-if="reports.includes('All contacts with min. info')">
       <table>
         <thead>
@@ -378,6 +380,12 @@
 export default {
   name: 'Reports',
 
+  components: {
+    [this.userData?.AppPermissions[this.appName][0].replace('_', '')]: this.userData?.AppPermissions[
+      this.appName
+    ][0].replace('_', ''),
+  },
+
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'msg',
@@ -392,6 +400,7 @@ export default {
       'patchUserSettings',
       'usaDateFrmt',
       'userList',
+      'appName',
       'slctdCntctIndex',
     ]),
     srtdCntcts() {

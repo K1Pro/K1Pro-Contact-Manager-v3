@@ -1,57 +1,55 @@
 <template>
-  <div class="day-content">
-    <div class="task-grid-day" v-if="firstDayY_m_d && calContactTasks">
-      <b v-if="days[dayIndex] == times.updtngY_m_d_H_i_s_z.slice(0, 10)">
-        {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : ''
-        }}{{ days[dayIndex] == times.updtngY_m_d_H_i_s_z.slice(0, 10) ? ' - Today' : '' }}
-      </b>
-      <span v-else>
-        {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : '' }}
-      </span>
-    </div>
-    <div class="task-grid-day-content" v-if="firstDayY_m_d && calContactTasks">
-      <template v-for="calContactTask in calContactTasks">
+  <div class="task-grid-day-title" v-if="firstDayY_m_d && calContactTasks">
+    <b v-if="days[dayIndex] == times.updtngY_m_d_H_i_s_z.slice(0, 10)">
+      {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : ''
+      }}{{ days[dayIndex] == times.updtngY_m_d_H_i_s_z.slice(0, 10) ? ' - Today' : '' }}
+    </b>
+    <span v-else>
+      {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : '' }}
+    </span>
+  </div>
+  <div class="task-grid-day-content" v-if="firstDayY_m_d && calContactTasks">
+    <template v-for="calContactTask in calContactTasks">
+      <div
+        class="task-grid-container"
+        :class="[
+          calContactTask.Status,
+          {
+            active: calContactTask.ContactID == userSettings.selectedContactIndex,
+          },
+          {
+            activeTask:
+              calContactTask.EventIndex == eventIndex &&
+              calContactTask.ContactID == userSettings.selectedContactIndex &&
+              calContactTask.Type == activeTab,
+          },
+        ]"
+        :style="{
+          'grid-template-columns': calContactTask.Icon ? 'calc(100% - 20px) 20px' : '100%',
+        }"
+        v-show="
+          (userSettings.calendar.filters.owners == calContactTask.Assign ||
+            userSettings.calendar.filters.owners == '') &&
+          (userSettings.calendar.filters.status == calContactTask.Status ||
+            userSettings.calendar.filters.status == '') &&
+          (userSettings.calendar.filters.category == calContactTask.Categ ||
+            userSettings.calendar.filters.category == '')
+        "
+      >
         <div
-          class="task-grid-container"
-          :class="[
-            calContactTask.Status,
-            {
-              active: calContactTask.ContactID == userSettings.selectedContactIndex,
-            },
-            {
-              activeTask:
-                calContactTask.EventIndex == eventIndex &&
-                calContactTask.ContactID == userSettings.selectedContactIndex &&
-                calContactTask.Type == activeTab,
-            },
-          ]"
-          :style="{
-            'grid-template-columns': calContactTask.Icon ? 'calc(100% - 20px) 20px' : '100%',
-          }"
-          v-show="
-            (userSettings.calendar.filters.owners == calContactTask.Assign ||
-              userSettings.calendar.filters.owners == '') &&
-            (userSettings.calendar.filters.status == calContactTask.Status ||
-              userSettings.calendar.filters.status == '') &&
-            (userSettings.calendar.filters.category == calContactTask.Categ ||
-              userSettings.calendar.filters.category == '')
-          "
+          style="overflow: hidden"
+          class="prevent-select"
+          @click="selectContact(calContactTask.ContactID, calContactTask.Type, calContactTask.EventIndex)"
+          v-on:dblclick="selectContact(calContactTask.ContactID, 'house-chimney-user', null)"
         >
-          <div
-            style="overflow: hidden"
-            class="prevent-select"
-            @click="selectContact(calContactTask.ContactID, calContactTask.Type, calContactTask.EventIndex)"
-            v-on:dblclick="selectContact(calContactTask.ContactID, 'house-chimney-user', null)"
-          >
-            {{ calContactTask.Time != '25:00' ? calContactTask.Time : '' }}
-            {{ calContactTask?.Name }}
-          </div>
-          <div style="text-align: center" class="prevent-select" v-if="calContactTask.Icon">
-            <i :class="calContactTask.Icon"></i>
-          </div>
+          {{ calContactTask.Time != '25:00' ? calContactTask.Time : '' }}
+          {{ calContactTask?.Name }}
         </div>
-      </template>
-    </div>
+        <div style="text-align: center" class="prevent-select" v-if="calContactTask.Icon">
+          <i :class="calContactTask.Icon"></i>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -139,37 +137,18 @@ export default {
 </script>
 
 <style>
-.day-content {
-  height: -webkit-fill-available;
-  height: -moz-fill-available;
-}
-.task-grid-day {
+.task-grid-day-title {
+  position: sticky;
+  top: 0;
   padding-left: 2px;
   padding-top: 2px;
   padding-bottom: 2px;
-  border-right: 5px solid #888;
   overflow: hidden;
+  background-color: inherit;
 }
 .task-grid-day-content {
-  height: -webkit-fill-available;
-  overflow: hidden scroll;
+  overflow: hidden;
 }
-
-.task-grid-day-content::-webkit-scrollbar {
-  width: 5px;
-}
-.task-grid-day-content::-webkit-scrollbar-track {
-  background: #888;
-}
-
-.task-grid-day-content::-webkit-scrollbar-thumb {
-  background: #f1f1f1;
-}
-
-.task-grid-day-content::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
 .task-grid-container {
   color: white;
   display: grid;

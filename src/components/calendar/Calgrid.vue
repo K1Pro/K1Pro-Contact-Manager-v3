@@ -117,11 +117,11 @@ export default {
   border: solid #999999;
   border-width: 2px;
   cursor: pointer;
-  overflow: hidden;
+  overflow: hidden scroll;
   white-space: nowrap;
   background-image: linear-gradient(125deg, #ffffff 0 25%, #cccccc 95% 100%);
 }
-/* .day::-webkit-scrollbar {
+.day::-webkit-scrollbar {
   width: 5px;
 }
 .day::-webkit-scrollbar-track {
@@ -134,7 +134,7 @@ export default {
 
 .day::-webkit-scrollbar-thumb:hover {
   background: #555;
-} */
+}
 .day:hover:not(.activeDay) {
   background-color: #ebccff;
   background-image: linear-gradient(125deg, #ebccff 0 25%, #bca3cc 95% 100%);
