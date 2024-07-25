@@ -125,7 +125,7 @@
         </div>
 
         <div v-else>
-          <custom1 v-if="customTab === 0"></custom1>
+          <dynamic_component_name_custom1 v-if="customTab === 0"></dynamic_component_name_custom1>
           <template v-else>{{ activeTab }}</template>
         </div>
       </div>
@@ -143,7 +143,7 @@ export default {
     Recurtasks,
     Notes,
     Settings,
-    Custom1,
+    dynamic_component_name_custom1,
     Reportspanel,
   },
 

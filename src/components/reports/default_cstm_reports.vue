@@ -1,5 +1,5 @@
 <template>
-  <div>Default reports</div>
+  <span></span>
 </template>
 
 <script>

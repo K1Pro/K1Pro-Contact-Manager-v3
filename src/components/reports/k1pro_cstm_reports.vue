@@ -1,5 +1,5 @@
 <template>
-  <div>K1Pro custom reports</div>
+  <span></span>
 </template>
 
 <script>

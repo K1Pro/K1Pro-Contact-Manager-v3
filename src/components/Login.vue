@@ -136,8 +136,8 @@ export default {
             this.username = '';
             this.password = '';
           }
+          this.spinLogin = false;
         }
-        // this.spinLogin = false;
       } catch (error) {
         console.log(error);
         this.msg.snackBar = 'Login error';

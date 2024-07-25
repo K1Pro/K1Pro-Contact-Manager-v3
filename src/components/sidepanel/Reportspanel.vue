@@ -32,9 +32,10 @@
         {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
         {{ contacts[slctdCntctIndex].Members[0]?.Name }}
       </div>
-      <template v-for="activeUser in Object.entries(activeUserList)">
+      <template v-for="(activeUser, activeUserIndex) in Object.entries(activeUserList)">
         <div
-          class="reports-panel-report reports-panel-odd"
+          class="reports-panel-report"
+          :class="[activeUserIndex % 2 ? 'reports-panel-even' : ' reports-panel-odd']"
           :style="{ 'font-weight': reports.includes('Activity log for user:' + activeUser[0]) ? 'bold' : 'normal' }"
           @click="selectReport('Activity log for user:' + activeUser[0])"
         >
