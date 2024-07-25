@@ -42,7 +42,13 @@
           ><input
             type="date"
             :value="recurTask.Start"
-            v-on:blur="updateRecurTaskFreq(recurTask.clmnIndex, $event.target.value, recurTask.Freq)"
+            v-on:blur="
+              updateRecurTaskFreq(
+                recurTask.clmnIndex,
+                $event.target.value,
+                contacts[slctdCntctIndex][clmn][recurTask.clmnIndex].Freq
+              )
+            "
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="recur-tasks-label">End:</span
@@ -62,7 +68,13 @@
           <span class="recur-tasks-label">Recur:</span>
           <select
             :value="recurTask.Freq"
-            @change="updateRecurTaskFreq(recurTask.clmnIndex, recurTask.Start, $event.target.value)"
+            @change="
+              updateRecurTaskFreq(
+                recurTask.clmnIndex,
+                contacts[slctdCntctIndex][clmn][recurTask.clmnIndex].Start,
+                $event.target.value
+              )
+            "
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           >
             <option>Annually</option>
