@@ -112,6 +112,7 @@ export default {
         }
         if (connType == 'Email') {
           this.activeWindow = 'email';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }
     },

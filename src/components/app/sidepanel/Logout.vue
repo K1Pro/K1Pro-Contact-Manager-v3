@@ -10,13 +10,7 @@ export default {
   name: 'Logoutbtn',
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'accessToken',
-      'sessionID',
-      'loggedIn',
-      'msg',
-      'endPts',
-    ]),
+    ...Pinia.mapWritableState(useDefaultStore, ['accessToken', 'sessionID', 'loggedIn', 'msg', 'endPts']),
   },
 
   methods: {
@@ -25,6 +19,7 @@ export default {
       this.sessionID = undefined;
       document.cookie = `_a_t=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${this.cookiePath};`;
       document.cookie = `_s_i=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${this.cookiePath};`;
+      location.reload();
     },
 
     async deleteLogin() {
@@ -32,16 +27,13 @@ export default {
         this.loggedIn = false;
         // this.msg.snackBar = 'Logged out';
         try {
-          const response = await fetch(
-            this.endPts.loginURL + this.endPts.logout + this.sessionID,
-            {
-              method: 'DELETE',
-              headers: {
-                Authorization: this.accessToken,
-                'Cache-Control': 'no-store',
-              },
-            }
-          );
+          const response = await fetch(this.endPts.loginURL + this.endPts.logout + this.sessionID, {
+            method: 'DELETE',
+            headers: {
+              Authorization: this.accessToken,
+              'Cache-Control': 'no-store',
+            },
+          });
           this.deleteCookie();
           // const logOutResJSON = await response.json();
         } catch (error) {

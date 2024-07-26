@@ -155,10 +155,6 @@ export default {
           )
             userDataResJSON.data.userSettings.calendar.filters.days = 1;
           this.userSettings = userDataResJSON.data.userSettings;
-          // testReport = JSON.parse(userDataResJSON.data.custom_report);
-          // // testReport = JSON.parse(userDataResJSON.data.accountSettings.customReport);
-          // console.log(testReport);
-          // console.log(JSON.parse(testReport.methods));
 
           this.getContacts(null);
           this.getEmailSettings();
