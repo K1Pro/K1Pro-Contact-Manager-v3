@@ -134,8 +134,8 @@
       <table>
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Stats</th>
+            <th style="width: 15%">Date</th>
+            <th style="width: 15%">Stats</th>
             <th style="width: 70%">Graph</th>
           </tr>
         </thead>
@@ -150,15 +150,27 @@
             <td>
               <div
                 style="height: 15px; background-color: lightskyblue"
-                :style="{ width: (contact[1] / srtdCntcts[srtdCntcts.length - 1][4]) * 100 + '%' }"
+                :style="{
+                  width: srtdCntcts[srtdCntcts.length - 1][4]
+                    ? (contact[1] / srtdCntcts[srtdCntcts.length - 1][4]) * 100 + '%'
+                    : '0%',
+                }"
               ></div>
               <div
                 style="height: 15px; background-color: lightcoral"
-                :style="{ width: (contact[2] / srtdCntcts[srtdCntcts.length - 1][4]) * 100 + '%' }"
+                :style="{
+                  width: srtdCntcts[srtdCntcts.length - 1][4]
+                    ? (contact[2] / srtdCntcts[srtdCntcts.length - 1][4]) * 100 + '%'
+                    : '0%',
+                }"
               ></div>
               <div
                 style="height: 15px; background-color: lightgreen"
-                :style="{ width: (contact[3] / srtdCntcts[srtdCntcts.length - 1][4]) * 100 + '%' }"
+                :style="{
+                  width: srtdCntcts[srtdCntcts.length - 1][4]
+                    ? (contact[3] / srtdCntcts[srtdCntcts.length - 1][4]) * 100 + '%'
+                    : '0%',
+                }"
               ></div>
             </td>
           </tr>
