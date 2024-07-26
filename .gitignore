@@ -6,6 +6,10 @@
 # production
 /not working
 /archive
+/index.php
+/sync.ffs_db
+/src/components/custom1
+/src/components/reports
 *.png
 *.ico
 *.env
@@ -13,7 +17,4 @@
 *.psd
 *.htaccess
 *.txt
-/index.php
-/sync.ffs_db
-/src/components/custom1
-/src/components/reports
+
