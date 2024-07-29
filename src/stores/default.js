@@ -151,9 +151,14 @@ const useDefaultStore = Pinia.defineStore('default', {
       }
     },
     usaDateFrmt(dateString) {
-      return dateString
-        ? dateString.slice(5, 7) + '/' + dateString.slice(8, 10) + '/' + dateString.slice(0, 4)
-        : dateString;
+      let newDateString = dateString;
+      if (dateString != null && dateString != undefined) {
+        // prettier-ignore
+        newDateString = dateString.includes('T')
+          ? dateString.slice(5, 7) + '/' + dateString.slice(8, 10) + '/' + dateString.slice(0, 4) + ' ' + dateString.slice(11,16)
+          : dateString.slice(5, 7) + '/' + dateString.slice(8, 10) + '/' + dateString.slice(0, 4)
+      }
+      return newDateString;
     },
   },
   getters: {

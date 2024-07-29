@@ -5,7 +5,7 @@
       <div
         v-for="(report, reportIndex) in includedReports"
         class="reports-panel-report"
-        :class="[reportIndex % 2 ? 'reports-panel-even' : ' reports-panel-odd']"
+        :class="'reports-panel' + (reportIndex % 2)"
         :style="{ 'font-weight': reports.includes(report.slice(0, 22)) ? 'bold' : 'normal' }"
         @click="selectReport(report)"
       >
@@ -14,7 +14,7 @@
       <div
         v-for="(activeUser, activeUserIndex) in Object.entries(activeUserList)"
         class="reports-panel-report"
-        :class="[(includedReports.length + activeUserIndex) % 2 ? 'reports-panel-even' : ' reports-panel-odd']"
+        :class="'reports-panel' + ((includedReports.length + activeUserIndex) % 2)"
         :style="{ 'font-weight': reports.includes('Activity log for user:' + activeUser[0]) ? 'bold' : 'normal' }"
         @click="selectReport('Activity log for user:' + activeUser[0])"
       >
@@ -23,11 +23,7 @@
       <div
         v-for="(report, reportIndex) in accountSettings.reports"
         class="reports-panel-report"
-        :class="[
-          (includedReports.length + Object.entries(activeUserList).length + reportIndex) % 2
-            ? 'reports-panel-even'
-            : ' reports-panel-odd',
-        ]"
+        :class="'reports-panel' + ((includedReports.length + Object.entries(activeUserList).length + reportIndex) % 2)"
         :style="{ 'font-weight': reports.includes(report) ? 'bold' : 'normal' }"
         @click="selectReport(report)"
       >
@@ -110,10 +106,10 @@ export default {
 .reports-panel-report:hover {
   text-decoration: underline;
 }
-.reports-panel-odd {
+.reports-panel0 {
   background-color: white;
 }
-.reports-panel-even {
+.reports-panel1 {
   background-color: lightblue;
 }
 </style>

@@ -94,7 +94,7 @@
             <td class="cellHover" @click="selectContact(contact[0])">{{ srtdCntcts.length - contactIndex }}</td>
             <td>{{ contact[2] }}</td>
             <td>
-              <div style="width: 125px">{{ contact[3] }}</div>
+              <div style="width: 125px">{{ usaDateFrmt(contact[3]) }}</div>
             </td>
             <td>
               <div>{{ contact[4] }}</div>
@@ -123,7 +123,7 @@
             <td>{{ contacts[slctdCntctIndex].Log.length - logIndex }}</td>
             <td>{{ contacts[slctdCntctIndex].Members[0]?.Name }}</td>
             <td>{{ contacts[slctdCntctIndex].Categ }}</td>
-            <td>{{ log[1] }}</td>
+            <td>{{ usaDateFrmt(log[1]) }}</td>
             <td>{{ log[2] }}</td>
             <td>{{ userList?.[log?.[0]]?.[0] }}</td>
           </tr>
