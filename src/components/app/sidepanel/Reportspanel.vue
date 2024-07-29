@@ -1,6 +1,6 @@
 <template>
   <div class="reports-panel">
-    <div class="reports-panel-title">Select a report</div>
+    <div class="reports-panel-title">Select a report:</div>
     <div class="reports-panel-body">
       <div
         v-for="(report, reportIndex) in includedReports"
@@ -97,6 +97,7 @@ export default {
   height: calc(100vh - 50px);
 }
 .reports-panel-report {
+  color: #3162b1;
   height: 29px;
   padding: 5px;
   cursor: pointer;

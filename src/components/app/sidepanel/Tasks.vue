@@ -72,10 +72,10 @@
           <span class="tasks-label">Finished:</span
           ><input
             type="checkbox"
-            :checked="task?.Status == 1"
+            :checked="task?.Status === true || task?.Status == '1'"
             @change="updateTask($event.target.checked, task.clmnIndex, 'Status')"
           />
-          {{ task?.Status == 1 ? 'Yes' : 'No' }}
+          {{ task?.Status === true || task?.Status == '1' ? 'Yes' : 'No' }}
           <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
             <span
               spellcheck="false"
@@ -173,6 +173,7 @@ export default {
       ) {
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
+        this.taskMemo = this.taskMemo + 1;
         this.patchContactInfo(event, this.clmn, clmnIndex, key);
       }
     },

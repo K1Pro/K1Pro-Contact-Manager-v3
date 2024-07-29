@@ -1,7 +1,7 @@
 <template>
   <div class="reports">
-    <template v-if="reports.includes('All contacts with min. info')">
-      <table>
+    <table>
+      <template v-if="reports.includes('All contacts with min. info')">
         <thead>
           <tr>
             <th>#</th>
@@ -26,10 +26,8 @@
             <td>{{ contact.Categ }}</td>
           </tr>
         </tbody>
-      </table>
-    </template>
-    <template v-if="reports.includes('All contacts with more info')">
-      <table>
+      </template>
+      <template v-if="reports.includes('All contacts with more info')">
         <thead>
           <tr>
             <th>#</th>
@@ -76,10 +74,8 @@
             </td>
           </tr>
         </tbody>
-      </table>
-    </template>
-    <template v-if="reports.includes('All contact tasks')">
-      <table>
+      </template>
+      <template v-if="reports.includes('All contact tasks')">
         <thead>
           <tr>
             <th>#</th>
@@ -104,10 +100,8 @@
             </td>
           </tr>
         </tbody>
-      </table>
-    </template>
-    <template v-if="reports.includes('Activity log for contact:')">
-      <table>
+      </template>
+      <template v-if="reports.includes('Activity log for contact:')">
         <thead>
           <tr>
             <th>#</th>
@@ -128,10 +122,8 @@
             <td>{{ userList?.[log?.[0]]?.[0] }}</td>
           </tr>
         </tbody>
-      </table>
-    </template>
-    <template v-if="reports.includes('Activity log for user:')">
-      <table>
+      </template>
+      <template v-if="reports.includes('Activity log for user:')">
         <thead>
           <tr>
             <th style="width: 15%">Date</th>
@@ -175,9 +167,9 @@
             </td>
           </tr>
         </tbody>
-      </table>
-    </template>
-    <dynamic_component_name_reports></dynamic_component_name_reports>
+      </template>
+      <dynamic_component_name_reports></dynamic_component_name_reports>
+    </table>
   </div>
 </template>
 
@@ -206,7 +198,21 @@ export default {
     srtdCntcts() {
       let clonedCntcts = this.contacts;
       let newSrtdCntcts = [];
-      if (this.reports == 'All contact tasks') {
+      if (this.reports == 'All contacts with min. info') {
+        clonedCntcts.forEach((contact) => {
+          contact.Tasks.forEach((task) => {
+            if (task.Date)
+              newSrtdCntcts.push([
+                contact?.id,
+                task?.Status == '1' ? 1 : 0,
+                contact?.Members?.[0]?.Name,
+                task?.Date,
+                this.userList[task?.Update]?.[0],
+                task?.Desc,
+              ]);
+          });
+        });
+      } else if (this.reports == 'All contact tasks') {
         clonedCntcts.forEach((contact) => {
           contact.Tasks.forEach((task) => {
             if (task.Date)

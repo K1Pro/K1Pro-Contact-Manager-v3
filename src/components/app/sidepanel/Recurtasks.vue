@@ -207,6 +207,7 @@ export default {
       ) {
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
+        this.recurTaskMemo = this.recurTaskMemo + 1;
         this.patchContactInfo(event, this.clmn, clmnIndex, key);
       }
     },
@@ -245,6 +246,7 @@ export default {
           freq == 'Semiannually' || freq == 'Quarterly' ? newRecurTask : [recurTaskEvent];
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Freq = freq;
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
+        this.recurTaskMemo = this.recurTaskMemo + 1;
         this.patchContactInfo(freq + '+' + start + '+' + recurTaskEvent, this.clmn, clmnIndex, 'Freq');
       }
     },
