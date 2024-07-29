@@ -71,7 +71,7 @@ export default {
 <style>
 .navigation-grid-container {
   display: grid;
-  grid-template-columns: auto 25px 30px 175px 30px 25px auto;
+  grid-template-columns: auto 30px 30px 175px 30px 30px auto;
 }
 .navigation i {
   cursor: pointer;
@@ -116,10 +116,4 @@ export default {
   border: 0;
   width: 175px;
 }
-
-/* @media only screen and (min-width: 768px) {
-  .navigation-grid-container {
-    grid-template-columns: auto auto auto 175px auto auto auto;
-  }
-} */
 </style>
