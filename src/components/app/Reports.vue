@@ -1,7 +1,7 @@
 <template>
   <div class="reports">
     <i class="fa-solid fa-download" @click="downloadTable"></i>
-    <table ref="reportTable">
+    <table>
       <template
         v-if="
           reports.includes('All contacts with min. info') ||
@@ -285,7 +285,7 @@ export default {
         csv.push(row.join(','));
       });
       const csv_string = csv.join('\n');
-      const filename = 'export_' + new Date().toLocaleDateString() + '.csv';
+      const filename = new Date().toLocaleDateString() + '_' + this.reports + '.csv';
       const link = document.createElement('a');
       link.style.display = 'none';
       link.setAttribute('target', '_blank');
@@ -309,6 +309,16 @@ export default {
   font-size: 12px;
   padding: 0px;
   overflow: scroll scroll;
+}
+.reports i {
+  z-index: 1;
+  color: white;
+  position: absolute;
+  top: 10px;
+  height: 30px;
+  padding: 10px 5px 0px 5px;
+  background-color: #6c757d;
+  cursor: pointer;
 }
 .reports table {
   border: 0px;
