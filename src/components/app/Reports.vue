@@ -1,7 +1,13 @@
 <template>
   <div class="reports">
     <table>
-      <template v-if="!reports.includes('All contact tasks') && !reports.includes('Activity log for user:')">
+      <template
+        v-if="
+          reports.includes('All contacts with min. info') ||
+          reports.includes('All contacts with more info') ||
+          reports.includes('Activity log for contact:')
+        "
+      >
         <thead>
           <tr>
             <th v-for="tableTitle in srtdCntcts[1][0]">{{ tableTitle }}</th>
@@ -22,7 +28,7 @@
               </template>
             </template>
             <template v-if="srtdCntctIndex > 0 && !srtdCntcts[0]">
-              <td v-for="tableContent in srtdCntct[1]">{{ tableContent }}</td>
+              <td v-for="tableContent in srtdCntct">{{ tableContent }}</td>
             </template>
           </tr>
         </tbody>
@@ -127,6 +133,7 @@ export default {
       let newSrtdCntcts = [];
       let numberColumn = [];
       if (this.reports.includes('All contacts with min. info')) {
+        // 'All contacts with min. info'
         clonedCntcts.forEach((contact) => {
           newSrtdCntcts.push([
             contact.id,
@@ -145,6 +152,7 @@ export default {
           });
         newSrtdCntcts.unshift(['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category']);
       } else if (this.reports.includes('All contacts with more info')) {
+        // 'All contacts with more info'
         clonedCntcts.forEach((contact) => {
           const addressArray = Object.entries(contact.Addresses[0]).map(([addressKey, addressValue]) => {
             return addressKey != 'Type' ? addressValue : null;
@@ -173,6 +181,7 @@ export default {
           });
         newSrtdCntcts.unshift(['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category']);
       } else if (this.reports == 'All contact tasks') {
+        // 'All contact tasks'
         numberColumn = null;
         clonedCntcts.forEach((contact) => {
           contact.Tasks.forEach((task) => {
@@ -189,6 +198,7 @@ export default {
         });
         newSrtdCntcts.sort((a, b) => b[3].localeCompare(a[3]));
       } else if (this.reports.includes('Activity log for contact:')) {
+        // 'Activity log for contact:'
         numberColumn = null;
         this.contacts[this.slctdCntctIndex].Log.forEach((log, logIndex) => {
           newSrtdCntcts.push([
@@ -202,6 +212,7 @@ export default {
         });
         newSrtdCntcts.unshift(['#', 'Contact', 'Category', 'Date', 'Activity', 'Owner']);
       } else if (this.reports.includes('Activity log for user:')) {
+        // 'Activity log for user:'
         numberColumn = null;
         let userID = this.reports.split(':')[1];
         let currentDate = new Date(this.times.initialUsrTmstmp);
