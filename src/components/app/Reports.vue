@@ -1,80 +1,33 @@
 <template>
   <div class="reports">
     <table>
-      <template v-if="reports.includes('All contacts with min. info')">
+      <template v-if="!reports.includes('All contact tasks') && !reports.includes('Activity log for user:')">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Contact</th>
-            <th>Address</th>
-            <th>Assets</th>
-            <th>Connections</th>
-            <th>Category</th>
+            <th v-for="tableTitle in srtdCntcts[1][0]">{{ tableTitle }}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
-            <td class="cellHover" @click="selectContact(contact.id)">{{ contactIndex + 1 }}</td>
-            <td>{{ Object.values(contact.Members)[0]?.Name }}</td>
-            <td>{{ Object.values(contact.Addresses)?.[0]?.Address_1 }}</td>
-            <td>
-              {{ Object.values(contact.Assets)[0] ? Object.values(Object.values(contact.Assets)[0])[0] : '' }}
-            </td>
-            <td>
-              {{ Object.values(contact.Connections)[0] ? Object.values(Object.values(contact.Connections)[0])[0] : '' }}
-            </td>
-            <td>{{ contact.Categ }}</td>
+          <tr v-for="(srtdCntct, srtdCntctIndex) in srtdCntcts[1]" :class="'cell' + ((srtdCntctIndex + 1) % 2)">
+            <template v-if="srtdCntctIndex > 0 && srtdCntcts[0]">
+              <template v-for="(tableContent, tableContentIndex) in srtdCntct">
+                <td
+                  v-if="tableContentIndex == 0"
+                  class="cellHover"
+                  @click="selectContact(srtdCntcts[0][srtdCntctIndex - 1])"
+                >
+                  {{ tableContent }}
+                </td>
+                <td v-if="tableContentIndex > 0">{{ tableContent }}</td>
+              </template>
+            </template>
+            <template v-if="srtdCntctIndex > 0 && !srtdCntcts[0]">
+              <td v-for="tableContent in srtdCntct[1]">{{ tableContent }}</td>
+            </template>
           </tr>
         </tbody>
       </template>
-      <template v-if="reports.includes('All contacts with more info')">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Contact</th>
-            <th>Address</th>
-            <th>Assets</th>
-            <th>Connections</th>
-            <th>Category</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
-            <td class="cellHover" @click="selectContact(contact.id)">{{ contactIndex + 1 }}</td>
-            <td>
-              <div v-for="contactInfo in contact.Members">{{ contactInfo.First }} {{ contactInfo?.Name }}</div>
-            </td>
-            <td>
-              <template v-for="contactInfo in contact.Addresses">
-                <div>{{ contactInfo.Address_1 }} {{ contactInfo.Address_2 }}</div>
-                <div>
-                  {{ contactInfo.City }} {{ contactInfo.State }}
-                  {{ contactInfo.Zip }}
-                </div>
-              </template>
-            </td>
-            <td>
-              <template v-for="contactInfo in contact.Assets">
-                <div v-for="infoItem in contactInfo">
-                  {{ infoItem }}
-                </div>
-              </template>
-            </td>
-            <td>
-              <template v-for="contactInfo in contact.Connections">
-                <div v-for="infoItem in contactInfo">
-                  {{ infoItem }}
-                </div>
-              </template>
-            </td>
-            <td>
-              <div>
-                {{ contact.Categ }}
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </template>
+
       <template v-if="reports.includes('All contact tasks')">
         <thead>
           <tr>
@@ -86,43 +39,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'taskCell' + (contactIndex % 2) + contact[1]">
-            <td class="cellHover" @click="selectContact(contact[0])">{{ srtdCntcts.length - contactIndex }}</td>
+          <tr v-for="(contact, contactIndex) in srtdCntcts[1]" :class="'taskCell' + (contactIndex % 2) + contact[1]">
+            <td class="cellHover" @click="selectContact(contact[0])">{{ srtdCntcts[1].length - contactIndex }}</td>
             <td>{{ contact[2] }}</td>
-            <td>
-              <div style="width: 125px">{{ usaDateFrmt(contact[3]) }}</div>
-            </td>
-            <td>
-              <div>{{ contact[4] }}</div>
-            </td>
-            <td>
-              <div>{{ contact[5] }}</div>
-            </td>
+            <td style="width: 125px">{{ usaDateFrmt(contact[3]) }}</td>
+            <td>{{ contact[4] }}</td>
+            <td>{{ contact[5] }}</td>
           </tr>
         </tbody>
       </template>
-      <template v-if="reports.includes('Activity log for contact:')">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Contact</th>
-            <th>Category</th>
-            <th>Date</th>
-            <th>Activity</th>
-            <th>Owner</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(log, logIndex) in contacts[slctdCntctIndex].Log" :class="'cell' + (logIndex % 2)">
-            <td>{{ contacts[slctdCntctIndex].Log.length - logIndex }}</td>
-            <td>{{ contacts[slctdCntctIndex].Members[0]?.Name }}</td>
-            <td>{{ contacts[slctdCntctIndex].Categ }}</td>
-            <td>{{ usaDateFrmt(log[1]) }}</td>
-            <td>{{ log[2] }}</td>
-            <td>{{ userList?.[log?.[0]]?.[0] }}</td>
-          </tr>
-        </tbody>
-      </template>
+
       <template v-if="reports.includes('Activity log for user:')">
         <thead>
           <tr>
@@ -132,7 +58,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(contact, contactIndex) in srtdCntcts" :class="'cell' + (contactIndex % 2)">
+          <tr v-for="(contact, contactIndex) in srtdCntcts[1]" :class="'cell' + (contactIndex % 2)">
             <td>{{ contact[0] }}</td>
             <td>
               <div style="white-space: nowrap">{{ contact[1] }} {{ contact[1] != 1 ? 'emails' : 'email' }}</div>
@@ -143,24 +69,24 @@
               <div
                 style="height: 15px; background-color: lightskyblue"
                 :style="{
-                  width: srtdCntcts[srtdCntcts.length - 1][4]
-                    ? (contact[1] / srtdCntcts[srtdCntcts.length - 1][4]) * 100 + '%'
+                  width: srtdCntcts[1][srtdCntcts[1].length - 1][4]
+                    ? (contact[1] / srtdCntcts[1][srtdCntcts[1].length - 1][4]) * 100 + '%'
                     : '0%',
                 }"
               ></div>
               <div
                 style="height: 15px; background-color: lightcoral"
                 :style="{
-                  width: srtdCntcts[srtdCntcts.length - 1][4]
-                    ? (contact[2] / srtdCntcts[srtdCntcts.length - 1][4]) * 100 + '%'
+                  width: srtdCntcts[1][srtdCntcts[1].length - 1][4]
+                    ? (contact[2] / srtdCntcts[1][srtdCntcts[1].length - 1][4]) * 100 + '%'
                     : '0%',
                 }"
               ></div>
               <div
                 style="height: 15px; background-color: lightgreen"
                 :style="{
-                  width: srtdCntcts[srtdCntcts.length - 1][4]
-                    ? (contact[3] / srtdCntcts[srtdCntcts.length - 1][4]) * 100 + '%'
+                  width: srtdCntcts[1][srtdCntcts[1].length - 1][4]
+                    ? (contact[3] / srtdCntcts[1][srtdCntcts[1].length - 1][4]) * 100 + '%'
                     : '0%',
                 }"
               ></div>
@@ -168,6 +94,7 @@
           </tr>
         </tbody>
       </template>
+
       <dynamic_component_name_reports></dynamic_component_name_reports>
     </table>
   </div>
@@ -198,21 +125,55 @@ export default {
     srtdCntcts() {
       let clonedCntcts = this.contacts;
       let newSrtdCntcts = [];
-      if (this.reports == 'All contacts with min. info') {
+      let numberColumn = [];
+      if (this.reports.includes('All contacts with min. info')) {
         clonedCntcts.forEach((contact) => {
-          contact.Tasks.forEach((task) => {
-            if (task.Date)
-              newSrtdCntcts.push([
-                contact?.id,
-                task?.Status == '1' ? 1 : 0,
-                contact?.Members?.[0]?.Name,
-                task?.Date,
-                this.userList[task?.Update]?.[0],
-                task?.Desc,
-              ]);
-          });
+          newSrtdCntcts.push([
+            contact.id,
+            contact.Members[0].Name ? contact.Members[0].Name : '',
+            contact.Addresses[0].Address_1 ? contact.Addresses[0].Address_1 : '',
+            contact.Assets[0] ? Object.values(contact.Assets[0])[0] : '',
+            contact.Connections[0] ? Object.values(contact.Connections[0])[0] : '',
+            contact.Categ ? contact.Categ : '',
+          ]);
         });
+        newSrtdCntcts
+          .sort((a, b) => a[1].localeCompare(b[1]))
+          .map((cntct, cntctIndex) => {
+            numberColumn.push(cntct[0]);
+            cntct[0] = cntctIndex + 1;
+          });
+        newSrtdCntcts.unshift(['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category']);
+      } else if (this.reports.includes('All contacts with more info')) {
+        clonedCntcts.forEach((contact) => {
+          const addressArray = Object.entries(contact.Addresses[0]).map(([addressKey, addressValue]) => {
+            return addressKey != 'Type' ? addressValue : null;
+          });
+          const assetsArray = contact.Assets.map((asset) => {
+            return Object.values(asset);
+          });
+          newSrtdCntcts.push([
+            contact.id,
+            contact.Members[0].Name ? contact.Members[0].Name : '',
+            Object.keys(contact?.Members?.[0])?.length > 2
+              ? contact?.Members?.[0]?.First + ' ' + contact?.Members?.[0]?.Name
+              : contact?.Members?.[0]?.Name,
+            addressArray.join(' '),
+            assetsArray.join(', '),
+            contact.Connections[0] ? Object.values(contact.Connections[0])[0] : '',
+            contact.Categ ? contact.Categ : '',
+          ]);
+        });
+        newSrtdCntcts
+          .sort((a, b) => a[1].localeCompare(b[1]))
+          .map((cntct, cntctIndex) => {
+            cntct.splice(1, 1);
+            numberColumn.push(cntct[0]);
+            cntct[0] = cntctIndex + 1;
+          });
+        newSrtdCntcts.unshift(['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category']);
       } else if (this.reports == 'All contact tasks') {
+        numberColumn = null;
         clonedCntcts.forEach((contact) => {
           contact.Tasks.forEach((task) => {
             if (task.Date)
@@ -227,7 +188,21 @@ export default {
           });
         });
         newSrtdCntcts.sort((a, b) => b[3].localeCompare(a[3]));
+      } else if (this.reports.includes('Activity log for contact:')) {
+        numberColumn = null;
+        this.contacts[this.slctdCntctIndex].Log.forEach((log, logIndex) => {
+          newSrtdCntcts.push([
+            this.contacts[this.slctdCntctIndex].Log.length - logIndex,
+            this.contacts[this.slctdCntctIndex].Members?.[0]?.Name,
+            this.contacts[this.slctdCntctIndex].Categ,
+            this.usaDateFrmt(log[1]),
+            log[2],
+            this.userList[log[0]][0],
+          ]);
+        });
+        newSrtdCntcts.unshift(['#', 'Contact', 'Category', 'Date', 'Activity', 'Owner']);
       } else if (this.reports.includes('Activity log for user:')) {
+        numberColumn = null;
         let userID = this.reports.split(':')[1];
         let currentDate = new Date(this.times.initialUsrTmstmp);
         let decreasingDate;
@@ -275,7 +250,7 @@ export default {
           })
           .sort((a, b) => a.Members[0].Name.localeCompare(b.Members[0].Name));
       }
-      return newSrtdCntcts;
+      return [numberColumn, newSrtdCntcts];
     },
   },
   methods: {
