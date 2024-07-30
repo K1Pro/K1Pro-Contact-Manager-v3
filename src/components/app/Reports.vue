@@ -1,6 +1,7 @@
 <template>
   <div class="reports">
-    <table>
+    <i class="fa-solid fa-download" @click="downloadTable"></i>
+    <table ref="reportTable">
       <template
         v-if="
           reports.includes('All contacts with min. info') ||
@@ -273,6 +274,26 @@ export default {
       if (this.windowWidth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }
+    },
+    downloadTable() {
+      const csv = [];
+      document.querySelectorAll('tr').forEach((tr) => {
+        const row = [];
+        for (let i of tr.children) {
+          row.push('"' + i.innerHTML.replaceAll('<div>', '').replaceAll('</div>', ', ').replace(/,\s*$/, '') + '"');
+        }
+        csv.push(row.join(','));
+      });
+      const csv_string = csv.join('\n');
+      const filename = 'export_' + new Date().toLocaleDateString() + '.csv';
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.setAttribute('target', '_blank');
+      link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     },
   },
 };
