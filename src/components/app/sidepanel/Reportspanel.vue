@@ -5,8 +5,7 @@
       <div
         v-for="(report, reportIndex) in includedReports"
         class="reports-panel-report"
-        :class="'reports-panel' + (reportIndex % 2)"
-        :style="{ 'font-weight': reports.includes(report.slice(0, 22)) ? 'bold' : 'normal' }"
+        :class="[reports.includes(report.slice(0, 22)) ? 'reports-panel-active' : 'reports-panel' + (reportIndex % 2)]"
         @click="selectReport(report)"
       >
         {{ report }}
@@ -14,8 +13,11 @@
       <div
         v-for="(activeUser, activeUserIndex) in Object.entries(activeUserList)"
         class="reports-panel-report"
-        :class="'reports-panel' + ((includedReports.length + activeUserIndex) % 2)"
-        :style="{ 'font-weight': reports.includes('Activity log for user:' + activeUser[0]) ? 'bold' : 'normal' }"
+        :class="[
+          reports.includes('Activity log for user:' + activeUser[0])
+            ? 'reports-panel-active'
+            : 'reports-panel' + ((includedReports.length + activeUserIndex) % 2),
+        ]"
         @click="selectReport('Activity log for user:' + activeUser[0])"
       >
         Activity log for user: {{ activeUser[1][0] }}
@@ -23,8 +25,11 @@
       <div
         v-for="(report, reportIndex) in accountSettings.reports"
         class="reports-panel-report"
-        :class="'reports-panel' + ((includedReports.length + Object.entries(activeUserList).length + reportIndex) % 2)"
-        :style="{ 'font-weight': reports.includes(report) ? 'bold' : 'normal' }"
+        :class="[
+          reports.includes(report)
+            ? 'reports-panel-active'
+            : 'reports-panel' + ((includedReports.length + Object.entries(activeUserList).length + reportIndex) % 2),
+        ]"
         @click="selectReport(report)"
       >
         {{ report }}
@@ -97,15 +102,20 @@ export default {
   height: calc(100vh - 50px);
 }
 .reports-panel-report {
-  color: #3162b1;
+  font-weight: normal;
+  color: black;
   height: 29px;
   padding: 5px;
   cursor: pointer;
   overflow: hidden;
   white-space: nowrap;
 }
+.reports-panel-active {
+  font-weight: bold;
+  background-color: #bbbbbb;
+}
 .reports-panel-report:hover {
-  text-decoration: underline;
+  background-color: #ddd;
 }
 .reports-panel0 {
   background-color: white;

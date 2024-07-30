@@ -1,6 +1,6 @@
 <template>
   <div class="reports">
-    <i class="fa-solid fa-download" @click="downloadTable"></i>
+    <i :style="{ left: tabContentWidth + 30 + 'px' }" class="fa-solid fa-download" @click="downloadTable"></i>
     <table>
       <template
         v-if="
@@ -15,8 +15,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(srtdCntct, srtdCntctIndex) in srtdCntcts[1]" :class="'cell' + ((srtdCntctIndex + 1) % 2)">
-            <template v-if="srtdCntctIndex > 0 && srtdCntcts[0]">
+          <template v-for="(srtdCntct, srtdCntctIndex) in srtdCntcts[1]">
+            <tr v-if="srtdCntctIndex > 0 && srtdCntcts[0]" :class="'cell' + ((srtdCntctIndex + 1) % 2)">
               <template v-for="(tableContent, tableContentIndex) in srtdCntct">
                 <td
                   v-if="tableContentIndex == 0"
@@ -27,11 +27,11 @@
                 </td>
                 <td v-if="tableContentIndex > 0">{{ tableContent }}</td>
               </template>
-            </template>
-            <template v-if="srtdCntctIndex > 0 && !srtdCntcts[0]">
+            </tr>
+            <tr v-if="srtdCntctIndex > 0 && !srtdCntcts[0]" :class="'cell' + ((srtdCntctIndex + 1) % 2)">
               <td v-for="tableContent in srtdCntct">{{ tableContent }}</td>
-            </template>
-          </tr>
+            </tr>
+          </template>
         </tbody>
       </template>
 
@@ -68,9 +68,9 @@
           <tr v-for="(contact, contactIndex) in srtdCntcts[1]" :class="'cell' + (contactIndex % 2)">
             <td>{{ contact[0] }}</td>
             <td>
-              <div style="white-space: nowrap">{{ contact[1] }} {{ contact[1] != 1 ? 'emails' : 'email' }}</div>
-              <div style="white-space: nowrap">{{ contact[2] }} {{ contact[2] != 1 ? 'calls' : 'call' }}</div>
-              <div style="white-space: nowrap">{{ contact[3] }} {{ contact[3] != 1 ? 'tasks' : 'task' }}</div>
+              <div>{{ contact[1] }} {{ contact[1] != 1 ? 'emails' : 'email' }}</div>
+              <div>{{ contact[2] }} {{ contact[2] != 1 ? 'calls' : 'call' }}</div>
+              <div>{{ contact[3] }} {{ contact[3] != 1 ? 'tasks' : 'task' }}</div>
             </td>
             <td>
               <div
@@ -128,6 +128,7 @@ export default {
       'usaDateFrmt',
       'userList',
       'slctdCntctIndex',
+      'tabContentWidth',
     ]),
     srtdCntcts() {
       let clonedCntcts = this.contacts;
@@ -280,6 +281,7 @@ export default {
       document.querySelectorAll('tr').forEach((tr) => {
         const row = [];
         for (let i of tr.children) {
+          // row.push('"' + i.innerHTML.replaceAll(/<.*>/, '').replace(/,\s*$/, '') + '"');
           row.push('"' + i.innerHTML.replaceAll('<div>', '').replaceAll('</div>', ', ').replace(/,\s*$/, '') + '"');
         }
         csv.push(row.join(','));
@@ -312,12 +314,11 @@ export default {
 }
 .reports i {
   z-index: 1;
-  color: white;
+  color: #417cd9;
   position: absolute;
-  top: 10px;
+  top: calc(100vh + 20px);
   height: 30px;
   padding: 10px 5px 0px 5px;
-  background-color: #6c757d;
   cursor: pointer;
 }
 .reports table {
@@ -366,6 +367,10 @@ export default {
 @media only screen and (min-width: 768px) {
   .reports {
     margin: 10px 0px 0px 0px;
+  }
+  .reports i {
+    top: 10px;
+    padding: 10px 5px 0px 20px;
   }
 }
 </style>
