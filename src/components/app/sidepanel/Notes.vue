@@ -55,6 +55,7 @@ export default {
   height: 30px;
   overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .notes textarea {
   width: 100%;

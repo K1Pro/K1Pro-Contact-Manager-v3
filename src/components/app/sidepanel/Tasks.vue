@@ -211,11 +211,13 @@ export default {
 }
 .tasks-title-grid-container {
   display: grid;
-  grid-template-columns: calc(100% - 60px) 30px 30px;
+  grid-template-columns: calc(100% - 52.5px) 30px 22.5px;
 }
 .tasks-title-grid-item1 {
   height: 20px;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 .tasks-title-grid-item2 button,
 .tasks-title-grid-item3 button {

@@ -282,11 +282,13 @@ export default {
 }
 .recur-tasks-title-grid-container {
   display: grid;
-  grid-template-columns: calc(100% - 60px) 30px 30px;
+  grid-template-columns: calc(100% - 52.5px) 30px 22.5px;
 }
 .recur-tasks-title-grid-item1 {
   height: 20px;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 .recur-tasks-title-grid-item2 button,
 .recur-tasks-title-grid-item3 button {
