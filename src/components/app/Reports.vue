@@ -11,15 +11,15 @@
       >
         <thead>
           <tr>
-            <th v-for="tableTitle in srtdCntcts[0]">{{ tableTitle }}</th>
+            <th v-for="tblTtl in tblCntnt[0]">{{ tblTtl }}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(srtdCntct, srtdCntctIndex) in srtdCntcts[2]" :class="'cell' + (srtdCntctIndex % 2)">
-            <td v-if="srtdCntcts[1]" class="cellHover" @click="selectContact(srtdCntcts[1][srtdCntctIndex][1])">
-              {{ srtdCntcts[1][srtdCntctIndex][0] }}
+          <tr v-for="(tblRow, tblRowIndx) in tblCntnt[2]" :class="'cell' + (tblRowIndx % 2)">
+            <td v-if="tblCntnt[1]" class="cellHover" @click="selectContact(tblCntnt[1][tblRowIndx][1])">
+              {{ tblCntnt[1][tblRowIndx][0] }}
             </td>
-            <td v-for="tableContent in srtdCntct">{{ tableContent }}</td>
+            <td v-for="tblCell in tblRow">{{ tblCell }}</td>
           </tr>
         </tbody>
       </template>
@@ -27,16 +27,12 @@
       <template v-if="reports.includes('All contact tasks')">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Contact</th>
-            <th>Date</th>
-            <th>Owner</th>
-            <th>Description</th>
+            <th v-for="tblTtl in tblCntnt[0]">{{ tblTtl }}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(contact, contactIndex) in srtdCntcts[2]" :class="'taskCell' + (contactIndex % 2) + contact[1]">
-            <td class="cellHover" @click="selectContact(contact[0])">{{ srtdCntcts[2].length - contactIndex }}</td>
+          <tr v-for="(contact, contactIndex) in tblCntnt[2]" :class="'taskCell' + (contactIndex % 2) + contact[1]">
+            <td class="cellHover" @click="selectContact(contact[0])">{{ tblCntnt[2].length - contactIndex }}</td>
             <td>{{ contact[2] }}</td>
             <td style="width: 125px">{{ usaDateFrmt(contact[3]) }}</td>
             <td>{{ contact[4] }}</td>
@@ -54,7 +50,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(contact, contactIndex) in srtdCntcts[2]" :class="'cell' + (contactIndex % 2)">
+          <tr v-for="(contact, contactIndex) in tblCntnt[2]" :class="'cell' + (contactIndex % 2)">
             <td>{{ contact[0] }}</td>
             <td>
               <div>{{ contact[1] }} {{ contact[1] != 1 ? 'emails' : 'email' }}</div>
@@ -65,24 +61,24 @@
               <div
                 style="height: 15px; background-color: lightskyblue"
                 :style="{
-                  width: srtdCntcts[2][srtdCntcts[2].length - 1][4]
-                    ? (contact[1] / srtdCntcts[2][srtdCntcts[2].length - 1][4]) * 100 + '%'
+                  width: tblCntnt[2][tblCntnt[2].length - 1][4]
+                    ? (contact[1] / tblCntnt[2][tblCntnt[2].length - 1][4]) * 100 + '%'
                     : '0%',
                 }"
               ></div>
               <div
                 style="height: 15px; background-color: lightcoral"
                 :style="{
-                  width: srtdCntcts[2][srtdCntcts[2].length - 1][4]
-                    ? (contact[2] / srtdCntcts[2][srtdCntcts[2].length - 1][4]) * 100 + '%'
+                  width: tblCntnt[2][tblCntnt[2].length - 1][4]
+                    ? (contact[2] / tblCntnt[2][tblCntnt[2].length - 1][4]) * 100 + '%'
                     : '0%',
                 }"
               ></div>
               <div
                 style="height: 15px; background-color: lightgreen"
                 :style="{
-                  width: srtdCntcts[2][srtdCntcts[2].length - 1][4]
-                    ? (contact[3] / srtdCntcts[2][srtdCntcts[2].length - 1][4]) * 100 + '%'
+                  width: tblCntnt[2][tblCntnt[2].length - 1][4]
+                    ? (contact[3] / tblCntnt[2][tblCntnt[2].length - 1][4]) * 100 + '%'
                     : '0%',
                 }"
               ></div>
@@ -119,15 +115,15 @@ export default {
       'slctdCntctIndex',
       'tabContentWidth',
     ]),
-    srtdCntcts() {
+    tblCntnt() {
       let clonedCntcts = this.contacts;
-      let tableHeaders = [];
-      let numberColumn = [];
-      let newSrtdCntcts = [];
+      let tblHdrs = [];
+      let nmbrClmn = [];
+      let tblClmns = [];
       if (this.reports.includes('All contacts with min. info')) {
         // 'All contacts with min. info'
         clonedCntcts.forEach((contact) => {
-          newSrtdCntcts.push([
+          tblClmns.push([
             contact.id,
             contact.Members[0].Name ? contact.Members[0].Name : '',
             contact.Addresses[0].Address_1 ? contact.Addresses[0].Address_1 : '',
@@ -136,16 +132,16 @@ export default {
             contact.Categ ? contact.Categ : '',
           ]);
         });
-        newSrtdCntcts
+        tblClmns
           .sort((a, b) => a[1].localeCompare(b[1]))
-          .map((cntct, cntctIndex) => {
-            const numberColumnArray = [];
-            numberColumnArray.push(cntctIndex + 1);
-            numberColumnArray.push(cntct[0]);
-            numberColumn.push(numberColumnArray);
+          .map((cntct, cntctIndx) => {
+            const nmbrClmnArray = [];
+            nmbrClmnArray.push(cntctIndx + 1);
+            nmbrClmnArray.push(cntct[0]);
+            nmbrClmn.push(nmbrClmnArray);
             cntct.splice(0, 1);
           });
-        tableHeaders = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
+        tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
       } else if (this.reports.includes('All contacts with more info')) {
         // 'All contacts with more info'
         clonedCntcts.forEach((contact) => {
@@ -155,7 +151,7 @@ export default {
           const assetsArray = contact.Assets.map((asset) => {
             return Object.values(asset);
           });
-          newSrtdCntcts.push([
+          tblClmns.push([
             contact.id,
             contact.Members[0].Name ? contact.Members[0].Name : '',
             Object.keys(contact?.Members?.[0])?.length > 2
@@ -167,22 +163,24 @@ export default {
             contact.Categ ? contact.Categ : '',
           ]);
         });
-        newSrtdCntcts
+        tblClmns
           .sort((a, b) => a[1].localeCompare(b[1]))
-          .map((cntct, cntctIndex) => {
-            cntct.splice(1, 1);
-            numberColumn.push(cntct[0]);
-            cntct[0] = cntctIndex + 1;
+          .map((cntct, cntctIndx) => {
+            const nmbrClmnArray = [];
+            nmbrClmnArray.push(cntctIndx + 1);
+            nmbrClmnArray.push(cntct[0]);
+            nmbrClmn.push(nmbrClmnArray);
+            cntct.splice(0, 2);
           });
 
-        tableHeaders = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
+        tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
       } else if (this.reports == 'All contact tasks') {
         // 'All contact tasks'
-        numberColumn = null;
+        nmbrClmn = null;
         clonedCntcts.forEach((contact) => {
           contact.Tasks.forEach((task) => {
             if (task.Date)
-              newSrtdCntcts.push([
+              tblClmns.push([
                 contact?.id,
                 task?.Status == '1' ? 1 : 0,
                 contact?.Members?.[0]?.Name,
@@ -192,12 +190,13 @@ export default {
               ]);
           });
         });
-        newSrtdCntcts.sort((a, b) => b[3].localeCompare(a[3]));
+        tblHdrs = ['#', 'Contact', 'Date', 'Owner', 'Description'];
+        tblClmns.sort((a, b) => b[3].localeCompare(a[3]));
       } else if (this.reports.includes('Activity log for contact:')) {
         // 'Activity log for contact:'
-        numberColumn = null;
+        nmbrClmn = null;
         this.contacts[this.slctdCntctIndex].Log.forEach((log, logIndex) => {
-          newSrtdCntcts.push([
+          tblClmns.push([
             this.contacts[this.slctdCntctIndex].Log.length - logIndex,
             this.contacts[this.slctdCntctIndex].Members?.[0]?.Name,
             this.contacts[this.slctdCntctIndex].Categ,
@@ -206,10 +205,10 @@ export default {
             this.userList[log[0]][0],
           ]);
         });
-        tableHeaders = ['#', 'Contact', 'Category', 'Date', 'Activity', 'Owner'];
+        tblHdrs = ['#', 'Contact', 'Category', 'Date', 'Activity', 'Owner'];
       } else if (this.reports.includes('Activity log for user:')) {
         // 'Activity log for user:'
-        numberColumn = null;
+        nmbrClmn = null;
         let userID = this.reports.split(':')[1];
         let currentDate = new Date(this.times.initialUsrTmstmp);
         let decreasingDate;
@@ -239,7 +238,7 @@ export default {
           emailCallCountArray.push(emailCount);
           emailCallCountArray.push(callCount);
           emailCallCountArray.push(taskCount);
-          newSrtdCntcts.push([
+          tblClmns.push([
             this.usaDateFrmt(decreasingDate),
             emailCount,
             callCount,
@@ -250,14 +249,14 @@ export default {
         }
       } else {
         clonedCntcts = this.contacts;
-        newSrtdCntcts = clonedCntcts
+        tblClmns = clonedCntcts
           .map((contact) => {
             if (!contact.Members[0].Name) contact.Members[0].Name = null;
             return contact;
           })
           .sort((a, b) => a.Members[0].Name.localeCompare(b.Members[0].Name));
       }
-      return [tableHeaders, numberColumn, newSrtdCntcts];
+      return [tblHdrs, nmbrClmn, tblClmns];
     },
   },
   methods: {
