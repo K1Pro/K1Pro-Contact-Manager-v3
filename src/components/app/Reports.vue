@@ -11,27 +11,16 @@
       >
         <thead>
           <tr>
-            <th v-for="tableTitle in srtdCntcts[1][0]">{{ tableTitle }}</th>
+            <th v-for="tableTitle in srtdCntcts[0]">{{ tableTitle }}</th>
           </tr>
         </thead>
         <tbody>
-          <template v-for="(srtdCntct, srtdCntctIndex) in srtdCntcts[1]">
-            <tr v-if="srtdCntctIndex > 0 && srtdCntcts[0]" :class="'cell' + ((srtdCntctIndex + 1) % 2)">
-              <template v-for="(tableContent, tableContentIndex) in srtdCntct">
-                <td
-                  v-if="tableContentIndex == 0"
-                  class="cellHover"
-                  @click="selectContact(srtdCntcts[0][srtdCntctIndex - 1])"
-                >
-                  {{ tableContent }}
-                </td>
-                <td v-if="tableContentIndex > 0">{{ tableContent }}</td>
-              </template>
-            </tr>
-            <tr v-if="srtdCntctIndex > 0 && !srtdCntcts[0]" :class="'cell' + ((srtdCntctIndex + 1) % 2)">
-              <td v-for="tableContent in srtdCntct">{{ tableContent }}</td>
-            </tr>
-          </template>
+          <tr v-for="(srtdCntct, srtdCntctIndex) in srtdCntcts[2]" :class="'cell' + (srtdCntctIndex % 2)">
+            <td v-if="srtdCntcts[1]" class="cellHover" @click="selectContact(srtdCntcts[1][srtdCntctIndex][1])">
+              {{ srtdCntcts[1][srtdCntctIndex][0] }}
+            </td>
+            <td v-for="tableContent in srtdCntct">{{ tableContent }}</td>
+          </tr>
         </tbody>
       </template>
 
@@ -46,8 +35,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(contact, contactIndex) in srtdCntcts[1]" :class="'taskCell' + (contactIndex % 2) + contact[1]">
-            <td class="cellHover" @click="selectContact(contact[0])">{{ srtdCntcts[1].length - contactIndex }}</td>
+          <tr v-for="(contact, contactIndex) in srtdCntcts[2]" :class="'taskCell' + (contactIndex % 2) + contact[1]">
+            <td class="cellHover" @click="selectContact(contact[0])">{{ srtdCntcts[2].length - contactIndex }}</td>
             <td>{{ contact[2] }}</td>
             <td style="width: 125px">{{ usaDateFrmt(contact[3]) }}</td>
             <td>{{ contact[4] }}</td>
@@ -65,7 +54,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(contact, contactIndex) in srtdCntcts[1]" :class="'cell' + (contactIndex % 2)">
+          <tr v-for="(contact, contactIndex) in srtdCntcts[2]" :class="'cell' + (contactIndex % 2)">
             <td>{{ contact[0] }}</td>
             <td>
               <div>{{ contact[1] }} {{ contact[1] != 1 ? 'emails' : 'email' }}</div>
@@ -76,24 +65,24 @@
               <div
                 style="height: 15px; background-color: lightskyblue"
                 :style="{
-                  width: srtdCntcts[1][srtdCntcts[1].length - 1][4]
-                    ? (contact[1] / srtdCntcts[1][srtdCntcts[1].length - 1][4]) * 100 + '%'
+                  width: srtdCntcts[2][srtdCntcts[2].length - 1][4]
+                    ? (contact[1] / srtdCntcts[2][srtdCntcts[2].length - 1][4]) * 100 + '%'
                     : '0%',
                 }"
               ></div>
               <div
                 style="height: 15px; background-color: lightcoral"
                 :style="{
-                  width: srtdCntcts[1][srtdCntcts[1].length - 1][4]
-                    ? (contact[2] / srtdCntcts[1][srtdCntcts[1].length - 1][4]) * 100 + '%'
+                  width: srtdCntcts[2][srtdCntcts[2].length - 1][4]
+                    ? (contact[2] / srtdCntcts[2][srtdCntcts[2].length - 1][4]) * 100 + '%'
                     : '0%',
                 }"
               ></div>
               <div
                 style="height: 15px; background-color: lightgreen"
                 :style="{
-                  width: srtdCntcts[1][srtdCntcts[1].length - 1][4]
-                    ? (contact[3] / srtdCntcts[1][srtdCntcts[1].length - 1][4]) * 100 + '%'
+                  width: srtdCntcts[2][srtdCntcts[2].length - 1][4]
+                    ? (contact[3] / srtdCntcts[2][srtdCntcts[2].length - 1][4]) * 100 + '%'
                     : '0%',
                 }"
               ></div>
@@ -132,8 +121,9 @@ export default {
     ]),
     srtdCntcts() {
       let clonedCntcts = this.contacts;
-      let newSrtdCntcts = [];
+      let tableHeaders = [];
       let numberColumn = [];
+      let newSrtdCntcts = [];
       if (this.reports.includes('All contacts with min. info')) {
         // 'All contacts with min. info'
         clonedCntcts.forEach((contact) => {
@@ -149,10 +139,13 @@ export default {
         newSrtdCntcts
           .sort((a, b) => a[1].localeCompare(b[1]))
           .map((cntct, cntctIndex) => {
-            numberColumn.push(cntct[0]);
-            cntct[0] = cntctIndex + 1;
+            const numberColumnArray = [];
+            numberColumnArray.push(cntctIndex + 1);
+            numberColumnArray.push(cntct[0]);
+            numberColumn.push(numberColumnArray);
+            cntct.splice(0, 1);
           });
-        newSrtdCntcts.unshift(['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category']);
+        tableHeaders = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
       } else if (this.reports.includes('All contacts with more info')) {
         // 'All contacts with more info'
         clonedCntcts.forEach((contact) => {
@@ -181,7 +174,8 @@ export default {
             numberColumn.push(cntct[0]);
             cntct[0] = cntctIndex + 1;
           });
-        newSrtdCntcts.unshift(['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category']);
+
+        tableHeaders = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
       } else if (this.reports == 'All contact tasks') {
         // 'All contact tasks'
         numberColumn = null;
@@ -212,7 +206,7 @@ export default {
             this.userList[log[0]][0],
           ]);
         });
-        newSrtdCntcts.unshift(['#', 'Contact', 'Category', 'Date', 'Activity', 'Owner']);
+        tableHeaders = ['#', 'Contact', 'Category', 'Date', 'Activity', 'Owner'];
       } else if (this.reports.includes('Activity log for user:')) {
         // 'Activity log for user:'
         numberColumn = null;
@@ -263,7 +257,7 @@ export default {
           })
           .sort((a, b) => a.Members[0].Name.localeCompare(b.Members[0].Name));
       }
-      return [numberColumn, newSrtdCntcts];
+      return [tableHeaders, numberColumn, newSrtdCntcts];
     },
   },
   methods: {
