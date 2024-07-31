@@ -7,6 +7,7 @@
           <select
             style="border: none; background-color: transparent"
             :value="member.Type"
+            :disabled="dsbld"
             @change="updateMember($event, memberIndex, 'Type')"
           >
             <option v-for="member in Object.keys(accountSettings.contactInfo.keys.Members)" :value="member">
@@ -36,6 +37,7 @@
             background-color: transparent;
             appearance: none;
           "
+          :disabled="dsbld"
         >
           <option selected disabled></option>
           <option v-for="cntctInfo in addCntctInfoDropDown" :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey">
@@ -45,7 +47,7 @@
           <option value="deleteContact">Delete contact</option>
         </select>
 
-        <button v-else class="member-button" @click="deleteContactInfo('Members', memberIndex)">
+        <button v-else class="member-button" @click="deleteContactInfo('Members', memberIndex)" :disabled="dsbld">
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
@@ -60,6 +62,7 @@
             :type="memberInputs.type"
             :placeholder="memberInputs.placeholder"
             :value="member[memberInputs.value]"
+            :disabled="dsbld"
             v-on:blur="updateMember($event, memberIndex, memberInputs.value)"
           />
         </div>
@@ -86,6 +89,7 @@ export default {
       'endPts',
       'contacts',
       'times',
+      'dsbld',
       'patchContactInfo',
       'deleteContactInfo',
       'patchUserSettings',

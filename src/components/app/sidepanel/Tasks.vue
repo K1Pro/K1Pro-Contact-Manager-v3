@@ -23,7 +23,7 @@
             </button>
           </div>
           <div class="tasks-title-grid-item3">
-            <button @click="newTask">
+            <button @click="newTask" :disabled="dsbld">
               <i class="fa-solid fa-square-plus"></i>
             </button>
           </div>
@@ -37,6 +37,7 @@
           ><input
             type="datetime-local"
             :value="task.Date"
+            :disabled="dsbld"
             v-on:blur="updateTask($event.target.value, task.clmnIndex, 'Date')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
           />
@@ -45,6 +46,7 @@
             :value="task.Tag"
             @change="updateTask($event.target.value, task.clmnIndex, 'Tag')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
+            :disabled="dsbld"
           >
             <option value="">None</option>
             <option value="fa-solid fa-phone">Call</option>
@@ -62,6 +64,7 @@
             :value="task.Assign"
             @change="updateTask($event.target.value, task.clmnIndex, 'Assign')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
+            :disabled="dsbld"
           >
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
               {{ userInfo[0] }}
@@ -74,12 +77,13 @@
             type="checkbox"
             :checked="task?.Status === true || task?.Status == '1'"
             @change="updateTask($event.target.checked, task.clmnIndex, 'Status')"
+            :disabled="dsbld"
           />
           {{ task?.Status === true || task?.Status == '1' ? 'Yes' : 'No' }}
           <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
             <span
               spellcheck="false"
-              contenteditable="plaintext-only"
+              :contenteditable="dsbld ? 'false' : 'plaintext-only'"
               v-on:blur="updateTask($event.target.innerHTML, task.clmnIndex, 'Desc')"
               >{{ task?.Desc }}</span
             >
@@ -117,6 +121,7 @@ export default {
       'userData',
       'contacts',
       'times',
+      'dsbld',
       'patchContactInfo',
       'deleteContactInfo',
       'userList',

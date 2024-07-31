@@ -46,6 +46,7 @@ const useDefaultStore = Pinia.defineStore('default', {
       appName: app_name,
       slctdDayIndex: null,
       updating: 0,
+      dsbld: false,
     };
   },
   actions: {

@@ -52,7 +52,7 @@
         <tbody>
           <tr v-for="(contact, contactIndex) in tblCntnt[2]" :class="'cell' + (contactIndex % 2)">
             <td>{{ contact[0] }}</td>
-            <td>
+            <td class="reports-usr-actvty-log">
               <div>{{ contact[1] }} {{ contact[1] != 1 ? 'emails' : 'email' }}</div>
               <div>{{ contact[2] }} {{ contact[2] != 1 ? 'calls' : 'call' }}</div>
               <div>{{ contact[3] }} {{ contact[3] != 1 ? 'tasks' : 'task' }}</div>
@@ -332,6 +332,10 @@ export default {
 }
 .reports td {
   padding: 5px;
+}
+.reports-usr-actvty-log div {
+  overflow: hidden;
+  white-space: nowrap;
 }
 .cell0 {
   background-color: white;

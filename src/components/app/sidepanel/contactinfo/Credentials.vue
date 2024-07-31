@@ -12,6 +12,7 @@
                 :type="credInputType"
                 :value="credInfo"
                 :ref="'credInput' + credIndex"
+                :disabled="dsbld"
                 :style="{
                   'border-bottom':
                     credIndex !== contacts[slctdCntctIndex].Credentials.length - 1 ? '1px solid black' : '0',
@@ -22,7 +23,7 @@
               <button class="cred-reveal" style="color: grey" @click="toggleCred(credIndex)">
                 <span :ref="'credIcon' + credIndex" class="fa-solid fa-eye"></span>
               </button>
-              <button class="cred-button" @click="deleteContactInfo('Credentials', credIndex)">
+              <button class="cred-button" @click="deleteContactInfo('Credentials', credIndex)" :disabled="dsbld">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
@@ -45,6 +46,7 @@ export default {
       'accountSettings',
       'userSettings',
       'contacts',
+      'dsbld',
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntctIndex',

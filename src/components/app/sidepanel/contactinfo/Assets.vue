@@ -13,9 +13,10 @@
               :placeholder="assetInputs.placeholder"
               :type="assetInputs.type"
               :value="assetInfo"
+              :disabled="dsbld"
               @change="updateAsset($event, assetIndex, assetType)"
             />
-            <button class="asset-button" @click="deleteContactInfo('Assets', assetIndex)">
+            <button class="asset-button" @click="deleteContactInfo('Assets', assetIndex)" :disabled="dsbld">
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>
@@ -24,9 +25,10 @@
               :placeholder="assetInputs.placeholder"
               :type="assetInputs.type"
               :value="assetInfo"
+              :disabled="dsbld"
               @change="updateAsset($event, assetIndex, assetType)"
             />
-            <button class="asset-button" @click="deleteContactInfo('Assets', assetIndex)">
+            <button class="asset-button" @click="deleteContactInfo('Assets', assetIndex)" :disabled="dsbld">
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>
@@ -48,6 +50,7 @@ export default {
       'accountSettings',
       'userSettings',
       'contacts',
+      'dsbld',
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntctIndex',

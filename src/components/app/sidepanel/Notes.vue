@@ -6,7 +6,12 @@
         {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
         {{ contacts[slctdCntctIndex].Members[0]?.Name }}
       </div>
-      <textarea placeholder="Notes" :value="contacts[slctdCntctIndex].Notes" @change="updateNotes($event)"></textarea>
+      <textarea
+        placeholder="Notes"
+        :value="contacts[slctdCntctIndex].Notes"
+        @change="updateNotes($event)"
+        :disabled="dsbld"
+      ></textarea>
     </template>
     <template v-else> Notes </template>
   </div>
@@ -21,6 +26,7 @@ export default {
       'msg',
       'userSettings',
       'contacts',
+      'dsbld',
       'patchContactInfo',
       'slctdCntctIndex',
     ]),

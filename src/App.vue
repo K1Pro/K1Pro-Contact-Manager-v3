@@ -70,6 +70,7 @@ export default {
       'endPts',
       'times',
       'updating',
+      'dsbld',
       'patchUserSettings',
       'slctdCntctIndex',
     ]),
@@ -110,6 +111,10 @@ export default {
         });
         const getCurrentupdateResJSON = await response.json();
         if (getCurrentupdateResJSON.success) {
+          if (this.dsbld == true) {
+            this.dsbld = false;
+            this.msg.snackBar = 'Internet restored';
+          }
           if (this.currentUpdate != getCurrentupdateResJSON.data.datetime && this.currentUpdate != null) {
             this.getContacts(getCurrentupdateResJSON.data.datetime);
           } else if (this.currentUpdate == null) {
@@ -117,8 +122,9 @@ export default {
           }
         }
       } catch (error) {
-        this.msg.snackBar = 'Network issue';
-        console.log(error.toString());
+        this.dsbld = true;
+        this.msg.snackBar = 'Internet problem';
+        // console.log(error.toString());
       }
     },
 
@@ -166,7 +172,7 @@ export default {
           this.sessionID = undefined;
         }
       } catch (error) {
-        this.msg.snackBar = 'Network issue';
+        this.msg.snackBar = 'Internet problem';
         console.log(error.toString());
       }
     },
@@ -181,10 +187,7 @@ export default {
           },
         });
         const getContactsResJSON = await response.json();
-        // if (document.activeElement.tagName != 'BODY') console.log('something is in focus');
-        // if (this.updating) console.log('something is being updated');
         if (getContactsResJSON.success && document.activeElement.tagName == 'BODY' && !this.updating) {
-          // console.log(getContactsResJSON);
           if (this.contacts.length == 0) {
             this.contacts = getContactsResJSON.data.contacts;
           } else {
@@ -201,7 +204,7 @@ export default {
           this.currentUpdate = updateTime;
         }
       } catch (error) {
-        this.msg.snackBar = 'Network issue';
+        this.msg.snackBar = 'Internet problem';
         console.log(error.toString());
       }
     },
@@ -221,7 +224,7 @@ export default {
           this.emails = getEmailSettingsResJSON.data.emailSettings;
         }
       } catch (error) {
-        this.msg.snackBar = 'Network issue';
+        this.msg.snackBar = 'Internet problem';
         console.log(error.toString());
       }
     },

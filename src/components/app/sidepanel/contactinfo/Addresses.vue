@@ -14,7 +14,7 @@
             </option>
           </select>
         </div>
-        <button class="address-button" @click="deleteContactInfo('Addresses', addressIndex)">
+        <button class="address-button" @click="deleteContactInfo('Addresses', addressIndex)" :disabled="dsbld">
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
@@ -27,6 +27,7 @@
         >
           <select
             v-if="addressInputs.value == 'State'"
+            :disabled="dsbld"
             :value="address[addressInputs.value]"
             @change="updateAddress($event, addressIndex, addressInputs.value)"
           >
@@ -88,6 +89,7 @@
             :type="addressInputs.type"
             :placeholder="addressInputs.placeholder"
             :value="address[addressInputs.value]"
+            :disabled="dsbld"
             @change="updateAddress($event, addressIndex, addressInputs.value)"
           />
         </div>
@@ -108,6 +110,7 @@ export default {
       'accountSettings',
       'userSettings',
       'contacts',
+      'dsbld',
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntctIndex',

@@ -10,6 +10,7 @@
                 connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '2px solid lightgray' : '0',
             }"
             @click="connect(conn.RealIndex, connType)"
+            :disabled="dsbld"
           >
             <i :class="connInputs.icon"></i>
           </button>
@@ -21,9 +22,10 @@
                 connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '2px solid lightgray' : '0',
             }"
             :value="connInfo"
+            :disabled="dsbld"
             @change="updateConnection($event, conn.RealIndex, connType)"
           />
-          <button class="conn-delete-icon" @click="deleteContactInfo('Connections', conn.RealIndex)">
+          <button class="conn-delete-icon" @click="deleteContactInfo('Connections', conn.RealIndex)" :disabled="dsbld">
             <i class="fa-solid fa-trash"></i>
           </button>
         </div>
@@ -32,6 +34,7 @@
         <input
           type="checkbox"
           v-model="contacts[slctdCntctIndex].DNC"
+          :disabled="dsbld"
           @change="patchContactInfo($event.target.checked, 'DNC')"
         />
         Do not contact
@@ -55,6 +58,7 @@ export default {
       'contacts',
       'endPts',
       'times',
+      'dsbld',
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntctIndex',
