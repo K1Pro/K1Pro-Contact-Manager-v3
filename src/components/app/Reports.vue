@@ -41,6 +41,34 @@
         </tbody>
       </template>
 
+      <template v-if="reports == 'Contact categories'">
+        <thead>
+          <tr>
+            <th style="width: 15%">Date</th>
+            <th style="width: 15%">Stats</th>
+            <th style="width: 70%">Graph</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="([contactKey, contactValue], contactIndex) in Object.entries(tblCntnt[2][0])"
+            :class="'cell' + (contactIndex % 2)"
+          >
+            <td>{{ contactKey }}</td>
+            <td>{{ contactValue }}</td>
+            <td>
+              <div
+                style="height: 15px"
+                :style="{
+                  width: (contactValue / contacts.length) * 100 + '%',
+                  'background-color': '#' + (((1 << 24) * Math.random()) | 0).toString(16).padStart(6, '0'),
+                }"
+              ></div>
+            </td>
+          </tr>
+        </tbody>
+      </template>
+
       <template v-if="reports.includes('Activity log for user:')">
         <thead>
           <tr>
@@ -192,6 +220,18 @@ export default {
         });
         tblHdrs = ['#', 'Contact', 'Date', 'Owner', 'Description'];
         tblClmns.sort((a, b) => b[3].localeCompare(a[3]));
+      } else if (this.reports == 'Contact categories') {
+        nmbrClmn = null;
+        const cntctCategArray = {};
+        clonedCntcts.forEach((contact) => {
+          contact.Categ = contact.Categ || contact.Categ != '' ? contact.Categ : 'No category';
+          if (!Object.keys(cntctCategArray).includes(contact.Categ)) {
+            cntctCategArray[contact.Categ] = 1;
+          } else {
+            cntctCategArray[contact.Categ]++;
+          }
+        });
+        tblClmns.push(cntctCategArray);
       } else if (this.reports.includes('Activity log for contact:')) {
         // 'Activity log for contact:'
         nmbrClmn = null;

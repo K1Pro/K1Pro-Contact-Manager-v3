@@ -1,42 +1,32 @@
 <template>
   <snackbar> </snackbar>
 
-  <template v-if="loggedIn === true">
-    <template v-if="contacts.length > 0">
-      <div class="app-grid-container" :style="appGridContainer">
-        <div class="app-grid-item1">
-          <sidepanel></sidepanel>
-        </div>
-
-        <div
-          v-if="windowWidth > 768"
-          class="app-grid-resizer"
-          @mousedown="startResizeGrid"
-          @mouseup="stopResizeGrid"
-          v-on:dblclick="resetGrid"
-        ></div>
-
-        <div class="app-grid-item2">
-          <calendar v-if="activeWindow == 'calendar'"></calendar>
-          <emails v-if="activeWindow == 'email'"></emails>
-          <reports v-if="activeWindow == 'reports'"></reports>
-        </div>
+  <template v-if="contacts.length > 0">
+    <div class="app-grid-container" :style="appGridContainer">
+      <div class="app-grid-item1">
+        <sidepanel></sidepanel>
       </div>
-    </template>
-    <template v-else>
-      <div id="loader-container">
-        <div class="loader"></div>
-      </div>
-    </template>
-  </template>
 
-  <template v-if="loggedIn === false">
-    <div id="login-container">
-      <login> </login>
+      <div
+        v-if="windowWidth > 768"
+        class="app-grid-resizer"
+        @mousedown="startResizeGrid"
+        @mouseup="stopResizeGrid"
+        v-on:dblclick="resetGrid"
+      ></div>
+
+      <div class="app-grid-item2">
+        <calendar v-if="activeWindow == 'calendar'"></calendar>
+        <emails v-if="activeWindow == 'email'"></emails>
+        <reports v-if="activeWindow == 'reports'"></reports>
+      </div>
     </div>
   </template>
-
-  <template v-else></template>
+  <template v-else>
+    <div id="loader-container">
+      <div class="loader"></div>
+    </div>
+  </template>
 </template>
 
 <script>

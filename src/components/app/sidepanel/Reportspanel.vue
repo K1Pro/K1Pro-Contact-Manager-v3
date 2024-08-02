@@ -75,6 +75,7 @@ export default {
       'All contacts with min. info (' + this.contacts?.length + ')',
       'All contacts with more info (' + this.contacts?.length + ')',
       'All contact tasks',
+      'Contact categories',
       'Activity log for contact: ' +
         (this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.First
           ? this.contacts[this.slctdCntctIndex].Members[0].First + ' '
