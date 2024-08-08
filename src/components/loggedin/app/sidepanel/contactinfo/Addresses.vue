@@ -105,6 +105,8 @@
 export default {
   name: 'Addresses',
 
+  inject: ['tbCntntWdth'],
+
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
       'accountSettings',
@@ -114,10 +116,9 @@ export default {
       'patchContactInfo',
       'deleteContactInfo',
       'slctdCntctIndex',
-      'tabContentWidth',
     ]),
     addressInputsWidth() {
-      return this.tabContentWidth > 120 ? 120 : this.tabContentWidth;
+      return this.tbCntntWdth > 120 ? 120 : this.tbCntntWdth;
     },
   },
 

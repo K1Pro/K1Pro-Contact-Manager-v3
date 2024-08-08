@@ -1,6 +1,6 @@
 <template>
   <div class="reports">
-    <i :style="{ left: tabContentWidth + 30 + 'px' }" class="fa-solid fa-download" @click="downloadTable"></i>
+    <i :style="{ left: tbCntntWdth + 30 + 'px' }" class="fa-solid fa-download" @click="downloadTable"></i>
     <table>
       <template
         v-if="
@@ -124,13 +124,14 @@
 export default {
   name: 'Reports',
 
-  components: {
-    dynamic_component_name_reports,
-  },
+  // components: {
+  //   dynamic_component_name_reports,
+  // },
+
+  inject: ['wndw', 'tbCntntWdth'],
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'windowWidth',
       'activeTab',
       'activeWindow',
       'userSettings',
@@ -141,7 +142,6 @@ export default {
       'usaDateFrmt',
       'userList',
       'slctdCntctIndex',
-      'tabContentWidth',
     ]),
     tblCntnt() {
       let clonedCntcts = this.contacts;
@@ -305,7 +305,7 @@ export default {
       this.activeTab = 'house-chimney-user';
       this.userSettings.selectedContactIndex = contactID;
       this.patchUserSettings();
-      if (this.windowWidth < 768) {
+      if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }
     },

@@ -4,11 +4,12 @@
   <template v-if="contacts.length > 0">
     <div class="app-grid-container" :style="appGridContainer">
       <div class="app-grid-item1">
-        <sidepanel></sidepanel>
+        <sidemenu :sideMenuItems="sideMenuItems" @sideMenuSlctdLnk="(lnk) => (sideMenuSlctdLnk = lnk)"></sidemenu>
+        <component :is="sideMenuSlctdLnk[0]" style="padding: 10px 10px 10px 70px; height: 100%"></component>
       </div>
 
       <div
-        v-if="windowWidth > 768"
+        v-if="wndw.wdth > 768"
         class="app-grid-resizer"
         @mousedown="startResizeGrid"
         @mouseup="stopResizeGrid"
@@ -33,22 +34,8 @@
 export default {
   name: 'App',
 
-  components: {
-    Snackbar,
-    Sidepanel,
-    Reports,
-    Login,
-    Emails,
-    Calendar,
-  },
-
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'accessToken',
-      'sessionID',
-      'loggedIn',
-      'msg',
-      'windowWidth',
       'activeWindow',
       'userData',
       'activeUserList',
@@ -57,7 +44,6 @@ export default {
       'tempFiltersDays',
       'contacts',
       'emails',
-      'endPts',
       'times',
       'updating',
       'dsbld',
@@ -70,31 +56,59 @@ export default {
     },
 
     appGridContainer() {
-      return this.windowWidth > 768
+      return this.wndw.wdth > 768
         ? {
             'grid-template-columns': `calc(${this.userSettings.layout['grid-size']}% - 5px) 10px calc(${this.appGridItem2Width}% - 5px)`,
           }
         : false;
     },
+
+    sideMenuItems() {
+      return [
+        ['fa fa-house-chimney-user', null, 'Contact info', 'Calendar'],
+        ['fa fa-list-check', this.contacts[this.slctdCntctIndex]?.Tasks.length, 'Tasks', 'Calendar'],
+        ['fa fa-repeat', this.contacts[this.slctdCntctIndex]?.RecurTasks.length, 'Recurring tasks', 'Calendar'],
+        ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length, 'Notes', 'Calendar'],
+        ['fa fa-chart-pie', null, 'Reports', 'Reportstable'],
+        ['fa fa-user-gear', null, 'Settings', 'Calendar'],
+      ];
+    },
+
+    tbCntntWdth() {
+      return this.wndw.wdth > 768
+        ? Math.round((this.wndw.wdth * (this.userSettings?.layout?.['grid-size'] / 100) - 75.02) * 100) / 100
+        : Math.round((this.wndw.wdth - 75.02) * 100) / 100;
+    },
   },
 
   data() {
-    return { currentUpdate: null };
+    return {
+      currentUpdate: null,
+      sideMenuSlctdLnk: ['Contactinfo'],
+      wndw: {
+        wdth: 0,
+        hght: 0,
+      },
+    };
+  },
+
+  provide() {
+    return {
+      sideMenuSlctdLnk: Vue.computed(() => this.sideMenuSlctdLnk),
+      wndw: Vue.computed(() => this.wndw),
+      tbCntntWdth: Vue.computed(() => this.tbCntntWdth),
+    };
   },
 
   methods: {
-    getCookie(accessToken, sessionID) {
-      this.accessToken = document.cookie.match(new RegExp(`(^| )${accessToken}=([^;]+)`))?.at(2);
-      this.sessionID = document.cookie.match(new RegExp(`(^| )${sessionID}=([^;]+)`))?.at(2);
-    },
     async updateTime() {
       const timeDifference = Math.round((this.times.initialBrwsrTmstmp - new Date().getTime()) * -1);
       this.times.updtngY_m_d_H_i_s_z = new Date(this.times.initialUsrTmstmp + timeDifference).toISOString();
       try {
-        const response = await fetch(servr_url + this.endPts.currentupdate, {
+        const response = await fetch(servr_url + 'currentupdate', {
           method: 'GET',
           headers: {
-            Authorization: this.accessToken,
+            Authorization: access_token,
             'Content-Type': 'application/json',
             'Cache-Control': 'no-store',
           },
@@ -103,7 +117,7 @@ export default {
         if (getCurrentupdateResJSON.success) {
           if (this.dsbld == true) {
             this.dsbld = false;
-            this.msg.snackBar = 'Internet restored';
+            // this.msg.snackBar = 'Internet restored';
           }
           if (this.currentUpdate != getCurrentupdateResJSON.data.datetime && this.currentUpdate != null) {
             this.getContacts(getCurrentupdateResJSON.data.datetime);
@@ -113,23 +127,23 @@ export default {
         }
       } catch (error) {
         this.dsbld = true;
-        this.msg.snackBar = 'Internet problem';
+        // this.msg.snackBar = 'Internet problem';
         // console.log(error.toString());
       }
     },
 
     async getUserData() {
       try {
-        const response = await fetch(servr_url + this.endPts.userData, {
+        const response = await fetch(servr_url + 'users', {
           method: 'GET',
           headers: {
-            Authorization: this.accessToken,
+            Authorization: access_token,
             'Cache-Control': 'no-store',
           },
         });
         const userDataResJSON = await response.json();
         if (userDataResJSON.success) {
-          // console.log(userDataResJSON);
+          console.log(userDataResJSON);
           this.times.initialBrwsrTmstmp = new Date().getTime();
           this.times.initialUsrTmstmp = new Date(userDataResJSON.data.date_Y_m_d_H_i_s_z).getTime();
           this.times.updtngY_m_d_H_i_s_z = userDataResJSON.data.date_Y_m_d_H_i_s_z;
@@ -139,13 +153,12 @@ export default {
             this.updateTime();
           }, 6000);
 
-          this.loggedIn = true;
           this.userData = userDataResJSON.data.user;
           this.accountSettings = userDataResJSON.data.accountSettings;
           this.tempFiltersDays = userDataResJSON.data.userSettings.calendar.filters.days;
           this.activeUserList = userDataResJSON.data.activeUserList;
           if (
-            this.windowWidth < 768 &&
+            this.wndw.wdth < 768 &&
             userDataResJSON.data.userSettings.calendar.filters.days != 0 &&
             userDataResJSON.data.userSettings.calendar.filters.days != 1
           )
@@ -155,24 +168,22 @@ export default {
           this.getContacts(null);
           this.getEmailSettings();
         } else {
-          this.loggedIn = false;
           document.cookie = `_a_t=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${cookiePath};`;
           document.cookie = `_s_i=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${cookiePath};`;
-          this.accessToken = undefined;
-          this.sessionID = undefined;
+          location.reload();
         }
       } catch (error) {
-        this.msg.snackBar = 'Internet problem';
+        // this.msg.snackBar = 'Internet problem';
         console.log(error.toString());
       }
     },
 
     async getContacts(updateTime) {
       try {
-        const response = await fetch(servr_url + this.endPts.contacts, {
+        const response = await fetch(servr_url + 'contacts', {
           method: 'GET',
           headers: {
-            Authorization: this.accessToken,
+            Authorization: access_token,
             'Cache-Control': 'no-store',
           },
         });
@@ -194,17 +205,17 @@ export default {
           this.currentUpdate = updateTime;
         }
       } catch (error) {
-        this.msg.snackBar = 'Internet problem';
+        // this.msg.snackBar = 'Internet problem';
         console.log(error.toString());
       }
     },
 
     async getEmailSettings() {
       try {
-        const response = await fetch(servr_url + this.endPts.emails, {
+        const response = await fetch(servr_url + 'emails', {
           method: 'GET',
           headers: {
-            Authorization: this.accessToken,
+            Authorization: access_token,
             'Cache-Control': 'no-store',
           },
         });
@@ -214,7 +225,7 @@ export default {
           this.emails = getEmailSettingsResJSON.data.emailSettings;
         }
       } catch (error) {
-        this.msg.snackBar = 'Internet problem';
+        // this.msg.snackBar = 'Internet problem';
         console.log(error.toString());
       }
     },
@@ -225,7 +236,8 @@ export default {
     // },
 
     updateScreenWidth() {
-      this.windowWidth = window.innerWidth;
+      this.wndw.wdth = window.innerWidth;
+      this.wndw.hght = window.innerHeight;
     },
     onScreenResize() {
       window.addEventListener('resize', () => {
@@ -257,21 +269,8 @@ export default {
     },
   },
 
-  watch: {
-    accessToken(newToken, oldToken) {
-      this.userData = {};
-      // this.loggedIn = false;
-      if (newToken != undefined) this.getUserData();
-    },
-  },
-
   created() {
-    this.getCookie('_a_t', '_s_i');
-    if (this.accessToken) {
-      this.getUserData();
-    } else {
-      this.loggedIn = false;
-    }
+    this.getUserData();
   },
 
   mounted() {

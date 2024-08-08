@@ -68,14 +68,14 @@ export default {
     ]),
   },
 
-  components: {
-    Searchbar,
-    Members,
-    Addresses,
-    Assets,
-    Connections,
-    Credentials,
-  },
+  // components: {
+  //   Searchbar,
+  //   Members,
+  //   Addresses,
+  //   Assets,
+  //   Connections,
+  //   Credentials,
+  // },
 };
 </script>
 

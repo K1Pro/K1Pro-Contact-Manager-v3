@@ -79,14 +79,13 @@
 export default {
   name: 'Members',
 
+  inject: ['tbCntntWdth'],
+
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'accessToken',
-      'msg',
       'userData',
       'accountSettings',
       'userSettings',
-      'endPts',
       'contacts',
       'times',
       'dsbld',
@@ -94,7 +93,6 @@ export default {
       'deleteContactInfo',
       'patchUserSettings',
       'slctdCntctIndex',
-      'tabContentWidth',
     ]),
     addCntctInfoDropDown() {
       const cntctInfoDropDown = [];
@@ -111,7 +109,7 @@ export default {
       return cntctInfoDropDown;
     },
     memberInputsWidth() {
-      return this.tabContentWidth > 120 ? 120 : this.tabContentWidth;
+      return this.tbCntntWdth > 120 ? 120 : this.tbCntntWdth;
     },
   },
 
@@ -141,10 +139,10 @@ export default {
           this.spinLogin = true;
           console.log(Object.keys(this.accountSettings.contactInfo.keys.Members)[0]);
           try {
-            const response = await fetch(servr_url + this.endPts.contacts, {
+            const response = await fetch(servr_url + 'contacts', {
               method: 'POST',
               headers: {
-                Authorization: this.accessToken,
+                Authorization: access_token,
                 'Content-Type': 'application/json',
                 'Cache-Control': 'no-store',
               },
@@ -195,11 +193,11 @@ export default {
               this.spinLogin = false;
             } else {
               this.spinLogin = false;
-              this.msg.snackBar = 'Failed to create new contact';
+              // this.msg.snackBar = 'Failed to create new contact';
             }
           } catch (error) {
             this.spinLogin = false;
-            this.msg.snackBar = 'Failed to create new contact';
+            // this.msg.snackBar = 'Failed to create new contact';
             console.log(error.toString());
           }
         }

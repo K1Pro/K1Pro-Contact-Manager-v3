@@ -50,13 +50,11 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'accessToken',
       'activeWindow',
       'userData',
       'accountSettings',
       'userSettings',
       'contacts',
-      'endPts',
       'times',
       'dsbld',
       'patchContactInfo',
@@ -86,10 +84,10 @@ export default {
             'tel:' + this.contacts[this.slctdCntctIndex].Connections[connIndex][connType].replace(/\D/g, '');
           const clmnIndex = this.slctdCntctIndex;
           try {
-            const response = await fetch(servr_url + this.endPts.calls, {
+            const response = await fetch(servr_url + 'calls', {
               method: 'POST',
               headers: {
-                Authorization: this.accessToken,
+                Authorization: access_token,
                 'Content-Type': 'application/json',
                 'Cache-Control': 'no-store',
               },
@@ -110,7 +108,7 @@ export default {
             } else {
             }
           } catch (error) {
-            this.msg.snackBar = error.toString();
+            // this.msg.snackBar = error.toString();
             console.log(error.toString());
           }
         }

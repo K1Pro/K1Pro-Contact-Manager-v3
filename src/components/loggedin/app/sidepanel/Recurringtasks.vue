@@ -1,5 +1,6 @@
 <template>
   <div class="recur-tasks">
+    {{ wndw }}
     <template v-if="contacts[slctdCntctIndex].RecurTasks">
       <div class="recur-tasks-title">
         <div class="recur-tasks-title-grid-container">
@@ -147,9 +148,10 @@
 export default {
   name: 'Recur Tasks',
 
+  inject: ['wndw'],
+
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'msg',
       'eventIndex',
       'userData',
       'contacts',
@@ -251,7 +253,7 @@ export default {
       }
     },
     deleteRecurTask(clmnIndex) {
-      if (confirm(this.msg.confirmDeletion) == true) {
+      if (confirm('Are you sure you would like to delete this?') == true) {
         this.deleteContactInfo(this.clmn, clmnIndex, true);
         this.showAllRecurTasks();
       }

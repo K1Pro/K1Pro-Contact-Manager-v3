@@ -4,7 +4,7 @@
     <div class="settings-body">
       <div class="settings-body-label">Days:</div>
       <select v-model="userSettings.calendar.filters.days" @change="daysRangeChange">
-        <template v-if="windowWidth > 768">
+        <template v-if="wndw.wdth > 768">
           <option v-for="(daysRange, daysRangeIndex) in daysRangeArr" :value="daysRangeIndex">
             {{ daysRange }}
           </option>
@@ -46,13 +46,14 @@
 export default {
   name: 'Settings',
 
-  components: {
-    Logout,
-  },
+  // components: {
+  //   Logout,
+  // },
+
+  inject: ['wndw'],
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'windowWidth',
       'userData',
       'accountSettings',
       'userSettings',

@@ -36,10 +36,10 @@
 export default {
   name: 'Calendar body',
 
+  inject: ['wndw'],
+
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'msg',
-      'windowWidth',
       'userSettings',
       'tempFiltersDays',
       'times',
@@ -49,9 +49,9 @@ export default {
     ]),
   },
 
-  components: {
-    Calcontent,
-  },
+  // components: {
+  //   Calcontent,
+  // },
 
   methods: {
     changeDate(slctdY_m_d, slctdDayIndex) {
@@ -61,7 +61,7 @@ export default {
   },
 
   watch: {
-    windowWidth(newWidth, oldWidth) {
+    'wndw.wdth'(newWidth, oldWidth) {
       if (
         newWidth < 768 &&
         oldWidth > 768 &&

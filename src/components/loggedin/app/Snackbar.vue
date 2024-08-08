@@ -1,8 +1,9 @@
 <template>
   <Transition name="slide-fade">
-    <div v-if="msg.snackBar && loggedIn" class="snackbar">
+    <span></span>
+    <!-- <div v-if="msg.snackBar" class="snackbar">
       {{ msg.snackBar }}
-    </div>
+    </div> -->
   </Transition>
 </template>
 
@@ -10,17 +11,13 @@
 export default {
   name: 'Snackbar',
 
-  computed: {
-    ...Pinia.mapWritableState(useDefaultStore, ['msg', 'loggedIn']),
-  },
-
-  watch: {
-    'msg.snackBar'() {
-      setTimeout(() => {
-        this.msg.snackBar = null;
-      }, 3000);
-    },
-  },
+  // watch: {
+  //   'msg.snackBar'() {
+  //     setTimeout(() => {
+  //       this.msg.snackBar = null;
+  //     }, 3000);
+  //   },
+  // },
 };
 </script>
 

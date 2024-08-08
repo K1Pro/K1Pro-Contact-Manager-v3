@@ -12,15 +12,6 @@
 <script>
 export default {
   name: 'Calendar',
-
-  computed: {
-    ...Pinia.mapWritableState(useDefaultStore, ['msg']),
-  },
-
-  components: {
-    Calnav,
-    Calgrid,
-  },
 };
 </script>
 

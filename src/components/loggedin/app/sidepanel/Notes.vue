@@ -23,7 +23,6 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'msg',
       'userSettings',
       'contacts',
       'dsbld',

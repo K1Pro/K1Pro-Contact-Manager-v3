@@ -1,15 +1,6 @@
 const useDefaultStore = Pinia.defineStore('default', {
   state: () => {
     return {
-      accessToken: '',
-      sessionID: '',
-      loggedIn: '',
-      msg: {
-        snackBar: '',
-        login: '',
-        confirmDeletion: 'Are you sure you would like to delete this?',
-      },
-      windowWidth: 0,
       activeTab: 'house-chimney-user',
       activeWindow: 'calendar',
       eventIndex: null,
@@ -21,21 +12,6 @@ const useDefaultStore = Pinia.defineStore('default', {
       contacts: [],
       emails: [],
       reports: 'All contacts with min. info',
-      endPts: {
-        url: url,
-        accountLoginURL: accountlogin_url,
-        accountResetURL: accountreset_url,
-        k1proURL: k1pro_url,
-        loginURL: login_url,
-        userData: 'users',
-        settings: 'settings',
-        contacts: 'contacts',
-        currentupdate: 'currentupdate',
-        emails: 'emails',
-        calls: 'calls',
-        login: 'sessions',
-        logout: 'sessions/',
-      },
       times: {
         initialUsrTmstmp: '',
         initialBrwsrTmstmp: '',
@@ -57,10 +33,10 @@ const useDefaultStore = Pinia.defineStore('default', {
         [this.userData.id]: this.times.updtngY_m_d_H_i_s_z,
       };
       try {
-        const response = await fetch(servr_url + this.endPts.contacts, {
+        const response = await fetch(servr_url + 'contacts', {
           method: 'PATCH',
           headers: {
-            Authorization: this.accessToken,
+            Authorization: access_token,
             'Content-Type': 'application/json',
             'Cache-Control': 'no-store',
           },
@@ -78,12 +54,12 @@ const useDefaultStore = Pinia.defineStore('default', {
           cloneUpdating = this.updating;
           this.updating = cloneUpdating - 1;
         } else {
-          this.msg.snackBar = 'Update error';
+          // this.msg.snackBar = 'Update error';
           cloneUpdating = this.updating;
           this.updating = cloneUpdating - 1;
         }
       } catch (error) {
-        this.msg.snackBar = 'Update error';
+        // this.msg.snackBar = 'Update error';
         cloneUpdating = this.updating;
         this.updating = cloneUpdating - 1;
         // this.msg.snackBar = error.toString();
@@ -92,13 +68,13 @@ const useDefaultStore = Pinia.defineStore('default', {
     async deleteContactInfo(column, columnIndex, prevConfirm) {
       let cloneUpdating = this.updating;
       this.updating = cloneUpdating + 1;
-      if (prevConfirm || confirm(this.msg.confirmDeletion) == true) {
+      if (prevConfirm || confirm('Are you sure you would like to delete this?') == true) {
         this.contacts[this.slctdCntctIndex][column].splice(columnIndex, 1);
         try {
-          const response = await fetch(servr_url + this.endPts.contacts, {
+          const response = await fetch(servr_url + 'contacts', {
             method: 'DELETE',
             headers: {
-              Authorization: this.accessToken,
+              Authorization: access_token,
               'Content-Type': 'application/json',
               'Cache-Control': 'no-store',
             },
@@ -113,12 +89,12 @@ const useDefaultStore = Pinia.defineStore('default', {
             cloneUpdating = this.updating;
             this.updating = cloneUpdating - 1;
           } else {
-            this.msg.snackBar = 'Delete error';
+            // this.msg.snackBar = 'Delete error';
             cloneUpdating = this.updating;
             this.updating = cloneUpdating - 1;
           }
         } catch (error) {
-          this.msg.snackBar = 'Delete error';
+          // this.msg.snackBar = 'Delete error';
           cloneUpdating = this.updating;
           this.updating = cloneUpdating - 1;
           // this.msg.snackBar = error.toString();
@@ -127,10 +103,10 @@ const useDefaultStore = Pinia.defineStore('default', {
     },
     async patchUserSettings() {
       try {
-        const response = await fetch(servr_url + this.endPts.settings, {
+        const response = await fetch(servr_url + 'settings', {
           method: 'PATCH',
           headers: {
-            Authorization: this.accessToken,
+            Authorization: access_token,
             'Content-Type': 'application/json',
             'Cache-Control': 'no-store',
           },
@@ -143,11 +119,11 @@ const useDefaultStore = Pinia.defineStore('default', {
           // console.log(patchUserSettingsResJSON);
           // this.msg.snackBar = patchUserSettingsResJSON.messages[0];
         } else {
-          this.msg.snackBar = 'Settings update error';
+          // this.msg.snackBar = 'Settings update error';
         }
       } catch (error) {
         console.log(error.toString());
-        this.msg.snackBar = 'Settings update error';
+        // this.msg.snackBar = 'Settings update error';
         // this.msg.snackBar = error.toString();
       }
     },
@@ -209,11 +185,6 @@ const useDefaultStore = Pinia.defineStore('default', {
     },
     userList(state) {
       return { ...state.activeUserList, ...state.accountSettings.userList };
-    },
-    tabContentWidth(state) {
-      return state.windowWidth > 768
-        ? Math.round((state.windowWidth * (state.userSettings?.layout?.['grid-size'] / 100) - 75.02) * 100) / 100
-        : Math.round((state.windowWidth - 75.02) * 100) / 100;
     },
   },
 });

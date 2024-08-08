@@ -59,14 +59,11 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'accessToken',
-      'msg',
       'activeWindow',
       'userData',
       'userSettings',
       'contacts',
       'emails',
-      'endPts',
       'times',
       'slctdCntctIndex',
     ]),
@@ -135,17 +132,17 @@ export default {
         formData.append('Datetime', sendEmailDatetime);
         formData.append('CC', this.$refs['CC'].checked);
         try {
-          const response = await fetch(servr_url + this.endPts.emails, {
+          const response = await fetch(servr_url + 'emails', {
             method: 'POST',
             headers: {
-              Authorization: this.accessToken,
+              Authorization: access_token,
               'Cache-Control': 'no-store',
             },
             body: formData,
           });
           const sendEmailResJSON = await response.json();
           if (sendEmailResJSON.success) {
-            this.msg.snackBar = 'Email sent successfully';
+            // this.msg.snackBar = 'Email sent successfully';
             console.log(sendEmailResJSON);
             this.spinLogin = false;
             this.contacts[columnIndex].Log.unshift([
@@ -154,12 +151,12 @@ export default {
               'Emailed ' + emailTemplate + this.$refs['emailTo'].value,
             ]);
           } else {
-            this.msg.snackBar = 'Email error';
+            // this.msg.snackBar = 'Email error';
             this.spinLogin = false;
           }
         } catch (error) {
           this.spinLogin = false;
-          this.msg.snackBar = error.toString();
+          // this.msg.snackBar = error.toString();
           console.log(error.toString());
         }
       }

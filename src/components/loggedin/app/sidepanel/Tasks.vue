@@ -116,7 +116,6 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'msg',
       'eventIndex',
       'userData',
       'contacts',
@@ -183,7 +182,7 @@ export default {
       }
     },
     deleteTask(clmnIndex) {
-      if (confirm(this.msg.confirmDeletion) == true) {
+      if (confirm('Are you sure you would like to delete this?') == true) {
         this.deleteContactInfo(this.clmn, clmnIndex, true);
         this.showAllTasks();
       }
