@@ -219,6 +219,7 @@ export default {
 
 <style>
 .members {
+  position: relative;
 }
 .member-title-grid-container {
   display: grid;

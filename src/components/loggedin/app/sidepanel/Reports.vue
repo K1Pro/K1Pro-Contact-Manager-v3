@@ -1,22 +1,22 @@
 <template>
-  <div class="reports-panel">
-    <div class="reports-panel-title">Select a report:</div>
-    <div class="reports-panel-body">
+  <div class="reports">
+    <div class="reports-title">Select a report:</div>
+    <div class="reports-body">
       <div
         v-for="(report, reportIndex) in includedReports"
-        class="reports-panel-report"
-        :class="[reports.includes(report.slice(0, 22)) ? 'reports-panel-active' : 'reports-panel' + (reportIndex % 2)]"
+        class="reports-report"
+        :class="[reports.includes(report.slice(0, 22)) ? 'reports-active' : 'reports' + (reportIndex % 2)]"
         @click="selectReport(report)"
       >
         {{ report }}
       </div>
       <div
         v-for="(activeUser, activeUserIndex) in Object.entries(activeUserList)"
-        class="reports-panel-report"
+        class="reports-report"
         :class="[
           reports.includes('Activity log for user:' + activeUser[0])
-            ? 'reports-panel-active'
-            : 'reports-panel' + ((includedReports.length + activeUserIndex) % 2),
+            ? 'reports-active'
+            : 'reports' + ((includedReports.length + activeUserIndex) % 2),
         ]"
         @click="selectReport('Activity log for user:' + activeUser[0])"
       >
@@ -24,11 +24,11 @@
       </div>
       <div
         v-for="(report, reportIndex) in accountSettings.reports"
-        class="reports-panel-report"
+        class="reports-report"
         :class="[
           reports.includes(report)
-            ? 'reports-panel-active'
-            : 'reports-panel' + ((includedReports.length + Object.entries(activeUserList).length + reportIndex) % 2),
+            ? 'reports-active'
+            : 'reports' + ((includedReports.length + Object.entries(activeUserList).length + reportIndex) % 2),
         ]"
         @click="selectReport(report)"
       >
@@ -40,7 +40,7 @@
 
 <script>
 export default {
-  name: 'Reports Panel',
+  name: 'Reports',
 
   inject: ['wndw'],
 
@@ -86,7 +86,7 @@ export default {
 </script>
 
 <style>
-.reports-panel-title {
+.reports-title {
   background-color: lightblue;
   font-weight: bold;
   padding: 5px;
@@ -95,11 +95,11 @@ export default {
   overflow: hidden;
   white-space: nowrap;
 }
-.reports-panel-body {
+.reports-body {
   background-color: white;
   height: calc(100vh - 50px);
 }
-.reports-panel-report {
+.reports-report {
   font-weight: normal;
   color: black;
   height: 29px;
@@ -108,17 +108,17 @@ export default {
   overflow: hidden;
   white-space: nowrap;
 }
-.reports-panel-active {
+.reports-active {
   font-weight: bold;
   background-color: #bbbbbb;
 }
-.reports-panel-report:hover {
+.reports-report:hover {
   background-color: #ddd;
 }
-.reports-panel0 {
+.reports0 {
   background-color: white;
 }
-.reports-panel1 {
+.reports1 {
   background-color: lightblue;
 }
 </style>

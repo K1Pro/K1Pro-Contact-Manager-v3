@@ -1,5 +1,5 @@
 <template>
-  <div class="reports">
+  <div class="reports-table">
     <i :style="{ left: tbCntntWdth + 30 + 'px' }" class="fa-solid fa-download" @click="downloadTable"></i>
     <table>
       <template
@@ -80,7 +80,7 @@
         <tbody>
           <tr v-for="(contact, contactIndex) in tblCntnt[2]" :class="'cell' + (contactIndex % 2)">
             <td>{{ contact[0] }}</td>
-            <td class="reports-usr-actvty-log">
+            <td class="reports-table-usr-actvty-log">
               <div>{{ contact[1] }} {{ contact[1] != 1 ? 'emails' : 'email' }}</div>
               <div>{{ contact[2] }} {{ contact[2] != 1 ? 'calls' : 'call' }}</div>
               <div>{{ contact[3] }} {{ contact[3] != 1 ? 'tasks' : 'task' }}</div>
@@ -122,7 +122,7 @@
 
 <script>
 export default {
-  name: 'Reports',
+  name: 'Reports table',
 
   // components: {
   //   dynamic_component_name_reports,
@@ -334,7 +334,7 @@ export default {
 </script>
 
 <style>
-.reports {
+.reports-table {
   text-align: left;
   background-color: white;
   width: calc(100% - 10px);
@@ -344,7 +344,7 @@ export default {
   padding: 0px;
   overflow: scroll scroll;
 }
-.reports i {
+.reports-table i {
   z-index: 1;
   color: #417cd9;
   position: absolute;
@@ -353,15 +353,15 @@ export default {
   padding: 10px 5px 0px 5px;
   cursor: pointer;
 }
-.reports table {
+.reports-table table {
   border: 0px;
   border-collapse: collapse;
   width: 100%;
 }
-.reports thead {
+.reports-table thead {
   height: 30px;
 }
-.reports th {
+.reports-table th {
   position: sticky;
   top: 0;
   background-color: #6c757d;
@@ -369,10 +369,10 @@ export default {
   margin: 0px;
   color: white;
 }
-.reports td {
+.reports-table td {
   padding: 5px;
 }
-.reports-usr-actvty-log div {
+.reports-table-usr-actvty-log div {
   overflow: hidden;
   white-space: nowrap;
 }
@@ -401,10 +401,10 @@ export default {
   text-decoration: underline;
 }
 @media only screen and (min-width: 768px) {
-  .reports {
+  .reports-table {
     margin: 10px 0px 0px 0px;
   }
-  .reports i {
+  .reports-table i {
     top: 10px;
     padding: 10px 5px 0px 20px;
   }

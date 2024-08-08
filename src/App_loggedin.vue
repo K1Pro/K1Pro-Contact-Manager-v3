@@ -10,7 +10,7 @@
           @sideMenuSlctdLnk="(lnk) => (sideMenuSlctdLnk = lnk)"
         ></sidemenu>
         <component
-          class="app-grid-side-component"
+          class="app-grid-item1-panel"
           :is="sideMenuSlctdLnk[0]"
           @sideMenuSlctdLnk="(lnk) => (sideMenuSlctdLnk = lnk)"
         ></component>
@@ -74,7 +74,7 @@ export default {
         ['fa fa-list-check', this.contacts[this.slctdCntctIndex]?.Tasks.length, 'Tasks', 'Calendar'],
         ['fa fa-repeat', this.contacts[this.slctdCntctIndex]?.RecurTasks.length, 'Recurring tasks', 'Calendar'],
         ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length, 'Notes', 'Calendar'],
-        ['fa fa-chart-pie', null, 'Reportspanel', 'Reports'],
+        ['fa fa-chart-pie', null, 'Reports', 'Reportstable'],
         ['fa fa-user-gear', null, 'Settings', 'Calendar'],
       ];
     },
@@ -310,9 +310,13 @@ export default {
   overflow-y: hidden;
 }
 
-.app-grid-side-component {
-  padding: 10px 0px 10px 65px;
+.app-grid-item1-panel {
+  padding: 0px 0px 0px 65px;
   height: 100%;
+  overflow-y: auto;
+  border-style: solid;
+  border-width: 10px 0px 10px 0px;
+  border-color: #00000000;
 }
 
 @media only screen and (min-width: 768px) {
