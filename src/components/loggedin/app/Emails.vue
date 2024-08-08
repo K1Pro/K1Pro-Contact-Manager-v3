@@ -5,7 +5,7 @@
         Send email to
         {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
         {{ contacts[slctdCntctIndex].Members[0]?.Name }}
-        <i @click="activeWindow = 'calendar'" class="fa-solid fa-xmark"></i>
+        <i @click="$emit('sideMenuSlctdLnk', ['Contactinfo', 'Calendar'])" class="fa-solid fa-xmark"></i>
       </div>
       <div class="emails-body">
         <div class="emailInputLabel">From:</div>
@@ -57,9 +57,10 @@
 export default {
   name: 'Emails',
 
+  emits: ['sideMenuSlctdLnk'],
+
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'activeWindow',
       'userData',
       'userSettings',
       'contacts',

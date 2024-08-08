@@ -128,12 +128,12 @@ export default {
   //   dynamic_component_name_reports,
   // },
 
+  emits: ['sideMenuSlctdLnk'],
+
   inject: ['wndw', 'tbCntntWdth'],
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'activeTab',
-      'activeWindow',
       'userSettings',
       'reports',
       'times',
@@ -301,8 +301,7 @@ export default {
   },
   methods: {
     selectContact(contactID) {
-      this.activeWindow = 'calendar';
-      this.activeTab = 'house-chimney-user';
+      this.$emit('sideMenuSlctdLnk', ['Contactinfo', 'Calendar']);
       this.userSettings.selectedContactIndex = contactID;
       this.patchUserSettings();
       if (this.wndw.wdth < 768) {

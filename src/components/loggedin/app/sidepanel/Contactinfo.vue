@@ -3,7 +3,7 @@
     <searchbar></searchbar>
     <members></members>
     <addresses></addresses>
-    <connections></connections>
+    <connections @sideMenuSlctdLnk="(lnk) => $emit('sideMenuSlctdLnk', lnk)"></connections>
     <assets></assets>
     <credentials></credentials>
     <template v-if="contacts[slctdCntctIndex]">
@@ -56,6 +56,8 @@
 <script>
 export default {
   name: 'Contact Info',
+
+  emits: ['sideMenuSlctdLnk'],
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [

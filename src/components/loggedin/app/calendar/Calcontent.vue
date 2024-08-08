@@ -19,9 +19,7 @@
           },
           {
             activeTask:
-              calContactTask.EventIndex == eventIndex &&
-              calContactTask.ContactID == userSettings.selectedContactIndex &&
-              calContactTask.Type == activeTab,
+              calContactTask.EventIndex == eventIndex && calContactTask.ContactID == userSettings.selectedContactIndex,
           },
         ]"
         :style="{
@@ -61,7 +59,6 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'activeTab',
       'eventIndex',
       'userSettings',
       'contacts',
@@ -126,7 +123,6 @@ export default {
     selectContact(ContactID, tab, eventIndex) {
       this.userSettings.selectedContactIndex = ContactID;
       this.eventIndex = eventIndex;
-      this.activeTab = tab;
       this.patchUserSettings();
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });

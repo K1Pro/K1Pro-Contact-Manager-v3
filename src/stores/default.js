@@ -1,8 +1,6 @@
 const useDefaultStore = Pinia.defineStore('default', {
   state: () => {
     return {
-      activeTab: 'house-chimney-user',
-      activeWindow: 'calendar',
       eventIndex: null,
       userData: {},
       accountSettings: {},
@@ -19,7 +17,6 @@ const useDefaultStore = Pinia.defineStore('default', {
         slctdTmstmp: '',
       },
       daysRangeArr: [1, 3, 7, 14, 21, 28],
-      appName: app_name,
       slctdDayIndex: null,
       updating: 0,
       dsbld: false,

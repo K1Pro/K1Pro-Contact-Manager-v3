@@ -51,7 +51,6 @@ export default {
       'accountSettings',
       'contacts',
       'reports',
-      'appName',
       'slctdCntctIndex',
     ]),
   },

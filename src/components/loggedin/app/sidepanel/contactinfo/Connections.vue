@@ -50,7 +50,6 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'activeWindow',
       'userData',
       'accountSettings',
       'userSettings',
@@ -67,6 +66,8 @@ export default {
       }).sort((a, b) => Object.keys(b)[0].localeCompare(Object.keys(a)[0]));
     },
   },
+
+  emits: ['sideMenuSlctdLnk'],
 
   data() {
     return { clmn: 'Connections' };
@@ -113,7 +114,7 @@ export default {
           }
         }
         if (connType == 'Email') {
-          this.activeWindow = 'email';
+          this.$emit('sideMenuSlctdLnk', ['Contactinfo', 'Emails']);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }

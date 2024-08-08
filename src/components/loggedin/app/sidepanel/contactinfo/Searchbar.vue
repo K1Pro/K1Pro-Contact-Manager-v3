@@ -49,13 +49,7 @@ export default {
   name: 'Search Bar',
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'userData',
-      'userSettings',
-      'contacts',
-      'appName',
-      'patchUserSettings',
-    ]),
+    ...Pinia.mapWritableState(useDefaultStore, ['userData', 'userSettings', 'contacts', 'patchUserSettings']),
     searchArray() {
       let searchResultArray = [];
       if (this.search.length > 2) {
@@ -100,7 +94,7 @@ export default {
 
         contact.Custom1.forEach((custom1) => {
           Object.entries(custom1).forEach(([custom1Key, custom1Value]) => {
-            if (custom1Key == 'Policy_No' && this.userData.AppPermissions[this.appName][0] == 'bundle_insurance')
+            if (custom1Key == 'Policy_No' && this.userData.AppPermissions[app_name][0] == 'bundle_insurance')
               stringArray[contactIndex] += (custom1Value + ' ').toLowerCase().replaceAll('-', '');
           });
         });

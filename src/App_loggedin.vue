@@ -4,8 +4,16 @@
   <template v-if="contacts.length > 0">
     <div class="app-grid-container" :style="appGridContainer">
       <div class="app-grid-item1">
-        <sidemenu :sideMenuItems="sideMenuItems" @sideMenuSlctdLnk="(lnk) => (sideMenuSlctdLnk = lnk)"></sidemenu>
-        <component :is="sideMenuSlctdLnk[0]" style="padding: 10px 10px 10px 70px; height: 100%"></component>
+        <sidemenu
+          :sideMenuItems="sideMenuItems"
+          :sideMenuSlctdLnk="sideMenuSlctdLnk"
+          @sideMenuSlctdLnk="(lnk) => (sideMenuSlctdLnk = lnk)"
+        ></sidemenu>
+        <component
+          class="app-grid-side-component"
+          :is="sideMenuSlctdLnk[0]"
+          @sideMenuSlctdLnk="(lnk) => (sideMenuSlctdLnk = lnk)"
+        ></component>
       </div>
 
       <div
@@ -17,9 +25,7 @@
       ></div>
 
       <div class="app-grid-item2">
-        <calendar v-if="activeWindow == 'calendar'"></calendar>
-        <emails v-if="activeWindow == 'email'"></emails>
-        <reports v-if="activeWindow == 'reports'"></reports>
+        <component :is="sideMenuSlctdLnk[1]" @sideMenuSlctdLnk="(lnk) => (sideMenuSlctdLnk = lnk)"></component>
       </div>
     </div>
   </template>
@@ -36,7 +42,6 @@ export default {
 
   computed: {
     ...Pinia.mapWritableState(useDefaultStore, [
-      'activeWindow',
       'userData',
       'activeUserList',
       'accountSettings',
@@ -69,7 +74,7 @@ export default {
         ['fa fa-list-check', this.contacts[this.slctdCntctIndex]?.Tasks.length, 'Tasks', 'Calendar'],
         ['fa fa-repeat', this.contacts[this.slctdCntctIndex]?.RecurTasks.length, 'Recurring tasks', 'Calendar'],
         ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length, 'Notes', 'Calendar'],
-        ['fa fa-chart-pie', null, 'Reportspanel', 'Reportstable'],
+        ['fa fa-chart-pie', null, 'Reportspanel', 'Reports'],
         ['fa fa-user-gear', null, 'Settings', 'Calendar'],
       ];
     },
@@ -84,7 +89,7 @@ export default {
   data() {
     return {
       currentUpdate: null,
-      sideMenuSlctdLnk: ['Contactinfo'],
+      sideMenuSlctdLnk: ['Contactinfo', 'Calendar'],
       wndw: {
         wdth: 0,
         hght: 0,
@@ -94,7 +99,6 @@ export default {
 
   provide() {
     return {
-      sideMenuSlctdLnk: Vue.computed(() => this.sideMenuSlctdLnk),
       wndw: Vue.computed(() => this.wndw),
       tbCntntWdth: Vue.computed(() => this.tbCntntWdth),
     };
@@ -304,6 +308,11 @@ export default {
   order: 1;
   background-color: #999999;
   overflow-y: hidden;
+}
+
+.app-grid-side-component {
+  padding: 10px 0px 10px 65px;
+  height: 100%;
 }
 
 @media only screen and (min-width: 768px) {
