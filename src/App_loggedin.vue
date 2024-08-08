@@ -69,7 +69,7 @@ export default {
         ['fa fa-list-check', this.contacts[this.slctdCntctIndex]?.Tasks.length, 'Tasks', 'Calendar'],
         ['fa fa-repeat', this.contacts[this.slctdCntctIndex]?.RecurTasks.length, 'Recurring tasks', 'Calendar'],
         ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length, 'Notes', 'Calendar'],
-        ['fa fa-chart-pie', null, 'Reports', 'Reportstable'],
+        ['fa fa-chart-pie', null, 'Reportspanel', 'Reportstable'],
         ['fa fa-user-gear', null, 'Settings', 'Calendar'],
       ];
     },

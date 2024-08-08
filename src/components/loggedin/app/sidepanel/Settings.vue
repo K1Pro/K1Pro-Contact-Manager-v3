@@ -85,10 +85,8 @@ export default {
 </script>
 
 <style>
-.settings {
-  background-color: lightblue;
-}
 .settings-title {
+  background-color: lightblue;
   font-weight: bold;
   padding: 5px;
   color: black;

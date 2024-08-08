@@ -50,10 +50,8 @@ export default {
 </script>
 
 <style>
-.notes {
-  background-color: lightblue;
-}
 .notes-title {
+  background-color: lightblue;
   font-weight: bold;
   padding: 5px;
   color: black;

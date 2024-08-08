@@ -87,10 +87,8 @@ export default {
 </script>
 
 <style>
-.reports-panel {
-  background-color: lightblue;
-}
 .reports-panel-title {
+  background-color: lightblue;
   font-weight: bold;
   padding: 5px;
   color: black;
