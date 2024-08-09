@@ -42,18 +42,9 @@
 export default {
   name: 'Reports',
 
-  inject: ['wndw'],
+  emits: ['slctdReport'],
 
-  computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'userData',
-      'activeUserList',
-      'accountSettings',
-      'contacts',
-      'reports',
-      'slctdCntctIndex',
-    ]),
-  },
+  inject: ['accountSettings', 'activeUserList', 'contacts', 'reports', 'slctdCntctIndex', 'wndw'],
 
   data() {
     return {
@@ -63,7 +54,8 @@ export default {
 
   methods: {
     selectReport(event) {
-      this.reports = event.trim();
+      // this.reports = event.trim();
+      this.$emit('slctdReport', event.trim());
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }

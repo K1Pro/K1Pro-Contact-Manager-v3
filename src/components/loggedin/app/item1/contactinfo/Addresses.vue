@@ -105,18 +105,17 @@
 export default {
   name: 'Addresses',
 
-  inject: ['tbCntntWdth'],
+  inject: [
+    'accountSettings',
+    'contacts',
+    'deleteContactInfo',
+    'dsbld',
+    'patchContactInfo',
+    'slctdCntctIndex',
+    'tbCntntWdth',
+  ],
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'accountSettings',
-      'userSettings',
-      'contacts',
-      'dsbld',
-      'patchContactInfo',
-      'deleteContactInfo',
-      'slctdCntctIndex',
-    ]),
     addressInputsWidth() {
       return this.tbCntntWdth > 120 ? 120 : this.tbCntntWdth;
     },

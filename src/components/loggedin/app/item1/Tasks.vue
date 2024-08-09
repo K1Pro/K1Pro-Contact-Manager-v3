@@ -114,19 +114,20 @@
 export default {
   name: 'Tasks',
 
+  inject: [
+    'contacts',
+    'deleteContactInfo',
+    'dsbld',
+    'eventIndex',
+    'patchContactInfo',
+    'slctdCntctIndex',
+    'slctdY_m_d',
+    'times',
+    'userData',
+    'userList',
+  ],
+
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'eventIndex',
-      'userData',
-      'contacts',
-      'times',
-      'dsbld',
-      'patchContactInfo',
-      'deleteContactInfo',
-      'userList',
-      'slctdCntctIndex',
-      'slctdY_m_d',
-    ]),
     Tasks() {
       return this.eventIndex !== null
         ? [

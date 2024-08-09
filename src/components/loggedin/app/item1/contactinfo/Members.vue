@@ -79,21 +79,22 @@
 export default {
   name: 'Members',
 
-  inject: ['tbCntntWdth'],
+  emits: ['userSettings'],
+
+  inject: [
+    'accountSettings',
+    'contacts',
+    'deleteContactInfo',
+    'dsbld',
+    'patchContactInfo',
+    'patchUserSettings',
+    'slctdCntctIndex',
+    'tbCntntWdth',
+    'times',
+    'userData',
+  ],
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'userData',
-      'accountSettings',
-      'userSettings',
-      'contacts',
-      'times',
-      'dsbld',
-      'patchContactInfo',
-      'deleteContactInfo',
-      'patchUserSettings',
-      'slctdCntctIndex',
-    ]),
     addCntctInfoDropDown() {
       const cntctInfoDropDown = [];
       Object.entries(this.accountSettings.contactInfo.keys).forEach(([contactInfoGroup, contactInfoKeys]) => {
@@ -189,6 +190,7 @@ export default {
               let clonedCntcts = this.contacts;
               this.contacts = [...clonedCntcts, newMember];
               this.userSettings.selectedContactIndex = newContactIndex;
+              this.$emit('userSettings', this.userSettings);
               this.patchUserSettings();
               this.spinLogin = false;
             } else {

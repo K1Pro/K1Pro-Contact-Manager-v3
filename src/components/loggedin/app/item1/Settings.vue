@@ -3,7 +3,7 @@
     <div class="settings-title">Settings for {{ userData.FirstName }}</div>
     <div class="settings-body">
       <div class="settings-body-label">Days:</div>
-      <select v-model="userSettings.calendar.filters.days" @change="daysRangeChange">
+      <select :value="userSettings.calendar.filters.days" @change="daysRangeChange">
         <template v-if="wndw.wdth > 768">
           <option v-for="(daysRange, daysRangeIndex) in daysRangeArr" :value="daysRangeIndex">
             {{ daysRange }}
@@ -15,21 +15,21 @@
         </template>
       </select>
       <div class="settings-body-label">Owners:</div>
-      <select v-model="userSettings.calendar.filters.owners" @change="ownersChange">
+      <select :value="userSettings.calendar.filters.owners" @change="ownersChange">
         <option value="">All</option>
         <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
           {{ userInfo[0] }}
         </option>
       </select>
       <div class="settings-body-label">Status:</div>
-      <select v-model="userSettings.calendar.filters.status" @change="statusChange">
+      <select :value="userSettings.calendar.filters.status" @change="statusChange">
         <option value="">All</option>
         <option value="compltd">Completed</option>
         <option value="not-compltd">Not completed</option>
         <option value="renewal">Recurring</option>
       </select>
       <div class="settings-body-label">Category:</div>
-      <select v-model="userSettings.calendar.filters.category" @change="categoryChange">
+      <select :value="userSettings.calendar.filters.category" @change="categoryChange">
         <option value="">All</option>
         <option v-for="category in accountSettings.Categ" :value="category">
           {{ category }}
@@ -46,38 +46,31 @@
 export default {
   name: 'Settings',
 
-  // components: {
-  //   Logout,
-  // },
+  inject: ['accountSettings', 'daysRangeArr', 'patchUserSettings', 'userData', 'userList', 'userSettings', 'wndw'],
 
-  inject: ['wndw'],
-
-  computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'userData',
-      'accountSettings',
-      'userSettings',
-      'tempFiltersDays',
-      'daysRangeArr',
-      'slctdDayIndex',
-      'patchUserSettings',
-      'userList',
-    ]),
-  },
+  emits: ['slctdDayIndex', 'tempFiltersDays', 'userSettings'],
 
   methods: {
     daysRangeChange(event) {
-      this.tempFiltersDays = event.target.value;
-      this.slctdDayIndex = null;
+      this.userSettings.calendar.filters.days = event.target.value;
+      this.$emit('tempFiltersDays', event.target.value);
+      this.$emit('slctdDayIndex', null);
+      this.$emit('userSettings', this.userSettings);
       this.patchUserSettings();
     },
-    ownersChange() {
+    ownersChange(event) {
+      this.userSettings.calendar.filters.owners = event.target.value;
+      this.$emit('userSettings', this.userSettings);
       this.patchUserSettings();
     },
-    statusChange() {
+    statusChange(event) {
+      this.userSettings.calendar.filters.status = event.target.value;
+      this.$emit('userSettings', this.userSettings);
       this.patchUserSettings();
     },
-    categoryChange() {
+    categoryChange(event) {
+      this.userSettings.calendar.filters.category = event.target.value;
+      this.$emit('userSettings', this.userSettings);
       this.patchUserSettings();
     },
   },

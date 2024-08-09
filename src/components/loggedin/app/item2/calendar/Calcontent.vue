@@ -38,7 +38,7 @@
           style="overflow: hidden"
           class="prevent-select"
           @click="selectContact(calContactTask.ContactID, calContactTask.Type, calContactTask.EventIndex)"
-          v-on:dblclick="selectContact(calContactTask.ContactID, 'house-chimney-user', null)"
+          v-on:dblclick="selectContact(calContactTask.ContactID, 'Contactinfo', null)"
         >
           {{ calContactTask.Time != '25:00' ? calContactTask.Time : '' }}
           {{ calContactTask?.Name }}
@@ -55,18 +55,13 @@
 export default {
   name: 'Day Content',
 
-  inject: ['wndw'],
+  emits: ['eventIndex', 'sideMenuSlctdLnk', 'userSettings'],
+
+  inject: ['contacts', 'days', 'eventIndex', 'firstDayTmstmp', 'patchUserSettings', 'times', 'wndw', 'userSettings'],
+
+  props: ['dayIndex'],
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'eventIndex',
-      'userSettings',
-      'contacts',
-      'patchUserSettings',
-      'times',
-      'days',
-      'firstDayY_m_d',
-    ]),
     calContactTasks() {
       let contactArray = {};
       let calDay;
@@ -77,7 +72,7 @@ export default {
             contactArray[contactIndex + 'Task' + taskIndex] = {
               Name: contact.Members[0]?.Name,
               Time: task.Date.split('T')[1],
-              Type: 'list-check',
+              Type: 'Tasks',
               Status: task.Status == 1 ? 'compltd' : 'not-compltd',
               Assign: task.Assign,
               Categ: contact.Categ,
@@ -102,7 +97,7 @@ export default {
             contactArray[contactIndex + 'Recur' + taskIndex] = {
               Name: contact.Members[0]?.Name,
               Time: task.Time ? task.Time : '25:00',
-              Type: 'repeat',
+              Type: 'Recurringtasks',
               Status: task.Review >= this.days[this.dayIndex] ? 'compltd' : 'renewal',
               Icon: task.Review >= this.days[this.dayIndex] ? 'fa fa-check' : 'fa fa-repeat',
               Assign: task.Assign,
@@ -115,14 +110,18 @@ export default {
       });
       return Object.values(contactArray).sort((a, b) => a.Time.localeCompare(b.Time));
     },
+    firstDayY_m_d() {
+      // prettier-ignore
+      return (new Date(this.firstDayTmstmp).getFullYear() + '-' + (new Date(this.firstDayTmstmp).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(this.firstDayTmstmp).getDate().toString().padStart(2, '0'));
+    },
   },
 
-  props: ['dayIndex'],
-
   methods: {
-    selectContact(ContactID, tab, eventIndex) {
+    selectContact(ContactID, sidemenuLink, eventIndex) {
       this.userSettings.selectedContactIndex = ContactID;
-      this.eventIndex = eventIndex;
+      this.$emit('userSettings', this.userSettings);
+      this.$emit('eventIndex', eventIndex);
+      this.$emit('sideMenuSlctdLnk', [sidemenuLink, 'Calendar']);
       this.patchUserSettings();
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });

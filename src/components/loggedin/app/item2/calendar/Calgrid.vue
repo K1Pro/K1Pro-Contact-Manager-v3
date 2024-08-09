@@ -8,7 +8,12 @@
           :class="{ activeDay: days[dayIndex] == slctdY_m_d }"
           @click="changeDate(days[dayIndex], dayIndex)"
         >
-          <calcontent :dayIndex="dayIndex"></calcontent>
+          <calcontent
+            :dayIndex="dayIndex"
+            @eventIndex="(el) => $emit('eventIndex', el)"
+            @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"
+            @userSettings="(el) => $emit('userSettings', el)"
+          ></calcontent>
         </div>
 
         <div v-if="(dayIndex + 1) % 7 === 0" class="calendar-body-grid-item">
@@ -17,14 +22,22 @@
             :class="{ activeDay: days[dayIndex - 1] == slctdY_m_d }"
             @click="changeDate(days[dayIndex - 1], dayIndex - 1)"
           >
-            <calcontent :dayIndex="dayIndex - 1"></calcontent>
+            <calcontent
+              :dayIndex="dayIndex - 1"
+              @eventIndex="(el) => $emit('eventIndex', el)"
+              @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"
+            ></calcontent>
           </div>
           <div
             class="day sunday"
             :class="{ activeDay: days[dayIndex] == slctdY_m_d }"
             @click="changeDate(days[dayIndex], dayIndex)"
           >
-            <calcontent :dayIndex="dayIndex"></calcontent>
+            <calcontent
+              :dayIndex="dayIndex"
+              @eventIndex="(el) => $emit('eventIndex', el)"
+              @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"
+            ></calcontent>
           </div>
         </div>
       </template>
@@ -36,27 +49,14 @@
 export default {
   name: 'Calendar body',
 
-  inject: ['wndw'],
+  inject: ['days', 'slctdY_m_d', 'tempFiltersDays', 'times', 'userSettings', 'wndw'],
 
-  computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'userSettings',
-      'tempFiltersDays',
-      'times',
-      'slctdDayIndex',
-      'days',
-      'slctdY_m_d',
-    ]),
-  },
-
-  // components: {
-  //   Calcontent,
-  // },
+  emits: ['eventIndex', 'sideMenuSlctdLnk', 'slctdDayIndex', 'tempFiltersDays', 'userSettings'],
 
   methods: {
     changeDate(slctdY_m_d, slctdDayIndex) {
       this.times.slctdTmstmp = new Date(slctdY_m_d + 'T00:00:00').getTime();
-      this.slctdDayIndex = slctdDayIndex;
+      this.$emit('slctdDayIndex', slctdDayIndex);
     },
   },
 
@@ -69,14 +69,16 @@ export default {
         this.userSettings.calendar.filters.days != 1
       ) {
         this.userSettings.calendar.filters.days = 1;
+        this.$emit('userSettings', this.userSettings);
       } else if (newWidth > 768 && oldWidth < 768 && this.userSettings.calendar.filters.days != this.tempFiltersDays) {
         this.userSettings.calendar.filters.days = this.tempFiltersDays;
+        this.$emit('userSettings', this.userSettings);
       }
     },
   },
 
   mounted() {
-    this.tempFiltersDays = this.userSettings.calendar.filters.days;
+    this.$emit('tempFiltersDays', this.userSettings.calendar.filters.days);
   },
 };
 </script>

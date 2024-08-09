@@ -48,8 +48,11 @@
 export default {
   name: 'Search Bar',
 
+  emits: ['userSettings'],
+
+  inject: ['contacts', 'patchUserSettings', 'userData'],
+
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, ['userData', 'userSettings', 'contacts', 'patchUserSettings']),
     searchArray() {
       let searchResultArray = [];
       if (this.search.length > 2) {
@@ -116,6 +119,7 @@ export default {
     },
     selectSearchedContact(event) {
       this.userSettings.selectedContactIndex = this.contacts[event.target.value].id;
+      this.$emit('userSettings', this.userSettings);
       this.search = '';
       this.$refs.searchDropdown.size = 0;
       this.patchUserSettings();

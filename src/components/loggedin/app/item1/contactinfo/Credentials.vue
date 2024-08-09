@@ -41,17 +41,7 @@
 export default {
   name: 'Credentials',
 
-  computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'accountSettings',
-      'userSettings',
-      'contacts',
-      'dsbld',
-      'patchContactInfo',
-      'deleteContactInfo',
-      'slctdCntctIndex',
-    ]),
-  },
+  inject: ['accountSettings', 'contacts', 'deleteContactInfo', 'dsbld', 'patchContactInfo', 'slctdCntctIndex'],
 
   data() {
     return { clmn: 'Credentials', credInputType: 'password' };

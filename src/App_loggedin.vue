@@ -4,15 +4,15 @@
   <template v-if="contacts.length > 0">
     <div class="app-grid-container" :style="appGridContainer">
       <div class="app-grid-item1">
-        <sidemenu
-          :sideMenuItems="sideMenuItems"
-          :sideMenuSlctdLnk="sideMenuSlctdLnk"
-          @sideMenuSlctdLnk="(lnk) => (sideMenuSlctdLnk = lnk)"
-        ></sidemenu>
+        <sidemenu :sideMenuItems :sideMenuSlctdLnk @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"></sidemenu>
         <component
           class="app-grid-item1-panel"
           :is="sideMenuSlctdLnk[0]"
-          @sideMenuSlctdLnk="(lnk) => (sideMenuSlctdLnk = lnk)"
+          @slctdReport="(el) => (reports = el)"
+          @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"
+          @tempFiltersDays="(el) => (tempFiltersDays = el)"
+          @slctdDayIndex="(el) => (slctdDayIndex = el)"
+          @userSettings="(el) => (userSettings = el)"
         ></component>
       </div>
 
@@ -25,7 +25,14 @@
       ></div>
 
       <div class="app-grid-item2">
-        <component :is="sideMenuSlctdLnk[1]" @sideMenuSlctdLnk="(lnk) => (sideMenuSlctdLnk = lnk)"></component>
+        <component
+          :is="sideMenuSlctdLnk[1]"
+          @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"
+          @eventIndex="(el) => (eventIndex = el)"
+          @tempFiltersDays="(el) => (tempFiltersDays = el)"
+          @slctdDayIndex="(el) => (slctdDayIndex = el)"
+          @userSettings="(el) => (userSettings = el)"
+        ></component>
       </div>
     </div>
   </template>
@@ -40,26 +47,71 @@
 export default {
   name: 'App',
 
-  computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'userData',
-      'activeUserList',
-      'accountSettings',
-      'userSettings',
-      'tempFiltersDays',
-      'contacts',
-      'emails',
-      'times',
-      'updating',
-      'dsbld',
-      'patchUserSettings',
-      'slctdCntctIndex',
-    ]),
+  data() {
+    return {
+      contacts: [],
+      currentUpdate: null,
+      sideMenuSlctdLnk: ['Contactinfo', 'Calendar'],
+      times: {
+        initialUsrTmstmp: '',
+        initialBrwsrTmstmp: '',
+        updtngY_m_d_H_i_s_z: null,
+        slctdTmstmp: '',
+      },
+      wndw: {
+        wdth: 0,
+        hght: 0,
+      },
+      eventIndex: null,
+      userData: {},
+      accountSettings: {},
+      userSettings: {},
+      activeUserList: {},
+      daysRangeArr: [1, 3, 7, 14, 21, 28],
+      reports: 'All contacts with min. info',
+      emails: [],
+      dsbld: false,
+      tempFiltersDays: null,
+      slctdDayIndex: null,
+      updating: 0,
+    };
+  },
 
+  provide() {
+    return {
+      contacts: Vue.computed(() => this.contacts),
+      wndw: Vue.computed(() => this.wndw),
+      eventIndex: Vue.computed(() => this.eventIndex),
+      times: Vue.computed(() => this.times),
+      tbCntntWdth: Vue.computed(() => this.tbCntntWdth),
+      userData: Vue.computed(() => this.userData),
+      accountSettings: Vue.computed(() => this.accountSettings),
+      userList: Vue.computed(() => this.userList),
+      activeUserList: Vue.computed(() => this.activeUserList),
+      userSettings: Vue.computed(() => this.userSettings),
+      daysRangeArr: this.daysRangeArr,
+      reports: Vue.computed(() => this.reports),
+      emails: Vue.computed(() => this.emails),
+      dsbld: Vue.computed(() => this.dsbld),
+      tempFiltersDays: Vue.computed(() => this.tempFiltersDays),
+      usaDateFrmt: this.usaDateFrmt,
+      patchContactInfo: this.patchContactInfo,
+      deleteContactInfo: this.deleteContactInfo,
+      patchUserSettings: this.patchUserSettings,
+      firstDayTmstmp: Vue.computed(() => this.firstDayTmstmp),
+      slctdY_m_d: Vue.computed(() => this.slctdY_m_d),
+      slctdCntctIndex: Vue.computed(() => this.slctdCntctIndex),
+      days: Vue.computed(() => this.days),
+    };
+  },
+
+  computed: {
+    userList() {
+      return { ...this.activeUserList, ...this.accountSettings.userList };
+    },
     appGridItem2Width() {
       return 100 - this.userSettings.layout['grid-size'];
     },
-
     appGridContainer() {
       return this.wndw.wdth > 768
         ? {
@@ -67,7 +119,6 @@ export default {
           }
         : false;
     },
-
     sideMenuItems() {
       return [
         ['fa fa-house-chimney-user', null, 'Contact info', 'Calendar'],
@@ -78,30 +129,51 @@ export default {
         ['fa fa-user-gear', null, 'Settings', 'Calendar'],
       ];
     },
-
     tbCntntWdth() {
       return this.wndw.wdth > 768
         ? Math.round((this.wndw.wdth * (this.userSettings?.layout?.['grid-size'] / 100) - 75.02) * 100) / 100
         : Math.round((this.wndw.wdth - 75.02) * 100) / 100;
     },
-  },
-
-  data() {
-    return {
-      currentUpdate: null,
-      sideMenuSlctdLnk: ['Contactinfo', 'Calendar'],
-      wndw: {
-        wdth: 0,
-        hght: 0,
-      },
-    };
-  },
-
-  provide() {
-    return {
-      wndw: Vue.computed(() => this.wndw),
-      tbCntntWdth: Vue.computed(() => this.tbCntntWdth),
-    };
+    firstDayTmstmp() {
+      const cmptdDayNumber = this.slctdDayIndex != null ? this.slctdDayIndex : 1;
+      const cmptdDayOfTheWeek = this.dayOfTheWeek == 0 ? 6 : this.dayOfTheWeek - 1;
+      const cmptdNoOfWeeks = this.slctdDayIndex != null ? Math.floor(this.slctdDayIndex / 7) : 1;
+      return this.userSettings.calendar.filters.days == 0
+        ? this.times.slctdTmstmp
+        : this.userSettings.calendar.filters.days == 1
+        ? this.times.slctdTmstmp - cmptdDayNumber * 86400000
+        : this.userSettings.calendar.filters.days == 2
+        ? this.times.slctdTmstmp - cmptdDayOfTheWeek * 86400000
+        : this.times.slctdTmstmp - cmptdNoOfWeeks * 604800000 - cmptdDayOfTheWeek * 86400000;
+    },
+    slctdY_m_d() {
+      // prettier-ignore
+      return (new Date(this.times.slctdTmstmp).getFullYear() + '-' + (new Date(this.times.slctdTmstmp).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(this.times.slctdTmstmp).getDate().toString().padStart(2, '0'));
+    },
+    slctdCntctIndex() {
+      return this.contacts.findIndex((contact) => contact.id == this.userSettings.selectedContactIndex);
+    },
+    dayOfTheWeek() {
+      return new Date(this.times.slctdTmstmp).getDay(); // 0 is Sunday, 1 is Monday, 2 is Tuesday, ...,
+    },
+    dayIndex() {
+      return this.days.findIndex((day) => day == this.slctdY_m_d);
+    },
+    calRow() {
+      return Math.ceil((this.days.findIndex((day) => day == this.slctdY_m_d) + 1) / 7);
+    },
+    days() {
+      let dateRangeStart = 1;
+      let dateArray = [];
+      let currentDate = new Date(this.firstDayTmstmp);
+      while (dateRangeStart <= this.daysRangeArr[this.userSettings.calendar.filters.days]) {
+        // prettier-ignore
+        dateArray.push(currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' + currentDate.getDate().toString().padStart(2, '0'));
+        currentDate.setDate(currentDate.getDate() + 1);
+        dateRangeStart++;
+      }
+      return dateArray;
+    },
   },
 
   methods: {
@@ -137,6 +209,7 @@ export default {
     },
 
     async getUserData() {
+      console.log(servr_url);
       try {
         const response = await fetch(servr_url + 'users', {
           method: 'GET',
@@ -234,10 +307,120 @@ export default {
       }
     },
 
-    // destroyed() {
-    //  Check this
-    //   clearInterval(this.updateTime());
-    // },
+    usaDateFrmt(dateString) {
+      let newDateString = dateString;
+      if (dateString != null && dateString != undefined) {
+        // prettier-ignore
+        newDateString = dateString.includes('T')
+          ? dateString.slice(5, 7) + '/' + dateString.slice(8, 10) + '/' + dateString.slice(0, 4) + ' ' + dateString.slice(11,16)
+          : dateString.slice(5, 7) + '/' + dateString.slice(8, 10) + '/' + dateString.slice(0, 4)
+      }
+      return newDateString;
+    },
+
+    async patchContactInfo(event, column, columnIndex, key) {
+      let cloneUpdating = this.updating;
+      this.updating = cloneUpdating + 1;
+      this.contacts[this.slctdCntctIndex].Updated = {
+        [this.userData.id]: this.times.updtngY_m_d_H_i_s_z,
+      };
+      try {
+        const response = await fetch(servr_url + 'contacts', {
+          method: 'PATCH',
+          headers: {
+            Authorization: access_token,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          },
+          body: JSON.stringify({
+            ID: this.userSettings.selectedContactIndex,
+            Column: column,
+            ColumnIndex: columnIndex,
+            Key: key,
+            Value: event,
+          }),
+        });
+        const patchContactInfoResJSON = await response.json();
+        if (patchContactInfoResJSON.success) {
+          // console.log(patchContactInfoResJSON.data);
+          cloneUpdating = this.updating;
+          this.updating = cloneUpdating - 1;
+        } else {
+          // this.msg.snackBar = 'Update error';
+          cloneUpdating = this.updating;
+          this.updating = cloneUpdating - 1;
+        }
+      } catch (error) {
+        // this.msg.snackBar = 'Update error';
+        cloneUpdating = this.updating;
+        this.updating = cloneUpdating - 1;
+        // this.msg.snackBar = error.toString();
+      }
+    },
+
+    async deleteContactInfo(column, columnIndex, prevConfirm) {
+      let cloneUpdating = this.updating;
+      this.updating = cloneUpdating + 1;
+      if (prevConfirm || confirm('Are you sure you would like to delete this?') == true) {
+        this.contacts[this.slctdCntctIndex][column].splice(columnIndex, 1);
+        try {
+          const response = await fetch(servr_url + 'contacts', {
+            method: 'DELETE',
+            headers: {
+              Authorization: access_token,
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store',
+            },
+            body: JSON.stringify({
+              ID: this.userSettings.selectedContactIndex,
+              Column: column,
+              ColumnIndex: columnIndex,
+            }),
+          });
+          const deleteContactInfoResJSON = await response.json();
+          if (deleteContactInfoResJSON.success) {
+            cloneUpdating = this.updating;
+            this.updating = cloneUpdating - 1;
+          } else {
+            // this.msg.snackBar = 'Delete error';
+            cloneUpdating = this.updating;
+            this.updating = cloneUpdating - 1;
+          }
+        } catch (error) {
+          // this.msg.snackBar = 'Delete error';
+          cloneUpdating = this.updating;
+          this.updating = cloneUpdating - 1;
+          // this.msg.snackBar = error.toString();
+        }
+      }
+    },
+
+    async patchUserSettings() {
+      try {
+        const response = await fetch(servr_url + 'settings', {
+          method: 'PATCH',
+          headers: {
+            Authorization: access_token,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          },
+          body: JSON.stringify({
+            Settings: this.userSettings,
+          }),
+        });
+        const patchUserSettingsResJSON = await response.json();
+        if (patchUserSettingsResJSON.success) {
+          // console.log(patchUserSettingsResJSON);
+          // this.msg.snackBar = patchUserSettingsResJSON.messages[0];
+        } else {
+          // this.msg.snackBar = 'Settings update error';
+        }
+      } catch (error) {
+        console.log(error.toString());
+        // this.msg.snackBar = 'Settings update error';
+        // this.msg.snackBar = error.toString();
+      }
+    },
 
     updateScreenWidth() {
       this.wndw.wdth = window.innerWidth;

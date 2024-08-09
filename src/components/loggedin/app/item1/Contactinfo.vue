@@ -1,9 +1,9 @@
 <template>
   <div class="contact-info">
     <searchbar></searchbar>
-    <members></members>
+    <members @userSettings="(el) => $emit('userSettings', el)"></members>
     <addresses></addresses>
-    <connections @sideMenuSlctdLnk="(lnk) => $emit('sideMenuSlctdLnk', lnk)"></connections>
+    <connections @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"></connections>
     <assets></assets>
     <credentials></credentials>
     <template v-if="contacts[slctdCntctIndex]">
@@ -57,27 +57,9 @@
 export default {
   name: 'Contact Info',
 
-  emits: ['sideMenuSlctdLnk'],
+  emits: ['sideMenuSlctdLnk', 'userSettings'],
 
-  computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'accountSettings',
-      'userSettings',
-      'contacts',
-      'patchContactInfo',
-      'slctdCntctIndex',
-      'userList',
-    ]),
-  },
-
-  // components: {
-  //   Searchbar,
-  //   Members,
-  //   Addresses,
-  //   Assets,
-  //   Connections,
-  //   Credentials,
-  // },
+  inject: ['accountSettings', 'contacts', 'patchContactInfo', 'slctdCntctIndex', 'userList'],
 };
 </script>
 

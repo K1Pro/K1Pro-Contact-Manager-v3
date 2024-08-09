@@ -124,25 +124,21 @@
 export default {
   name: 'Reports table',
 
-  // components: {
-  //   dynamic_component_name_reports,
-  // },
+  emits: ['sideMenuSlctdLnk', 'userSettings'],
 
-  emits: ['sideMenuSlctdLnk'],
-
-  inject: ['wndw', 'tbCntntWdth'],
+  inject: [
+    'contacts',
+    'patchUserSettings',
+    'reports',
+    'slctdCntctIndex',
+    'tbCntntWdth',
+    'times',
+    'usaDateFrmt',
+    'userList',
+    'wndw',
+  ],
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'userSettings',
-      'reports',
-      'times',
-      'contacts',
-      'patchUserSettings',
-      'usaDateFrmt',
-      'userList',
-      'slctdCntctIndex',
-    ]),
     tblCntnt() {
       let clonedCntcts = this.contacts;
       let tblHdrs = [];
@@ -301,8 +297,10 @@ export default {
   },
   methods: {
     selectContact(contactID) {
-      this.$emit('sideMenuSlctdLnk', ['Contactinfo', 'Calendar']);
       this.userSettings.selectedContactIndex = contactID;
+      this.$emit('sideMenuSlctdLnk', ['Contactinfo', 'Calendar']);
+      this.$emit('userSettings', this.userSettings);
+
       this.patchUserSettings();
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });

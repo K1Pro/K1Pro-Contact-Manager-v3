@@ -1,6 +1,6 @@
 <template>
   <div class="emails">
-    <template v-if="contacts && userSettings">
+    <template v-if="contacts">
       <div class="emails-title">
         Send email to
         {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
@@ -59,15 +59,9 @@ export default {
 
   emits: ['sideMenuSlctdLnk'],
 
+  inject: ['contacts', 'emails', 'slctdCntctIndex', 'times', 'userData'],
+
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'userData',
-      'userSettings',
-      'contacts',
-      'emails',
-      'times',
-      'slctdCntctIndex',
-    ]),
     templateBody() {
       let slctdTemplateBody;
       if (this.slctdTemplate != 'null') {

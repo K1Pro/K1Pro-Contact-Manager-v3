@@ -201,21 +201,11 @@
 export default {
   name: 'Bundle Insurance Custom reports',
 
-  inject: ['wndw'],
+  emits: ['sideMenuSlctdLnk', 'userSettings'],
 
-  emits: ['sideMenuSlctdLnk'],
+  inject: ['contacts', 'patchUserSettings', 'reports', 'slctdCntctIndex', 'times', 'usaDateFrmt', 'wndw'],
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'userSettings',
-      'reports',
-      'times',
-      'contacts',
-      'patchUserSettings',
-      'usaDateFrmt',
-      'userList',
-      'slctdCntctIndex',
-    ]),
     srtdCntcts() {
       let clonedCntcts = this.contacts;
       let newSrtdCntcts = [];
@@ -343,6 +333,7 @@ export default {
     selectContact(contactID) {
       this.$emit('sideMenuSlctdLnk', ['Contactinfo', 'Calendar']);
       this.userSettings.selectedContactIndex = contactID;
+      this.$emit('userSettings', this.userSettings);
       this.patchUserSettings();
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });

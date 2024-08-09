@@ -44,20 +44,17 @@
 export default {
   name: 'Navigation',
 
-  computed: {
-    ...Pinia.mapWritableState(useDefaultStore, ['userSettings', 'times', 'slctdDayIndex', 'days', 'slctdY_m_d']),
-  },
+  emits: ['slctdDayIndex'],
 
-  data() {
-    return {};
-  },
+  inject: ['days', 'slctdY_m_d', 'times', 'userSettings'],
 
   methods: {
     changeDate(event) {
       if (event.target.value != this.slctdY_m_d) {
-        this.slctdDayIndex = this.days.includes(event.target.value)
-          ? this.days.findIndex((day) => day == event.target.value)
-          : null;
+        this.$emit(
+          'slctdDayIndex',
+          this.days.includes(event.target.value) ? this.days.findIndex((day) => day == event.target.value) : null
+        );
         this.times.slctdTmstmp = new Date(event.target.value + 'T00:00:00').getTime();
       }
     },

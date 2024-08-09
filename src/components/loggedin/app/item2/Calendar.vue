@@ -4,7 +4,13 @@
       <calnav></calnav>
     </div>
     <div class="calendar-container-item2">
-      <calgrid></calgrid>
+      <calgrid
+        @eventIndex="(el) => $emit('eventIndex', el)"
+        @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"
+        @tempFiltersDays="(el) => $emit('tempFiltersDays', el)"
+        @slctdDayIndex="(el) => $emit('slctdDayIndex', el)"
+        @userSettings="(el) => $emit('userSettings', el)"
+      ></calgrid>
     </div>
   </div>
 </template>
@@ -12,6 +18,8 @@
 <script>
 export default {
   name: 'Calendar',
+
+  emits: ['eventIndex', 'sideMenuSlctdLnk', 'slctdDayIndex', 'tempFiltersDays', 'userSettings'],
 };
 </script>
 

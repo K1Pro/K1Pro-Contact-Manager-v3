@@ -1,6 +1,5 @@
 <template>
   <div class="recur-tasks">
-    {{ wndw }}
     <template v-if="contacts[slctdCntctIndex].RecurTasks">
       <div class="recur-tasks-title">
         <div class="recur-tasks-title-grid-container">
@@ -148,20 +147,19 @@
 export default {
   name: 'Recur Tasks',
 
-  inject: ['wndw'],
+  inject: [
+    'contacts',
+    'deleteContactInfo',
+    'eventIndex',
+    'patchContactInfo',
+    'slctdCntctIndex',
+    'slctdY_m_d',
+    'times',
+    'userData',
+    'userList',
+  ],
 
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'eventIndex',
-      'userData',
-      'contacts',
-      'times',
-      'patchContactInfo',
-      'deleteContactInfo',
-      'userList',
-      'slctdCntctIndex',
-      'slctdY_m_d',
-    ]),
     RecurTasks() {
       return this.eventIndex !== null
         ? [

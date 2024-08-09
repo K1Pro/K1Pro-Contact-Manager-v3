@@ -1,6 +1,6 @@
 <template>
   <div class="notes">
-    <template v-if="contacts && userSettings">
+    <template v-if="contacts">
       <div class="notes-title">
         Notes for
         {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
@@ -21,15 +21,7 @@
 export default {
   name: 'Notes',
 
-  computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'userSettings',
-      'contacts',
-      'dsbld',
-      'patchContactInfo',
-      'slctdCntctIndex',
-    ]),
-  },
+  inject: ['contacts', 'dsbld', 'patchContactInfo', 'slctdCntctIndex'],
 
   data() {
     return { clmn: 'Notes' };

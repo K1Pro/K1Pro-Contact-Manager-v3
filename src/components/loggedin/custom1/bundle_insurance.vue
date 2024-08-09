@@ -90,18 +90,8 @@
 <script>
 export default {
   name: 'Custom 1',
-  // test
-  computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'userData',
-      'accountSettings',
-      'userSettings',
-      'contacts',
-      'patchContactInfo',
-      'deleteContactInfo',
-      'slctdCntctIndex',
-    ]),
-  },
+
+  inject: ['accountSettings', 'contacts', 'deleteContactInfo', 'patchContactInfo', 'slctdCntctIndex', 'userData'],
 
   data() {
     return { clmn: 'Custom1' };

@@ -48,26 +48,27 @@
 export default {
   name: 'Connections',
 
+  emits: ['sideMenuSlctdLnk'],
+
+  inject: [
+    'accountSettings',
+    'contacts',
+    'deleteContactInfo',
+    'dsbld',
+    'patchContactInfo',
+    'slctdCntctIndex',
+    'times',
+    'userData',
+    'userSettings',
+  ],
+
   computed: {
-    ...Pinia.mapWritableState(useDefaultStore, [
-      'userData',
-      'accountSettings',
-      'userSettings',
-      'contacts',
-      'times',
-      'dsbld',
-      'patchContactInfo',
-      'deleteContactInfo',
-      'slctdCntctIndex',
-    ]),
     connections() {
       return this.contacts[this.slctdCntctIndex].Connections.map((val, index) => {
         return { ...val, RealIndex: index };
       }).sort((a, b) => Object.keys(b)[0].localeCompare(Object.keys(a)[0]));
     },
   },
-
-  emits: ['sideMenuSlctdLnk'],
 
   data() {
     return { clmn: 'Connections' };
