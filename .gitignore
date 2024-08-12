@@ -8,8 +8,8 @@
 /archive
 /index.php
 /sync.ffs_db
-/src/components/custom1
-/src/components/reports
+/src/components/loggedin/custom1
+/src/components/loggedin/reports
 *.png
 *.ico
 *.env

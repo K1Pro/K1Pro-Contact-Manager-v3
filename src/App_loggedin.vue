@@ -131,7 +131,7 @@ export default {
         ['fa fa-house-chimney-user', null, 'Contact info', 'Calendar'],
         ['fa fa-calendar-check', this.contacts[this.slctdCntctIndex]?.Tasks.length, 'Tasks', 'Calendar'],
         ['fa fa-repeat', this.contacts[this.slctdCntctIndex]?.RecurTasks.length, 'Recurring tasks', 'Calendar'],
-        ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length, 'Notes', 'Calendar'],
+        ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length > 0 ? '1' : null, 'Notes', 'Calendar'],
         ['fa fa-chart-pie', null, 'Reports', 'Reportstable'],
         ['fa fa-user-gear', null, 'Settings', 'Calendar'],
       ];
@@ -140,7 +140,10 @@ export default {
           const sidemenuCustomItemsArray = [];
           sidemenu.forEach((sidemenuItem, sidemenuItemIndex) => {
             if (sidemenuItemIndex == 1 && sidemenuItem.includes('Custom')) {
-              sidemenuItem = this.contacts[this.slctdCntctIndex][sidemenuItem].length.toString();
+              sidemenuItem =
+                this.contacts[this.slctdCntctIndex][sidemenuItem].length > 0
+                  ? this.contacts[this.slctdCntctIndex][sidemenuItem].length.toString()
+                  : null;
               sidemenuCustomItemsArray.push(sidemenuItem);
             } else {
               sidemenuCustomItemsArray.push(sidemenuItem);
