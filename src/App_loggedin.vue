@@ -1,10 +1,10 @@
 <template>
-  <snackbar> </snackbar>
+  <snackbar :msg @deleteMsg="msg = null"></snackbar>
 
   <template v-if="contacts.length > 0">
     <div class="app-grid-container" :style="appGridContainer">
       <div class="app-grid-item1">
-        <sidemenu :sideMenuItems :sideMenuSlctdLnk @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"></sidemenu>
+        <sidemenu :sideMenuItems @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"></sidemenu>
         <component
           class="app-grid-item1-panel"
           :is="sideMenuSlctdLnk[0]"
@@ -13,6 +13,7 @@
           @tempFiltersDays="(el) => (tempFiltersDays = el)"
           @slctdDayIndex="(el) => (slctdDayIndex = el)"
           @userSettings="(el) => (userSettings = el)"
+          @contacts="(el) => (contacts = el)"
         ></component>
       </div>
 
@@ -49,59 +50,65 @@ export default {
 
   data() {
     return {
+      accountSettings: {},
+      activeUserList: {},
       contacts: [],
       currentUpdate: null,
+      daysRangeArr: [1, 3, 7, 14, 21, 28],
+      dsbld: false,
+      emails: [],
+      eventIndex: null,
+      msg: null,
+      reports: 'All contacts with min. info',
+      slctdDayIndex: null,
       sideMenuSlctdLnk: ['Contactinfo', 'Calendar'],
+      tempFiltersDays: null,
       times: {
         initialUsrTmstmp: '',
         initialBrwsrTmstmp: '',
         updtngY_m_d_H_i_s_z: null,
         slctdTmstmp: '',
       },
+      updating: 0,
+      userData: {},
+      userSettings: {},
       wndw: {
         wdth: 0,
         hght: 0,
       },
-      eventIndex: null,
-      userData: {},
-      accountSettings: {},
-      userSettings: {},
-      activeUserList: {},
-      daysRangeArr: [1, 3, 7, 14, 21, 28],
-      reports: 'All contacts with min. info',
-      emails: [],
-      dsbld: false,
-      tempFiltersDays: null,
-      slctdDayIndex: null,
-      updating: 0,
     };
   },
 
   provide() {
     return {
-      contacts: Vue.computed(() => this.contacts),
-      wndw: Vue.computed(() => this.wndw),
-      eventIndex: Vue.computed(() => this.eventIndex),
-      times: Vue.computed(() => this.times),
-      tbCntntWdth: Vue.computed(() => this.tbCntntWdth),
-      userData: Vue.computed(() => this.userData),
+      // computed
       accountSettings: Vue.computed(() => this.accountSettings),
-      userList: Vue.computed(() => this.userList),
       activeUserList: Vue.computed(() => this.activeUserList),
-      userSettings: Vue.computed(() => this.userSettings),
-      daysRangeArr: this.daysRangeArr,
-      reports: Vue.computed(() => this.reports),
-      emails: Vue.computed(() => this.emails),
-      dsbld: Vue.computed(() => this.dsbld),
-      tempFiltersDays: Vue.computed(() => this.tempFiltersDays),
-      usaDateFrmt: this.usaDateFrmt,
-      patchContactInfo: this.patchContactInfo,
-      deleteContactInfo: this.deleteContactInfo,
-      patchUserSettings: this.patchUserSettings,
-      firstDayTmstmp: Vue.computed(() => this.firstDayTmstmp),
-      slctdY_m_d: Vue.computed(() => this.slctdY_m_d),
-      slctdCntctIndex: Vue.computed(() => this.slctdCntctIndex),
+      contacts: Vue.computed(() => this.contacts),
       days: Vue.computed(() => this.days),
+      dsbld: Vue.computed(() => this.dsbld),
+      emails: Vue.computed(() => this.emails),
+      eventIndex: Vue.computed(() => this.eventIndex),
+      firstDayTmstmp: Vue.computed(() => this.firstDayTmstmp),
+      reports: Vue.computed(() => this.reports),
+      sideMenuSlctdLnk: Vue.computed(() => this.sideMenuSlctdLnk),
+      slctdCntctIndex: Vue.computed(() => this.slctdCntctIndex),
+      slctdY_m_d: Vue.computed(() => this.slctdY_m_d),
+      tbCntntWdth: Vue.computed(() => this.tbCntntWdth),
+      times: Vue.computed(() => this.times),
+      tempFiltersDays: Vue.computed(() => this.tempFiltersDays),
+      userData: Vue.computed(() => this.userData),
+      userList: Vue.computed(() => this.userList),
+      userSettings: Vue.computed(() => this.userSettings),
+      wndw: Vue.computed(() => this.wndw),
+      // static
+      daysRangeArr: this.daysRangeArr,
+      // methods
+      deleteContactInfo: this.deleteContactInfo,
+      patchContactInfo: this.patchContactInfo,
+      patchUserSettings: this.patchUserSettings,
+      showMsg: this.showMsg,
+      usaDateFrmt: this.usaDateFrmt,
     };
   },
 
@@ -122,7 +129,7 @@ export default {
     sideMenuItems() {
       return [
         ['fa fa-house-chimney-user', null, 'Contact info', 'Calendar'],
-        ['fa fa-list-check', this.contacts[this.slctdCntctIndex]?.Tasks.length, 'Tasks', 'Calendar'],
+        ['fa fa-calendar-check', this.contacts[this.slctdCntctIndex]?.Tasks.length, 'Tasks', 'Calendar'],
         ['fa fa-repeat', this.contacts[this.slctdCntctIndex]?.RecurTasks.length, 'Recurring tasks', 'Calendar'],
         ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length, 'Notes', 'Calendar'],
         ['fa fa-chart-pie', null, 'Reports', 'Reportstable'],
@@ -177,6 +184,9 @@ export default {
   },
 
   methods: {
+    showMsg(newMsg) {
+      this.msg = newMsg;
+    },
     async updateTime() {
       const timeDifference = Math.round((this.times.initialBrwsrTmstmp - new Date().getTime()) * -1);
       this.times.updtngY_m_d_H_i_s_z = new Date(this.times.initialUsrTmstmp + timeDifference).toISOString();
@@ -193,7 +203,7 @@ export default {
         if (getCurrentupdateResJSON.success) {
           if (this.dsbld == true) {
             this.dsbld = false;
-            // this.msg.snackBar = 'Internet restored';
+            this.showMsg('Internet restored');
           }
           if (this.currentUpdate != getCurrentupdateResJSON.data.datetime && this.currentUpdate != null) {
             this.getContacts(getCurrentupdateResJSON.data.datetime);
@@ -203,8 +213,8 @@ export default {
         }
       } catch (error) {
         this.dsbld = true;
-        // this.msg.snackBar = 'Internet problem';
-        // console.log(error.toString());
+        this.showMsg('Internet problem');
+        console.log(error.toString());
       }
     },
 
@@ -250,7 +260,7 @@ export default {
           location.reload();
         }
       } catch (error) {
-        // this.msg.snackBar = 'Internet problem';
+        this.showMsg('Internet problem');
         console.log(error.toString());
       }
     },
@@ -282,7 +292,7 @@ export default {
           this.currentUpdate = updateTime;
         }
       } catch (error) {
-        // this.msg.snackBar = 'Internet problem';
+        this.showMsg('Internet problem');
         console.log(error.toString());
       }
     },
@@ -302,7 +312,7 @@ export default {
           this.emails = getEmailSettingsResJSON.data.emailSettings;
         }
       } catch (error) {
-        // this.msg.snackBar = 'Internet problem';
+        this.showMsg('Internet problem');
         console.log(error.toString());
       }
     },
@@ -346,15 +356,15 @@ export default {
           cloneUpdating = this.updating;
           this.updating = cloneUpdating - 1;
         } else {
-          // this.msg.snackBar = 'Update error';
+          this.showMsg('Update error');
           cloneUpdating = this.updating;
           this.updating = cloneUpdating - 1;
         }
       } catch (error) {
-        // this.msg.snackBar = 'Update error';
+        this.showMsg('Update error');
         cloneUpdating = this.updating;
         this.updating = cloneUpdating - 1;
-        // this.msg.snackBar = error.toString();
+        this.showMsg(error.toString());
       }
     },
 
@@ -382,15 +392,15 @@ export default {
             cloneUpdating = this.updating;
             this.updating = cloneUpdating - 1;
           } else {
-            // this.msg.snackBar = 'Delete error';
+            this.showMsg('Delete error');
             cloneUpdating = this.updating;
             this.updating = cloneUpdating - 1;
           }
         } catch (error) {
-          // this.msg.snackBar = 'Delete error';
+          this.showMsg('Delete error');
           cloneUpdating = this.updating;
           this.updating = cloneUpdating - 1;
-          // this.msg.snackBar = error.toString();
+          this.showMsg(error.toString());
         }
       }
     },
@@ -409,16 +419,12 @@ export default {
           }),
         });
         const patchUserSettingsResJSON = await response.json();
-        if (patchUserSettingsResJSON.success) {
-          // console.log(patchUserSettingsResJSON);
-          // this.msg.snackBar = patchUserSettingsResJSON.messages[0];
-        } else {
-          // this.msg.snackBar = 'Settings update error';
+        if (!patchUserSettingsResJSON.success) {
+          this.showMsg('Settings update error');
         }
       } catch (error) {
         console.log(error.toString());
-        // this.msg.snackBar = 'Settings update error';
-        // this.msg.snackBar = error.toString();
+        this.showMsg('Settings update error');
       }
     },
 

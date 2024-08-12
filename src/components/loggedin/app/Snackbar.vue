@@ -1,9 +1,8 @@
 <template>
   <Transition name="slide-fade">
-    <span></span>
-    <!-- <div v-if="msg.snackBar" class="snackbar">
-      {{ msg.snackBar }}
-    </div> -->
+    <div v-if="snackbarMsg" class="snackbar">
+      {{ snackbarMsg }}
+    </div>
   </Transition>
 </template>
 
@@ -11,13 +10,27 @@
 export default {
   name: 'Snackbar',
 
-  // watch: {
-  //   'msg.snackBar'() {
-  //     setTimeout(() => {
-  //       this.msg.snackBar = null;
-  //     }, 3000);
-  //   },
-  // },
+  data() {
+    return {
+      snackbarMsg: null,
+    };
+  },
+
+  props: ['msg'],
+
+  emits: ['deleteMsg'],
+
+  watch: {
+    msg(newMsg) {
+      if (newMsg) {
+        this.snackbarMsg = newMsg;
+        this.$emit('deleteMsg');
+        setTimeout(() => {
+          this.snackbarMsg = null;
+        }, 3000);
+      }
+    },
+  },
 };
 </script>
 

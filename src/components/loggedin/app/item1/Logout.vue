@@ -18,7 +18,6 @@ export default {
 
     async deleteLogin() {
       if (confirm('Are you sure you want to log out?') == true) {
-        // this.msg.snackBar = 'Logged out';
         try {
           const response = await fetch(login_url + 'sessions/' + session_id, {
             method: 'DELETE',
@@ -28,11 +27,8 @@ export default {
             },
           });
           this.deleteCookie();
-          // const logOutResJSON = await response.json();
         } catch (error) {
           this.deleteCookie();
-          // this.msg.snackBar = 'Logged out with error';
-          console.log(error);
         }
       }
     },

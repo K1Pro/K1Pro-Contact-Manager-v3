@@ -59,7 +59,7 @@ export default {
 
   emits: ['sideMenuSlctdLnk'],
 
-  inject: ['contacts', 'emails', 'slctdCntctIndex', 'times', 'userData'],
+  inject: ['contacts', 'emails', 'slctdCntctIndex', 'times', 'userData', 'showMsg'],
 
   computed: {
     templateBody() {
@@ -137,7 +137,7 @@ export default {
           });
           const sendEmailResJSON = await response.json();
           if (sendEmailResJSON.success) {
-            // this.msg.snackBar = 'Email sent successfully';
+            this.showMsg('Email sent successfully');
             console.log(sendEmailResJSON);
             this.spinLogin = false;
             this.contacts[columnIndex].Log.unshift([
@@ -146,12 +146,12 @@ export default {
               'Emailed ' + emailTemplate + this.$refs['emailTo'].value,
             ]);
           } else {
-            // this.msg.snackBar = 'Email error';
+            this.showMsg('Email error');
             this.spinLogin = false;
           }
         } catch (error) {
           this.spinLogin = false;
-          // this.msg.snackBar = error.toString();
+          this.showMsg(error.toString());
           console.log(error.toString());
         }
       }

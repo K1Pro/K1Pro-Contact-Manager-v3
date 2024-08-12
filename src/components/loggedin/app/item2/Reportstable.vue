@@ -115,7 +115,7 @@
         </tbody>
       </template>
 
-      <dynamic_component_name_reports></dynamic_component_name_reports>
+      <custom_reports></custom_reports>
     </table>
   </div>
 </template>
@@ -128,6 +128,7 @@ export default {
 
   inject: [
     'contacts',
+    'userSettings',
     'patchUserSettings',
     'reports',
     'slctdCntctIndex',
@@ -150,7 +151,7 @@ export default {
           tblClmns.push([
             contact.id,
             contact.Members[0].Name ? contact.Members[0].Name : '',
-            contact.Addresses[0].Address_1 ? contact.Addresses[0].Address_1 : '',
+            contact.Addresses[0]?.Address_1 ? contact.Addresses[0].Address_1 : '',
             contact.Assets[0] ? Object.values(contact.Assets[0])[0] : '',
             contact.Connections[0] ? Object.values(contact.Connections[0])[0] : '',
             contact.Categ ? contact.Categ : '',
@@ -300,7 +301,6 @@ export default {
       this.userSettings.selectedContactIndex = contactID;
       this.$emit('sideMenuSlctdLnk', ['Contactinfo', 'Calendar']);
       this.$emit('userSettings', this.userSettings);
-
       this.patchUserSettings();
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });

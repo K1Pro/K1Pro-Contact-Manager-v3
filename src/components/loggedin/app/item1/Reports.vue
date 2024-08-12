@@ -54,7 +54,6 @@ export default {
 
   methods: {
     selectReport(event) {
-      // this.reports = event.trim();
       this.$emit('slctdReport', event.trim());
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: 0, behavior: 'smooth' });

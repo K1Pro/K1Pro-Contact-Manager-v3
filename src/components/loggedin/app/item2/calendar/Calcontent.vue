@@ -19,7 +19,9 @@
           },
           {
             activeTask:
-              calContactTask.EventIndex == eventIndex && calContactTask.ContactID == userSettings.selectedContactIndex,
+              calContactTask.EventIndex == eventIndex &&
+              calContactTask.ContactID == userSettings.selectedContactIndex &&
+              calContactTask.Type == sideMenuSlctdLnk[0],
           },
         ]"
         :style="{
@@ -57,7 +59,17 @@ export default {
 
   emits: ['eventIndex', 'sideMenuSlctdLnk', 'userSettings'],
 
-  inject: ['contacts', 'days', 'eventIndex', 'firstDayTmstmp', 'patchUserSettings', 'times', 'wndw', 'userSettings'],
+  inject: [
+    'contacts',
+    'days',
+    'eventIndex',
+    'firstDayTmstmp',
+    'patchUserSettings',
+    'sideMenuSlctdLnk',
+    'times',
+    'wndw',
+    'userSettings',
+  ],
 
   props: ['dayIndex'],
 

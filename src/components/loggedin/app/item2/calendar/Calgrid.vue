@@ -49,9 +49,9 @@
 export default {
   name: 'Calendar body',
 
-  inject: ['days', 'slctdY_m_d', 'tempFiltersDays', 'times', 'userSettings', 'wndw'],
-
   emits: ['eventIndex', 'sideMenuSlctdLnk', 'slctdDayIndex', 'tempFiltersDays', 'userSettings'],
+
+  inject: ['days', 'slctdY_m_d', 'tempFiltersDays', 'times', 'userSettings', 'wndw'],
 
   methods: {
     changeDate(slctdY_m_d, slctdDayIndex) {

@@ -79,19 +79,21 @@
 export default {
   name: 'Members',
 
-  emits: ['userSettings'],
+  emits: ['contacts', 'userSettings'],
 
   inject: [
     'accountSettings',
     'contacts',
-    'deleteContactInfo',
     'dsbld',
-    'patchContactInfo',
-    'patchUserSettings',
     'slctdCntctIndex',
     'tbCntntWdth',
     'times',
     'userData',
+    'userSettings',
+    'deleteContactInfo',
+    'showMsg',
+    'patchContactInfo',
+    'patchUserSettings',
   ],
 
   computed: {
@@ -188,18 +190,18 @@ export default {
                 Custom5: '',
               };
               let clonedCntcts = this.contacts;
-              this.contacts = [...clonedCntcts, newMember];
+              this.$emit('contacts', [...clonedCntcts, newMember]);
               this.userSettings.selectedContactIndex = newContactIndex;
               this.$emit('userSettings', this.userSettings);
               this.patchUserSettings();
               this.spinLogin = false;
             } else {
               this.spinLogin = false;
-              // this.msg.snackBar = 'Failed to create new contact';
+              this.showMsg('Failed to create new contact');
             }
           } catch (error) {
             this.spinLogin = false;
-            // this.msg.snackBar = 'Failed to create new contact';
+            this.showMsg('Failed to create new contact');
             console.log(error.toString());
           }
         }
