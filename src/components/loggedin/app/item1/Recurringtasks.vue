@@ -93,8 +93,12 @@
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
               {{ userInfo[0] }}
             </option>
-            <option disabled>Updated by {{ userList[recurTask.Update][0] }}</option>
-            <option disabled>Created by {{ userList[recurTask.Create][0] }}</option>
+            <option v-if="userList?.[recurTask?.Update]?.[0]" disabled>
+              Updated by {{ userList[recurTask.Update][0] }}
+            </option>
+            <option v-if="userList?.[recurTask?.Create]?.[0]" disabled>
+              Created by {{ userList[recurTask.Create][0] }}
+            </option>
           </select>
           <span class="recur-tasks-label">Finished:</span>
           <button

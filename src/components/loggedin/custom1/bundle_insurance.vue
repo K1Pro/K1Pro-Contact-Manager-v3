@@ -1,90 +1,84 @@
 <template>
-  <template v-if="contacts[slctdCntctIndex].Custom1 && userData?.AppPermissions[app_name][0] == 'bundle_insurance'">
-    <div class="policy-info">
-      <div class="policy-info-title">
-        <div class="policy-info-title-grid-container">
-          <div class="policy-info-title-grid-item1">
-            Policy info for
-            {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
-            {{ contacts[slctdCntctIndex].Members[0]?.Name }}
-          </div>
-          <div class="policy-info-title-grid-item2">
-            <button @click="newPolicy">
-              <i class="fa-solid fa-square-plus"></i>
-            </button>
-          </div>
+  <div class="policy-info">
+    <div class="policy-info-title">
+      <div class="policy-info-title-grid-container">
+        <div class="policy-info-title-grid-item1">
+          Policy info for
+          {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
+          {{ contacts[slctdCntctIndex].Members[0]?.Name }}
         </div>
-      </div>
-
-      <div
-        v-for="(policyInfo, policyInfoIndex) in contacts[slctdCntctIndex].Custom1"
-        class="policy-info-policy"
-        :style="{
-          'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white',
-        }"
-      >
-        <i class="fa-solid fa-trash" @click="deleteContactInfo('Custom1', policyInfoIndex)"></i>
-        <div v-for="policyInfoInputs in accountSettings.Custom1">
-          <span class="policy-info-label" v-if="!(policyInfo.Policy_Type != 'Home' && policyInfoInputs.value == 'EHV')"
-            >{{ policyInfoInputs.placeholder }}:</span
-          >
-          <template v-if="policyInfoInputs.type == 'select'">
-            <select
-              @change="updatePolicy($event.target.value, policyInfoIndex, policyInfoInputs.value)"
-              :style="{
-                'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white',
-                border: policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray',
-              }"
-            >
-              <option></option>
-              <option
-                v-for="option in policyInfoInputs.options"
-                :selected="option == policyInfo[policyInfoInputs.value]"
-              >
-                {{ option }}
-              </option>
-            </select>
-          </template>
-          <template v-else-if="policyInfoInputs.type == 'checkbox'">
-            <input
-              :type="policyInfoInputs.type"
-              :checked="policyInfo[policyInfoInputs.value] == 1"
-              @change="updatePolicy($event.target.checked, policyInfoIndex, policyInfoInputs.value)"
-            />
-            {{ policyInfo[policyInfoInputs.value] == 1 ? 'Yes' : 'No' }}
-          </template>
-          <template
-            v-else-if="
-              policyInfoInputs.type == 'number' &&
-              !(policyInfo.Policy_Type != 'Home' && policyInfoInputs.value == 'EHV')
-            "
-          >
-            <input
-              :style="{
-                'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white',
-                border: policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray',
-              }"
-              :type="policyInfoInputs.type"
-              :value="policyInfo[policyInfoInputs.value]"
-              @change="updatePolicy($event.target.value, policyInfoIndex, policyInfoInputs.value)"
-            />
-          </template>
-          <template v-else>
-            <input
-              v-if="policyInfoInputs.type != 'number'"
-              :style="{
-                'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white',
-                border: policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray',
-              }"
-              :type="policyInfoInputs.type"
-              :value="policyInfo[policyInfoInputs.value]"
-              v-on:blur="updatePolicy($event.target.value, policyInfoIndex, policyInfoInputs.value)"
-            />
-          </template>
+        <div class="policy-info-title-grid-item2">
+          <button @click="newPolicy">
+            <i class="fa-solid fa-square-plus"></i>
+          </button>
         </div>
       </div>
     </div>
-  </template>
+
+    <div
+      v-for="(policyInfo, policyInfoIndex) in contacts[slctdCntctIndex].Custom1"
+      class="policy-info-policy"
+      :style="{
+        'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white',
+      }"
+    >
+      <i class="fa-solid fa-trash" @click="deleteContactInfo('Custom1', policyInfoIndex)"></i>
+      <div v-for="policyInfoInputs in accountSettings.Custom1">
+        <span class="policy-info-label" v-if="!(policyInfo.Policy_Type != 'Home' && policyInfoInputs.value == 'EHV')"
+          >{{ policyInfoInputs.placeholder }}:</span
+        >
+        <template v-if="policyInfoInputs.type == 'select'">
+          <select
+            @change="updatePolicy($event.target.value, policyInfoIndex, policyInfoInputs.value)"
+            :style="{
+              'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white',
+              border: policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray',
+            }"
+          >
+            <option></option>
+            <option v-for="option in policyInfoInputs.options" :selected="option == policyInfo[policyInfoInputs.value]">
+              {{ option }}
+            </option>
+          </select>
+        </template>
+        <template v-else-if="policyInfoInputs.type == 'checkbox'">
+          <input
+            :type="policyInfoInputs.type"
+            :checked="policyInfo[policyInfoInputs.value] == 1"
+            @change="updatePolicy($event.target.checked, policyInfoIndex, policyInfoInputs.value)"
+          />
+          {{ policyInfo[policyInfoInputs.value] == 1 ? 'Yes' : 'No' }}
+        </template>
+        <template
+          v-else-if="
+            policyInfoInputs.type == 'number' && !(policyInfo.Policy_Type != 'Home' && policyInfoInputs.value == 'EHV')
+          "
+        >
+          <input
+            :style="{
+              'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white',
+              border: policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray',
+            }"
+            :type="policyInfoInputs.type"
+            :value="policyInfo[policyInfoInputs.value]"
+            @change="updatePolicy($event.target.value, policyInfoIndex, policyInfoInputs.value)"
+          />
+        </template>
+        <template v-else>
+          <input
+            v-if="policyInfoInputs.type != 'number'"
+            :style="{
+              'background-color': policyInfoIndex % 2 ? 'lightblue' : 'white',
+              border: policyInfoIndex % 2 ? '1px solid gray' : '1px solid lightgray',
+            }"
+            :type="policyInfoInputs.type"
+            :value="policyInfo[policyInfoInputs.value]"
+            v-on:blur="updatePolicy($event.target.value, policyInfoIndex, policyInfoInputs.value)"
+          />
+        </template>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -119,10 +113,8 @@ export default {
 </script>
 
 <style>
-.policy-info {
-  background-color: lightblue;
-}
 .policy-info-title {
+  background-color: lightblue;
   font-weight: bold;
   padding: 5px;
   color: black;

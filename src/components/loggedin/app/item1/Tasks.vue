@@ -69,8 +69,8 @@
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
               {{ userInfo[0] }}
             </option>
-            <option disabled>Updated by {{ userList[task.Update][0] }}</option>
-            <option disabled>Created by {{ userList[task.Create][0] }}</option>
+            <option v-if="userList?.[task?.Update]?.[0]" disabled>Updated by {{ userList[task.Update][0] }}</option>
+            <option v-if="userList?.[task?.Create]?.[0]" disabled>Created by {{ userList[task.Create][0] }}</option>
           </select>
           <span class="tasks-label">Finished:</span
           ><input
