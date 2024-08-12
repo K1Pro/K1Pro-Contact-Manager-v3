@@ -52,22 +52,26 @@ export default {
 
   methods: {
     daysRangeChange(event) {
-      this.userSettings.calendar.filters.days = event.target.value;
+      const cloneUserSettings = this.userSettings;
+      cloneUserSettings.calendar.filters.days = event.target.value;
       this.$emit('tempFiltersDays', event.target.value);
       this.$emit('slctdDayIndex', null);
-      this.patchUserSettings(this.userSettings);
+      this.patchUserSettings(cloneUserSettings);
     },
     ownersChange(event) {
-      this.userSettings.calendar.filters.owners = event.target.value;
-      this.patchUserSettings(this.userSettings);
+      const cloneUserSettings = this.userSettings;
+      cloneUserSettings.calendar.filters.owners = event.target.value;
+      this.patchUserSettings(cloneUserSettings);
     },
     statusChange(event) {
-      this.userSettings.calendar.filters.status = event.target.value;
-      this.patchUserSettings(this.userSettings);
+      const cloneUserSettings = this.userSettings;
+      cloneUserSettings.calendar.filters.status = event.target.value;
+      this.patchUserSettings(cloneUserSettings);
     },
     categoryChange(event) {
-      this.userSettings.calendar.filters.category = event.target.value;
-      this.patchUserSettings(this.userSettings);
+      const cloneUserSettings = this.userSettings;
+      cloneUserSettings.calendar.filters.category = event.target.value;
+      this.patchUserSettings(cloneUserSettings);
     },
   },
 };

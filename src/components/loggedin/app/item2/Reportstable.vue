@@ -141,13 +141,13 @@ export default {
 
   computed: {
     tblCntnt() {
-      let clonedCntcts = this.contacts;
+      let cloneCntcts = this.contacts;
       let tblHdrs = [];
       let nmbrClmn = [];
       let tblClmns = [];
       if (this.reports.includes('All contacts with min. info')) {
         // 'All contacts with min. info'
-        clonedCntcts.forEach((contact) => {
+        cloneCntcts.forEach((contact) => {
           tblClmns.push([
             contact.id,
             contact.Members[0].Name ? contact.Members[0].Name : '',
@@ -169,7 +169,7 @@ export default {
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
       } else if (this.reports.includes('All contacts with more info')) {
         // 'All contacts with more info'
-        clonedCntcts.forEach((contact) => {
+        cloneCntcts.forEach((contact) => {
           const addressArray = Object.entries(contact.Addresses[0]).map(([addressKey, addressValue]) => {
             return addressKey != 'Type' ? addressValue : null;
           });
@@ -202,7 +202,7 @@ export default {
       } else if (this.reports == 'All contact tasks') {
         // 'All contact tasks'
         nmbrClmn = null;
-        clonedCntcts.forEach((contact) => {
+        cloneCntcts.forEach((contact) => {
           contact.Tasks.forEach((task) => {
             if (task.Date)
               tblClmns.push([
@@ -220,7 +220,7 @@ export default {
       } else if (this.reports == 'Contact categories') {
         nmbrClmn = null;
         const cntctCategArray = {};
-        clonedCntcts.forEach((contact) => {
+        cloneCntcts.forEach((contact) => {
           contact.Categ = contact.Categ || contact.Categ != '' ? contact.Categ : 'No category';
           if (!Object.keys(cntctCategArray).includes(contact.Categ)) {
             cntctCategArray[contact.Categ] = 1;
@@ -257,7 +257,7 @@ export default {
           emailCount = 0;
           callCount = 0;
           taskCount = 0;
-          clonedCntcts.forEach((contact) => {
+          cloneCntcts.forEach((contact) => {
             contact.Log.forEach((log) => {
               if (log[0] == userID && log[1].includes(decreasingDate) && log[2].includes('Emailed')) {
                 emailCount += 1;
@@ -285,8 +285,8 @@ export default {
           currentDate.setDate(currentDate.getDate() - 1);
         }
       } else {
-        clonedCntcts = this.contacts;
-        tblClmns = clonedCntcts
+        cloneCntcts = this.contacts;
+        tblClmns = cloneCntcts
           .map((contact) => {
             if (!contact.Members[0].Name) contact.Members[0].Name = null;
             return contact;
@@ -299,8 +299,9 @@ export default {
   methods: {
     selectContact(contactID) {
       this.$emit('sideMenuSlctdLnk', ['Contactinfo', 'Calendar']);
-      this.userSettings.selectedContactIndex = contactID;
-      this.patchUserSettings(this.userSettings);
+      const cloneUserSettings = this.userSettings;
+      cloneUserSettings.selectedContactIndex = contactID;
+      this.patchUserSettings(cloneUserSettings);
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }

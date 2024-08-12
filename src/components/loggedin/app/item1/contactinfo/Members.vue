@@ -129,13 +129,15 @@ export default {
           event.srcElement.selectedIndex = 0;
           const clmnIndex = this.contacts[this.slctdCntctIndex][InfoGroup].length;
           if (InfoGroup == 'Members' || InfoGroup == 'Addresses') {
-            let cloneContacts = [...this.contacts[this.slctdCntctIndex][InfoGroup], { Type: InfoKey }];
-            this.contacts[this.slctdCntctIndex][InfoGroup] = cloneContacts;
-            this.patchContactInfo(InfoKey, InfoGroup, clmnIndex, 'Type');
+            const cloneCntcts = [...this.contacts[this.slctdCntctIndex][InfoGroup], { Type: InfoKey }];
+            const cloneCntct = this.contacts[this.slctdCntctIndex];
+            cloneCntct[InfoGroup] = cloneCntcts;
+            this.patchContactInfo(InfoKey, InfoGroup, clmnIndex, 'Type', cloneCntct);
           } else {
-            let cloneContacts = [...this.contacts[this.slctdCntctIndex][InfoGroup], { [InfoKey]: '' }];
-            this.contacts[this.slctdCntctIndex][InfoGroup] = cloneContacts;
-            this.patchContactInfo('', InfoGroup, clmnIndex, InfoKey);
+            const cloneCntcts = [...this.contacts[this.slctdCntctIndex][InfoGroup], { [InfoKey]: '' }];
+            const cloneCntct = this.contacts[this.slctdCntctIndex];
+            cloneCntct[InfoGroup] = cloneCntcts;
+            this.patchContactInfo('', InfoGroup, clmnIndex, InfoKey, cloneCntct);
           }
         } else {
           event.srcElement.selectedIndex = 0;
@@ -189,10 +191,11 @@ export default {
                 Custom4: '',
                 Custom5: '',
               };
-              let clonedCntcts = this.contacts;
-              this.$emit('contacts', [...clonedCntcts, newMember]);
-              this.userSettings.selectedContactIndex = newContactIndex;
-              this.patchUserSettings(this.userSettings);
+              const cloneCntcts = this.contacts;
+              this.$emit('contacts', [...cloneCntcts, newMember]);
+              const cloneUserSettings = this.userSettings;
+              cloneUserSettings.selectedContactIndex = newContactIndex;
+              this.patchUserSettings(cloneUserSettings);
               this.spinLogin = false;
             } else {
               this.spinLogin = false;
@@ -212,8 +215,9 @@ export default {
           event.target.value != '') ||
         (event.target.value == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
       ) {
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event.target.value;
-        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key);
+        const cloneCntct = this.contacts[this.slctdCntctIndex];
+        cloneCntct[this.clmn][clmnIndex][key] = event.target.value;
+        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key, cloneCntct);
       }
     },
   },

@@ -58,8 +58,9 @@ export default {
           event.target.value != '') ||
         (event.target.value == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
       ) {
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event.target.value;
-        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key);
+        const cloneCntct = this.contacts[this.slctdCntctIndex];
+        cloneCntct[this.clmn][clmnIndex][key] = event.target.value;
+        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key, cloneCntct);
       }
     },
   },

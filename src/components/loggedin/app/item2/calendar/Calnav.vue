@@ -44,7 +44,7 @@
 export default {
   name: 'Navigation',
 
-  emits: ['slctdDayIndex'],
+  emits: ['slctdDayIndex', 'slctdTmstmp'],
 
   inject: ['days', 'slctdY_m_d', 'times', 'userSettings'],
 
@@ -55,11 +55,11 @@ export default {
           'slctdDayIndex',
           this.days.includes(event.target.value) ? this.days.findIndex((day) => day == event.target.value) : null
         );
-        this.times.slctdTmstmp = new Date(event.target.value + 'T00:00:00').getTime();
+        this.$emit('slctdTmstmp', new Date(event.target.value + 'T00:00:00').getTime());
       }
     },
     getTime(newDate) {
-      this.times.slctdTmstmp += newDate * 86400000;
+      this.$emit('slctdTmstmp', this.times.slctdTmstmp + newDate * 86400000);
     },
   },
 };

@@ -207,14 +207,14 @@ export default {
 
   computed: {
     srtdCntcts() {
-      let clonedCntcts = this.contacts;
+      let cloneCntcts = this.contacts;
       let newSrtdCntcts = [];
       if (this.reports == 'All policies') {
-        newSrtdCntcts = clonedCntcts
+        newSrtdCntcts = cloneCntcts
           .filter((cntct) => cntct.Custom1.length > 0)
           .sort((a, b) => a.Members[0]?.Name?.localeCompare(b.Members[0]?.Name));
       } else if (this.reports == 'Active policies') {
-        newSrtdCntcts = clonedCntcts
+        newSrtdCntcts = cloneCntcts
           .filter((cntct) => cntct.Categ == 'Customer')
           .sort((a, b) => a.Members[0]?.Name?.localeCompare(b.Members[0]?.Name));
       } else if (this.reports == 'Renewals') {
@@ -227,7 +227,7 @@ export default {
         const rnwlStoptY_m_d = (rnwlStop.getMonth() + 1).toString().padStart(2, '0') + '-' + rnwlStop.getDate().toString().padStart(2, '0');
         // prettier-ignore
         const rnwlDateHalfYearAgoY_m_d = rnwlDateHalfYearAgo.getFullYear() + '-' + (rnwlDateHalfYearAgo.getMonth() + 1).toString().padStart(2, '0') + '-' + rnwlDateHalfYearAgo.getDate().toString().padStart(2, '0');
-        clonedCntcts.forEach((contact) => {
+        cloneCntcts.forEach((contact) => {
           if (contact.Categ == 'Customer' && contact.Custom1 && contact.RecurTasks) {
             contact.Custom1.forEach((custom1) => {
               if (
@@ -267,7 +267,7 @@ export default {
         });
         newSrtdCntcts.sort((a, b) => b[5].localeCompare(a[5]));
       } else if (this.reports == 'New business') {
-        clonedCntcts.forEach((contact) => {
+        cloneCntcts.forEach((contact) => {
           if (contact.Categ == 'Customer') {
             contact.Custom1.forEach((custom1) => {
               if (custom1?.Active == '1')
@@ -285,13 +285,13 @@ export default {
         });
         newSrtdCntcts.sort((a, b) => b[5].localeCompare(a[5]));
       } else if (this.reports == 'Erie leads') {
-        newSrtdCntcts = clonedCntcts
+        newSrtdCntcts = cloneCntcts
           .filter((cntct) => cntct.Categ == 'Erie lead')
           .sort((a, b) => Object.values(b.Created)[0].localeCompare(Object.values(a.Created)[0]));
       } else if (this.reports == 'Microsip phone book') {
         let phoneArray = [];
         let emailArray = [];
-        clonedCntcts.forEach((contact) => {
+        cloneCntcts.forEach((contact) => {
           phoneArray = [];
           emailArray = [];
           contact.Connections.forEach((conn) => {
@@ -332,8 +332,9 @@ export default {
   methods: {
     selectContact(contactID) {
       this.$emit('sideMenuSlctdLnk', ['Contactinfo', 'Calendar']);
-      this.userSettings.selectedContactIndex = contactID;
-      this.patchUserSettings(this.userSettings);
+      const cloneUserSettings = this.userSettings;
+      cloneUserSettings.selectedContactIndex = contactID;
+      this.patchUserSettings(cloneUserSettings);
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }

@@ -147,6 +147,8 @@
 export default {
   name: 'Recur Tasks',
 
+  emits: ['eventIndex'],
+
   inject: [
     'contacts',
     'deleteContactInfo',
@@ -195,9 +197,16 @@ export default {
           Update: this.userData.id,
         },
       ];
-      this.contacts[this.slctdCntctIndex].RecurTasks = newRecurTasks;
-      this.eventIndex = this.contacts[this.slctdCntctIndex].RecurTasks.length - 1;
-      this.patchContactInfo(this.slctdY_m_d, this.clmn, this.contacts[this.slctdCntctIndex].RecurTasks.length, 'Start');
+      const cloneCntct = this.contacts[this.slctdCntctIndex];
+      cloneCntct.RecurTasks = newRecurTasks;
+      this.$emit('eventIndex', this.contacts[this.slctdCntctIndex].RecurTasks.length - 1);
+      this.patchContactInfo(
+        this.slctdY_m_d,
+        this.clmn,
+        this.contacts[this.slctdCntctIndex].RecurTasks.length,
+        'Start',
+        cloneCntct
+      );
       this.recurTaskMemo = this.recurTaskMemo + 1;
     },
     updateRecurTask(event, clmnIndex, key) {
@@ -205,10 +214,11 @@ export default {
         (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
         (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
       ) {
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
+        const cloneCntct = this.contacts[this.slctdCntctIndex];
+        cloneCntct[this.clmn][clmnIndex][key] = event;
+        cloneCntct[this.clmn][clmnIndex].Update = this.userData.id;
         this.recurTaskMemo = this.recurTaskMemo + 1;
-        this.patchContactInfo(event, this.clmn, clmnIndex, key);
+        this.patchContactInfo(event, this.clmn, clmnIndex, key, cloneCntct);
       }
     },
     updateRecurTaskFreq(clmnIndex, start, freq) {
@@ -241,13 +251,14 @@ export default {
           recurTaskEvent = 'everyday';
         }
 
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Start = start;
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Recur =
+        const cloneCntct = this.contacts[this.slctdCntctIndex];
+        cloneCntct[this.clmn][clmnIndex].Start = start;
+        cloneCntct[this.clmn][clmnIndex].Recur =
           freq == 'Semiannually' || freq == 'Quarterly' ? newRecurTask : [recurTaskEvent];
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Freq = freq;
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
+        cloneCntct[this.clmn][clmnIndex].Freq = freq;
+        cloneCntct[this.clmn][clmnIndex].Update = this.userData.id;
         this.recurTaskMemo = this.recurTaskMemo + 1;
-        this.patchContactInfo(freq + '+' + start + '+' + recurTaskEvent, this.clmn, clmnIndex, 'Freq');
+        this.patchContactInfo(freq + '+' + start + '+' + recurTaskEvent, this.clmn, clmnIndex, 'Freq', cloneCntct);
       }
     },
     deleteRecurTask(clmnIndex) {
@@ -257,7 +268,7 @@ export default {
       }
     },
     showAllRecurTasks() {
-      this.eventIndex = null;
+      this.$emit('eventIndex', null);
       this.recurTaskMemo = this.recurTaskMemo + 1;
     },
   },

@@ -132,8 +132,9 @@ export default {
     selectContact(ContactID, sidemenuLink, eventIndex) {
       this.$emit('eventIndex', eventIndex);
       this.$emit('sideMenuSlctdLnk', [sidemenuLink, 'Calendar']);
-      this.userSettings.selectedContactIndex = ContactID;
-      this.patchUserSettings(this.userSettings);
+      const cloneUserSettings = this.userSettings;
+      cloneUserSettings.selectedContactIndex = ContactID;
+      this.patchUserSettings(cloneUserSettings);
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }

@@ -114,6 +114,8 @@
 export default {
   name: 'Tasks',
 
+  emits: ['eventIndex'],
+
   inject: [
     'contacts',
     'deleteContactInfo',
@@ -161,13 +163,15 @@ export default {
           Update: this.userData.id,
         },
       ];
-      this.contacts[this.slctdCntctIndex].Tasks = newTasks;
-      this.eventIndex = this.contacts[this.slctdCntctIndex].Tasks.length - 1;
+      const cloneCntct = this.contacts[this.slctdCntctIndex];
+      cloneCntct.Tasks = newTasks;
+      this.$emit('eventIndex', this.contacts[this.slctdCntctIndex].Tasks.length - 1);
       this.patchContactInfo(
         this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
         this.clmn,
         this.contacts[this.slctdCntctIndex].Tasks.length,
-        'Date'
+        'Date',
+        cloneCntct
       );
       this.taskMemo = this.taskMemo + 1;
     },
@@ -176,10 +180,11 @@ export default {
         (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
         (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
       ) {
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
+        const cloneCntct = this.contacts[this.slctdCntctIndex];
+        cloneCntct[this.clmn][clmnIndex][key] = event;
+        cloneCntct[this.clmn][clmnIndex].Update = this.userData.id;
         this.taskMemo = this.taskMemo + 1;
-        this.patchContactInfo(event, this.clmn, clmnIndex, key);
+        this.patchContactInfo(event, this.clmn, clmnIndex, key, cloneCntct);
       }
     },
     deleteTask(clmnIndex) {
@@ -189,7 +194,7 @@ export default {
       }
     },
     showAllTasks() {
-      this.eventIndex = null;
+      this.$emit('eventIndex', null);
       this.taskMemo = this.taskMemo + 1;
     },
   },

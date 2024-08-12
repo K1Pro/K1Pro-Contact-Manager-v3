@@ -9,7 +9,7 @@
       <textarea
         placeholder="Notes"
         :value="contacts[slctdCntctIndex].Notes"
-        @change="updateNotes($event)"
+        @change="updateNotes($event.target.value)"
         :disabled="dsbld"
       ></textarea>
     </template>
@@ -30,11 +30,12 @@ export default {
   methods: {
     updateNotes(event) {
       if (
-        (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn] && event.target.value != '') ||
-        (event.target.value == '' && this.contacts[this.slctdCntctIndex][this.clmn])
+        (event != this.contacts[this.slctdCntctIndex][this.clmn] && event != '') ||
+        (event == '' && this.contacts[this.slctdCntctIndex][this.clmn])
       ) {
-        this.contacts[this.slctdCntctIndex][this.clmn] = event.target.value;
-        this.patchContactInfo(event.target.value, this.clmn);
+        const cloneCntct = this.contacts[this.slctdCntctIndex];
+        cloneCntct[this.clmn] = event;
+        this.patchContactInfo(event, this.clmn, null, null, cloneCntct);
       }
     },
   },

@@ -35,7 +35,7 @@
           type="checkbox"
           v-model="contacts[slctdCntctIndex].DNC"
           :disabled="dsbld"
-          @change="patchContactInfo($event.target.checked, 'DNC')"
+          @change="updateDNC($event.target.checked, 'DNC')"
         />
         Do not contact
         <hr />
@@ -126,9 +126,15 @@ export default {
           event.target.value != '') ||
         (event.target.value == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
       ) {
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event.target.value;
-        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key);
+        const cloneCntct = this.contacts[this.slctdCntctIndex];
+        cloneCntct[this.clmn][clmnIndex][key] = event.target.value;
+        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key, cloneCntct);
       }
+    },
+    updateDNC(event, clmn) {
+      const cloneCntct = this.contacts[this.slctdCntctIndex];
+      cloneCntct[clmn] = event;
+      this.patchContactInfo(event, clmn, null, null, cloneCntct);
     },
   },
 };

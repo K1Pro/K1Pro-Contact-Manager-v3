@@ -1,7 +1,7 @@
 <template>
   <div class="calendar-container">
     <div class="calendar-container-item1">
-      <calnav></calnav>
+      <calnav @slctdTmstmp="(el) => $emit('slctdTmstmp', el)"></calnav>
     </div>
     <div class="calendar-container-item2">
       <calgrid
@@ -9,6 +9,7 @@
         @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"
         @tempFiltersDays="(el) => $emit('tempFiltersDays', el)"
         @slctdDayIndex="(el) => $emit('slctdDayIndex', el)"
+        @slctdTmstmp="(el) => $emit('slctdTmstmp', el)"
       ></calgrid>
     </div>
   </div>
@@ -18,7 +19,7 @@
 export default {
   name: 'Calendar',
 
-  emits: ['eventIndex', 'sideMenuSlctdLnk', 'slctdDayIndex', 'tempFiltersDays'],
+  emits: ['eventIndex', 'sideMenuSlctdLnk', 'slctdDayIndex', 'slctdTmstmp', 'tempFiltersDays'],
 };
 </script>
 

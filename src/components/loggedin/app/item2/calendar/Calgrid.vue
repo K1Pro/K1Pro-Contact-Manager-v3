@@ -48,13 +48,13 @@
 export default {
   name: 'Calendar body',
 
-  emits: ['eventIndex', 'sideMenuSlctdLnk', 'slctdDayIndex', 'tempFiltersDays'],
+  emits: ['eventIndex', 'sideMenuSlctdLnk', 'slctdDayIndex', 'slctdTmstmp', 'tempFiltersDays'],
 
   inject: ['days', 'slctdY_m_d', 'tempFiltersDays', 'times', 'userSettings', 'wndw'],
 
   methods: {
     changeDate(slctdY_m_d, slctdDayIndex) {
-      this.times.slctdTmstmp = new Date(slctdY_m_d + 'T00:00:00').getTime();
+      this.$emit('slctdTmstmp', new Date(slctdY_m_d + 'T00:00:00').getTime());
       this.$emit('slctdDayIndex', slctdDayIndex);
     },
   },
@@ -67,11 +67,13 @@ export default {
         this.userSettings.calendar.filters.days != 0 &&
         this.userSettings.calendar.filters.days != 1
       ) {
-        this.userSettings.calendar.filters.days = 1;
-        this.patchUserSettings(this.userSettings);
+        const cloneUserSettings = this.userSettings;
+        cloneUserSettings.calendar.filters.days = 1;
+        this.patchUserSettings(cloneUserSettings);
       } else if (newWidth > 768 && oldWidth < 768 && this.userSettings.calendar.filters.days != this.tempFiltersDays) {
-        this.userSettings.calendar.filters.days = this.tempFiltersDays;
-        this.patchUserSettings(this.userSettings);
+        const cloneUserSettings = this.userSettings;
+        cloneUserSettings.calendar.filters.days = this.tempFiltersDays;
+        this.patchUserSettings(cloneUserSettings);
       }
     },
   },

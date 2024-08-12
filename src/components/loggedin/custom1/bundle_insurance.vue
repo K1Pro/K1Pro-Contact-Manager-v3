@@ -100,16 +100,18 @@ export default {
   methods: {
     newPolicy() {
       const newCustom1 = [...this.contacts[this.slctdCntctIndex][this.clmn], {}];
-      this.contacts[this.slctdCntctIndex][this.clmn] = newCustom1;
-      this.patchContactInfo('', this.clmn, this.contacts[this.slctdCntctIndex][this.clmn].length, 'Date');
+      const cloneCntct = this.contacts[this.slctdCntctIndex];
+      cloneCntct[this.clmn] = newCustom1;
+      this.patchContactInfo('', this.clmn, this.contacts[this.slctdCntctIndex][this.clmn].length, 'Date', cloneCntct);
     },
     updatePolicy(inptVal, clmnIndex, key) {
       if (
         (inptVal != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && inptVal != '') ||
         (inptVal == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
       ) {
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = inptVal;
-        this.patchContactInfo(inptVal, this.clmn, clmnIndex, key);
+        const cloneCntct = this.contacts[this.slctdCntctIndex];
+        cloneCntct[this.clmn][clmnIndex][key] = inptVal;
+        this.patchContactInfo(inptVal, this.clmn, clmnIndex, key, cloneCntct);
       }
     },
   },

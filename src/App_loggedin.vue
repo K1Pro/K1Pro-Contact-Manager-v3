@@ -10,6 +10,7 @@
           :is="sideMenuSlctdLnk[0]"
           @slctdReport="(el) => (reports = el)"
           @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"
+          @eventIndex="(el) => (eventIndex = el)"
           @tempFiltersDays="(el) => (tempFiltersDays = el)"
           @slctdDayIndex="(el) => (slctdDayIndex = el)"
           @contacts="(el) => (contacts = el)"
@@ -31,6 +32,7 @@
           @eventIndex="(el) => (eventIndex = el)"
           @tempFiltersDays="(el) => (tempFiltersDays = el)"
           @slctdDayIndex="(el) => (slctdDayIndex = el)"
+          @slctdTmstmp="(el) => (times.slctdTmstmp = el)"
         ></component>
       </div>
     </div>
@@ -326,12 +328,13 @@ export default {
       return newDateString;
     },
 
-    async patchContactInfo(event, column, columnIndex, key) {
-      let cloneUpdating = this.updating;
-      this.updating = cloneUpdating + 1;
+    async patchContactInfo(event, column, columnIndex, key, newCntctInfo) {
+      this.contacts[this.slctdCntctIndex] = newCntctInfo;
       this.contacts[this.slctdCntctIndex].Updated = {
         [this.userData.id]: this.times.updtngY_m_d_H_i_s_z,
       };
+      let cloneUpdating = this.updating;
+      this.updating = cloneUpdating + 1;
       try {
         const response = await fetch(servr_url + 'contacts', {
           method: 'PATCH',
