@@ -12,7 +12,6 @@
             :dayIndex="dayIndex"
             @eventIndex="(el) => $emit('eventIndex', el)"
             @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"
-            @userSettings="(el) => $emit('userSettings', el)"
           ></calcontent>
         </div>
 
@@ -49,7 +48,7 @@
 export default {
   name: 'Calendar body',
 
-  emits: ['eventIndex', 'sideMenuSlctdLnk', 'slctdDayIndex', 'tempFiltersDays', 'userSettings'],
+  emits: ['eventIndex', 'sideMenuSlctdLnk', 'slctdDayIndex', 'tempFiltersDays'],
 
   inject: ['days', 'slctdY_m_d', 'tempFiltersDays', 'times', 'userSettings', 'wndw'],
 
@@ -69,10 +68,10 @@ export default {
         this.userSettings.calendar.filters.days != 1
       ) {
         this.userSettings.calendar.filters.days = 1;
-        this.$emit('userSettings', this.userSettings);
+        this.patchUserSettings(this.userSettings);
       } else if (newWidth > 768 && oldWidth < 768 && this.userSettings.calendar.filters.days != this.tempFiltersDays) {
         this.userSettings.calendar.filters.days = this.tempFiltersDays;
-        this.$emit('userSettings', this.userSettings);
+        this.patchUserSettings(this.userSettings);
       }
     },
   },

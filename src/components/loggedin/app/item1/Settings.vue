@@ -48,30 +48,26 @@ export default {
 
   inject: ['accountSettings', 'daysRangeArr', 'patchUserSettings', 'userData', 'userList', 'userSettings', 'wndw'],
 
-  emits: ['slctdDayIndex', 'tempFiltersDays', 'userSettings'],
+  emits: ['slctdDayIndex', 'tempFiltersDays'],
 
   methods: {
     daysRangeChange(event) {
       this.userSettings.calendar.filters.days = event.target.value;
       this.$emit('tempFiltersDays', event.target.value);
       this.$emit('slctdDayIndex', null);
-      this.$emit('userSettings', this.userSettings);
-      this.patchUserSettings();
+      this.patchUserSettings(this.userSettings);
     },
     ownersChange(event) {
       this.userSettings.calendar.filters.owners = event.target.value;
-      this.$emit('userSettings', this.userSettings);
-      this.patchUserSettings();
+      this.patchUserSettings(this.userSettings);
     },
     statusChange(event) {
       this.userSettings.calendar.filters.status = event.target.value;
-      this.$emit('userSettings', this.userSettings);
-      this.patchUserSettings();
+      this.patchUserSettings(this.userSettings);
     },
     categoryChange(event) {
       this.userSettings.calendar.filters.category = event.target.value;
-      this.$emit('userSettings', this.userSettings);
-      this.patchUserSettings();
+      this.patchUserSettings(this.userSettings);
     },
   },
 };

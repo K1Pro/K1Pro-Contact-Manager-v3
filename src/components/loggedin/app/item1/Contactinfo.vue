@@ -1,7 +1,7 @@
 <template>
   <div class="contact-info">
     <searchbar></searchbar>
-    <members @userSettings="(el) => $emit('userSettings', el)" @contacts="(el) => $emit('contacts', el)"></members>
+    <members @contacts="(el) => $emit('contacts', el)"></members>
     <addresses></addresses>
     <connections @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"></connections>
     <assets></assets>
@@ -57,7 +57,7 @@
 export default {
   name: 'Contact Info',
 
-  emits: ['contacts', 'sideMenuSlctdLnk', 'userSettings'],
+  emits: ['contacts', 'sideMenuSlctdLnk'],
 
   inject: ['accountSettings', 'contacts', 'patchContactInfo', 'slctdCntctIndex', 'userList'],
 };

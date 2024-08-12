@@ -48,8 +48,6 @@
 export default {
   name: 'Search Bar',
 
-  emits: ['userSettings'],
-
   inject: ['contacts', 'patchUserSettings', 'userData'],
 
   computed: {
@@ -118,11 +116,10 @@ export default {
       }
     },
     selectSearchedContact(event) {
-      this.userSettings.selectedContactIndex = this.contacts[event.target.value].id;
-      this.$emit('userSettings', this.userSettings);
       this.search = '';
       this.$refs.searchDropdown.size = 0;
-      this.patchUserSettings();
+      this.userSettings.selectedContactIndex = this.contacts[event.target.value].id;
+      this.patchUserSettings(this.userSettings);
     },
 
     onWindowClick() {

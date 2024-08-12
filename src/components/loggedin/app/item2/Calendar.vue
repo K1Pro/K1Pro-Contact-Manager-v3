@@ -9,7 +9,6 @@
         @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"
         @tempFiltersDays="(el) => $emit('tempFiltersDays', el)"
         @slctdDayIndex="(el) => $emit('slctdDayIndex', el)"
-        @userSettings="(el) => $emit('userSettings', el)"
       ></calgrid>
     </div>
   </div>
@@ -19,7 +18,7 @@
 export default {
   name: 'Calendar',
 
-  emits: ['eventIndex', 'sideMenuSlctdLnk', 'slctdDayIndex', 'tempFiltersDays', 'userSettings'],
+  emits: ['eventIndex', 'sideMenuSlctdLnk', 'slctdDayIndex', 'tempFiltersDays'],
 };
 </script>
 

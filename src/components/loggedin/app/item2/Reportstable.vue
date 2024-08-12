@@ -124,7 +124,7 @@
 export default {
   name: 'Reports table',
 
-  emits: ['sideMenuSlctdLnk', 'userSettings'],
+  emits: ['sideMenuSlctdLnk'],
 
   inject: [
     'contacts',
@@ -298,10 +298,9 @@ export default {
   },
   methods: {
     selectContact(contactID) {
-      this.userSettings.selectedContactIndex = contactID;
       this.$emit('sideMenuSlctdLnk', ['Contactinfo', 'Calendar']);
-      this.$emit('userSettings', this.userSettings);
-      this.patchUserSettings();
+      this.userSettings.selectedContactIndex = contactID;
+      this.patchUserSettings(this.userSettings);
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }

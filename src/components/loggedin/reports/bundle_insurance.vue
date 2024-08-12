@@ -201,7 +201,7 @@
 export default {
   name: 'Bundle Insurance Custom reports',
 
-  emits: ['sideMenuSlctdLnk', 'userSettings'],
+  emits: ['sideMenuSlctdLnk'],
 
   inject: ['contacts', 'patchUserSettings', 'reports', 'slctdCntctIndex', 'times', 'usaDateFrmt', 'wndw'],
 
@@ -333,8 +333,7 @@ export default {
     selectContact(contactID) {
       this.$emit('sideMenuSlctdLnk', ['Contactinfo', 'Calendar']);
       this.userSettings.selectedContactIndex = contactID;
-      this.$emit('userSettings', this.userSettings);
-      this.patchUserSettings();
+      this.patchUserSettings(this.userSettings);
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }

@@ -57,7 +57,7 @@
 export default {
   name: 'Day Content',
 
-  emits: ['eventIndex', 'sideMenuSlctdLnk', 'userSettings'],
+  emits: ['eventIndex', 'sideMenuSlctdLnk'],
 
   inject: [
     'contacts',
@@ -130,11 +130,10 @@ export default {
 
   methods: {
     selectContact(ContactID, sidemenuLink, eventIndex) {
-      this.userSettings.selectedContactIndex = ContactID;
-      this.$emit('userSettings', this.userSettings);
       this.$emit('eventIndex', eventIndex);
       this.$emit('sideMenuSlctdLnk', [sidemenuLink, 'Calendar']);
-      this.patchUserSettings();
+      this.userSettings.selectedContactIndex = ContactID;
+      this.patchUserSettings(this.userSettings);
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }

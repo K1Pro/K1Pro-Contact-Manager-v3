@@ -79,7 +79,7 @@
 export default {
   name: 'Members',
 
-  emits: ['contacts', 'userSettings'],
+  emits: ['contacts'],
 
   inject: [
     'accountSettings',
@@ -192,8 +192,7 @@ export default {
               let clonedCntcts = this.contacts;
               this.$emit('contacts', [...clonedCntcts, newMember]);
               this.userSettings.selectedContactIndex = newContactIndex;
-              this.$emit('userSettings', this.userSettings);
-              this.patchUserSettings();
+              this.patchUserSettings(this.userSettings);
               this.spinLogin = false;
             } else {
               this.spinLogin = false;

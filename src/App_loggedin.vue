@@ -12,7 +12,6 @@
           @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"
           @tempFiltersDays="(el) => (tempFiltersDays = el)"
           @slctdDayIndex="(el) => (slctdDayIndex = el)"
-          @userSettings="(el) => (userSettings = el)"
           @contacts="(el) => (contacts = el)"
         ></component>
       </div>
@@ -32,7 +31,6 @@
           @eventIndex="(el) => (eventIndex = el)"
           @tempFiltersDays="(el) => (tempFiltersDays = el)"
           @slctdDayIndex="(el) => (slctdDayIndex = el)"
-          @userSettings="(el) => (userSettings = el)"
         ></component>
       </div>
     </div>
@@ -405,7 +403,8 @@ export default {
       }
     },
 
-    async patchUserSettings() {
+    async patchUserSettings(newUserSettings) {
+      this.userSettings = newUserSettings;
       try {
         const response = await fetch(servr_url + 'settings', {
           method: 'PATCH',
@@ -450,7 +449,7 @@ export default {
     },
 
     stopResizeGrid() {
-      this.patchUserSettings();
+      this.patchUserSettings(this.userSettings);
       document.removeEventListener('mousemove', this.resizeGrid, true);
       document.removeEventListener('mouseup', this.stopResizeGrid, true);
       document.querySelector('body').classList.remove('prevent-select');
@@ -458,7 +457,7 @@ export default {
 
     resetGrid() {
       this.userSettings.layout['grid-size'] = 50;
-      this.patchUserSettings();
+      this.patchUserSettings(this.userSettings);
     },
   },
 
