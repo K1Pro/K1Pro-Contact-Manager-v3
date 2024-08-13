@@ -4,7 +4,7 @@
   <template v-if="contacts.length > 0">
     <div class="app-grid-container" :style="appGridContainer">
       <div class="app-grid-item1">
-        <sidemenu :sideMenuItems @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"></sidemenu>
+        <sidemenu :sideMenuItems :wndw @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"></sidemenu>
         <component
           class="app-grid-item1-panel"
           :is="sideMenuSlctdLnk[0]"

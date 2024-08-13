@@ -50,7 +50,7 @@ export default {
 
   emits: ['eventIndex', 'sideMenuSlctdLnk', 'slctdDayIndex', 'slctdTmstmp', 'tempFiltersDays'],
 
-  inject: ['days', 'slctdY_m_d', 'tempFiltersDays', 'times', 'userSettings', 'wndw'],
+  inject: ['days', 'patchUserSettings', 'slctdY_m_d', 'tempFiltersDays', 'times', 'userSettings', 'wndw'],
 
   methods: {
     changeDate(slctdY_m_d, slctdDayIndex) {
