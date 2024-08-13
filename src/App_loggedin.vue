@@ -237,7 +237,6 @@ export default {
     },
 
     async getUserData() {
-      console.log(servr_url);
       try {
         const response = await fetch(servr_url + 'users', {
           method: 'GET',
@@ -248,7 +247,7 @@ export default {
         });
         const userDataResJSON = await response.json();
         if (userDataResJSON.success) {
-          console.log(userDataResJSON);
+          // console.log(userDataResJSON);
           this.times.initialBrwsrTmstmp = new Date().getTime();
           this.times.initialUsrTmstmp = new Date(userDataResJSON.data.date_Y_m_d_H_i_s_z).getTime();
           this.times.updtngY_m_d_H_i_s_z = userDataResJSON.data.date_Y_m_d_H_i_s_z;
@@ -484,7 +483,7 @@ export default {
 
   watch: {
     sideMenuSlctdLnk() {
-      console.log('need to reset eventIndex');
+      this.$emit('eventIndex', null);
     },
   },
 

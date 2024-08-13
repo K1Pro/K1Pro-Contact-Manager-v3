@@ -170,9 +170,11 @@ export default {
       } else if (this.reports.includes('All contacts with more info')) {
         // 'All contacts with more info'
         cloneCntcts.forEach((contact) => {
-          const addressArray = Object.entries(contact.Addresses[0]).map(([addressKey, addressValue]) => {
-            return addressKey != 'Type' ? addressValue : null;
-          });
+          const addressArray = contact.Addresses[0]
+            ? Object.entries(contact.Addresses[0]).map(([addressKey, addressValue]) => {
+                return addressKey != 'Type' ? addressValue : null;
+              })
+            : [];
           const assetsArray = contact.Assets.map((asset) => {
             return Object.values(asset);
           });
