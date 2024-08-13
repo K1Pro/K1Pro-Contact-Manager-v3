@@ -115,7 +115,7 @@
         </tbody>
       </template>
 
-      <custom_reports></custom_reports>
+      <custom_reports @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"></custom_reports>
     </table>
   </div>
 </template>
