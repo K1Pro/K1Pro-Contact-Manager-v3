@@ -4,7 +4,11 @@
   <template v-if="contacts.length > 0">
     <div class="app-grid-container" :style="appGridContainer">
       <div class="app-grid-item1">
-        <sidemenu :sideMenuItems :wndw @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"></sidemenu>
+        <sidemenu
+          :sideMenuItems
+          :wndw
+          @sideMenuSlctdLnk="(el) => ((eventIndex = null), (sideMenuSlctdLnk = el))"
+        ></sidemenu>
         <component
           class="app-grid-item1-panel"
           :is="sideMenuSlctdLnk[0]"
@@ -478,12 +482,6 @@ export default {
     resetGrid() {
       this.userSettings.layout['grid-size'] = 50;
       this.patchUserSettings(this.userSettings);
-    },
-  },
-
-  watch: {
-    sideMenuSlctdLnk() {
-      this.$emit('eventIndex', null);
     },
   },
 
