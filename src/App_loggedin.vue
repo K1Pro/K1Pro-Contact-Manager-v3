@@ -52,6 +52,8 @@
 export default {
   name: 'App',
 
+  mixins: [snackbarMixin, screenWidthMixin, appGridResizerMixin],
+
   data() {
     return {
       accountSettings: {},
@@ -62,7 +64,6 @@ export default {
       dsbld: false,
       emails: [],
       eventIndex: null,
-      msg: null,
       reports: 'All contacts with min. info',
       slctdDayIndex: null,
       sideMenuSlctdLnk: ['Contactinfo', 'Calendar'],
@@ -76,10 +77,6 @@ export default {
       updating: 0,
       userData: {},
       userSettings: {},
-      wndw: {
-        wdth: 0,
-        hght: 0,
-      },
     };
   },
 
@@ -104,14 +101,12 @@ export default {
       userData: Vue.computed(() => this.userData),
       userList: Vue.computed(() => this.userList),
       userSettings: Vue.computed(() => this.userSettings),
-      wndw: Vue.computed(() => this.wndw),
       // static
       daysRangeArr: this.daysRangeArr,
       // methods
       deleteContactInfo: this.deleteContactInfo,
       patchContactInfo: this.patchContactInfo,
       patchUserSettings: this.patchUserSettings,
-      showMsg: this.showMsg,
       usaDateFrmt: this.usaDateFrmt,
     };
   },
@@ -119,16 +114,6 @@ export default {
   computed: {
     userList() {
       return { ...this.activeUserList, ...this.accountSettings.userList };
-    },
-    appGridItem2Width() {
-      return 100 - this.userSettings.layout['grid-size'];
-    },
-    appGridContainer() {
-      return this.wndw.wdth > 768
-        ? {
-            'grid-template-columns': `calc(${this.userSettings.layout['grid-size']}% - 5px) 10px calc(${this.appGridItem2Width}% - 5px)`,
-          }
-        : false;
     },
     sideMenuItems() {
       const sideMenuItemsArray = [
@@ -206,9 +191,6 @@ export default {
   },
 
   methods: {
-    showMsg(newMsg) {
-      this.msg = newMsg;
-    },
     async updateTime() {
       const timeDifference = Math.round((this.times.initialBrwsrTmstmp - new Date().getTime()) * -1);
       this.times.updtngY_m_d_H_i_s_z = new Date(this.times.initialUsrTmstmp + timeDifference).toISOString();
@@ -450,48 +432,10 @@ export default {
         this.showMsg('Settings update error');
       }
     },
-
-    updateScreenWidth() {
-      this.wndw.wdth = window.innerWidth;
-      this.wndw.hght = window.innerHeight;
-    },
-    onScreenResize() {
-      window.addEventListener('resize', () => {
-        this.updateScreenWidth();
-      });
-    },
-
-    resizeGrid(event) {
-      const newGridSize = Math.round((event.clientX / window.innerWidth) * 100);
-      if (newGridSize > 25 && newGridSize < 65) this.userSettings.layout['grid-size'] = newGridSize;
-    },
-
-    startResizeGrid() {
-      document.querySelector('body').classList.add('prevent-select');
-      document.addEventListener('mousemove', this.resizeGrid, true);
-      document.addEventListener('mouseup', this.stopResizeGrid, true);
-    },
-
-    stopResizeGrid() {
-      this.patchUserSettings(this.userSettings);
-      document.removeEventListener('mousemove', this.resizeGrid, true);
-      document.removeEventListener('mouseup', this.stopResizeGrid, true);
-      document.querySelector('body').classList.remove('prevent-select');
-    },
-
-    resetGrid() {
-      this.userSettings.layout['grid-size'] = 50;
-      this.patchUserSettings(this.userSettings);
-    },
   },
 
   created() {
     this.getUserData();
-  },
-
-  mounted() {
-    this.updateScreenWidth();
-    this.onScreenResize();
   },
 };
 </script>
@@ -505,7 +449,6 @@ export default {
   background-color: #c6c6c6;
   /* word-break: break-all; */
 }
-
 .app-grid-item1 {
   min-height: 100vh;
   order: 3;
@@ -515,34 +458,32 @@ export default {
   background: -ms-linear-gradient(left, #f1f1f1 49px, #999999 49px);
   background: linear-gradient(left, #f1f1f1 49px, #999999 49px);
 }
-
-.app-grid-item2 {
-  order: 1;
-  background-color: #999999;
-  overflow-y: hidden;
-}
-
 .app-grid-item1-panel {
-  padding: 0px 0px 0px 65px;
+  padding: 0px 10px 0px 65px;
   height: 100%;
   overflow-y: auto;
   border-style: solid;
   border-width: 10px 0px 10px 0px;
   border-color: #00000000;
 }
-
+.app-grid-item2 {
+  order: 1;
+  background-color: #999999;
+  overflow-y: hidden;
+}
 @media only screen and (min-width: 768px) {
   .app-grid-container {
     /* grid-template-columns: calc(50% - 5px) 10px calc(50% - 5px); this is in computed now*/
     grid-template-rows: 100vh;
   }
-
   .app-grid-item1 {
     min-height: auto;
     order: 1;
     background: #999999;
   }
-
+  .app-grid-item1-panel {
+    padding: 0px 0px 0px 65px;
+  }
   .app-grid-resizer {
     order: 2;
     cursor: col-resize;
