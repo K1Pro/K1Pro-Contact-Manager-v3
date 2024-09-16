@@ -1,5 +1,11 @@
 <template>
-  <div class="task-grid-day-title" v-if="firstDayY_m_d && calContactTasks">
+  <div
+    class="task-grid-day-title"
+    v-if="firstDayY_m_d && calContactTasks"
+    @drop.prevent="dropEvent(days[dayIndex])"
+    @dragover.prevent
+    @dragenter.prevent
+  >
     <b v-if="days[dayIndex] == times.updtngY_m_d_H_i_s_z.slice(0, 10)">
       {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : ''
       }}{{ days[dayIndex] == times.updtngY_m_d_H_i_s_z.slice(0, 10) ? ' - Today' : '' }}
@@ -41,6 +47,16 @@
           class="prevent-select"
           @click="selectContact(calContactTask.ContactID, calContactTask.Type, calContactTask.EventIndex)"
           v-on:dblclick="selectContact(calContactTask.ContactID, 'Contactinfo', null)"
+          :draggable="calContactTask.Type == 'Tasks' ? true : false"
+          @dragstart="
+            dragEvent(
+              $event,
+              calContactTask.ContactID,
+              calContactTask.EventIndex,
+              calContactTask.Type,
+              calContactTask.Time
+            )
+          "
         >
           {{ calContactTask.Time != '25:00' ? calContactTask.Time : '' }}
           {{ calContactTask?.Name }}
@@ -64,10 +80,12 @@ export default {
     'days',
     'eventIndex',
     'firstDayTmstmp',
+    'patchContactInfo',
     'patchUserSettings',
     'sideMenuSlctdLnk',
     'times',
     'wndw',
+    'userData',
     'userSettings',
   ],
 
@@ -137,6 +155,37 @@ export default {
       this.patchUserSettings(cloneUserSettings);
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+      }
+    },
+    dragEvent(event, contactID, eventIndex, eventType, eventTime) {
+      event.dataTransfer.setData('array', [contactID, eventIndex, eventType, eventTime]);
+    },
+    dropEvent(newDate) {
+      const eventInfo = event.dataTransfer.getData('array').split(',');
+      const slctdCntctIndex = this.contacts.findIndex((contact) => contact.id == eventInfo[0]);
+      const ContactID = eventInfo[0];
+      const clmnIndex = eventInfo[1];
+      const clmn = eventInfo[2];
+      const eventDateTime = newDate + 'T' + eventInfo[3];
+      const key = 'Date';
+
+      const cloneUserSettings = this.userSettings;
+      cloneUserSettings.selectedContactIndex = ContactID;
+      this.patchUserSettings(cloneUserSettings);
+
+      if (
+        (eventDateTime != this.contacts[slctdCntctIndex][clmn][clmnIndex][key] && eventDateTime != '') ||
+        (eventDateTime == '' && this.contacts[slctdCntctIndex][clmn][clmnIndex][key])
+      ) {
+        const cloneCntct = this.contacts[slctdCntctIndex];
+        cloneCntct[clmn][clmnIndex][key] = eventDateTime;
+        cloneCntct[clmn][clmnIndex].Update = this.userData.id;
+        if (this.sideMenuSlctdLnk[0] == 'Tasks') {
+          this.$emit('eventIndex', null);
+          this.$emit('eventIndex', clmnIndex);
+        }
+        // this.taskMemo = this.taskMemo + 1;
+        this.patchContactInfo(eventDateTime, clmn, clmnIndex, key, cloneCntct);
       }
     },
   },
