@@ -29,12 +29,6 @@ body {
   animation: spin 2s linear infinite;
 }
 
-.prevent-select {
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
-}
-
 @media only screen and (min-width: 768px) {
   body {
     overflow-y: auto;

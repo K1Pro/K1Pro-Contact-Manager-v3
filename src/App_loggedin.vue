@@ -52,7 +52,7 @@
 export default {
   name: 'App',
 
-  mixins: [snackbarMixin, screenWidthMixin, appGridResizerMixin],
+  mixins: [snackbarMixin, wndwWdthHghtMixin, appGridResizerMixin],
 
   data() {
     return {
