@@ -35,9 +35,6 @@
           {{ category }}
         </option>
       </select>
-      <div>
-        <logout></logout>
-      </div>
     </div>
   </div>
 </template>

@@ -122,7 +122,9 @@ export default {
         ['fa fa-repeat', this.contacts[this.slctdCntctIndex]?.RecurTasks.length, 'Recurring tasks', 'Calendar'],
         ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length > 0 ? '1' : null, 'Notes', 'Calendar'],
         ['fa fa-chart-pie', null, 'Reports', 'Reportstable'],
-        ['fa fa-user-gear', null, 'Settings', 'Calendar'],
+        ['fa fa-sliders', null, 'Settings', 'Calendar'],
+        ['fa fa-user-gear', null, 'Account', 'Calendar'],
+        ['fa fa-sign-out', null, 'Log out'],
       ];
       if (this.accountSettings.sidemenu) {
         this.accountSettings.sidemenu.forEach((sidemenu) => {
