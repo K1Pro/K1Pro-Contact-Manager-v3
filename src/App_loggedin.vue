@@ -123,8 +123,8 @@ export default {
         ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length > 0 ? '1' : null, 'Notes', 'Calendar'],
         ['fa fa-chart-pie', null, 'Reports', 'Reportstable'],
         ['fa fa-sliders', null, 'Settings', 'Calendar'],
-        ['fa fa-user-gear', 'link-' + accountlogin_url, 'Account'],
-        ['fa fa-sign-out', null, 'Log out'],
+        ['fa fa-user-gear', 'post-' + accountlogin_url, 'Account'],
+        ['fa fa-sign-out', null, 'Log out', '_a_t', access_token, '_s_i', session_id],
       ];
       if (this.accountSettings.sidemenu) {
         this.accountSettings.sidemenu.forEach((sidemenu) => {
