@@ -32,7 +32,11 @@
 
       <template v-for="(task, taskIndex) in Tasks" v-memo="[taskMemo]">
         <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }">
-          <i class="fa-solid fa-trash" @click="deleteTask(task.clmnIndex)"></i>
+          <i
+            v-if="userData.AppPermissions[appName][1] == 'Admin'"
+            class="fa-solid fa-trash"
+            @click="deleteTask(task.clmnIndex)"
+          ></i>
           <span class="tasks-label">Date:</span
           ><input
             type="datetime-local"
@@ -118,6 +122,7 @@ export default {
 
   inject: [
     'contacts',
+    'appName',
     'deleteContactInfo',
     'dsbld',
     'eventIndex',

@@ -37,9 +37,13 @@
             'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white',
           }"
         >
-          <i class="fa-solid fa-trash" @click="deleteRecurTask(recurTask.clmnIndex)"></i>
-          <span class="recur-tasks-label">Start:</span
-          ><input
+          <i
+            v-if="userData.AppPermissions[appName][1] == 'Admin'"
+            class="fa-solid fa-trash"
+            @click="deleteRecurTask(recurTask.clmnIndex)"
+          ></i>
+          <span class="recur-tasks-label">Start:</span>
+          <input
             type="date"
             :value="recurTask.Start"
             v-on:blur="
@@ -154,6 +158,7 @@ export default {
   emits: ['eventIndex'],
 
   inject: [
+    'appName',
     'contacts',
     'deleteContactInfo',
     'eventIndex',
