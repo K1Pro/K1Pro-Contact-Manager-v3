@@ -14,7 +14,12 @@
             </option>
           </select>
         </div>
-        <button class="address-button" @click="deleteContactInfo('Addresses', addressIndex)" :disabled="dsbld">
+        <button
+          v-if="userData.AppPermissions[appName][1] == 'Admin'"
+          class="address-button"
+          @click="deleteContactInfo('Addresses', addressIndex)"
+          :disabled="dsbld"
+        >
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
@@ -107,12 +112,14 @@ export default {
 
   inject: [
     'accountSettings',
+    'appName',
     'contacts',
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',
     'slctdCntctIndex',
     'tbCntntWdth',
+    'userData',
   ],
 
   computed: {

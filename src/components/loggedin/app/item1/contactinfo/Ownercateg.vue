@@ -51,13 +51,7 @@
 export default {
   name: 'Owner and category',
 
-  inject: ['accountSettings', 'contacts', 'patchContactInfo', 'slctdCntctIndex', 'userData', 'userList'],
-
-  data() {
-    return {
-      appName: app_name,
-    };
-  },
+  inject: ['accountSettings', 'appName', 'contacts', 'patchContactInfo', 'slctdCntctIndex', 'userData', 'userList'],
 
   methods: {
     updateOwnerCateg(event, clmn) {
@@ -67,9 +61,6 @@ export default {
         this.patchContactInfo(event, clmn, null, null, cloneCntct);
       }
     },
-  },
-  mounted() {
-    console.log(this.userData.AppPermissions[app_name][1]);
   },
 };
 </script>

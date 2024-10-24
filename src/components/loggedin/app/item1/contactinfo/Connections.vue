@@ -25,7 +25,12 @@
             :disabled="dsbld"
             @change="updateConnection($event, conn.RealIndex, connType)"
           />
-          <button class="conn-delete-icon" @click="deleteContactInfo('Connections', conn.RealIndex)" :disabled="dsbld">
+          <button
+            v-if="userData.AppPermissions[appName][1] == 'Admin'"
+            class="conn-delete-icon"
+            @click="deleteContactInfo('Connections', conn.RealIndex)"
+            :disabled="dsbld"
+          >
             <i class="fa-solid fa-trash"></i>
           </button>
         </div>
@@ -52,6 +57,7 @@ export default {
 
   inject: [
     'accountSettings',
+    'appName',
     'contacts',
     'deleteContactInfo',
     'dsbld',

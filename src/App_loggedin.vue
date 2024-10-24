@@ -77,6 +77,7 @@ export default {
       updating: 0,
       userData: {},
       userSettings: {},
+      appName: app_name,
     };
   },
 
@@ -103,6 +104,7 @@ export default {
       userSettings: Vue.computed(() => this.userSettings),
       // static
       daysRangeArr: this.daysRangeArr,
+      appName: this.appName,
       // methods
       deleteContactInfo: this.deleteContactInfo,
       patchContactInfo: this.patchContactInfo,

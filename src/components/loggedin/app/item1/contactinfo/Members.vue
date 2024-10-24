@@ -47,7 +47,12 @@
           <option value="deleteContact">Delete contact</option>
         </select>
 
-        <button v-else class="member-button" @click="deleteContactInfo('Members', memberIndex)" :disabled="dsbld">
+        <button
+          v-if="memberIndex !== 0 && userData.AppPermissions[appName][1] == 'Admin'"
+          class="member-button"
+          @click="deleteContactInfo('Members', memberIndex)"
+          :disabled="dsbld"
+        >
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
@@ -83,6 +88,7 @@ export default {
 
   inject: [
     'accountSettings',
+    'appName',
     'contacts',
     'dsbld',
     'slctdCntctIndex',
