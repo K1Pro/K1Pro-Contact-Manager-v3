@@ -6,7 +6,11 @@
       :value="contacts[slctdCntctIndex].Assigned"
       @change="updateOwnerCateg($event.target.value, 'Assigned')"
     >
-      <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
+      <option
+        v-for="([userNo, userInfo], userIndex) in Object.entries(userList)"
+        :value="userNo"
+        :disabled="userData.AppPermissions[appName][1] != 'Admin'"
+      >
         {{ userInfo[0] }}
       </option>
       <option disabled>
@@ -47,7 +51,13 @@
 export default {
   name: 'Owner and category',
 
-  inject: ['accountSettings', 'contacts', 'patchContactInfo', 'slctdCntctIndex', 'userList'],
+  inject: ['accountSettings', 'contacts', 'patchContactInfo', 'slctdCntctIndex', 'userData', 'userList'],
+
+  data() {
+    return {
+      appName: app_name,
+    };
+  },
 
   methods: {
     updateOwnerCateg(event, clmn) {
@@ -57,6 +67,9 @@ export default {
         this.patchContactInfo(event, clmn, null, null, cloneCntct);
       }
     },
+  },
+  mounted() {
+    console.log(this.userData.AppPermissions[app_name][1]);
   },
 };
 </script>
