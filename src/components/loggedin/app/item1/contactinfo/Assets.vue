@@ -16,7 +16,12 @@
               :disabled="dsbld"
               @change="updateAsset($event, assetIndex, assetType)"
             />
-            <button class="asset-button" @click="deleteContactInfo('Assets', assetIndex)" :disabled="dsbld">
+            <button
+              v-if="userData.AppPermissions[appName][1] == 'admin'"
+              class="asset-button"
+              @click="deleteContactInfo('Assets', assetIndex)"
+              :disabled="dsbld"
+            >
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>
@@ -28,7 +33,12 @@
               :disabled="dsbld"
               @change="updateAsset($event, assetIndex, assetType)"
             />
-            <button class="asset-button" @click="deleteContactInfo('Assets', assetIndex)" :disabled="dsbld">
+            <button
+              v-if="userData.AppPermissions[appName][1] == 'admin'"
+              class="asset-button"
+              @click="deleteContactInfo('Assets', assetIndex)"
+              :disabled="dsbld"
+            >
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>
@@ -45,7 +55,16 @@
 export default {
   name: 'Assets',
 
-  inject: ['accountSettings', 'contacts', 'deleteContactInfo', 'dsbld', 'patchContactInfo', 'slctdCntctIndex'],
+  inject: [
+    'accountSettings',
+    'appName',
+    'contacts',
+    'deleteContactInfo',
+    'dsbld',
+    'patchContactInfo',
+    'slctdCntctIndex',
+    'userData',
+  ],
 
   data() {
     return { clmn: 'Assets' };

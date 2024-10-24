@@ -15,7 +15,7 @@
           </select>
         </div>
         <button
-          v-if="userData.AppPermissions[appName][1] == 'Admin'"
+          v-if="userData.AppPermissions[appName][1] == 'admin'"
           class="address-button"
           @click="deleteContactInfo('Addresses', addressIndex)"
           :disabled="dsbld"

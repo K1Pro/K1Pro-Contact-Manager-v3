@@ -38,7 +38,7 @@
           }"
         >
           <i
-            v-if="userData.AppPermissions[appName][1] == 'Admin'"
+            v-if="userData.AppPermissions[appName][1] == 'admin'"
             class="fa-solid fa-trash"
             @click="deleteRecurTask(recurTask.clmnIndex)"
           ></i>

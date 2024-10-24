@@ -48,7 +48,7 @@
         </select>
 
         <button
-          v-if="memberIndex !== 0 && userData.AppPermissions[appName][1] == 'Admin'"
+          v-if="memberIndex !== 0 && userData.AppPermissions[appName][1] == 'admin'"
           class="member-button"
           @click="deleteContactInfo('Members', memberIndex)"
           :disabled="dsbld"

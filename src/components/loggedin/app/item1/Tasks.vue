@@ -33,7 +33,7 @@
       <template v-for="(task, taskIndex) in Tasks" v-memo="[taskMemo]">
         <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }">
           <i
-            v-if="userData.AppPermissions[appName][1] == 'Admin'"
+            v-if="userData.AppPermissions[appName][1] == 'admin'"
             class="fa-solid fa-trash"
             @click="deleteTask(task.clmnIndex)"
           ></i>

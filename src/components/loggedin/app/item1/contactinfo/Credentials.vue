@@ -23,7 +23,12 @@
               <button class="cred-reveal" style="color: grey" @click="toggleCred(credIndex)">
                 <span :ref="'credIcon' + credIndex" class="fa-solid fa-eye"></span>
               </button>
-              <button class="cred-button" @click="deleteContactInfo('Credentials', credIndex)" :disabled="dsbld">
+              <button
+                class="cred-button"
+                v-if="userData.AppPermissions[appName][1] == 'admin'"
+                @click="deleteContactInfo('Credentials', credIndex)"
+                :disabled="dsbld"
+              >
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
@@ -41,7 +46,16 @@
 export default {
   name: 'Credentials',
 
-  inject: ['accountSettings', 'contacts', 'deleteContactInfo', 'dsbld', 'patchContactInfo', 'slctdCntctIndex'],
+  inject: [
+    'accountSettings',
+    'appName',
+    'contacts',
+    'deleteContactInfo',
+    'dsbld',
+    'patchContactInfo',
+    'slctdCntctIndex',
+    'userData',
+  ],
 
   data() {
     return { clmn: 'Credentials', credInputType: 'password' };

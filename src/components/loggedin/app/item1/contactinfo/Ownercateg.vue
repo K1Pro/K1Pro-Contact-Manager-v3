@@ -9,7 +9,7 @@
       <option
         v-for="([userNo, userInfo], userIndex) in Object.entries(userList)"
         :value="userNo"
-        :disabled="userData.AppPermissions[appName][1] != 'Admin'"
+        :disabled="userData.AppPermissions[appName][1] != 'admin'"
       >
         {{ userInfo[0] }}
       </option>
