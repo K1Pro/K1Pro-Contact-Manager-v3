@@ -64,7 +64,7 @@ export default {
       dsbld: false,
       emails: [],
       eventIndex: null,
-      reports: 'All contacts with min. info',
+      reports: null,
       slctdDayIndex: null,
       sideMenuSlctdLnk: ['Contactinfo', 'Calendar'],
       tempFiltersDays: null,
@@ -74,6 +74,7 @@ export default {
         updtngY_m_d_H_i_s_z: null,
         slctdTmstmp: '',
       },
+      roles: ['admin', 'editor', 'author', 'contributor', 'subscriber'],
       updating: 0,
       userData: {},
       userSettings: {},
@@ -105,6 +106,7 @@ export default {
       // static
       daysRangeArr: this.daysRangeArr,
       appName: this.appName,
+      roles: this.roles,
       // methods
       deleteContactInfo: this.deleteContactInfo,
       patchContactInfo: this.patchContactInfo,
@@ -248,6 +250,11 @@ export default {
           }, 6000);
 
           this.userData = userDataResJSON.data.user;
+          // prettier-ignore
+          this.reports = 'Renewals'
+          // this.userData.AppPermissions[this.appName][1] == 'admin'
+          //   ? 'All contacts with min. info'
+          //   : this.userData.FirstName + '\'s tasks';
           this.accountSettings = userDataResJSON.data.accountSettings;
           this.tempFiltersDays = userDataResJSON.data.userSettings.calendar.filters.days;
           this.activeUserList = userDataResJSON.data.activeUserList;
@@ -262,8 +269,6 @@ export default {
           this.getContacts(null);
           this.getEmailSettings();
         } else {
-          document.cookie = `_a_t=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${cookiePath};`;
-          document.cookie = `_s_i=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${cookiePath};`;
           location.reload();
         }
       } catch (error) {

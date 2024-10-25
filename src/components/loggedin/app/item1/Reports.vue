@@ -10,18 +10,34 @@
       >
         {{ report }}
       </div>
-      <div
-        v-for="(activeUser, activeUserIndex) in Object.entries(activeUserList)"
-        class="reports-report"
-        :class="[
-          reports.includes('Activity log for user:' + activeUser[0])
-            ? 'reports-active'
-            : 'reports' + ((includedReports.length + activeUserIndex) % 2),
-        ]"
-        @click="selectReport('Activity log for user:' + activeUser[0])"
+
+      <template v-for="(activeUser, activeUserIndex) in Object.entries(activeUserList)">
+        <div
+          v-if="activeUser[0] == userData.id || userData.AppPermissions[appName][1] == 'admin'"
+          class="reports-report"
+          :class="[
+            reports.includes('Task list:' + activeUser[0])
+              ? 'reports-active'
+              : 'reports' + ((includedReports.length + activeUserIndex) % 2),
+          ]"
+          @click="selectReport('Task list:' + activeUser[0])"
+        >
+          Task list: {{ activeUser[1][0] }}
+        </div>
+        <div
+          v-if="activeUser[0] == userData.id || userData.AppPermissions[appName][1] == 'admin'"
+          class="reports-report"
+          :class="[
+            reports.includes('Task statistics:' + activeUser[0])
+              ? 'reports-active'
+              : 'reports' + ((includedReports.length + activeUserIndex) % 2),
+          ]"
+          @click="selectReport('Task statistics:' + activeUser[0])"
+        >
+          Task statistics: {{ activeUser[1][0] }}
+        </div></template
       >
-        Activity log for user: {{ activeUser[1][0] }}
-      </div>
+
       <div
         v-for="(report, reportIndex) in accountSettings.reports"
         class="reports-report"
@@ -44,7 +60,16 @@ export default {
 
   emits: ['slctdReport'],
 
-  inject: ['accountSettings', 'activeUserList', 'contacts', 'reports', 'slctdCntctIndex', 'wndw'],
+  inject: [
+    'accountSettings',
+    'activeUserList',
+    'appName',
+    'contacts',
+    'reports',
+    'slctdCntctIndex',
+    'userData',
+    'wndw',
+  ],
 
   data() {
     return {
@@ -61,17 +86,28 @@ export default {
     },
   },
   mounted() {
-    this.includedReports = [
-      'All contacts with min. info (' + this.contacts?.length + ')',
-      'All contacts with more info (' + this.contacts?.length + ')',
-      'All contact tasks',
-      'Contact categories',
-      'Activity log for contact: ' +
-        (this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.First
-          ? this.contacts[this.slctdCntctIndex].Members[0].First + ' '
-          : '') +
-        this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.Name,
-    ];
+    console.log(this.userData.FirstName);
+    if (this.userData.AppPermissions[this.appName][1] == 'admin') {
+      this.includedReports = [
+        'All contacts with min. info (' + this.contacts?.length + ')',
+        'All contacts with more info (' + this.contacts?.length + ')',
+        'All contact tasks',
+        'Contact categories',
+        'Activity log for contact: ' +
+          (this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.First
+            ? this.contacts[this.slctdCntctIndex].Members[0].First + ' '
+            : '') +
+          this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.Name,
+      ];
+    } else {
+      this.includedReports = [
+        'Activity log for contact: ' +
+          (this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.First
+            ? this.contacts[this.slctdCntctIndex].Members[0].First + ' '
+            : '') +
+          this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.Name,
+      ];
+    }
   },
 };
 </script>

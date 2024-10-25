@@ -1,6 +1,11 @@
 <template>
   <div class="reports-table">
-    <i :style="{ left: tbCntntWdth + 30 + 'px' }" class="fa-solid fa-download" @click="downloadTable"></i>
+    <i
+      v-if="userData.AppPermissions[appName][1] == 'admin'"
+      :style="{ left: tbCntntWdth + 30 + 'px' }"
+      class="fa-solid fa-download"
+      @click="downloadTable"
+    ></i>
     <table>
       <template
         v-if="
@@ -24,7 +29,7 @@
         </tbody>
       </template>
 
-      <template v-if="reports.includes('All contact tasks')">
+      <template v-if="reports.includes('All contact tasks') || reports.includes('Task list:')">
         <thead>
           <tr>
             <th v-for="tblTtl in tblCntnt[0]">{{ tblTtl }}</th>
@@ -69,7 +74,7 @@
         </tbody>
       </template>
 
-      <template v-if="reports.includes('Activity log for user:')">
+      <template v-if="reports.includes('Task statistics:')">
         <thead>
           <tr>
             <th style="width: 15%">Date</th>
@@ -127,6 +132,7 @@ export default {
   emits: ['sideMenuSlctdLnk'],
 
   inject: [
+    'appName',
     'contacts',
     'userSettings',
     'patchUserSettings',
@@ -134,6 +140,7 @@ export default {
     'slctdCntctIndex',
     'tbCntntWdth',
     'times',
+    'userData',
     'usaDateFrmt',
     'userList',
     'wndw',
@@ -219,6 +226,24 @@ export default {
         });
         tblHdrs = ['#', 'Contact', 'Date', 'Owner', 'Description'];
         tblClmns.sort((a, b) => b[3].localeCompare(a[3]));
+      } else if (this.reports.includes('Task list:')) {
+        // 'Task list: '
+        nmbrClmn = null;
+        cloneCntcts.forEach((contact) => {
+          contact.Tasks.forEach((task) => {
+            if (task.Date && this.reports.split(':')[1] == task?.Update)
+              tblClmns.push([
+                contact?.id,
+                task?.Status == '1' ? 1 : 0,
+                contact?.Members?.[0]?.Name,
+                task?.Date,
+                this.userList[task?.Update]?.[0],
+                task?.Desc,
+              ]);
+          });
+        });
+        tblHdrs = ['#', 'Contact', 'Date', 'Owner', 'Description'];
+        tblClmns.sort((a, b) => b[3].localeCompare(a[3]));
       } else if (this.reports == 'Contact categories') {
         nmbrClmn = null;
         const cntctCategArray = {};
@@ -245,8 +270,8 @@ export default {
           ]);
         });
         tblHdrs = ['#', 'Contact', 'Category', 'Date', 'Activity', 'Owner'];
-      } else if (this.reports.includes('Activity log for user:')) {
-        // 'Activity log for user:'
+      } else if (this.reports.includes('Task statistics:')) {
+        // 'Task statistics:'
         nmbrClmn = null;
         let userID = this.reports.split(':')[1];
         let currentDate = new Date(this.times.initialUsrTmstmp);
