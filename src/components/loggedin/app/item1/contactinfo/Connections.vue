@@ -26,7 +26,7 @@
             @change="updateConnection($event, conn.RealIndex, connType)"
           />
           <button
-            v-if="userData.AppPermissions[appName][1] == 'admin'"
+            v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3"
             class="conn-delete-icon"
             @click="deleteContactInfo('Connections', conn.RealIndex)"
             :disabled="dsbld"
@@ -62,6 +62,7 @@ export default {
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',
+    'roles',
     'slctdCntctIndex',
     'times',
     'userData',

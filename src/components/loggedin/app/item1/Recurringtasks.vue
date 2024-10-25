@@ -38,7 +38,7 @@
           }"
         >
           <i
-            v-if="userData.AppPermissions[appName][1] == 'admin'"
+            v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3"
             class="fa-solid fa-trash"
             @click="deleteRecurTask(recurTask.clmnIndex)"
           ></i>
@@ -163,6 +163,7 @@ export default {
     'deleteContactInfo',
     'eventIndex',
     'patchContactInfo',
+    'roles',
     'slctdCntctIndex',
     'slctdY_m_d',
     'times',

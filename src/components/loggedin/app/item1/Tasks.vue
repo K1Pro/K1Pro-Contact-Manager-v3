@@ -33,7 +33,7 @@
       <template v-for="(task, taskIndex) in Tasks" v-memo="[taskMemo]">
         <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }">
           <i
-            v-if="userData.AppPermissions[appName][1] == 'admin'"
+            v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3"
             class="fa-solid fa-trash"
             @click="deleteTask(task.clmnIndex)"
           ></i>
@@ -127,6 +127,7 @@ export default {
     'dsbld',
     'eventIndex',
     'patchContactInfo',
+    'roles',
     'slctdCntctIndex',
     'slctdY_m_d',
     'times',

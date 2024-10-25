@@ -74,7 +74,7 @@ export default {
         updtngY_m_d_H_i_s_z: null,
         slctdTmstmp: '',
       },
-      roles: ['admin', 'editor', 'author', 'contributor', 'subscriber'],
+      roles: ['subscriber', 'contributor', 'author', 'editor', 'admin'],
       updating: 0,
       userData: {},
       userSettings: {},
@@ -252,7 +252,7 @@ export default {
           this.userData = userDataResJSON.data.user;
           // prettier-ignore
           this.reports = 'Renewals'
-          // this.userData.AppPermissions[this.appName][1] == 'admin'
+          // this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 3
           //   ? 'All contacts with min. info'
           //   : this.userData.FirstName + '\'s tasks';
           this.accountSettings = userDataResJSON.data.accountSettings;

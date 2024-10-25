@@ -13,7 +13,9 @@
 
       <template v-for="(activeUser, activeUserIndex) in Object.entries(activeUserList)">
         <div
-          v-if="activeUser[0] == userData.id || userData.AppPermissions[appName][1] == 'admin'"
+          v-if="
+            activeUser[0] == userData.id || roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3
+          "
           class="reports-report"
           :class="[
             reports.includes('Task list:' + activeUser[0])
@@ -25,7 +27,9 @@
           Task list: {{ activeUser[1][0] }}
         </div>
         <div
-          v-if="activeUser[0] == userData.id || userData.AppPermissions[appName][1] == 'admin'"
+          v-if="
+            activeUser[0] == userData.id || roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3
+          "
           class="reports-report"
           :class="[
             reports.includes('Task statistics:' + activeUser[0])
@@ -66,6 +70,7 @@ export default {
     'appName',
     'contacts',
     'reports',
+    'roles',
     'slctdCntctIndex',
     'userData',
     'wndw',
@@ -87,7 +92,7 @@ export default {
   },
   mounted() {
     console.log(this.userData.FirstName);
-    if (this.userData.AppPermissions[this.appName][1] == 'admin') {
+    if (this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 3) {
       this.includedReports = [
         'All contacts with min. info (' + this.contacts?.length + ')',
         'All contacts with more info (' + this.contacts?.length + ')',

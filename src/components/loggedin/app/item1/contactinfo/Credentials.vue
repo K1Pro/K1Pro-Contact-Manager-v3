@@ -25,7 +25,7 @@
               </button>
               <button
                 class="cred-button"
-                v-if="userData.AppPermissions[appName][1] == 'admin'"
+                v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3"
                 @click="deleteContactInfo('Credentials', credIndex)"
                 :disabled="dsbld"
               >
@@ -53,6 +53,7 @@ export default {
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',
+    'roles',
     'slctdCntctIndex',
     'userData',
   ],

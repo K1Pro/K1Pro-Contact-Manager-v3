@@ -9,7 +9,7 @@
       <option
         v-for="([userNo, userInfo], userIndex) in Object.entries(userList)"
         :value="userNo"
-        :disabled="userData.AppPermissions[appName][1] != 'admin'"
+        :disabled="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3"
       >
         {{ userInfo[0] }}
       </option>
@@ -51,7 +51,16 @@
 export default {
   name: 'Owner and category',
 
-  inject: ['accountSettings', 'appName', 'contacts', 'patchContactInfo', 'slctdCntctIndex', 'userData', 'userList'],
+  inject: [
+    'accountSettings',
+    'appName',
+    'contacts',
+    'patchContactInfo',
+    'roles',
+    'slctdCntctIndex',
+    'userData',
+    'userList',
+  ],
 
   methods: {
     updateOwnerCateg(event, clmn) {
