@@ -9,8 +9,8 @@
     <table>
       <template
         v-if="
-          reports.includes('Contact list with min. info') ||
-          reports.includes('Contact list with more info') ||
+          reports.includes('Contact list: min. info') ||
+          reports.includes('Contact list: more info') ||
           reports.includes('cntct_Task list:')
         "
       >
@@ -74,7 +74,7 @@
         </tbody>
       </template>
 
-      <template v-if="reports.includes('Task statistics:')">
+      <template v-if="reports.includes('Task stats:')">
         <thead>
           <tr>
             <th style="width: 15%">Date</th>
@@ -153,8 +153,8 @@ export default {
       let tblHdrs = [];
       let nmbrClmn = [];
       let tblClmns = [];
-      if (this.reports.includes('Contact list with min. info')) {
-        // 'Contact list with min. info'
+      if (this.reports.includes('Contact list: min. info')) {
+        // 'Contact list: min. info'
         cloneCntcts.forEach((contact) => {
           tblClmns.push([
             contact.id,
@@ -175,8 +175,8 @@ export default {
             cntct.splice(0, 1);
           });
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
-      } else if (this.reports.includes('Contact list with more info')) {
-        // 'Contact list with more info'
+      } else if (this.reports.includes('Contact list: more info')) {
+        // 'Contact list: more info'
         cloneCntcts.forEach((contact) => {
           const addressArray = contact.Addresses[0]
             ? Object.entries(contact.Addresses[0]).map(([addressKey, addressValue]) => {
@@ -271,8 +271,8 @@ export default {
           ]);
         });
         tblHdrs = ['#', 'Contact', 'Category', 'Date', 'Activity', 'Owner'];
-      } else if (this.reports.includes('Task statistics:')) {
-        // 'Task statistics:'
+      } else if (this.reports.includes('Task stats:')) {
+        // 'Task stats:'
         nmbrClmn = null;
         let userID = this.reports.split(':')[1];
         let currentDate = new Date(this.times.initialUsrTmstmp);

@@ -11,36 +11,42 @@
         {{ report.includes('_') ? report.split('_')[1] : report }}
       </div>
 
-      <template v-for="(activeUser, activeUserIndex) in Object.entries(activeUserList)">
-        <div
-          v-if="
-            activeUser[0] == userData.id || roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5
-          "
-          class="reports-report"
-          :class="[
-            reports.includes('user_Task list:' + activeUser[0])
-              ? 'reports-active'
-              : 'reports' + ((includedReports.length + activeUserIndex) % 2),
-          ]"
-          @click="selectReport('user_Task list:' + activeUser[0])"
-        >
-          Task list: {{ activeUser[1][0] }}
-        </div>
-        <div
-          v-if="
-            activeUser[0] == userData.id || roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5
-          "
-          class="reports-report"
-          :class="[
-            reports.includes('Task statistics:' + activeUser[0])
-              ? 'reports-active'
-              : 'reports' + ((includedReports.length + activeUserIndex) % 2),
-          ]"
-          @click="selectReport('Task statistics:' + activeUser[0])"
-        >
-          Task statistics: {{ activeUser[1][0] }}
-        </div></template
-      >
+      <template v-for="activeUserIndex in Object.entries(activeUserList).length * 2">
+        <template v-if="activeUserIndex % 2">
+          <div
+            v-if="
+              Object.entries(activeUserList)[(activeUserIndex - 1) / 2][0] == userData.id ||
+              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5
+            "
+            class="reports-report"
+            :class="[
+              reports.includes('user_Task list:' + Object.entries(activeUserList)[(activeUserIndex - 1) / 2][0])
+                ? 'reports-active'
+                : 'reports' + ((includedReports.length + activeUserIndex + 1) % 2),
+            ]"
+            @click="selectReport('user_Task list:' + Object.entries(activeUserList)[(activeUserIndex - 1) / 2][0])"
+          >
+            Task list: {{ Object.entries(activeUserList)[(activeUserIndex - 1) / 2][1][0] }}
+          </div>
+        </template>
+        <template v-if="(activeUserIndex + 1) % 2">
+          <div
+            v-if="
+              Object.entries(activeUserList)[(activeUserIndex - 2) / 2][0] == userData.id ||
+              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5
+            "
+            class="reports-report"
+            :class="[
+              reports.includes('Task stats:' + Object.entries(activeUserList)[(activeUserIndex - 2) / 2][0])
+                ? 'reports-active'
+                : 'reports' + ((includedReports.length + activeUserIndex + 1) % 2),
+            ]"
+            @click="selectReport('Task stats:' + Object.entries(activeUserList)[(activeUserIndex - 2) / 2][0])"
+          >
+            Task stats: {{ Object.entries(activeUserList)[(activeUserIndex - 2) / 2][1][0] }}
+          </div>
+        </template>
+      </template>
 
       <div
         v-for="(report, reportIndex) in accountSettings.reports"
@@ -94,8 +100,8 @@ export default {
     console.log(this.userData.FirstName);
     if (this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 5) {
       this.includedReports = [
-        'Contact list with min. info (' + this.contacts?.length + ')',
-        'Contact list with more info (' + this.contacts?.length + ')',
+        'Contact list: min. info (' + this.contacts?.length + ')',
+        'Contact list: more info (' + this.contacts?.length + ')',
         'Contact categories',
         'Task list: all',
         'cntct_Task list: ' +
