@@ -17,7 +17,7 @@
               @change="updateAsset($event, assetIndex, assetType)"
             />
             <button
-              v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3"
+              v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5"
               class="asset-button"
               @click="deleteContactInfo('Assets', assetIndex)"
               :disabled="dsbld"
@@ -34,7 +34,7 @@
               @change="updateAsset($event, assetIndex, assetType)"
             />
             <button
-              v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3"
+              v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5"
               class="asset-button"
               @click="deleteContactInfo('Assets', assetIndex)"
               :disabled="dsbld"

@@ -1,7 +1,7 @@
 <template>
   <div class="reports-table">
     <i
-      v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3"
+      v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5"
       :style="{ left: tbCntntWdth + 30 + 'px' }"
       class="fa-solid fa-download"
       @click="downloadTable"
@@ -9,9 +9,9 @@
     <table>
       <template
         v-if="
-          reports.includes('All contacts with min. info') ||
-          reports.includes('All contacts with more info') ||
-          reports.includes('Activity log for contact:')
+          reports.includes('Contact list with min. info') ||
+          reports.includes('Contact list with more info') ||
+          reports.includes('cntct_Task list:')
         "
       >
         <thead>
@@ -29,7 +29,7 @@
         </tbody>
       </template>
 
-      <template v-if="reports.includes('All contact tasks') || reports.includes('Task list:')">
+      <template v-if="reports.includes('Task list: all') || reports.includes('user_Task list:')">
         <thead>
           <tr>
             <th v-for="tblTtl in tblCntnt[0]">{{ tblTtl }}</th>
@@ -153,8 +153,8 @@ export default {
       let tblHdrs = [];
       let nmbrClmn = [];
       let tblClmns = [];
-      if (this.reports.includes('All contacts with min. info')) {
-        // 'All contacts with min. info'
+      if (this.reports.includes('Contact list with min. info')) {
+        // 'Contact list with min. info'
         cloneCntcts.forEach((contact) => {
           tblClmns.push([
             contact.id,
@@ -175,8 +175,8 @@ export default {
             cntct.splice(0, 1);
           });
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
-      } else if (this.reports.includes('All contacts with more info')) {
-        // 'All contacts with more info'
+      } else if (this.reports.includes('Contact list with more info')) {
+        // 'Contact list with more info'
         cloneCntcts.forEach((contact) => {
           const addressArray = contact.Addresses[0]
             ? Object.entries(contact.Addresses[0]).map(([addressKey, addressValue]) => {
@@ -209,8 +209,8 @@ export default {
           });
 
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
-      } else if (this.reports == 'All contact tasks') {
-        // 'All contact tasks'
+      } else if (this.reports == 'Task list: all') {
+        // 'Task list: all'
         nmbrClmn = null;
         cloneCntcts.forEach((contact) => {
           contact.Tasks.forEach((task) => {
@@ -227,8 +227,8 @@ export default {
         });
         tblHdrs = ['#', 'Contact', 'Date', 'Owner', 'Description'];
         tblClmns.sort((a, b) => b[3].localeCompare(a[3]));
-      } else if (this.reports.includes('Task list:')) {
-        // 'Task list: '
+      } else if (this.reports.includes('user_Task list:')) {
+        // 'user_Task list: '
         nmbrClmn = null;
         cloneCntcts.forEach((contact) => {
           contact.Tasks.forEach((task) => {
@@ -257,8 +257,8 @@ export default {
           }
         });
         tblClmns.push(cntctCategArray);
-      } else if (this.reports.includes('Activity log for contact:')) {
-        // 'Activity log for contact:'
+      } else if (this.reports.includes('cntct_Task list:')) {
+        // 'cntct_Task list'
         nmbrClmn = null;
         this.contacts[this.slctdCntctIndex].Log.forEach((log, logIndex) => {
           tblClmns.push([

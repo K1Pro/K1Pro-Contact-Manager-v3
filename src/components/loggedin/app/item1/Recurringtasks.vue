@@ -38,7 +38,7 @@
           }"
         >
           <i
-            v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3"
+            v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5"
             class="fa-solid fa-trash"
             @click="deleteRecurTask(recurTask.clmnIndex)"
           ></i>

@@ -48,7 +48,7 @@
         </select>
 
         <button
-          v-if="memberIndex !== 0 && roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3"
+          v-if="memberIndex !== 0 && roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5"
           class="member-button"
           @click="deleteContactInfo('Members', memberIndex)"
           :disabled="dsbld"

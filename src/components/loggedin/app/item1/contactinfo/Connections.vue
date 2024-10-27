@@ -26,7 +26,7 @@
             @change="updateConnection($event, conn.RealIndex, connType)"
           />
           <button
-            v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3"
+            v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5"
             class="conn-delete-icon"
             @click="deleteContactInfo('Connections', conn.RealIndex)"
             :disabled="dsbld"

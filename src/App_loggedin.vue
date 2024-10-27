@@ -74,7 +74,18 @@ export default {
         updtngY_m_d_H_i_s_z: null,
         slctdTmstmp: '',
       },
-      roles: ['subscriber', 'contributor', 'author', 'editor', 'admin'],
+      roles: [
+        'demo',
+        'guest',
+        'subscriber',
+        'viewer',
+        'contributor',
+        'author',
+        'editor',
+        'publisher',
+        'manager',
+        'admin',
+      ],
       updating: 0,
       userData: {},
       userSettings: {},
@@ -252,8 +263,8 @@ export default {
           this.userData = userDataResJSON.data.user;
           // prettier-ignore
           this.reports = 'Renewals'
-          // this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 3
-          //   ? 'All contacts with min. info'
+          // this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 5
+          //   ? 'Contact list with min. info'
           //   : this.userData.FirstName + '\'s tasks';
           this.accountSettings = userDataResJSON.data.accountSettings;
           this.tempFiltersDays = userDataResJSON.data.userSettings.calendar.filters.days;

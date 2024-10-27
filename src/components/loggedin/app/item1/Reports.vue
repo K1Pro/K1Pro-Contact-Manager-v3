@@ -8,27 +8,27 @@
         :class="[reports.includes(report.slice(0, 22)) ? 'reports-active' : 'reports' + (reportIndex % 2)]"
         @click="selectReport(report)"
       >
-        {{ report }}
+        {{ report.includes('_') ? report.split('_')[1] : report }}
       </div>
 
       <template v-for="(activeUser, activeUserIndex) in Object.entries(activeUserList)">
         <div
           v-if="
-            activeUser[0] == userData.id || roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3
+            activeUser[0] == userData.id || roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5
           "
           class="reports-report"
           :class="[
-            reports.includes('Task list:' + activeUser[0])
+            reports.includes('user_Task list:' + activeUser[0])
               ? 'reports-active'
               : 'reports' + ((includedReports.length + activeUserIndex) % 2),
           ]"
-          @click="selectReport('Task list:' + activeUser[0])"
+          @click="selectReport('user_Task list:' + activeUser[0])"
         >
           Task list: {{ activeUser[1][0] }}
         </div>
         <div
           v-if="
-            activeUser[0] == userData.id || roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3
+            activeUser[0] == userData.id || roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5
           "
           class="reports-report"
           :class="[
@@ -92,13 +92,13 @@ export default {
   },
   mounted() {
     console.log(this.userData.FirstName);
-    if (this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 3) {
+    if (this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 5) {
       this.includedReports = [
-        'All contacts with min. info (' + this.contacts?.length + ')',
-        'All contacts with more info (' + this.contacts?.length + ')',
-        'All contact tasks',
+        'Contact list with min. info (' + this.contacts?.length + ')',
+        'Contact list with more info (' + this.contacts?.length + ')',
         'Contact categories',
-        'Activity log for contact: ' +
+        'Task list: all',
+        'cntct_Task list: ' +
           (this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.First
             ? this.contacts[this.slctdCntctIndex].Members[0].First + ' '
             : '') +
@@ -106,7 +106,7 @@ export default {
       ];
     } else {
       this.includedReports = [
-        'Activity log for contact: ' +
+        'cntct_Task list: ' +
           (this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.First
             ? this.contacts[this.slctdCntctIndex].Members[0].First + ' '
             : '') +
