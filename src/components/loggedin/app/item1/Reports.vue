@@ -3,9 +3,37 @@
     <div class="reports-title">Select a report:</div>
     <div class="reports-body">
       <div
+        class="reports-report"
+        :class="[reports.includes('user_Contact report:' + userData.id) ? 'reports-active' : 'reports0']"
+        @click="selectReport('user_Contact report:' + userData.id)"
+      >
+        Contact report: {{ userData.FirstName }}
+      </div>
+
+      <template v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5">
+        <template
+          v-for="([activeUserKey, activeUserVal], activeUserIndex) in Object.entries(activeUserList).filter(
+            (user) => user[0] != userData.id
+          )"
+        >
+          <div
+            class="reports-report"
+            :class="[
+              reports.includes('user_Contact report:' + activeUserKey)
+                ? 'reports-active'
+                : 'reports' + ((1 + activeUserIndex) % 2),
+            ]"
+            @click="selectReport('user_Contact report:' + activeUserKey)"
+          >
+            Contact report: {{ activeUserVal[0] }}
+          </div>
+        </template>
+      </template>
+
+      <div
         v-for="(report, reportIndex) in includedReports"
         class="reports-report"
-        :class="[reports.includes(report.slice(0, 22)) ? 'reports-active' : 'reports' + (reportIndex % 2)]"
+        :class="[reports.includes(report) ? 'reports-active' : 'reports' + ((cntctReportAmnt + reportIndex) % 2)]"
         @click="selectReport(report)"
       >
         {{ report.includes('_') ? report.split('_')[1] : report }}
@@ -20,13 +48,13 @@
             "
             class="reports-report"
             :class="[
-              reports.includes('user_Task list:' + Object.entries(activeUserList)[(activeUserIndex - 1) / 2][0])
+              reports.includes('user_Task report:' + Object.entries(activeUserList)[(activeUserIndex - 1) / 2][0])
                 ? 'reports-active'
-                : 'reports' + ((includedReports.length + activeUserIndex + 1) % 2),
+                : 'reports' + ((cntctReportAmnt + includedReports.length + activeUserIndex + 1) % 2),
             ]"
-            @click="selectReport('user_Task list:' + Object.entries(activeUserList)[(activeUserIndex - 1) / 2][0])"
+            @click="selectReport('user_Task report:' + Object.entries(activeUserList)[(activeUserIndex - 1) / 2][0])"
           >
-            Task list: {{ Object.entries(activeUserList)[(activeUserIndex - 1) / 2][1][0] }}
+            Task report: {{ Object.entries(activeUserList)[(activeUserIndex - 1) / 2][1][0] }}
           </div>
         </template>
         <template v-if="(activeUserIndex + 1) % 2">
@@ -39,7 +67,7 @@
             :class="[
               reports.includes('Task stats:' + Object.entries(activeUserList)[(activeUserIndex - 2) / 2][0])
                 ? 'reports-active'
-                : 'reports' + ((includedReports.length + activeUserIndex + 1) % 2),
+                : 'reports' + ((cntctReportAmnt + includedReports.length + activeUserIndex + 1) % 2),
             ]"
             @click="selectReport('Task stats:' + Object.entries(activeUserList)[(activeUserIndex - 2) / 2][0])"
           >
@@ -85,6 +113,10 @@ export default {
   data() {
     return {
       includedReports: [],
+      cntctReportAmnt:
+        this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 5
+          ? Object.entries(this.activeUserList).length
+          : 1,
     };
   },
 
@@ -97,14 +129,13 @@ export default {
     },
   },
   mounted() {
-    console.log(this.userData.FirstName);
     if (this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 5) {
       this.includedReports = [
-        'Contact list: min. info (' + this.contacts?.length + ')',
-        'Contact list: more info (' + this.contacts?.length + ')',
+        'Contact report: All ' + this.contacts?.length + ' (min. info)',
+        'Contact report: All ' + this.contacts?.length + ' (more info)',
         'Contact categories',
-        'Task list: all',
-        'cntct_Task list: ' +
+        'Task report: All',
+        'cntct_Task report: ' +
           (this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.First
             ? this.contacts[this.slctdCntctIndex].Members[0].First + ' '
             : '') +
@@ -112,7 +143,7 @@ export default {
       ];
     } else {
       this.includedReports = [
-        'cntct_Task list: ' +
+        'cntct_Task report: ' +
           (this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.First
             ? this.contacts[this.slctdCntctIndex].Members[0].First + ' '
             : '') +

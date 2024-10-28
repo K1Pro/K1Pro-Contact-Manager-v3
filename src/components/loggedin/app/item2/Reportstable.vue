@@ -9,9 +9,10 @@
     <table>
       <template
         v-if="
-          reports.includes('Contact list: min. info') ||
-          reports.includes('Contact list: more info') ||
-          reports.includes('cntct_Task list:')
+          reports.includes('(min. info)') ||
+          reports.includes('(more info)') ||
+          reports.includes('cntct_Task report:') ||
+          reports.includes('user_Contact report:')
         "
       >
         <thead>
@@ -20,7 +21,12 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(tblRow, tblRowIndx) in tblCntnt[2]" :class="'cell' + (tblRowIndx % 2)">
+          <tr
+            v-for="(tblRow, tblRowIndx) in tblCntnt[2]"
+            :class="
+              reports.includes('cntct_Task report:') ? 'taskCell' + (tblRowIndx % 2) + '1' : 'cell' + (tblRowIndx % 2)
+            "
+          >
             <td v-if="tblCntnt[1]" class="cellHover" @click="selectContact(tblCntnt[1][tblRowIndx][1])">
               {{ tblCntnt[1][tblRowIndx][0] }}
             </td>
@@ -29,7 +35,7 @@
         </tbody>
       </template>
 
-      <template v-if="reports.includes('Task list: all') || reports.includes('user_Task list:')">
+      <template v-if="reports.includes('Task report: All') || reports.includes('user_Task report:')">
         <thead>
           <tr>
             <th v-for="tblTtl in tblCntnt[0]">{{ tblTtl }}</th>
@@ -153,8 +159,8 @@ export default {
       let tblHdrs = [];
       let nmbrClmn = [];
       let tblClmns = [];
-      if (this.reports.includes('Contact list: min. info')) {
-        // 'Contact list: min. info'
+      if (this.reports.includes('(min. info)')) {
+        // Contact report: (min. info)
         cloneCntcts.forEach((contact) => {
           tblClmns.push([
             contact.id,
@@ -175,8 +181,8 @@ export default {
             cntct.splice(0, 1);
           });
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
-      } else if (this.reports.includes('Contact list: more info')) {
-        // 'Contact list: more info'
+      } else if (this.reports.includes('(more info)')) {
+        // (more info)
         cloneCntcts.forEach((contact) => {
           const addressArray = contact.Addresses[0]
             ? Object.entries(contact.Addresses[0]).map(([addressKey, addressValue]) => {
@@ -209,8 +215,32 @@ export default {
           });
 
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
-      } else if (this.reports == 'Task list: all') {
-        // 'Task list: all'
+      } else if (this.reports.includes('user_Contact report:')) {
+        // user_Contact report:
+        cloneCntcts.forEach((contact) => {
+          if (contact.Assigned == this.reports.split(':')[1]) {
+            tblClmns.push([
+              contact.id,
+              contact.Members[0].Name ? contact.Members[0].Name : '',
+              contact.Addresses[0]?.Address_1 ? contact.Addresses[0].Address_1 : '',
+              contact.Assets[0] ? Object.values(contact.Assets[0])[0] : '',
+              contact.Connections[0] ? Object.values(contact.Connections[0])[0] : '',
+              contact.Categ ? contact.Categ : '',
+            ]);
+          }
+        });
+        tblClmns
+          .sort((a, b) => a[1].localeCompare(b[1]))
+          .map((cntct, cntctIndx) => {
+            const nmbrClmnArray = [];
+            nmbrClmnArray.push(cntctIndx + 1);
+            nmbrClmnArray.push(cntct[0]);
+            nmbrClmn.push(nmbrClmnArray);
+            cntct.splice(0, 1);
+          });
+        tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
+      } else if (this.reports == 'Task report: All') {
+        // Task report: All
         nmbrClmn = null;
         cloneCntcts.forEach((contact) => {
           contact.Tasks.forEach((task) => {
@@ -227,8 +257,8 @@ export default {
         });
         tblHdrs = ['#', 'Contact', 'Date', 'Owner', 'Description'];
         tblClmns.sort((a, b) => b[3].localeCompare(a[3]));
-      } else if (this.reports.includes('user_Task list:')) {
-        // 'user_Task list: '
+      } else if (this.reports.includes('user_Task report:')) {
+        // 'user_Task report: '
         nmbrClmn = null;
         cloneCntcts.forEach((contact) => {
           contact.Tasks.forEach((task) => {
@@ -257,8 +287,8 @@ export default {
           }
         });
         tblClmns.push(cntctCategArray);
-      } else if (this.reports.includes('cntct_Task list:')) {
-        // 'cntct_Task list'
+      } else if (this.reports.includes('cntct_Task report:')) {
+        // 'cntct_Task report'
         nmbrClmn = null;
         this.contacts[this.slctdCntctIndex].Log.forEach((log, logIndex) => {
           tblClmns.push([
