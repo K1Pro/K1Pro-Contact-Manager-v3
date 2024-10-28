@@ -43,7 +43,14 @@
       :value="contacts[slctdCntctIndex].Categ"
       @change="updateOwnerCateg($event.target.value, 'Categ')"
     >
-      <option v-for="category in accountSettings.Categ">
+      <option
+        v-for="category in accountSettings.Categ"
+        :disabled="
+          roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 4 ||
+          (roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 7 &&
+            contacts[slctdCntctIndex].Assigned != userData.id)
+        "
+      >
         {{ category }}
       </option>
     </select>

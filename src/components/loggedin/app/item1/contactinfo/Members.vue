@@ -72,6 +72,11 @@
             :placeholder="memberInputs.placeholder"
             :value="member[memberInputs.value]"
             :disabled="dsbld"
+            :readonly="
+              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 4 ||
+              (roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 7 &&
+                contacts[slctdCntctIndex].Assigned != userData.id)
+            "
             v-on:blur="updateMember($event, memberIndex, memberInputs.value)"
           />
         </div>

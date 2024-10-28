@@ -26,6 +26,11 @@
                   ? 'calc(100% - 60px)'
                   : 'calc(100% - 30px)',
             }"
+            :readonly="
+              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 4 ||
+              (roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 7 &&
+                contacts[slctdCntctIndex].Assigned != userData.id)
+            "
             :value="connInfo"
             :disabled="dsbld"
             @change="updateConnection($event, conn.RealIndex, connType)"

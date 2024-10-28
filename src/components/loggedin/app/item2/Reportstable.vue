@@ -15,12 +15,12 @@
           reports.includes('user_Contact report:')
         "
       >
-        <thead>
+        <thead v-if="tblCntnt[2].length > 0">
           <tr>
             <th v-for="tblTtl in tblCntnt[0]">{{ tblTtl }}</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody v-if="tblCntnt[2].length > 0">
           <tr
             v-for="(tblRow, tblRowIndx) in tblCntnt[2]"
             :class="
@@ -33,6 +33,7 @@
             <td v-for="tblCell in tblRow">{{ tblCell }}</td>
           </tr>
         </tbody>
+        <p v-else>Empty</p>
       </template>
 
       <template v-if="reports.includes('Task report: All') || reports.includes('user_Task report:')">
