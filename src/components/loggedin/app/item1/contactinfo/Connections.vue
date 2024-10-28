@@ -20,6 +20,11 @@
             :style="{
               'border-bottom':
                 connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '2px solid lightgray' : '0',
+              width:
+                roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
+                contacts[slctdCntctIndex].Assigned == userData.id
+                  ? 'calc(100% - 60px)'
+                  : 'calc(100% - 30px)',
             }"
             :value="connInfo"
             :disabled="dsbld"
@@ -176,7 +181,6 @@ export default {
   color: DimGrey;
 }
 .connections input[type='text'] {
-  width: calc(100% - 60px);
   padding: 5px;
 }
 .connections input[type='text']:focus {

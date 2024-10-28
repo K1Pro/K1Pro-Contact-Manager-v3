@@ -9,6 +9,11 @@
               :style="{
                 'border-bottom':
                   assetIndex !== contacts[slctdCntctIndex].Assets.length - 1 ? '2px solid lightgray' : '0',
+                width:
+                  roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
+                  contacts[slctdCntctIndex].Assigned == userData.id
+                    ? 'calc(100% - 30px)'
+                    : '100%',
               }"
               :placeholder="assetInputs.placeholder"
               :type="assetInputs.type"
@@ -34,6 +39,13 @@
               :type="assetInputs.type"
               :value="assetInfo"
               :disabled="dsbld"
+              :style="{
+                width:
+                  roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
+                  contacts[slctdCntctIndex].Assigned == userData.id
+                    ? 'calc(100% - 30px)'
+                    : '100%',
+              }"
               @change="updateAsset($event, assetIndex, assetType)"
             />
             <button
@@ -104,7 +116,6 @@ export default {
   z-index: 1;
 }
 .assets input[type='text'] {
-  width: calc(100% - 30px);
   padding: 5px 5px 5px 30px;
   border: none;
 }

@@ -16,11 +16,27 @@
                 :style="{
                   'border-bottom':
                     credIndex !== contacts[slctdCntctIndex].Credentials.length - 1 ? '1px solid black' : '0',
+                  width:
+                    roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
+                    contacts[slctdCntctIndex].Assigned == userData.id
+                      ? 'calc(100% - 30px)'
+                      : '100%',
                 }"
                 @change="updateCred($event, credIndex, credType)"
                 @focusin="revealCred(credIndex)"
               />
-              <button class="cred-reveal" style="color: grey" @click="toggleCred(credIndex)">
+              <button
+                class="cred-reveal"
+                style="color: grey"
+                :style="{
+                  right:
+                    roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
+                    contacts[slctdCntctIndex].Assigned == userData.id
+                      ? '35px'
+                      : '0px',
+                }"
+                @click="toggleCred(credIndex)"
+              >
                 <span :ref="'credIcon' + credIndex" class="fa-solid fa-eye"></span>
               </button>
               <button
@@ -112,7 +128,6 @@ export default {
 }
 .credentials input[type='text'],
 .credentials input[type='password'] {
-  width: calc(100% - 30px);
   padding: 5px 35px 5px 30px;
   border: none;
   border-radius: 0px;
@@ -121,7 +136,6 @@ export default {
   width: 30px;
   position: absolute;
   top: 5px;
-  right: 35px;
   background: none;
   border: none;
   cursor: pointer;
