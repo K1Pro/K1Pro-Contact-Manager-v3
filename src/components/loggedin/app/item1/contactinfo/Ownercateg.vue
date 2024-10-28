@@ -9,7 +9,10 @@
       <option
         v-for="([userNo, userInfo], userIndex) in Object.entries(userList)"
         :value="userNo"
-        :disabled="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5"
+        :disabled="
+          contacts[slctdCntctIndex].Assigned != userData.id &&
+          roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 6
+        "
       >
         {{ userInfo[0] }}
       </option>

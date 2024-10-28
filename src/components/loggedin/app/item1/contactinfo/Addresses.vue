@@ -15,7 +15,10 @@
           </select>
         </div>
         <button
-          v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5"
+          v-if="
+            roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
+            contacts[slctdCntctIndex].Assigned == userData.id
+          "
           class="address-button"
           @click="deleteContactInfo('Addresses', addressIndex)"
           :disabled="dsbld"

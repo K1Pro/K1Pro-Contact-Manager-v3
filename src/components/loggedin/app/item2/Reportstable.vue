@@ -251,7 +251,7 @@ export default {
                 task?.Status == '1' ? 1 : 0,
                 contact?.Members?.[0]?.Name,
                 task?.Date,
-                this.userList[task?.Update]?.[0],
+                this.userList[task?.Assign]?.[0],
                 task?.Desc,
               ]);
           });
@@ -326,7 +326,7 @@ export default {
               }
             });
             contact.Tasks.forEach((task) => {
-              if (task?.Date.includes(decreasingDate) && task?.Update == userID && task?.Status == 1) {
+              if (task?.Date.includes(decreasingDate) && task?.Assign == userID && task?.Status == 1) {
                 taskCount += 1;
               }
             });

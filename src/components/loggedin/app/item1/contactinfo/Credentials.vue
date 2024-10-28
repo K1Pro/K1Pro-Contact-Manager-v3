@@ -25,7 +25,10 @@
               </button>
               <button
                 class="cred-button"
-                v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5"
+                v-if="
+                  roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
+                  contacts[slctdCntctIndex].Assigned == userData.id
+                "
                 @click="deleteContactInfo('Credentials', credIndex)"
                 :disabled="dsbld"
               >
