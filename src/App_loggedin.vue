@@ -262,7 +262,7 @@ export default {
 
           this.userData = userDataResJSON.data.user;
           // prettier-ignore
-          this.reports = 'Renewals'
+          this.reports = 'user_Contact report:' + this.userData.id
           // this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 5
           //   ? 'Contact list with min. info'
           //   : this.userData.FirstName + '\'s tasks';

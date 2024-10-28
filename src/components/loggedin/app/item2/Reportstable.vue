@@ -155,6 +155,7 @@ export default {
 
   computed: {
     tblCntnt() {
+      console.log('test');
       let cloneCntcts = this.contacts;
       let tblHdrs = [];
       let nmbrClmn = [];
@@ -262,13 +263,13 @@ export default {
         nmbrClmn = null;
         cloneCntcts.forEach((contact) => {
           contact.Tasks.forEach((task) => {
-            if (task.Date && this.reports.split(':')[1] == task?.Update)
+            if (task.Date && this.reports.split(':')[1] == task?.Assign)
               tblClmns.push([
                 contact?.id,
                 task?.Status == '1' ? 1 : 0,
                 contact?.Members?.[0]?.Name,
                 task?.Date,
-                this.userList[task?.Update]?.[0],
+                this.userList[task?.Assign]?.[0],
                 task?.Desc,
               ]);
           });
@@ -399,6 +400,7 @@ export default {
   font-size: 12px;
   padding: 0px;
   overflow: scroll scroll;
+  user-select: none;
 }
 .reports-table i {
   z-index: 1;

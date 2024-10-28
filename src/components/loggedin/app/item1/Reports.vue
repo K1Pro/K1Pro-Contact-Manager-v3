@@ -76,18 +76,20 @@
         </template>
       </template>
 
-      <div
-        v-for="(report, reportIndex) in accountSettings.reports"
-        class="reports-report"
-        :class="[
-          reports.includes(report)
-            ? 'reports-active'
-            : 'reports' + ((includedReports.length + Object.entries(activeUserList).length + reportIndex) % 2),
-        ]"
-        @click="selectReport(report)"
-      >
-        {{ report }}
-      </div>
+      <template v-for="(report, reportIndex) in accountSettings.reports">
+        <div
+          v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > report.split('_')[0]"
+          class="reports-report"
+          :class="[
+            reports.includes(report.split('_')[1])
+              ? 'reports-active'
+              : 'reports' + ((includedReports.length + Object.entries(activeUserList).length + reportIndex) % 2),
+          ]"
+          @click="selectReport(report.split('_')[1])"
+        >
+          {{ report.split('_')[1] }}
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -163,6 +165,7 @@ export default {
   height: 30px;
   overflow: hidden;
   white-space: nowrap;
+  user-select: none;
 }
 .reports-body {
   background-color: white;
@@ -176,6 +179,7 @@ export default {
   cursor: pointer;
   overflow: hidden;
   white-space: nowrap;
+  user-select: none;
 }
 .reports-active {
   font-weight: bold;
