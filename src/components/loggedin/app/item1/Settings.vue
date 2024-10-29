@@ -35,6 +35,16 @@
           {{ category }}
         </option>
       </select>
+      <template v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 7">
+        <div class="settings-body-label">Users:</div>
+        <select v-model="userSlctd">
+          <option value="" selected disabled>Select</option>
+          <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
+            {{ userInfo[0] }}
+          </option>
+        </select>
+        <div v-if="userSlctd != ''">{{ userList[userSlctd] }}</div>
+      </template>
     </div>
   </div>
 </template>
@@ -43,9 +53,23 @@
 export default {
   name: 'Settings',
 
-  inject: ['accountSettings', 'daysRangeArr', 'patchUserSettings', 'userData', 'userList', 'userSettings', 'wndw'],
+  inject: [
+    'accountSettings',
+    'appName',
+    'daysRangeArr',
+    'patchUserSettings',
+    'roles',
+    'userData',
+    'userList',
+    'userSettings',
+    'wndw',
+  ],
 
   emits: ['slctdDayIndex', 'tempFiltersDays'],
+
+  data() {
+    return { userSlctd: '' };
+  },
 
   methods: {
     daysRangeChange(event) {
