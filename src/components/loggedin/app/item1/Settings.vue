@@ -35,15 +35,33 @@
           {{ category }}
         </option>
       </select>
+
       <template v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 7">
-        <div class="settings-body-label">Users:</div>
+        <hr />
+        <div class="settings-body-label">User:</div>
         <select v-model="userSlctd">
           <option value="" selected disabled>Select</option>
           <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
             {{ userInfo[0] }}
           </option>
         </select>
-        <div v-if="userSlctd != ''">{{ userList[userSlctd] }}</div>
+        <template v-if="userSlctd != ''">
+          <div class="settings-body-label">Type:</div>
+          <select :disabled="userList[userSlctd][1] == 'inactive'">
+            <option value="inactive" :selected="userList[userSlctd][1] == 'inactive'" disabled>inactive</option>
+            <option v-for="role in roles" :value="role" :selected="role == userList[userSlctd][1]">
+              {{ role }}
+            </option>
+          </select>
+
+          <div class="settings-body-label">IPs:</div>
+          <textarea
+            rows="3"
+            :disabled="userList[userSlctd][1] == 'inactive'"
+            @change="patchUserData"
+            :value="IPList ? IPList : userList[userSlctd][1] == 'inactive' ? 'inactive' : 'all'"
+          ></textarea>
+        </template>
       </template>
     </div>
   </div>
@@ -71,6 +89,15 @@ export default {
     return { userSlctd: '' };
   },
 
+  computed: {
+    IPList() {
+      return this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 7 &&
+        this.userSlctd != ''
+        ? this.userList?.[this.userSlctd]?.[2]?.join(', ')
+        : null;
+    },
+  },
+
   methods: {
     daysRangeChange(event) {
       const cloneUserSettings = this.userSettings;
@@ -93,6 +120,30 @@ export default {
       const cloneUserSettings = this.userSettings;
       cloneUserSettings.calendar.filters.category = event.target.value;
       this.patchUserSettings(cloneUserSettings);
+    },
+    async patchUserData(event) {
+      console.log(this.userSlctd);
+      console.log(event.target.value.replaceAll(' ', '').split(','));
+      try {
+        const response = await fetch(servr_url + 'users', {
+          method: 'PATCH',
+          headers: {
+            Authorization: access_token,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          },
+          body: JSON.stringify({
+            UserID: this.userSlctd,
+            IPList: event.target.value.replaceAll(' ', '').split(','),
+          }),
+        });
+        const patchUserDataResJSON = await response.json();
+        if (patchUserDataResJSON.success) {
+          console.log(patchUserDataResJSON);
+        }
+      } catch (error) {
+        console.log(error.toString());
+      }
     },
   },
 };
@@ -131,6 +182,10 @@ export default {
   width: calc(100% - 90px);
   height: 20px;
   overflow: hidden;
+}
+.settings-body textarea {
+  width: calc(100% - 65px);
+  resize: none;
 }
 /* .settings-body div {
     padding: 5px 0px 5px 0px;
