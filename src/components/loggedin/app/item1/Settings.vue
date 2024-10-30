@@ -58,7 +58,7 @@
           <textarea
             rows="3"
             :disabled="userList[userSlctd][1] == 'inactive'"
-            @change="patchUserData"
+            @change="patchUserDataFn"
             :value="IPList ? IPList : userList[userSlctd][1] == 'inactive' ? 'inactive' : 'all'"
           ></textarea>
         </template>
@@ -121,9 +121,20 @@ export default {
       cloneUserSettings.calendar.filters.category = event.target.value;
       this.patchUserSettings(cloneUserSettings);
     },
-    async patchUserData(event) {
-      console.log(this.userSlctd);
-      console.log(event.target.value.replaceAll(' ', '').split(','));
+
+    patchUserDataFn(event) {
+      if (
+        event.target.value.replaceAll(' ', '') == '' ||
+        event.target.value.toLowerCase().replaceAll(' ', '').includes('all')
+      ) {
+        this.userList[this.userSlctd][2] = null;
+        this.patchUserData(null);
+      } else {
+        this.patchUserData(event.target.value.replaceAll(' ', '').split(','));
+      }
+    },
+
+    async patchUserData(IPList) {
       try {
         const response = await fetch(servr_url + 'users', {
           method: 'PATCH',
@@ -134,7 +145,7 @@ export default {
           },
           body: JSON.stringify({
             UserID: this.userSlctd,
-            IPList: event.target.value.replaceAll(' ', '').split(','),
+            IPList: IPList,
           }),
         });
         const patchUserDataResJSON = await response.json();
