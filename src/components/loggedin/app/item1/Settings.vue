@@ -130,6 +130,7 @@ export default {
         this.userList[this.userSlctd][2] = null;
         this.patchUserData(null);
       } else {
+        this.userList[this.userSlctd][2] = event.target.value.replaceAll(' ', '').split(',');
         this.patchUserData(event.target.value.replaceAll(' ', '').split(','));
       }
     },
@@ -149,9 +150,6 @@ export default {
           }),
         });
         const patchUserDataResJSON = await response.json();
-        if (patchUserDataResJSON.success) {
-          console.log(patchUserDataResJSON);
-        }
       } catch (error) {
         console.log(error.toString());
       }
