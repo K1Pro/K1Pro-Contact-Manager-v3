@@ -18,7 +18,7 @@
               {{ member }}
             </option>
           </select>
-          <span v-else style="padding: 0px 10px">{{ member.Type }}</span>
+          <div v-else style="display: inline-block; padding: 5px">{{ member.Type }}</div>
         </div>
         <template v-if="memberIndex === 0">
           <i
