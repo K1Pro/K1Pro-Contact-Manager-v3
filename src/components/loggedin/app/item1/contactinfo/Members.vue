@@ -5,6 +5,10 @@
         <div class="member-title">
           <i class="fa-solid fa-user"></i>
           <select
+            v-if="
+              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
+              contacts[slctdCntctIndex].Assigned == userData.id
+            "
             style="border: none; background-color: transparent"
             :value="member.Type"
             :disabled="dsbld"
@@ -14,6 +18,7 @@
               {{ member }}
             </option>
           </select>
+          <span v-else style="padding: 0px 10px">{{ member.Type }}</span>
         </div>
         <template v-if="memberIndex === 0">
           <i
