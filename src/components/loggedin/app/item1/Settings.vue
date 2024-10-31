@@ -47,18 +47,24 @@
         </select>
         <template v-if="userSlctd != ''">
           <div class="settings-body-label">Type:</div>
-          <select :disabled="userList[userSlctd][1] == 'inactive'">
-            <option value="inactive" :selected="userList[userSlctd][1] == 'inactive'" disabled>inactive</option>
-            <option v-for="role in roles" :value="role" :selected="role == userList[userSlctd][1]">
-              {{ role }}
-            </option>
+          <select
+            :disabled="userList[userSlctd][1] == 'inactive'"
+            v-model="userList[userSlctd][1]"
+            @change="patchAuthorization"
+          >
+            <option value="inactive" disabled>inactive</option>
+            <template v-for="role in roles">
+              <option v-if="role != 'demo' && role != 'guest'" :value="role">
+                {{ role }}
+              </option>
+            </template>
           </select>
 
           <div class="settings-body-label">IPs:</div>
           <textarea
             rows="3"
             :disabled="userList[userSlctd][1] == 'inactive'"
-            @change="patchUserDataFn"
+            @change="patchIPList"
             :value="IPList ? IPList : userList[userSlctd][1] == 'inactive' ? 'inactive' : 'all'"
           ></textarea>
         </template>
@@ -86,7 +92,7 @@ export default {
   emits: ['slctdDayIndex', 'tempFiltersDays'],
 
   data() {
-    return { userSlctd: '' };
+    return { userSlctd: this.userData.id };
   },
 
   computed: {
@@ -122,20 +128,27 @@ export default {
       this.patchUserSettings(cloneUserSettings);
     },
 
-    patchUserDataFn(event) {
+    patchAuthorization(event) {
+      if (this.userSlctd == this.userData.id) {
+        this.userData.AppPermissions[this.appName][1] = event.target.value;
+      }
+      this.patchUserData(event.target.value, null);
+    },
+
+    patchIPList(event) {
       if (
         event.target.value.replaceAll(' ', '') == '' ||
         event.target.value.toLowerCase().replaceAll(' ', '').includes('all')
       ) {
         this.userList[this.userSlctd][2] = null;
-        this.patchUserData(null);
+        this.patchUserData(null, null);
       } else {
         this.userList[this.userSlctd][2] = event.target.value.replaceAll(' ', '').split(',');
-        this.patchUserData(event.target.value.replaceAll(' ', '').split(','));
+        this.patchUserData(null, event.target.value.replaceAll(' ', '').split(','));
       }
     },
 
-    async patchUserData(IPList) {
+    async patchUserData(authorization, IPList) {
       try {
         const response = await fetch(servr_url + 'users', {
           method: 'PATCH',
@@ -147,9 +160,11 @@ export default {
           body: JSON.stringify({
             UserID: this.userSlctd,
             IPList: IPList,
+            Authorization: authorization,
           }),
         });
         const patchUserDataResJSON = await response.json();
+        console.log(patchUserDataResJSON);
       } catch (error) {
         console.log(error.toString());
       }
