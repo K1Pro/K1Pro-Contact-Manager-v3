@@ -52,7 +52,11 @@
         <input
           type="checkbox"
           v-model="contacts[slctdCntctIndex].DNC"
-          :disabled="dsbld"
+          :disabled="
+            dsbld ||
+            (roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 6 &&
+              contacts[slctdCntctIndex].Assigned != userData.id)
+          "
           @change="updateDNC($event.target.checked, 'DNC')"
         />
         Do not contact
