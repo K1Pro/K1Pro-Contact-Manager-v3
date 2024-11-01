@@ -113,6 +113,7 @@ export default {
       tempFiltersDays: Vue.computed(() => this.tempFiltersDays),
       userData: Vue.computed(() => this.userData),
       userList: Vue.computed(() => this.userList),
+      userRole: Vue.computed(() => this.userRole),
       userSettings: Vue.computed(() => this.userSettings),
       // static
       daysRangeArr: this.daysRangeArr,
@@ -129,6 +130,9 @@ export default {
   computed: {
     userList() {
       return { ...this.activeUserList, ...this.accountSettings.userList };
+    },
+    userRole() {
+      return this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]);
     },
     sideMenuItems() {
       const sideMenuItemsArray = [
@@ -490,6 +494,15 @@ export default {
   order: 1;
   background-color: #999999;
   overflow-y: hidden;
+}
+input:not([type='checkbox']):disabled {
+  color: black;
+  appearance: none;
+}
+select:disabled {
+  color: black;
+  appearance: none;
+  padding-left: 5px;
 }
 @media only screen and (min-width: 768px) {
   .app-grid-container {

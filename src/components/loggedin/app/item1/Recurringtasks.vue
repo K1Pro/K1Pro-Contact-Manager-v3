@@ -37,11 +37,7 @@
             'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white',
           }"
         >
-          <i
-            v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5"
-            class="fa-solid fa-trash"
-            @click="deleteRecurTask(recurTask.clmnIndex)"
-          ></i>
+          <i v-if="userRole > 5" class="fa-solid fa-trash" @click="deleteRecurTask(recurTask.clmnIndex)"></i>
           <span class="recur-tasks-label">Start:</span>
           <input
             type="date"
@@ -163,12 +159,12 @@ export default {
     'deleteContactInfo',
     'eventIndex',
     'patchContactInfo',
-    'roles',
     'slctdCntctIndex',
     'slctdY_m_d',
     'times',
     'userData',
     'userList',
+    'userRole',
   ],
 
   computed: {

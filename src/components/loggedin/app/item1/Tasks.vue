@@ -32,16 +32,14 @@
 
       <template v-for="(task, taskIndex) in Tasks" v-memo="[taskMemo]">
         <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }">
-          <i
-            v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5"
-            class="fa-solid fa-trash"
-            @click="deleteTask(task.clmnIndex)"
-          ></i>
-          <span class="tasks-label">Date:</span
-          ><input
+          <i v-if="userRole > 5" class="fa-solid fa-trash" @click="deleteTask(task.clmnIndex)"></i>
+          <span class="tasks-label">Date:</span>
+          <input
             type="datetime-local"
             :value="task.Date"
-            :disabled="dsbld"
+            :disabled="
+              dsbld || userRole < 4 || (userRole < 7 && task.Create != userData.id && task.Assign != userData.id)
+            "
             v-on:blur="updateTask($event.target.value, task.clmnIndex, 'Date')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
           />
@@ -50,7 +48,9 @@
             :value="task.Tag"
             @change="updateTask($event.target.value, task.clmnIndex, 'Tag')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
-            :disabled="dsbld"
+            :disabled="
+              dsbld || userRole < 4 || (userRole < 7 && task.Create != userData.id && task.Assign != userData.id)
+            "
           >
             <option value="">None</option>
             <option value="fa-solid fa-phone">Call</option>
@@ -68,7 +68,9 @@
             :value="task.Assign"
             @change="updateTask($event.target.value, task.clmnIndex, 'Assign')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
-            :disabled="dsbld"
+            :disabled="
+              dsbld || userRole < 4 || (userRole < 7 && task.Create != userData.id && task.Assign != userData.id)
+            "
           >
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
               {{ userInfo[0] }}
@@ -76,18 +78,24 @@
             <option v-if="userList?.[task?.Update]?.[0]" disabled>Updated by {{ userList[task.Update][0] }}</option>
             <option v-if="userList?.[task?.Create]?.[0]" disabled>Created by {{ userList[task.Create][0] }}</option>
           </select>
-          <span class="tasks-label">Finished:</span
-          ><input
+          <span class="tasks-label">Finished:</span>
+          <input
             type="checkbox"
             :checked="task?.Status === true || task?.Status == '1'"
             @change="updateTask($event.target.checked, task.clmnIndex, 'Status')"
-            :disabled="dsbld"
+            :disabled="
+              dsbld || userRole < 4 || (userRole < 7 && task.Create != userData.id && task.Assign != userData.id)
+            "
           />
           {{ task?.Status === true || task?.Status == '1' ? 'Yes' : 'No' }}
           <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
             <span
               spellcheck="false"
-              :contenteditable="dsbld ? 'false' : 'plaintext-only'"
+              :contenteditable="
+                dsbld || userRole < 4 || (userRole < 7 && task.Create != userData.id && task.Assign != userData.id)
+                  ? 'false'
+                  : 'plaintext-only'
+              "
               v-on:blur="updateTask($event.target.innerHTML, task.clmnIndex, 'Desc')"
               >{{ task?.Desc }}</span
             >
@@ -127,12 +135,12 @@ export default {
     'dsbld',
     'eventIndex',
     'patchContactInfo',
-    'roles',
     'slctdCntctIndex',
     'slctdY_m_d',
     'times',
     'userData',
     'userList',
+    'userRole',
   ],
 
   computed: {
