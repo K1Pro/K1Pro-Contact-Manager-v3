@@ -384,6 +384,9 @@ export default {
   font-size: 14px;
   cursor: pointer;
 }
+.recur-tasks-body i:hover {
+  color: DimGrey;
+}
 .recur-tasks-label {
   padding-bottom: 10px;
   font-size: 14px;

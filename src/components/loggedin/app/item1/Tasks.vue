@@ -272,6 +272,9 @@ export default {
   font-size: 14px;
   cursor: pointer;
 }
+.tasks-body i:hover {
+  color: DimGrey;
+}
 .tasks-label {
   padding-bottom: 10px;
   font-size: 14px;
