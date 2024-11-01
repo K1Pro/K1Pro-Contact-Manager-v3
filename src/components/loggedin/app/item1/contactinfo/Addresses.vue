@@ -8,6 +8,7 @@
             v-if="userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id"
             style="border: none; background-color: transparent"
             :value="address.Type"
+            :disabled="dsbld"
             @change="updateAddress($event, addressIndex, 'Type')"
           >
             <option v-for="address in Object.keys(accountSettings.contactInfo.keys.Addresses)" :value="address">
@@ -17,10 +18,9 @@
           <div v-else style="display: inline-block; padding: 5px">{{ address.Type }}</div>
         </div>
         <button
-          v-if="userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id"
+          v-if="!dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
           class="address-button"
           @click="deleteContactInfo('Addresses', addressIndex)"
-          :disabled="dsbld"
         >
           <i class="fa-solid fa-trash"></i>
         </button>
@@ -34,16 +34,13 @@
         >
           <select
             v-if="addressInputs.value == 'State'"
-            :disabled="dsbld"
+            :disabled="dsbld || (userRole < 6 && contacts[slctdCntctIndex].Assigned != userData.id)"
             :value="address[addressInputs.value]"
+            style="background-color: #ffffff; opacity: 1"
             @change="updateAddress($event, addressIndex, addressInputs.value)"
           >
             <option value="" disabled selected>State</option>
-            <option
-              v-for="state in stateList"
-              :value="state"
-              :disabled="userRole < 6 && contacts[slctdCntctIndex].Assigned != userData.id"
-            >
+            <option v-for="state in stateList" :value="state">
               {{ state }}
             </option>
           </select>
@@ -53,7 +50,8 @@
             :placeholder="addressInputs.placeholder"
             :value="address[addressInputs.value]"
             :disabled="dsbld"
-            :readonly="userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+            :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+            style="background-color: white"
             @change="updateAddress($event, addressIndex, addressInputs.value)"
           />
         </div>

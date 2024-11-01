@@ -10,7 +10,7 @@
                 connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '2px solid lightgray' : '0',
             }"
             @click="connect(conn.RealIndex, connType)"
-            :disabled="dsbld"
+            :disabled="dsbld || userRole < 4"
           >
             <i :class="connInputs.icon"></i>
           </button>
@@ -21,17 +21,18 @@
               'border-bottom':
                 connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '2px solid lightgray' : '0',
               width:
-                userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id
+                !dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)
                   ? 'calc(100% - 60px)'
                   : 'calc(100% - 30px)',
             }"
-            :readonly="userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+            style="background-color: #ffffff; opacity: 1"
             :value="connInfo"
-            :disabled="dsbld"
+            :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+            :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
             @change="updateConnection($event, conn.RealIndex, connType)"
           />
           <button
-            v-if="userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id"
+            v-if="!dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
             class="conn-delete-icon"
             @click="deleteContactInfo('Connections', conn.RealIndex)"
             :disabled="dsbld"

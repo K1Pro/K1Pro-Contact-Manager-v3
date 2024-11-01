@@ -6,23 +6,27 @@
           <div v-if="assetInputs.icon" style="position: relative">
             <i class="asset-icon" :class="assetInputs.icon"></i>
             <input
-              :style="{
-                'border-bottom':
-                  assetIndex !== contacts[slctdCntctIndex].Assets.length - 1 ? '2px solid lightgray' : '0',
-                width: userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id ? 'calc(100% - 30px)' : '100%',
-              }"
               :placeholder="assetInputs.placeholder"
               :type="assetInputs.type"
               :value="assetInfo"
-              :disabled="dsbld"
-              :readonly="userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+              :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+              :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
               @change="updateAsset($event, assetIndex, assetType)"
+              :style="{
+                'border-bottom':
+                  assetIndex !== contacts[slctdCntctIndex].Assets.length - 1 ? '2px solid lightgray' : '0',
+                width:
+                  !dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)
+                    ? 'calc(100% - 30px)'
+                    : '100%',
+              }"
+              style="background-color: #ffffff; opacity: 1"
             />
             <button
-              v-if="userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id"
+              v-if="!dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
               class="asset-button"
-              @click="deleteContactInfo('Assets', assetIndex)"
               :disabled="dsbld"
+              @click="deleteContactInfo('Assets', assetIndex)"
             >
               <i class="fa-solid fa-trash"></i>
             </button>
@@ -32,18 +36,22 @@
               :placeholder="assetInputs.placeholder"
               :type="assetInputs.type"
               :value="assetInfo"
-              :disabled="dsbld"
-              :readonly="userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
-              :style="{
-                width: userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id ? 'calc(100% - 30px)' : '100%',
-              }"
+              :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+              :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
               @change="updateAsset($event, assetIndex, assetType)"
+              :style="{
+                width:
+                  !dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)
+                    ? 'calc(100% - 30px)'
+                    : '100%',
+              }"
+              style="background-color: #ffffff; opacity: 1"
             />
             <button
-              v-if="userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id"
+              v-if="!dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
               class="asset-button"
-              @click="deleteContactInfo('Assets', assetIndex)"
               :disabled="dsbld"
+              @click="deleteContactInfo('Assets', assetIndex)"
             >
               <i class="fa-solid fa-trash"></i>
             </button>

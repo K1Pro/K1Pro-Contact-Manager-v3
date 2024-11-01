@@ -17,7 +17,7 @@
           </select>
           <div v-else style="display: inline-block; padding: 5px">{{ member.Type }}</div>
         </div>
-        <template v-if="memberIndex === 0">
+        <template v-if="!dsbld && memberIndex === 0">
           <i
             v-if="spinLogin"
             class="spin fa-sharp fa-solid fa-circle-notch"
@@ -54,10 +54,9 @@
         </select>
 
         <button
-          v-if="memberIndex !== 0 && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
+          v-if="!dsbld && memberIndex !== 0 && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
           class="member-button"
           @click="deleteContactInfo('Members', memberIndex)"
-          :disabled="dsbld"
         >
           <i class="fa-solid fa-trash"></i>
         </button>
@@ -74,8 +73,9 @@
             :placeholder="memberInputs.placeholder"
             :value="member[memberInputs.value]"
             :disabled="dsbld"
-            :readonly="userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+            :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
             v-on:blur="updateMember($event, memberIndex, memberInputs.value)"
+            style="background-color: white"
           />
         </div>
       </div>

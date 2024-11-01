@@ -2,15 +2,13 @@
   <div style="text-align: right; font-size: 14px">
     Owner:
     <select
-      style="margin-right: 5px; width: calc(100% - 85px); border: none; background-color: transparent"
+      style="width: calc(100% - 85px); border: none; background-color: transparent"
+      :style="{ 'margin-right': dsbld || userRole < 7 ? '0px' : '5px' }"
       :value="contacts[slctdCntctIndex].Assigned"
+      :disabled="dsbld || userRole < 7"
       @change="updateOwnerCateg($event.target.value, 'Assigned')"
     >
-      <option
-        v-for="([userNo, userInfo], userIndex) in Object.entries(userList)"
-        :value="userNo"
-        :disabled="contacts[slctdCntctIndex].Assigned != userData.id && userRole < 6"
-      >
+      <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
         {{ userInfo[0] }}
       </option>
       <option disabled>
@@ -36,14 +34,16 @@
   <div style="text-align: right; font-size: 14px">
     Category:
     <select
-      style="margin-right: 5px; width: calc(100% - 85px); border: none; background-color: transparent"
+      style="width: calc(100% - 85px); border: none; background-color: transparent"
+      :style="{
+        'margin-right':
+          dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id) ? '0px' : '5px',
+      }"
       :value="contacts[slctdCntctIndex].Categ"
+      :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
       @change="updateOwnerCateg($event.target.value, 'Categ')"
     >
-      <option
-        v-for="category in accountSettings.Categ"
-        :disabled="userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
-      >
+      <option v-for="category in accountSettings.Categ">
         {{ category }}
       </option>
     </select>
@@ -56,8 +56,8 @@ export default {
 
   inject: [
     'accountSettings',
-    'appName',
     'contacts',
+    'dsbld',
     'patchContactInfo',
     'slctdCntctIndex',
     'userData',

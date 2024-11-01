@@ -12,32 +12,35 @@
                 :type="credInputType"
                 :value="credInfo"
                 :ref="'credInput' + credIndex"
-                :disabled="dsbld"
-                :readonly="userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+                :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+                :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+                @change="updateCred($event, credIndex, credType)"
+                @focusin="revealCred(credIndex)"
                 :style="{
                   'border-bottom':
                     credIndex !== contacts[slctdCntctIndex].Credentials.length - 1 ? '1px solid black' : '0',
                   width:
-                    userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id ? 'calc(100% - 30px)' : '100%',
+                    !dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)
+                      ? 'calc(100% - 30px)'
+                      : '100%',
                 }"
-                @change="updateCred($event, credIndex, credType)"
-                @focusin="revealCred(credIndex)"
+                style="background-color: #ffffff; opacity: 1"
               />
               <button
                 class="cred-reveal"
-                style="color: grey"
-                :style="{
-                  right: userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id ? '35px' : '0px',
-                }"
                 @click="toggleCred(credIndex)"
+                :style="{
+                  right: !dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id) ? '35px' : '0px',
+                }"
+                style="color: grey"
               >
                 <span :ref="'credIcon' + credIndex" class="fa-solid fa-eye"></span>
               </button>
               <button
                 class="cred-button"
-                v-if="userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id"
-                @click="deleteContactInfo('Credentials', credIndex)"
                 :disabled="dsbld"
+                v-if="!dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
+                @click="deleteContactInfo('Credentials', credIndex)"
               >
                 <i class="fa-solid fa-trash"></i>
               </button>
