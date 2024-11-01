@@ -45,11 +45,25 @@
           :disabled="dsbld"
         >
           <option selected disabled></option>
-          <option v-for="cntctInfo in addCntctInfoDropDown" :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey">
+          <option
+            v-if="
+              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
+              contacts[slctdCntctIndex].Assigned == userData.id
+            "
+            v-for="cntctInfo in addCntctInfoDropDown"
+            :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey"
+          >
             {{ cntctInfo.InfoKey + cntctInfo.InfoPlaceholder }}
           </option>
-          <option value="newContact">New contact</option>
-          <option value="deleteContact">Delete contact</option>
+          <option value="newContact" v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3">
+            New contact
+          </option>
+          <option
+            value="deleteContact"
+            v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 7"
+          >
+            Delete contact
+          </option>
         </select>
 
         <button
