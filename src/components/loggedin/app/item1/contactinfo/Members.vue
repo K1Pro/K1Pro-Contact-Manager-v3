@@ -5,10 +5,7 @@
         <div class="member-title">
           <i class="fa-solid fa-user"></i>
           <select
-            v-if="
-              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
-              contacts[slctdCntctIndex].Assigned == userData.id
-            "
+            v-if="userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id"
             style="border: none; background-color: transparent"
             :value="member.Type"
             :disabled="dsbld"
@@ -46,32 +43,18 @@
         >
           <option selected disabled></option>
           <option
-            v-if="
-              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
-              contacts[slctdCntctIndex].Assigned == userData.id
-            "
+            v-if="userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id"
             v-for="cntctInfo in addCntctInfoDropDown"
             :value="cntctInfo.InfoGroup + '_' + cntctInfo.InfoKey"
           >
             {{ cntctInfo.InfoKey + cntctInfo.InfoPlaceholder }}
           </option>
-          <option value="newContact" v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 3">
-            New contact
-          </option>
-          <option
-            value="deleteContact"
-            v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 7"
-          >
-            Delete contact
-          </option>
+          <option value="newContact" v-if="userRole > 3">New contact</option>
+          <option value="deleteContact" v-if="userRole > 7">Delete contact</option>
         </select>
 
         <button
-          v-if="
-            memberIndex !== 0 &&
-            (roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
-              contacts[slctdCntctIndex].Assigned == userData.id)
-          "
+          v-if="memberIndex !== 0 && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
           class="member-button"
           @click="deleteContactInfo('Members', memberIndex)"
           :disabled="dsbld"
@@ -91,11 +74,7 @@
             :placeholder="memberInputs.placeholder"
             :value="member[memberInputs.value]"
             :disabled="dsbld"
-            :readonly="
-              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 4 ||
-              (roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 7 &&
-                contacts[slctdCntctIndex].Assigned != userData.id)
-            "
+            :readonly="userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
             v-on:blur="updateMember($event, memberIndex, memberInputs.value)"
           />
         </div>
@@ -118,17 +97,17 @@ export default {
     'accountSettings',
     'appName',
     'contacts',
+    'deleteContactInfo',
     'dsbld',
+    'patchContactInfo',
+    'patchUserSettings',
+    'showMsg',
     'slctdCntctIndex',
     'tbCntntWdth',
     'times',
     'userData',
+    'userRole',
     'userSettings',
-    'deleteContactInfo',
-    'roles',
-    'showMsg',
-    'patchContactInfo',
-    'patchUserSettings',
   ],
 
   computed: {

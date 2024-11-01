@@ -13,19 +13,12 @@
                 :value="credInfo"
                 :ref="'credInput' + credIndex"
                 :disabled="dsbld"
-                :readonly="
-                  roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 4 ||
-                  (roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 7 &&
-                    contacts[slctdCntctIndex].Assigned != userData.id)
-                "
+                :readonly="userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
                 :style="{
                   'border-bottom':
                     credIndex !== contacts[slctdCntctIndex].Credentials.length - 1 ? '1px solid black' : '0',
                   width:
-                    roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
-                    contacts[slctdCntctIndex].Assigned == userData.id
-                      ? 'calc(100% - 30px)'
-                      : '100%',
+                    userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id ? 'calc(100% - 30px)' : '100%',
                 }"
                 @change="updateCred($event, credIndex, credType)"
                 @focusin="revealCred(credIndex)"
@@ -34,11 +27,7 @@
                 class="cred-reveal"
                 style="color: grey"
                 :style="{
-                  right:
-                    roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
-                    contacts[slctdCntctIndex].Assigned == userData.id
-                      ? '35px'
-                      : '0px',
+                  right: userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id ? '35px' : '0px',
                 }"
                 @click="toggleCred(credIndex)"
               >
@@ -46,10 +35,7 @@
               </button>
               <button
                 class="cred-button"
-                v-if="
-                  roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
-                  contacts[slctdCntctIndex].Assigned == userData.id
-                "
+                v-if="userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id"
                 @click="deleteContactInfo('Credentials', credIndex)"
                 :disabled="dsbld"
               >
@@ -77,9 +63,9 @@ export default {
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',
-    'roles',
     'slctdCntctIndex',
     'userData',
+    'userRole',
   ],
 
   data() {

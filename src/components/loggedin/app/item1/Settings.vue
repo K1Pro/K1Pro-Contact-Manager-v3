@@ -36,7 +36,7 @@
         </option>
       </select>
 
-      <template v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 7">
+      <template v-if="userRole > 7">
         <hr />
         <div class="settings-body-label">User:</div>
         <select v-model="userSlctd">
@@ -85,6 +85,7 @@ export default {
     'roles',
     'userData',
     'userList',
+    'userRole',
     'userSettings',
     'wndw',
   ],
@@ -97,10 +98,7 @@ export default {
 
   computed: {
     IPList() {
-      return this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 7 &&
-        this.userSlctd != ''
-        ? this.userList?.[this.userSlctd]?.[2]?.join(', ')
-        : null;
+      return this.userRole > 7 && this.userSlctd != '' ? this.userList?.[this.userSlctd]?.[2]?.join(', ') : null;
     },
   },
 

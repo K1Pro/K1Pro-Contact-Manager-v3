@@ -5,10 +5,7 @@
         <div class="address-title">
           <i class="fa-solid fa-house"></i>
           <select
-            v-if="
-              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
-              contacts[slctdCntctIndex].Assigned == userData.id
-            "
+            v-if="userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id"
             style="border: none; background-color: transparent"
             :value="address.Type"
             @change="updateAddress($event, addressIndex, 'Type')"
@@ -20,10 +17,7 @@
           <div v-else style="display: inline-block; padding: 5px">{{ address.Type }}</div>
         </div>
         <button
-          v-if="
-            roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
-            contacts[slctdCntctIndex].Assigned == userData.id
-          "
+          v-if="userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id"
           class="address-button"
           @click="deleteContactInfo('Addresses', addressIndex)"
           :disabled="dsbld"
@@ -48,10 +42,7 @@
             <option
               v-for="state in stateList"
               :value="state"
-              :disabled="
-                roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 6 &&
-                contacts[slctdCntctIndex].Assigned != userData.id
-              "
+              :disabled="userRole < 6 && contacts[slctdCntctIndex].Assigned != userData.id"
             >
               {{ state }}
             </option>
@@ -62,11 +53,7 @@
             :placeholder="addressInputs.placeholder"
             :value="address[addressInputs.value]"
             :disabled="dsbld"
-            :readonly="
-              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 4 ||
-              (roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 7 &&
-                contacts[slctdCntctIndex].Assigned != userData.id)
-            "
+            :readonly="userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
             @change="updateAddress($event, addressIndex, addressInputs.value)"
           />
         </div>
@@ -89,10 +76,10 @@ export default {
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',
-    'roles',
     'slctdCntctIndex',
     'tbCntntWdth',
     'userData',
+    'userRole',
   ],
 
   computed: {
@@ -104,59 +91,8 @@ export default {
   data() {
     return {
       clmn: 'Addresses',
-      stateList: [
-        'AL',
-        'AK',
-        'AZ',
-        'AR',
-        'CA',
-        'CO',
-        'CT',
-        'DE',
-        'DC',
-        'FL',
-        'GA',
-        'HI',
-        'ID',
-        'IL',
-        'IN',
-        'IA',
-        'KS',
-        'KY',
-        'LA',
-        'ME',
-        'MD',
-        'MA',
-        'MI',
-        'MN',
-        'MS',
-        'MO',
-        'MT',
-        'NE',
-        'NV',
-        'NH',
-        'NJ',
-        'NM',
-        'NY',
-        'NC',
-        'ND',
-        'OH',
-        'OK',
-        'OR',
-        'PA',
-        'RI',
-        'SC',
-        'SD',
-        'TN',
-        'TX',
-        'UT',
-        'VT',
-        'VA',
-        'WA',
-        'WV',
-        'WI',
-        'WY',
-      ],
+      // prettier-ignore
+      stateList: ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY',],
     };
   },
 

@@ -21,25 +21,17 @@
               'border-bottom':
                 connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '2px solid lightgray' : '0',
               width:
-                roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
-                contacts[slctdCntctIndex].Assigned == userData.id
+                userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id
                   ? 'calc(100% - 60px)'
                   : 'calc(100% - 30px)',
             }"
-            :readonly="
-              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 4 ||
-              (roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 7 &&
-                contacts[slctdCntctIndex].Assigned != userData.id)
-            "
+            :readonly="userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
             :value="connInfo"
             :disabled="dsbld"
             @change="updateConnection($event, conn.RealIndex, connType)"
           />
           <button
-            v-if="
-              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5 ||
-              contacts[slctdCntctIndex].Assigned == userData.id
-            "
+            v-if="userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id"
             class="conn-delete-icon"
             @click="deleteContactInfo('Connections', conn.RealIndex)"
             :disabled="dsbld"
@@ -52,11 +44,7 @@
         <input
           type="checkbox"
           v-model="contacts[slctdCntctIndex].DNC"
-          :disabled="
-            dsbld ||
-            (roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 6 &&
-              contacts[slctdCntctIndex].Assigned != userData.id)
-          "
+          :disabled="dsbld || (userRole < 6 && contacts[slctdCntctIndex].Assigned != userData.id)"
           @change="updateDNC($event.target.checked, 'DNC')"
         />
         Do not contact
@@ -79,10 +67,10 @@ export default {
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',
-    'roles',
     'slctdCntctIndex',
     'times',
     'userData',
+    'userRole',
     'userSettings',
   ],
 

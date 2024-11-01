@@ -9,10 +9,7 @@
       <option
         v-for="([userNo, userInfo], userIndex) in Object.entries(userList)"
         :value="userNo"
-        :disabled="
-          contacts[slctdCntctIndex].Assigned != userData.id &&
-          roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 6
-        "
+        :disabled="contacts[slctdCntctIndex].Assigned != userData.id && userRole < 6"
       >
         {{ userInfo[0] }}
       </option>
@@ -45,11 +42,7 @@
     >
       <option
         v-for="category in accountSettings.Categ"
-        :disabled="
-          roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 4 ||
-          (roles.findIndex((role) => role === userData.AppPermissions[appName][1]) < 7 &&
-            contacts[slctdCntctIndex].Assigned != userData.id)
-        "
+        :disabled="userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
       >
         {{ category }}
       </option>
@@ -66,10 +59,10 @@ export default {
     'appName',
     'contacts',
     'patchContactInfo',
-    'roles',
     'slctdCntctIndex',
     'userData',
     'userList',
+    'userRole',
   ],
 
   methods: {

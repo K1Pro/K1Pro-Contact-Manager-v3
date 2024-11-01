@@ -10,7 +10,7 @@
         Contact report: {{ userData.FirstName }}
       </div>
 
-      <template v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5">
+      <template v-if="userRole > 5">
         <template
           v-for="([activeUserKey, activeUserVal], activeUserIndex) in Object.entries(activeUserList).filter(
             (user) => user[0] != userData.id
@@ -42,10 +42,7 @@
       <template v-for="activeUserIndex in Object.entries(activeUserList).length * 2">
         <template v-if="activeUserIndex % 2">
           <div
-            v-if="
-              Object.entries(activeUserList)[(activeUserIndex - 1) / 2][0] == userData.id ||
-              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5
-            "
+            v-if="Object.entries(activeUserList)[(activeUserIndex - 1) / 2][0] == userData.id || userRole > 5"
             class="reports-report"
             :class="[
               reports.includes('user_Task report:' + Object.entries(activeUserList)[(activeUserIndex - 1) / 2][0])
@@ -59,10 +56,7 @@
         </template>
         <template v-if="(activeUserIndex + 1) % 2">
           <div
-            v-if="
-              Object.entries(activeUserList)[(activeUserIndex - 2) / 2][0] == userData.id ||
-              roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5
-            "
+            v-if="Object.entries(activeUserList)[(activeUserIndex - 2) / 2][0] == userData.id || userRole > 5"
             class="reports-report"
             :class="[
               reports.includes('Task stats:' + Object.entries(activeUserList)[(activeUserIndex - 2) / 2][0])
@@ -78,7 +72,7 @@
 
       <template v-for="(report, reportIndex) in accountSettings.reports">
         <div
-          v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > report.split('_')[0]"
+          v-if="userRole > report.split('_')[0]"
           class="reports-report"
           :class="[
             reports.includes(report.split('_')[1])
@@ -106,19 +100,16 @@ export default {
     'appName',
     'contacts',
     'reports',
-    'roles',
     'slctdCntctIndex',
     'userData',
+    'userRole',
     'wndw',
   ],
 
   data() {
     return {
       includedReports: [],
-      cntctReportAmnt:
-        this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 5
-          ? Object.entries(this.activeUserList).length
-          : 1,
+      cntctReportAmnt: this.userRole > 5 ? Object.entries(this.activeUserList).length : 1,
     };
   },
 
@@ -131,7 +122,7 @@ export default {
     },
   },
   mounted() {
-    if (this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 5) {
+    if (this.userRole > 5) {
       this.includedReports = [
         'Contact report: All ' + this.contacts?.length + ' (min. info)',
         'Contact report: All ' + this.contacts?.length + ' (more info)',

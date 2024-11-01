@@ -1,7 +1,7 @@
 <template>
   <div class="reports-table">
     <i
-      v-if="roles.findIndex((role) => role === userData.AppPermissions[appName][1]) > 5"
+      v-if="userRole > 5"
       :style="{ left: tbCntntWdth + 30 + 'px' }"
       class="fa-solid fa-download"
       @click="downloadTable"
@@ -144,13 +144,13 @@ export default {
     'userSettings',
     'patchUserSettings',
     'reports',
-    'roles',
     'slctdCntctIndex',
     'tbCntntWdth',
     'times',
     'userData',
     'usaDateFrmt',
     'userList',
+    'userRole',
     'wndw',
   ],
 
