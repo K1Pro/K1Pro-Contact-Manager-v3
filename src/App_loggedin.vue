@@ -75,7 +75,7 @@ export default {
         slctdTmstmp: '',
       },
       roles: [
-        'demo',
+        'inactive',
         'guest',
         'subscriber',
         'viewer',
@@ -83,6 +83,7 @@ export default {
         'author',
         'editor',
         'publisher',
+        'demo',
         'manager',
         'admin',
       ],
@@ -140,6 +141,7 @@ export default {
         ['fa fa-calendar-check', this.contacts[this.slctdCntctIndex]?.Tasks.length, 'Tasks', 'Calendar'],
         ['fa fa-repeat', this.contacts[this.slctdCntctIndex]?.RecurTasks.length, 'Recurring tasks', 'Calendar'],
         ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length > 0 ? '1' : null, 'Notes', 'Calendar'],
+        ['fa fa-comment', null, 'Chat', 'Chatpanel'],
         ['fa fa-chart-pie', null, 'Reports', 'Reportstable'],
         ['fa fa-sliders', null, 'Settings', 'Calendar'],
         ['fa fa-user-gear', 'post-' + accountlogin_url, 'Account', '_a_t', access_token, '_s_i', session_id],
@@ -159,7 +161,7 @@ export default {
               sidemenuCustomItemsArray.push(sidemenuItem);
             }
           });
-          sideMenuItemsArray.splice(4, 0, sidemenuCustomItemsArray);
+          sideMenuItemsArray.splice(5, 0, sidemenuCustomItemsArray);
         });
       }
       return sideMenuItemsArray;

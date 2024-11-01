@@ -156,7 +156,6 @@ export default {
 
   computed: {
     tblCntnt() {
-      console.log('test');
       let cloneCntcts = this.contacts;
       let tblHdrs = [];
       let nmbrClmn = [];

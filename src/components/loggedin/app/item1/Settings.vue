@@ -52,9 +52,8 @@
             v-model="userList[userSlctd][1]"
             @change="patchAuthorization"
           >
-            <option value="inactive" disabled>inactive</option>
             <template v-for="role in roles">
-              <option v-if="role != 'demo' && role != 'guest'" :value="role">
+              <option v-if="role != 'demo' && role != 'guest'" :disabled="role == 'inactive'" :value="role">
                 {{ role }}
               </option>
             </template>
