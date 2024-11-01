@@ -38,7 +38,9 @@
             type="datetime-local"
             :value="task.Date"
             :disabled="
-              dsbld || userRole < 4 || (userRole < 7 && task.Create != userData.id && task.Assign != userData.id)
+              dsbld ||
+              userRole < 4 ||
+              (userRole < 7 && task.Create != userData.id && task.Assign != userData.id && task.Update != userData.id)
             "
             v-on:blur="updateTask($event.target.value, task.clmnIndex, 'Date')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
@@ -49,7 +51,9 @@
             @change="updateTask($event.target.value, task.clmnIndex, 'Tag')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
             :disabled="
-              dsbld || userRole < 4 || (userRole < 7 && task.Create != userData.id && task.Assign != userData.id)
+              dsbld ||
+              userRole < 4 ||
+              (userRole < 7 && task.Create != userData.id && task.Assign != userData.id && task.Update != userData.id)
             "
           >
             <option value="">None</option>
@@ -69,7 +73,9 @@
             @change="updateTask($event.target.value, task.clmnIndex, 'Assign')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
             :disabled="
-              dsbld || userRole < 4 || (userRole < 7 && task.Create != userData.id && task.Assign != userData.id)
+              dsbld ||
+              userRole < 4 ||
+              (userRole < 7 && task.Create != userData.id && task.Assign != userData.id && task.Update != userData.id)
             "
           >
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
@@ -84,7 +90,9 @@
             :checked="task?.Status === true || task?.Status == '1'"
             @change="updateTask($event.target.checked, task.clmnIndex, 'Status')"
             :disabled="
-              dsbld || userRole < 4 || (userRole < 7 && task.Create != userData.id && task.Assign != userData.id)
+              dsbld ||
+              userRole < 4 ||
+              (userRole < 7 && task.Create != userData.id && task.Assign != userData.id && task.Update != userData.id)
             "
           />
           {{ task?.Status === true || task?.Status == '1' ? 'Yes' : 'No' }}
@@ -92,7 +100,9 @@
             <span
               spellcheck="false"
               :contenteditable="
-                dsbld || userRole < 4 || (userRole < 7 && task.Create != userData.id && task.Assign != userData.id)
+                dsbld ||
+                userRole < 4 ||
+                (userRole < 7 && task.Create != userData.id && task.Assign != userData.id && task.Update != userData.id)
                   ? 'false'
                   : 'plaintext-only'
               "

@@ -504,6 +504,9 @@ select:disabled {
   appearance: none;
   padding-left: 5px;
 }
+button:disabled {
+  color: black;
+}
 @media only screen and (min-width: 768px) {
   .app-grid-container {
     /* grid-template-columns: calc(50% - 5px) 10px calc(50% - 5px); this is in computed now*/

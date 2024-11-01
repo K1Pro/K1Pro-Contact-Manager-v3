@@ -42,6 +42,14 @@
           <input
             type="date"
             :value="recurTask.Start"
+            :disabled="
+              dsbld ||
+              userRole < 4 ||
+              (userRole < 7 &&
+                recurTask.Create != userData.id &&
+                recurTask.Assign != userData.id &&
+                recurTask.Update != userData.id)
+            "
             v-on:blur="
               updateRecurTaskFreq(
                 recurTask.clmnIndex,
@@ -51,23 +59,47 @@
             "
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
-          <span class="recur-tasks-label">End:</span
-          ><input
+          <span class="recur-tasks-label">End:</span>
+          <input
             type="date"
             :value="recurTask.End"
+            :disabled="
+              dsbld ||
+              userRole < 4 ||
+              (userRole < 7 &&
+                recurTask.Create != userData.id &&
+                recurTask.Assign != userData.id &&
+                recurTask.Update != userData.id)
+            "
             v-on:blur="updateRecurTask($event.target.value, recurTask.clmnIndex, 'End')"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
-          <span class="recur-tasks-label">Time:</span
-          ><input
+          <span class="recur-tasks-label">Time:</span>
+          <input
             type="time"
             :value="recurTask.Time"
+            :disabled="
+              dsbld ||
+              userRole < 4 ||
+              (userRole < 7 &&
+                recurTask.Create != userData.id &&
+                recurTask.Assign != userData.id &&
+                recurTask.Update != userData.id)
+            "
             v-on:blur="updateRecurTask($event.target.value, recurTask.clmnIndex, 'Time')"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="recur-tasks-label">Recur:</span>
           <select
             :value="recurTask.Freq"
+            :disabled="
+              dsbld ||
+              userRole < 4 ||
+              (userRole < 7 &&
+                recurTask.Create != userData.id &&
+                recurTask.Assign != userData.id &&
+                recurTask.Update != userData.id)
+            "
             @change="
               updateRecurTaskFreq(
                 recurTask.clmnIndex,
@@ -87,6 +119,14 @@
           <span class="recur-tasks-label">Owner:</span>
           <select
             :value="recurTask.Assign"
+            :disabled="
+              dsbld ||
+              userRole < 4 ||
+              (userRole < 7 &&
+                recurTask.Create != userData.id &&
+                recurTask.Assign != userData.id &&
+                recurTask.Update != userData.id)
+            "
             @change="updateRecurTask($event.target.value, recurTask.clmnIndex, 'Assign')"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           >
@@ -102,6 +142,14 @@
           </select>
           <span class="recur-tasks-label">Finished:</span>
           <button
+            :disabled="
+              dsbld ||
+              userRole < 4 ||
+              (userRole < 7 &&
+                recurTask.Create != userData.id &&
+                recurTask.Assign != userData.id &&
+                recurTask.Update != userData.id)
+            "
             @click="
               updateRecurTask(times.updtngY_m_d_H_i_s_z.slice(0, 10), recurTask.clmnIndex, 'Review');
               recurTaskMemo = recurTaskMemo + 1;
@@ -120,7 +168,16 @@
           <div class="recur-tasks-span" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
             <span
               spellcheck="false"
-              contenteditable="plaintext-only"
+              :contenteditable="
+                dsbld ||
+                userRole < 4 ||
+                (userRole < 7 &&
+                  recurTask.Create != userData.id &&
+                  recurTask.Assign != userData.id &&
+                  recurTask.Update != userData.id)
+                  ? 'false'
+                  : 'plaintext-only'
+              "
               v-on:blur="updateRecurTask($event.target.innerHTML, recurTask.clmnIndex, 'Desc')"
               >{{ recurTask.Desc }}</span
             >
@@ -157,6 +214,7 @@ export default {
     'appName',
     'contacts',
     'deleteContactInfo',
+    'dsbld',
     'eventIndex',
     'patchContactInfo',
     'slctdCntctIndex',
