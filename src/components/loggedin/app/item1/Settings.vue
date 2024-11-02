@@ -35,6 +35,11 @@
           {{ category }}
         </option>
       </select>
+      <div class="settings-body-label">Clock:</div>
+      <select>
+        <option disabled selected>12-hour (coming soon)</option>
+        <option disabled>24-hour (coming soon)</option>
+      </select>
 
       <template v-if="userRole > 7">
         <hr />
