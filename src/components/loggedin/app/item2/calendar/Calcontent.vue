@@ -58,7 +58,7 @@
             )
           "
         >
-          {{ calContactTask.Time != '25:00' ? calContactTask.Time : '' }}
+          {{ calContactTask.Time != '25:00' ? calContactTask.Clock.replace(' AM', '').replace(' PM', '') : '' }}
           {{ calContactTask?.Name }}
         </div>
         <div style="text-align: center" class="prevent-select" v-if="calContactTask.Icon">
@@ -102,6 +102,14 @@ export default {
             contactArray[contactIndex + 'Task' + taskIndex] = {
               Name: contact.Members[0]?.Name,
               Time: task.Date.split('T')[1],
+              Clock:
+                this.userSettings.clock == 12
+                  ? new Date(task.Date).toLocaleTimeString('en-US', {
+                      hour12: true,
+                      hour: 'numeric',
+                      minute: 'numeric',
+                    })
+                  : task.Date.split('T')[1],
               Type: 'Tasks',
               Status: task.Status == 1 ? 'compltd' : 'not-compltd',
               Assign: task.Assign,
@@ -127,6 +135,16 @@ export default {
             contactArray[contactIndex + 'Recur' + taskIndex] = {
               Name: contact.Members[0]?.Name,
               Time: task.Time ? task.Time : '25:00',
+              Clock:
+                task.Time && this.userSettings.clock == 12
+                  ? new Date(this.days[this.dayIndex] + 'T' + task.Time).toLocaleTimeString('en-US', {
+                      hour12: true,
+                      hour: 'numeric',
+                      minute: 'numeric',
+                    })
+                  : task.Time && this.userSettings.clock == 24
+                  ? task.Time
+                  : '25:00',
               Type: 'Recurringtasks',
               Status: task.Review >= this.days[this.dayIndex] ? 'compltd' : 'renewal',
               Icon: task.Review >= this.days[this.dayIndex] ? 'fa fa-check' : 'fa fa-repeat',

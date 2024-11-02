@@ -36,9 +36,9 @@
         </option>
       </select>
       <div class="settings-body-label">Clock:</div>
-      <select>
-        <option disabled selected>12-hour (coming soon)</option>
-        <option disabled>24-hour (coming soon)</option>
+      <select :value="userSettings.clock" @change="clockChange">
+        <option value="12">12-hour</option>
+        <option value="24">24-hour</option>
       </select>
 
       <template v-if="userRole > 7">
@@ -127,6 +127,11 @@ export default {
     categoryChange(event) {
       const cloneUserSettings = this.userSettings;
       cloneUserSettings.calendar.filters.category = event.target.value;
+      this.patchUserSettings(cloneUserSettings);
+    },
+    clockChange(event) {
+      const cloneUserSettings = this.userSettings;
+      cloneUserSettings.clock = event.target.value;
       this.patchUserSettings(cloneUserSettings);
     },
 
