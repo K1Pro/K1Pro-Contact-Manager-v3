@@ -20,25 +20,30 @@
         Contact report: {{ activeUserList[slctdUser][0] }}
       </div>
 
-      <div
-        v-if="slctdUser == userData.id"
-        v-for="(report, reportIndex) in includedReports"
-        class="reports-report"
-        :class="[reports.includes(report) ? 'reports-active' : 'reports' + ((cntctReportAmnt + reportIndex) % 2)]"
-        @click="selectReport(report)"
-      >
-        {{ report.includes('_') ? report.split('_')[1] : report }}
-      </div>
+      <template v-for="(report, reportIndex) in includedReports">
+        <div
+          v-if="roles.findIndex((role) => role === activeUserList[slctdUser][1]) > report.split('_')[0]"
+          class="reports-report"
+          :class="[
+            reports.includes(
+              report.split('_')[1] ? report.split('_')[1] + '_' + report.split('_')[2] : report.split('_')[2]
+            )
+              ? 'reports-active'
+              : 'reports' + ((cntctReportAmnt + reportIndex) % 2),
+          ]"
+          @click="
+            selectReport(
+              report.split('_')[1] ? report.split('_')[1] + '_' + report.split('_')[2] : report.split('_')[2]
+            )
+          "
+        >
+          {{ report.split('_')[2] }}
+        </div>
+      </template>
 
       <div
         class="reports-report"
-        :class="[
-          reports.includes('user_Task report:' + slctdUser)
-            ? 'reports-active'
-            : slctdUser == userData.id
-            ? 'reports0'
-            : 'reports1',
-        ]"
+        :class="[reports.includes('user_Task report:' + slctdUser) ? 'reports-active' : 'reports0']"
         @click="selectReport('user_Task report:' + slctdUser)"
       >
         Task report: {{ activeUserList[slctdUser][0] }}
@@ -46,21 +51,15 @@
 
       <div
         class="reports-report"
-        :class="[
-          reports.includes('Task stats:' + slctdUser)
-            ? 'reports-active'
-            : slctdUser == userData.id
-            ? 'reports1'
-            : 'reports0',
-        ]"
+        :class="[reports.includes('Task stats:' + slctdUser) ? 'reports-active' : 'reports1']"
         @click="selectReport('Task stats:' + slctdUser)"
       >
         Task stats: {{ activeUserList[slctdUser][0] }}
       </div>
 
-      <template v-if="slctdUser == userData.id" v-for="(report, reportIndex) in accountSettings.reports">
+      <template v-for="(report, reportIndex) in accountSettings.reports">
         <div
-          v-if="userRole > report.split('_')[0]"
+          v-if="roles.findIndex((role) => role === activeUserList[slctdUser][1]) > report.split('_')[0]"
           class="reports-report"
           :class="[
             reports.includes(report.split('_')[1])
@@ -88,6 +87,7 @@ export default {
     'appName',
     'contacts',
     'reports',
+    'roles',
     'slctdCntctIndex',
     'userData',
     'userRole',
@@ -96,7 +96,17 @@ export default {
 
   data() {
     return {
-      includedReports: [],
+      includedReports: [
+        '5__Contact report: All ' + this.contacts?.length + ' (min. info)',
+        '5__Contact report: All ' + this.contacts?.length + ' (more info)',
+        '5__Contact categories',
+        '5__Task report: All',
+        '4_cntct_Task report: ' +
+          (this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.First
+            ? this.contacts[this.slctdCntctIndex].Members[0].First + ' '
+            : '') +
+          this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.Name,
+      ],
       cntctReportAmnt: this.userRole > 5 ? Object.entries(this.activeUserList).length : 1,
       slctdUser: this.userData.id,
     };
@@ -109,29 +119,6 @@ export default {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     },
-  },
-  mounted() {
-    if (this.userRole > 5) {
-      this.includedReports = [
-        'Contact report: All ' + this.contacts?.length + ' (min. info)',
-        'Contact report: All ' + this.contacts?.length + ' (more info)',
-        'Contact categories',
-        'Task report: All',
-        'cntct_Task report: ' +
-          (this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.First
-            ? this.contacts[this.slctdCntctIndex].Members[0].First + ' '
-            : '') +
-          this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.Name,
-      ];
-    } else {
-      this.includedReports = [
-        'cntct_Task report: ' +
-          (this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.First
-            ? this.contacts[this.slctdCntctIndex].Members[0].First + ' '
-            : '') +
-          this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.Name,
-      ];
-    }
   },
 };
 </script>

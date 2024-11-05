@@ -13,10 +13,10 @@ body {
 }
 
 #loader-container {
+  position: absolute;
   display: grid;
   place-items: center;
   height: 100vh;
-  /* background-color: #999999; */
 }
 
 #loader {
