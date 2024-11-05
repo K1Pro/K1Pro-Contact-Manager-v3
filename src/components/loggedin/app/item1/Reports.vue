@@ -1,36 +1,27 @@
 <template>
   <div class="reports">
-    <div class="reports-title">Select a report:</div>
+    <div class="reports-title">
+      Select report:
+      <select v-if="userRole > 5" v-model="slctdUser">
+        <option
+          v-for="([activeUserKey, activeUserVal], activeUserIndex) in Object.entries(activeUserList)"
+          :value="activeUserKey"
+        >
+          {{ activeUserVal[0] }}
+        </option>
+      </select>
+    </div>
     <div class="reports-body">
       <div
         class="reports-report"
-        :class="[reports.includes('user_Contact report:' + userData.id) ? 'reports-active' : 'reports0']"
-        @click="selectReport('user_Contact report:' + userData.id)"
+        :class="[reports.includes('user_Contact report:' + slctdUser) ? 'reports-active' : 'reports0']"
+        @click="selectReport('user_Contact report:' + slctdUser)"
       >
-        Contact report: {{ userData.FirstName }}
+        Contact report: {{ activeUserList[slctdUser][0] }}
       </div>
 
-      <template v-if="userRole > 5">
-        <template
-          v-for="([activeUserKey, activeUserVal], activeUserIndex) in Object.entries(activeUserList).filter(
-            (user) => user[0] != userData.id
-          )"
-        >
-          <div
-            class="reports-report"
-            :class="[
-              reports.includes('user_Contact report:' + activeUserKey)
-                ? 'reports-active'
-                : 'reports' + ((1 + activeUserIndex) % 2),
-            ]"
-            @click="selectReport('user_Contact report:' + activeUserKey)"
-          >
-            Contact report: {{ activeUserVal[0] }}
-          </div>
-        </template>
-      </template>
-
       <div
+        v-if="slctdUser == userData.id"
         v-for="(report, reportIndex) in includedReports"
         class="reports-report"
         :class="[reports.includes(report) ? 'reports-active' : 'reports' + ((cntctReportAmnt + reportIndex) % 2)]"
@@ -39,38 +30,35 @@
         {{ report.includes('_') ? report.split('_')[1] : report }}
       </div>
 
-      <template v-for="activeUserIndex in Object.entries(activeUserList).length * 2">
-        <template v-if="activeUserIndex % 2">
-          <div
-            v-if="Object.entries(activeUserList)[(activeUserIndex - 1) / 2][0] == userData.id || userRole > 5"
-            class="reports-report"
-            :class="[
-              reports.includes('user_Task report:' + Object.entries(activeUserList)[(activeUserIndex - 1) / 2][0])
-                ? 'reports-active'
-                : 'reports' + ((cntctReportAmnt + includedReports.length + activeUserIndex + 1) % 2),
-            ]"
-            @click="selectReport('user_Task report:' + Object.entries(activeUserList)[(activeUserIndex - 1) / 2][0])"
-          >
-            Task report: {{ Object.entries(activeUserList)[(activeUserIndex - 1) / 2][1][0] }}
-          </div>
-        </template>
-        <template v-if="(activeUserIndex + 1) % 2">
-          <div
-            v-if="Object.entries(activeUserList)[(activeUserIndex - 2) / 2][0] == userData.id || userRole > 5"
-            class="reports-report"
-            :class="[
-              reports.includes('Task stats:' + Object.entries(activeUserList)[(activeUserIndex - 2) / 2][0])
-                ? 'reports-active'
-                : 'reports' + ((cntctReportAmnt + includedReports.length + activeUserIndex + 1) % 2),
-            ]"
-            @click="selectReport('Task stats:' + Object.entries(activeUserList)[(activeUserIndex - 2) / 2][0])"
-          >
-            Task stats: {{ Object.entries(activeUserList)[(activeUserIndex - 2) / 2][1][0] }}
-          </div>
-        </template>
-      </template>
+      <div
+        class="reports-report"
+        :class="[
+          reports.includes('user_Task report:' + slctdUser)
+            ? 'reports-active'
+            : slctdUser == userData.id
+            ? 'reports0'
+            : 'reports1',
+        ]"
+        @click="selectReport('user_Task report:' + slctdUser)"
+      >
+        Task report: {{ activeUserList[slctdUser][0] }}
+      </div>
 
-      <template v-for="(report, reportIndex) in accountSettings.reports">
+      <div
+        class="reports-report"
+        :class="[
+          reports.includes('Task stats:' + slctdUser)
+            ? 'reports-active'
+            : slctdUser == userData.id
+            ? 'reports1'
+            : 'reports0',
+        ]"
+        @click="selectReport('Task stats:' + slctdUser)"
+      >
+        Task stats: {{ activeUserList[slctdUser][0] }}
+      </div>
+
+      <template v-if="slctdUser == userData.id" v-for="(report, reportIndex) in accountSettings.reports">
         <div
           v-if="userRole > report.split('_')[0]"
           class="reports-report"
@@ -110,6 +98,7 @@ export default {
     return {
       includedReports: [],
       cntctReportAmnt: this.userRole > 5 ? Object.entries(this.activeUserList).length : 1,
+      slctdUser: this.userData.id,
     };
   },
 
@@ -157,6 +146,12 @@ export default {
   overflow: hidden;
   white-space: nowrap;
   user-select: none;
+}
+.reports-title select {
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  background-color: transparent;
 }
 .reports-body {
   background-color: white;

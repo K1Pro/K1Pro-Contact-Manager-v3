@@ -71,6 +71,10 @@
             @change="patchIPList"
             :value="IPList ? IPList : userList[userSlctd][1] == 'inactive' ? 'inactive' : 'all'"
           ></textarea>
+          <div class="settings-body-label">Timezone:</div>
+          <select>
+            <option selected>GMT-5 (Central)</option>
+          </select>
         </template>
       </template>
     </div>

@@ -30,7 +30,9 @@
             <td v-if="tblCntnt[1]" class="cellHover" @click="selectContact(tblCntnt[1][tblRowIndx][1])">
               {{ tblCntnt[1][tblRowIndx][0] }}
             </td>
-            <td v-for="tblCell in tblRow">{{ tblCell }}</td>
+            <td v-for="tblCell in tblRow" class="cellHover" @click="selectContact(tblCntnt[1][tblRowIndx][1])">
+              {{ tblCell }}
+            </td>
           </tr>
         </tbody>
         <p v-else>Empty</p>
@@ -45,10 +47,12 @@
         <tbody>
           <tr v-for="(contact, contactIndex) in tblCntnt[2]" :class="'taskCell' + (contactIndex % 2) + contact[1]">
             <td class="cellHover" @click="selectContact(contact[0])">{{ tblCntnt[2].length - contactIndex }}</td>
-            <td>{{ contact[2] }}</td>
-            <td style="width: 125px">{{ usaDateFrmt(contact[3]) }}</td>
-            <td>{{ contact[4] }}</td>
-            <td>{{ contact[5] }}</td>
+            <td class="cellHover" @click="selectContact(contact[0])">{{ contact[2] }}</td>
+            <td class="cellHover" @click="selectContact(contact[0])" style="width: 125px">
+              {{ usaDateFrmt(contact[3]) }}
+            </td>
+            <td class="cellHover" @click="selectContact(contact[0])">{{ contact[4] }}</td>
+            <td class="cellHover" @click="selectContact(contact[0])">{{ contact[5] }}</td>
           </tr>
         </tbody>
       </template>
@@ -452,12 +456,15 @@ export default {
 .taskCell01 {
   background-color: rgb(205, 255, 205);
 }
+tr:hover {
+  background: lightblue;
+}
 .cellHover {
   cursor: pointer;
 }
-.cellHover:hover {
+/* .cellHover:hover {
   text-decoration: underline;
-}
+} */
 @media only screen and (min-width: 768px) {
   .reports-table {
     margin: 10px 0px 0px 0px;

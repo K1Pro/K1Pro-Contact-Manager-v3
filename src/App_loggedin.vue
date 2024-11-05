@@ -43,7 +43,7 @@
   </template>
   <template v-else>
     <div id="loader-container">
-      <div class="loader"></div>
+      <div id="loader"></div>
     </div>
   </template>
 </template>
@@ -358,8 +358,9 @@ export default {
     },
 
     async patchContactInfo(event, column, columnIndex, key, newCntctInfo) {
-      this.contacts[this.slctdCntctIndex] = newCntctInfo;
-      this.contacts[this.slctdCntctIndex].Updated = {
+      const slctdCntctIndex = this.contacts.findIndex((contact) => contact.id == newCntctInfo.id);
+      this.contacts[slctdCntctIndex] = newCntctInfo;
+      this.contacts[slctdCntctIndex].Updated = {
         [this.userData.id]: this.times.updtngY_m_d_H_i_s_z,
       };
       let cloneUpdating = this.updating;
@@ -373,7 +374,7 @@ export default {
             'Cache-Control': 'no-store',
           },
           body: JSON.stringify({
-            ID: this.userSettings.selectedContactIndex,
+            ID: newCntctInfo.id,
             Column: column,
             ColumnIndex: columnIndex,
             Key: key,
