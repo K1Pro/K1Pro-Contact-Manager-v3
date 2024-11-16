@@ -218,7 +218,7 @@ export default {
       const timeDifference = Math.round((this.times.initialBrwsrTmstmp - new Date().getTime()) * -1);
       this.times.updtngY_m_d_H_i_s_z = new Date(this.times.initialUsrTmstmp + timeDifference).toISOString();
       try {
-        const response = await fetch(servr_url + 'currentupdate', {
+        const response = await fetch(app_api_url + '/currentupdate', {
           method: 'GET',
           headers: {
             Authorization: access_token,
@@ -247,7 +247,7 @@ export default {
 
     async getUserData() {
       try {
-        const response = await fetch(servr_url + 'users', {
+        const response = await fetch(app_api_url + '/users', {
           method: 'GET',
           headers: {
             Authorization: access_token,
@@ -255,8 +255,9 @@ export default {
           },
         });
         const userDataResJSON = await response.json();
+        console.log(userDataResJSON);
         if (userDataResJSON.success) {
-          // console.log(userDataResJSON);
+          console.log(userDataResJSON);
           this.times.initialBrwsrTmstmp = new Date().getTime();
           this.times.initialUsrTmstmp = new Date(userDataResJSON.data.date_Y_m_d_H_i_s_z).getTime();
           this.times.updtngY_m_d_H_i_s_z = userDataResJSON.data.date_Y_m_d_H_i_s_z;
@@ -286,8 +287,27 @@ export default {
           this.getContacts(null);
           this.getEmailSettings();
         } else {
-          location.reload();
+          console.log('deletelogin');
+          // this.deleteLogin();
         }
+      } catch (error) {
+        this.showMsg('Internet problem');
+        console.log(error.toString());
+      }
+    },
+
+    async deleteLogin() {
+      // possibly refactor once you have created a guest db
+      try {
+        const response = await fetch(login_api_url + '/sessions/' + session_id, {
+          method: 'DELETE',
+          headers: {
+            Authorization: access_token,
+            'Cache-Control': 'no-store',
+          },
+        });
+        const deleteLoginResJSON = await response.json();
+        if (deleteLoginResJSON.success) location.reload();
       } catch (error) {
         this.showMsg('Internet problem');
         console.log(error.toString());
@@ -296,7 +316,7 @@ export default {
 
     async getContacts(updateTime) {
       try {
-        const response = await fetch(servr_url + 'contacts', {
+        const response = await fetch(app_api_url + '/contacts', {
           method: 'GET',
           headers: {
             Authorization: access_token,
@@ -328,7 +348,7 @@ export default {
 
     async getEmailSettings() {
       try {
-        const response = await fetch(servr_url + 'emails', {
+        const response = await fetch(app_api_url + '/emails', {
           method: 'GET',
           headers: {
             Authorization: access_token,
@@ -366,7 +386,7 @@ export default {
       let cloneUpdating = this.updating;
       this.updating = cloneUpdating + 1;
       try {
-        const response = await fetch(servr_url + 'contacts', {
+        const response = await fetch(app_api_url + '/contacts', {
           method: 'PATCH',
           headers: {
             Authorization: access_token,
@@ -405,7 +425,7 @@ export default {
       if (prevConfirm || confirm('Are you sure you would like to delete this?') == true) {
         this.contacts[this.slctdCntctIndex][column].splice(columnIndex, 1);
         try {
-          const response = await fetch(servr_url + 'contacts', {
+          const response = await fetch(app_api_url + '/contacts', {
             method: 'DELETE',
             headers: {
               Authorization: access_token,
@@ -439,7 +459,7 @@ export default {
     async patchUserSettings(newUserSettings) {
       this.userSettings = newUserSettings;
       try {
-        const response = await fetch(servr_url + 'settings', {
+        const response = await fetch(app_api_url + '/settings', {
           method: 'PATCH',
           headers: {
             Authorization: access_token,

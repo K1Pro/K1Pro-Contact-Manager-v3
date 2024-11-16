@@ -99,7 +99,7 @@ export default {
             'tel:' + this.contacts[this.slctdCntctIndex].Connections[connIndex][connType].replace(/\D/g, '');
           const clmnIndex = this.slctdCntctIndex;
           try {
-            const response = await fetch(servr_url + 'calls', {
+            const response = await fetch(app_api_url + '/calls', {
               method: 'POST',
               headers: {
                 Authorization: access_token,

@@ -7,7 +7,7 @@
             <div class="credentials-group">
               <i class="cred-icon" :class="credInputs.icon"></i>
               <input
-                autocomplete="off"
+                autocomplete="new-password"
                 :placeholder="credInputs.placeholder"
                 :type="credInputType"
                 :value="credInfo"

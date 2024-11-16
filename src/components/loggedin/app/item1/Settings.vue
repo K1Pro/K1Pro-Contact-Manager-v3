@@ -161,7 +161,7 @@ export default {
 
     async patchUserData(authorization, IPList) {
       try {
-        const response = await fetch(servr_url + 'users', {
+        const response = await fetch(app_api_url + '/users', {
           method: 'PATCH',
           headers: {
             Authorization: access_token,

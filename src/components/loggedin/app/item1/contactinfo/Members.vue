@@ -158,7 +158,7 @@ export default {
           this.spinLogin = true;
           console.log(Object.keys(this.accountSettings.contactInfo.keys.Members)[0]);
           try {
-            const response = await fetch(servr_url + 'contacts', {
+            const response = await fetch(app_api_url + '/contacts', {
               method: 'POST',
               headers: {
                 Authorization: access_token,

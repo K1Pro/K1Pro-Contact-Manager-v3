@@ -127,7 +127,7 @@ export default {
         formData.append('Datetime', sendEmailDatetime);
         formData.append('CC', this.$refs['CC'].checked);
         try {
-          const response = await fetch(servr_url + 'emails', {
+          const response = await fetch(app_api_url + '/emails', {
             method: 'POST',
             headers: {
               Authorization: access_token,
