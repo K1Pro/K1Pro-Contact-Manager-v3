@@ -1,7 +1,7 @@
 <template>
   <div class="reports">
     <div class="reports-title">
-      Select report:
+      Report:
       <select v-if="userRole > 5" v-model="slctdUser">
         <option
           v-for="([activeUserKey, activeUserVal], activeUserIndex) in Object.entries(activeUserList)"

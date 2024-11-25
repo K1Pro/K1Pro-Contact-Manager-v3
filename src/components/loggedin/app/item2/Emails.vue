@@ -65,7 +65,6 @@ export default {
     templateBody() {
       let slctdTemplateBody;
       if (this.slctdTemplate != 'null') {
-        console.log(this.emails);
         // prettier-ignore
         slctdTemplateBody = this.emails[this.slctdTemplate].body
           .replaceAll('___FirstName___', this.contacts[this.slctdCntctIndex].Members[0]?.First)

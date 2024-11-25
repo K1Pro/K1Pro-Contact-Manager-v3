@@ -13,6 +13,7 @@
           class="app-grid-item1-panel"
           :is="sideMenuSlctdLnk[0]"
           @slctdReport="(el) => (reports = el)"
+          @slctdChatGroup="(el) => (chatGroup = el)"
           @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"
           @eventIndex="(el) => (eventIndex = el)"
           @tempFiltersDays="(el) => (tempFiltersDays = el)"
@@ -58,6 +59,8 @@ export default {
     return {
       accountSettings: {},
       activeUserList: {},
+      chatGroups: {},
+      slctd: { chatGroup: null },
       contacts: [],
       currentUpdate: null,
       daysRangeArr: [1, 3, 7, 14, 21, 28],
@@ -99,6 +102,8 @@ export default {
       // computed
       accountSettings: Vue.computed(() => this.accountSettings),
       activeUserList: Vue.computed(() => this.activeUserList),
+      chatGroups: Vue.computed(() => this.chatGroups),
+      slctd: Vue.computed(() => this.slctd),
       contacts: Vue.computed(() => this.contacts),
       days: Vue.computed(() => this.days),
       dsbld: Vue.computed(() => this.dsbld),
@@ -141,7 +146,7 @@ export default {
         ['fa fa-calendar-check', this.contacts[this.slctdCntctIndex]?.Tasks.length, 'Tasks', 'Calendar'],
         ['fa fa-repeat', this.contacts[this.slctdCntctIndex]?.RecurTasks.length, 'Recurring tasks', 'Calendar'],
         ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length > 0 ? '1' : null, 'Notes', 'Calendar'],
-        ['fa fa-comment', null, 'Chat', 'Chatpanel'],
+        ['fa fa-comment', null, 'Chat', 'Chatbox'],
         ['fa fa-chart-pie', null, 'Reports', 'Reportstable'],
         ['fa fa-sliders', null, 'Settings', 'Calendar'],
         ['fa fa-user-gear', 'post-' + accountlogin_url, 'Account', '_a_t', access_token, '_s_i', session_id],
@@ -161,7 +166,7 @@ export default {
               sidemenuCustomItemsArray.push(sidemenuItem);
             }
           });
-          sideMenuItemsArray.splice(5, 0, sidemenuCustomItemsArray);
+          sideMenuItemsArray.splice(4, 0, sidemenuCustomItemsArray);
         });
       }
       return sideMenuItemsArray;
@@ -257,7 +262,6 @@ export default {
         const userDataResJSON = await response.json();
         console.log(userDataResJSON);
         if (userDataResJSON.success) {
-          console.log(userDataResJSON);
           this.times.initialBrwsrTmstmp = new Date().getTime();
           this.times.initialUsrTmstmp = new Date(userDataResJSON.data.date_Y_m_d_H_i_s_z).getTime();
           this.times.updtngY_m_d_H_i_s_z = userDataResJSON.data.date_Y_m_d_H_i_s_z;
@@ -274,8 +278,10 @@ export default {
           //   ? 'Contact list with min. info'
           //   : this.userData.FirstName + '\'s tasks';
           this.accountSettings = userDataResJSON.data.accountSettings;
-          this.tempFiltersDays = userDataResJSON.data.userSettings.calendar.filters.days;
           this.activeUserList = userDataResJSON.data.activeUserList;
+          this.chatGroups = userDataResJSON.data.accountSettings.chats;
+          this.slctd.chatGroup = Object.keys(userDataResJSON.data.accountSettings.chats)[0];
+          this.tempFiltersDays = userDataResJSON.data.userSettings.calendar.filters.days;
           if (
             this.wndw.wdth < 768 &&
             userDataResJSON.data.userSettings.calendar.filters.days != 0 &&
