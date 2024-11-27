@@ -64,7 +64,6 @@ export default {
       slctd: { chatGroup: null },
       contacts: [],
       currentUpdate: null,
-      mstRcnt: { chat: null },
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       dsbld: false,
       emails: [],
@@ -78,6 +77,7 @@ export default {
         initialBrwsrTmstmp: '',
         updtngY_m_d_H_i_s_z: null,
         slctdTmstmp: '',
+        mstRcntChat: null,
       },
       roles: [
         'inactive',
@@ -106,7 +106,6 @@ export default {
       activeUserList: Vue.computed(() => this.activeUserList),
       chats: Vue.computed(() => this.chats),
       chatGroups: Vue.computed(() => this.chatGroups),
-      mstRcnt: Vue.computed(() => this.mstRcnt),
       slctd: Vue.computed(() => this.slctd),
       contacts: Vue.computed(() => this.contacts),
       days: Vue.computed(() => this.days),
@@ -138,6 +137,11 @@ export default {
   },
 
   computed: {
+    userChatGroups() {
+      return this.chatGroups !== null
+        ? Object.entries(this.chatGroups).filter(([key, value]) => value.includes(this.userData?.id))
+        : [];
+    },
     userList() {
       return { ...this.activeUserList, ...this.accountSettings.userList };
     },
@@ -235,28 +239,30 @@ export default {
             'Cache-Control': 'no-store',
           },
         });
-        const getCurrentupdateResJSON = await response.json();
-        if (getCurrentupdateResJSON.success) {
+        const resJSON = await response.json();
+        if (resJSON.success) {
           if (this.dsbld == true) {
             this.dsbld = false;
             this.showMsg('Internet restored');
           }
-          if (this.currentUpdate != getCurrentupdateResJSON.data.datetime && this.currentUpdate != null) {
-            this.getContacts(getCurrentupdateResJSON.data.datetime);
+          if (this.currentUpdate != resJSON.data.datetime && this.currentUpdate != null) {
+            this.getContacts(resJSON.data.datetime);
           } else if (this.currentUpdate == null) {
-            this.currentUpdate = getCurrentupdateResJSON.data.datetime;
+            this.currentUpdate = resJSON.data.datetime;
           }
-          if (this.mstRcnt.chat < getCurrentupdateResJSON.data.chatsdatetime) {
+          if (this.times.mstRcntChat < resJSON.data.chatsdatetime) {
             console.log('time to update chat');
-            this.getChats(this.mstRcnt.chat);
+            this.getChats(this.times.mstRcntChat);
           } else {
             console.log('dont need to update chat');
-            // this.mstRcnt.chat = getCurrentupdateResJSON.data.chatsdatetime;
+            // this.times.mstRcntChat = resJSON.data.chatsdatetime;
           }
+        } else {
+          this.deleteLogin();
         }
       } catch (error) {
         this.dsbld = true;
-        this.showMsg('Internet problem');
+        this.showMsg('Internet connection issue');
         console.log(error.toString());
       }
     },
@@ -271,13 +277,12 @@ export default {
           },
         });
         const userDataResJSON = await response.json();
-        console.log(userDataResJSON);
+        // console.log(userDataResJSON);
         if (userDataResJSON.success) {
           this.times.initialBrwsrTmstmp = new Date().getTime();
           this.times.initialUsrTmstmp = new Date(userDataResJSON.data.date_Y_m_d_H_i_s_z).getTime();
           this.times.updtngY_m_d_H_i_s_z = userDataResJSON.data.date_Y_m_d_H_i_s_z;
           this.times.slctdTmstmp = new Date(this.times.updtngY_m_d_H_i_s_z).getTime();
-          this.mstRcnt.chat = userDataResJSON.data.date_Y_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
 
           setInterval(() => {
             this.updateTime();
@@ -292,7 +297,6 @@ export default {
           this.accountSettings = userDataResJSON.data.accountSettings;
           this.activeUserList = userDataResJSON.data.activeUserList;
           this.chatGroups = userDataResJSON.data.accountSettings.chats;
-          this.chats = userDataResJSON.data.chats ? userDataResJSON.data.chats : [];
           this.slctd.chatGroup = Object.keys(userDataResJSON.data.accountSettings.chats)[0];
           this.tempFiltersDays = userDataResJSON.data.userSettings.calendar.filters.days;
           if (
@@ -302,22 +306,19 @@ export default {
           )
             userDataResJSON.data.userSettings.calendar.filters.days = 1;
           this.userSettings = userDataResJSON.data.userSettings;
-
           this.getContacts(null);
-          // this.getChats('1970-01-01T00:00:00');
           this.getEmailSettings();
         } else {
-          console.log('deletelogin');
-          // this.deleteLogin();
+          this.deleteLogin();
         }
       } catch (error) {
-        this.showMsg('Internet problem');
+        this.dsbld = true;
+        this.showMsg('Internet connection issue');
         console.log(error.toString());
       }
     },
 
     async deleteLogin() {
-      // possibly refactor once you have created a guest db
       try {
         const response = await fetch(login_api_url + '/sessions/' + session_id, {
           method: 'DELETE',
@@ -326,11 +327,9 @@ export default {
             'Cache-Control': 'no-store',
           },
         });
-        const deleteLoginResJSON = await response.json();
-        if (deleteLoginResJSON.success) location.reload();
+        location.reload();
       } catch (error) {
-        this.showMsg('Internet problem');
-        console.log(error.toString());
+        location.reload();
       }
     },
 
@@ -361,7 +360,8 @@ export default {
           this.currentUpdate = updateTime;
         }
       } catch (error) {
-        this.showMsg('Internet problem');
+        this.dsbld = true;
+        this.showMsg('Internet connection issue');
         console.log(error.toString());
       }
     },
@@ -377,14 +377,15 @@ export default {
         });
         const getChatsResJSON = await response.json();
         if (getChatsResJSON.success) {
-          console.log('retrieved chats');
-          console.log(getChatsResJSON.data.date_Y_m_d_H_i_s);
-          this.mstRcnt.chat = getChatsResJSON.data.date_Y_m_d_H_i_s;
-          getChatsResJSON.data.chats.forEach((chat) => {
-            this.chats.push(chat);
-          });
-
-          console.log(this.chats);
+          this.times.mstRcntChat = getChatsResJSON.data.date_Y_m_d_H_i_s;
+          if (updtngY_m_d_H_i_s_z == '1970-01-01T00:00:00') {
+            this.chats = getChatsResJSON.data.chats ? getChatsResJSON.data.chats : [];
+          } else {
+            getChatsResJSON.data.chats.forEach((chat) => {
+              this.chats.push(chat);
+              const newChat = new Notification(this.activeUserList[chat.userid][0] + ': ' + chat.chatmessage);
+            });
+          }
         }
       } catch (error) {
         this.showMsg(error.toString());
@@ -407,7 +408,8 @@ export default {
           this.emails = getEmailSettingsResJSON.data.emailSettings;
         }
       } catch (error) {
-        this.showMsg('Internet problem');
+        this.dsbld = true;
+        this.showMsg('Internet connection issue');
         console.log(error.toString());
       }
     },
@@ -503,6 +505,7 @@ export default {
     },
 
     async patchUserSettings(newUserSettings) {
+      const oldUserSettings = this.userSettings;
       this.userSettings = newUserSettings;
       try {
         const response = await fetch(app_api_url + '/settings', {
@@ -518,17 +521,19 @@ export default {
         });
         const patchUserSettingsResJSON = await response.json();
         if (!patchUserSettingsResJSON.success) {
-          this.showMsg('Settings update error');
+          this.userSettings = oldUserSettings;
+          this.showMsg('User settings not updated');
         }
       } catch (error) {
         console.log(error.toString());
-        this.showMsg('Settings update error');
+        this.showMsg('User settings not updated');
       }
     },
   },
 
   created() {
     this.getUserData();
+    this.getChats('1970-01-01T00:00:00');
   },
 };
 </script>

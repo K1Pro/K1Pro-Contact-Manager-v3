@@ -31,11 +31,12 @@ export default {
     },
   },
 
-  mounted() {
-    setTimeout(() => {
-      this.slctChatGroup(this.slctd.chatGroup);
-    }, 2000);
-  },
+  // mounted() {
+  //   setTimeout(() => {
+  //     console.log('what is this doing here?');
+  //     this.slctChatGroup(this.slctd.chatGroup);
+  //   }, 2000);
+  // },
 };
 </script>
 

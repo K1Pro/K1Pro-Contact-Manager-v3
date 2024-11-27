@@ -2,30 +2,40 @@
   <div class="chat-box">
     <div class="chat-box-title">Chat with {{ slctd.chatGroup }}</div>
     <div class="chat-box-body">
-      <template v-for="(chat, chatIndx) in chats">
-        <div v-if="JSON.stringify(chat.chatgroup) === JSON.stringify(chatGroups[slctd.chatGroup])">
-          <div
-            v-if="chats?.[chatIndx]?.chattime?.slice(5, 10) != chats?.[chatIndx - 1]?.chattime?.slice(5, 10)"
-            class="chat-box-body-time"
-          >
+      <div
+        v-for="(chat, chatIndx) in chats.filter(
+          (chat) => JSON.stringify(chat.chatgroup) === JSON.stringify(chatGroups[slctd.chatGroup])
+        )"
+      >
+        <div
+          v-if="chats?.[chatIndx]?.chattime?.slice(5, 10) != chats?.[chatIndx - 1]?.chattime?.slice(5, 10)"
+          class="chat-box-body-time"
+        >
+          <div class="chat-box-body-timedate">
             {{ this.usaDateFrmt(chat.chattime) }}
           </div>
-
-          <div
-            class="chat-box-body-msg"
-            :title="activeUserList[chat.userid][0] + ' sent this message on ' + chat.chattime.slice(11, 16)"
-            :class="chat.userid === userData.id ? 'chat-box-right' : 'chat-box-left'"
-          >
-            {{ chat.chatmessage }}
-            <div class="chat-box-body-date">{{ chat.chattime.slice(11, 16) }}</div>
-          </div>
         </div>
-      </template>
-      <div ref="bottomEl"></div>
+
+        <div
+          class="chat-box-body-msg"
+          :title="
+            activeUserList[chat.userid][0] +
+            ' sent this message on ' +
+            this.usaDateFrmt(chat.chattime) +
+            ' ' +
+            chat.chattime.slice(11, 16)
+          "
+          :class="chat.userid === userData.id ? 'chat-box-right' : 'chat-box-left'"
+        >
+          {{ chat.chatmessage }}
+          <div class="chat-box-body-date">{{ activeUserList[chat.userid][0] }} - {{ chat.chattime.slice(11, 16) }}</div>
+        </div>
+      </div>
+      <div ref="bottomChatEl"></div>
     </div>
     <div class="chat-box-new-message">
-      <textarea v-model="chatBoxMsg"></textarea>
-      <button :disabled="!chatBoxMsg" @click="sendChat">Send</button>
+      <textarea v-model="chatBoxMsg" v-on:keyup.enter="sendChat" :disabled="dsbld"></textarea>
+      <button :disabled="!chatBoxMsg || dsbld" @click="sendChat">Send</button>
     </div>
   </div>
 </template>
@@ -34,12 +44,11 @@
 export default {
   name: 'Chat box',
 
-  inject: ['activeUserList', 'chats', 'chatGroups', 'mstRcnt', 'showMsg', 'slctd', 'times', 'userData', 'usaDateFrmt'],
+  inject: ['activeUserList', 'chats', 'chatGroups', 'dsbld', 'showMsg', 'slctd', 'times', 'userData', 'usaDateFrmt'],
 
   data() {
     return {
       chatBoxMsg: '',
-      spinChat: false,
     };
   },
 
@@ -53,20 +62,19 @@ export default {
 
   methods: {
     async sendChat() {
-      const mstRcntChat = this.times.updtngY_m_d_H_i_s_z;
-      this.mstRcnt.chat = mstRcntChat.slice(0, 19).replace('T', ' ');
+      const chatBoxMsg = this.chatBoxMsg;
+      this.chatBoxMsg = '';
+      const mstRcntChatTime = this.times.updtngY_m_d_H_i_s_z;
+      this.times.mstRcntChat = mstRcntChatTime.slice(0, 19).replace('T', ' ');
       if (this.chats === null) this.chats = [];
       try {
         this.chats.push({
+          chattime: mstRcntChatTime.slice(0, 19).replace('T', ' '),
           userid: this.userData.id,
           chatgroup: this.chatGroups[this.slctd.chatGroup],
-          chattime: mstRcntChat.slice(0, 19).replace('T', ' '),
-          chatmessage: this.chatBoxMsg,
+          chatmessage: chatBoxMsg,
         });
-        // console.log(this.chatBoxMsg);
-        // console.log(this.userData.id);
-        // console.log(this.chatGroups[this.slctd.chatGroup]);
-        const response = await fetch(app_api_url + '/chats/' + mstRcntChat.slice(0, 19), {
+        const response = await fetch(app_api_url + '/chats/' + mstRcntChatTime.slice(0, 19), {
           method: 'POST',
           headers: {
             Authorization: access_token,
@@ -75,20 +83,16 @@ export default {
           },
           body: JSON.stringify({
             UserID: this.userData.id,
-            ChatName: this.slctd.chatGroup,
             ChatGroup: this.chatGroups[this.slctd.chatGroup],
-            // ChatTime: mstRcntChat.slice(0, 19).replace('T', ' '),
-            ChatMessage: this.chatBoxMsg,
+            ChatMessage: chatBoxMsg,
           }),
         });
         const sendChatResJSON = await response.json();
-        if (sendChatResJSON.success) {
-          this.chatBoxMsg = '';
+        if (!sendChatResJSON.success) {
+          this.showMsg('Chat was not sent');
         }
-        console.log(sendChatResJSON);
       } catch (error) {
-        this.spinChat = false;
-        this.showMsg(error.toString());
+        this.showMsg('Chat was not sent');
         console.log(error.toString());
       }
     },
@@ -97,14 +101,14 @@ export default {
   watch: {
     slctdChatAmount() {
       setTimeout(() => {
-        this.$refs.bottomEl.scrollIntoView();
+        this.$refs.bottomChatEl.scrollIntoView();
       }, 1);
     },
   },
 
   mounted() {
     setTimeout(() => {
-      this.$refs.bottomEl.scrollIntoView();
+      this.$refs.bottomChatEl.scrollIntoView();
     }, 1);
   },
 };
@@ -136,6 +140,15 @@ export default {
 }
 .chat-box-body-time {
   text-align: center;
+}
+.chat-box-body-timedate {
+  margin: 10px auto;
+  padding: 5px;
+  border: 1px solid rgb(176, 176, 176);
+  background-color: rgb(176, 176, 176);
+  color: white;
+  border-radius: 10px;
+  width: 75px;
 }
 .chat-box-body-msg {
   font-size: 20px;
