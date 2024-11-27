@@ -59,10 +59,12 @@ export default {
     return {
       accountSettings: {},
       activeUserList: {},
+      chats: [],
       chatGroups: {},
       slctd: { chatGroup: null },
       contacts: [],
       currentUpdate: null,
+      mstRcnt: { chat: null },
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       dsbld: false,
       emails: [],
@@ -102,7 +104,9 @@ export default {
       // computed
       accountSettings: Vue.computed(() => this.accountSettings),
       activeUserList: Vue.computed(() => this.activeUserList),
+      chats: Vue.computed(() => this.chats),
       chatGroups: Vue.computed(() => this.chatGroups),
+      mstRcnt: Vue.computed(() => this.mstRcnt),
       slctd: Vue.computed(() => this.slctd),
       contacts: Vue.computed(() => this.contacts),
       days: Vue.computed(() => this.days),
@@ -242,6 +246,13 @@ export default {
           } else if (this.currentUpdate == null) {
             this.currentUpdate = getCurrentupdateResJSON.data.datetime;
           }
+          if (this.mstRcnt.chat < getCurrentupdateResJSON.data.chatsdatetime) {
+            console.log('time to update chat');
+            this.getChats(this.mstRcnt.chat);
+          } else {
+            console.log('dont need to update chat');
+            // this.mstRcnt.chat = getCurrentupdateResJSON.data.chatsdatetime;
+          }
         }
       } catch (error) {
         this.dsbld = true;
@@ -266,6 +277,7 @@ export default {
           this.times.initialUsrTmstmp = new Date(userDataResJSON.data.date_Y_m_d_H_i_s_z).getTime();
           this.times.updtngY_m_d_H_i_s_z = userDataResJSON.data.date_Y_m_d_H_i_s_z;
           this.times.slctdTmstmp = new Date(this.times.updtngY_m_d_H_i_s_z).getTime();
+          this.mstRcnt.chat = userDataResJSON.data.date_Y_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
 
           setInterval(() => {
             this.updateTime();
@@ -280,6 +292,7 @@ export default {
           this.accountSettings = userDataResJSON.data.accountSettings;
           this.activeUserList = userDataResJSON.data.activeUserList;
           this.chatGroups = userDataResJSON.data.accountSettings.chats;
+          this.chats = userDataResJSON.data.chats ? userDataResJSON.data.chats : [];
           this.slctd.chatGroup = Object.keys(userDataResJSON.data.accountSettings.chats)[0];
           this.tempFiltersDays = userDataResJSON.data.userSettings.calendar.filters.days;
           if (
@@ -291,6 +304,7 @@ export default {
           this.userSettings = userDataResJSON.data.userSettings;
 
           this.getContacts(null);
+          // this.getChats('1970-01-01T00:00:00');
           this.getEmailSettings();
         } else {
           console.log('deletelogin');
@@ -348,6 +362,32 @@ export default {
         }
       } catch (error) {
         this.showMsg('Internet problem');
+        console.log(error.toString());
+      }
+    },
+
+    async getChats(updtngY_m_d_H_i_s_z) {
+      try {
+        const response = await fetch(app_api_url + '/chats/' + updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T'), {
+          headers: {
+            Authorization: access_token,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          },
+        });
+        const getChatsResJSON = await response.json();
+        if (getChatsResJSON.success) {
+          console.log('retrieved chats');
+          console.log(getChatsResJSON.data.date_Y_m_d_H_i_s);
+          this.mstRcnt.chat = getChatsResJSON.data.date_Y_m_d_H_i_s;
+          getChatsResJSON.data.chats.forEach((chat) => {
+            this.chats.push(chat);
+          });
+
+          console.log(this.chats);
+        }
+      } catch (error) {
+        this.showMsg(error.toString());
         console.log(error.toString());
       }
     },

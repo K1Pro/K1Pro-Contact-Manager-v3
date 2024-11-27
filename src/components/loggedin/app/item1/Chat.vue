@@ -3,8 +3,8 @@
     <div class="chat-title">Chat</div>
     <div class="chat-body">
       <div
-        v-for="([chatGroup, chatGroupMembers], chatGroupIndx) in Object.entries(chatGroups).filter(([key, value]) =>
-          value.includes(userData.id)
+        v-for="([chatGroup, chatGroupMembers], chatGroupIndx) in Object.entries(accountSettings.chats).filter(
+          ([key, value]) => value.includes(userData.id)
         )"
         class="chat-groups"
         :class="[slctd.chatGroup == chatGroup ? 'chat-groups-active' : 'chat' + (chatGroupIndx % 2)]"
@@ -20,12 +20,21 @@
 export default {
   name: 'Chat',
 
-  inject: ['chatGroups', 'slctd', 'userData'],
+  inject: ['accountSettings', 'patchUserSettings', 'slctd', 'times', 'userData', 'userSettings'],
 
   methods: {
     slctChatGroup(chatGroup) {
       this.slctd.chatGroup = chatGroup;
+      const cloneUserSettings = this.userSettings;
+      cloneUserSettings.chats[chatGroup] = this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
+      this.patchUserSettings(cloneUserSettings);
     },
+  },
+
+  mounted() {
+    setTimeout(() => {
+      this.slctChatGroup(this.slctd.chatGroup);
+    }, 2000);
   },
 };
 </script>
