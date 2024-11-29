@@ -14,7 +14,7 @@
     <div class="reports-body">
       <div
         class="reports-report"
-        :class="[reports.includes('user_Contact report:' + slctdUser) ? 'reports-active' : 'reports0']"
+        :class="[slctd.report.includes('user_Contact report:' + slctdUser) ? 'reports-active' : 'reports0']"
         @click="selectReport('user_Contact report:' + slctdUser)"
       >
         Contact report: {{ activeUserList[slctdUser][0] }}
@@ -25,7 +25,7 @@
           v-if="roles.findIndex((role) => role === activeUserList[slctdUser][1]) > report.split('_')[0]"
           class="reports-report"
           :class="[
-            reports.includes(
+            slctd.report.includes(
               report.split('_')[1] ? report.split('_')[1] + '_' + report.split('_')[2] : report.split('_')[2]
             )
               ? 'reports-active'
@@ -43,7 +43,7 @@
 
       <div
         class="reports-report"
-        :class="[reports.includes('user_Task report:' + slctdUser) ? 'reports-active' : 'reports0']"
+        :class="[slctd.report.includes('user_Task report:' + slctdUser) ? 'reports-active' : 'reports0']"
         @click="selectReport('user_Task report:' + slctdUser)"
       >
         Task report: {{ activeUserList[slctdUser][0] }}
@@ -51,7 +51,7 @@
 
       <div
         class="reports-report"
-        :class="[reports.includes('Task stats:' + slctdUser) ? 'reports-active' : 'reports1']"
+        :class="[slctd.report.includes('Task stats:' + slctdUser) ? 'reports-active' : 'reports1']"
         @click="selectReport('Task stats:' + slctdUser)"
       >
         Task stats: {{ activeUserList[slctdUser][0] }}
@@ -62,7 +62,7 @@
           v-if="roles.findIndex((role) => role === activeUserList[slctdUser][1]) > report.split('_')[0]"
           class="reports-report"
           :class="[
-            reports.includes(report.split('_')[1])
+            slctd.report.includes(report.split('_')[1])
               ? 'reports-active'
               : 'reports' + ((includedReports.length + Object.entries(activeUserList).length + reportIndex) % 2),
           ]"
@@ -79,15 +79,13 @@
 export default {
   name: 'Reports',
 
-  emits: ['slctdReport'],
-
   inject: [
     'accountSettings',
     'activeUserList',
     'appName',
     'contacts',
-    'reports',
     'roles',
+    'slctd',
     'slctdCntctIndex',
     'userData',
     'userRole',
@@ -114,7 +112,7 @@ export default {
 
   methods: {
     selectReport(event) {
-      this.$emit('slctdReport', event.trim());
+      this.slctd.report = event.trim();
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }

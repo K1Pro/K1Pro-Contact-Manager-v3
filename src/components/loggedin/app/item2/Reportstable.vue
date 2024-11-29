@@ -9,10 +9,10 @@
     <table>
       <template
         v-if="
-          reports.includes('(min. info)') ||
-          reports.includes('(more info)') ||
-          reports.includes('cntct_Task report:') ||
-          reports.includes('user_Contact report:')
+          slctd.report.includes('(min. info)') ||
+          slctd.report.includes('(more info)') ||
+          slctd.report.includes('cntct_Task report:') ||
+          slctd.report.includes('user_Contact report:')
         "
       >
         <thead v-if="tblCntnt[2].length > 0">
@@ -24,7 +24,9 @@
           <tr
             v-for="(tblRow, tblRowIndx) in tblCntnt[2]"
             :class="
-              reports.includes('cntct_Task report:') ? 'taskCell' + (tblRowIndx % 2) + '1' : 'cell' + (tblRowIndx % 2)
+              slctd.report.includes('cntct_Task report:')
+                ? 'taskCell' + (tblRowIndx % 2) + '1'
+                : 'cell' + (tblRowIndx % 2)
             "
           >
             <td v-if="tblCntnt[1]" class="cellHover" @click="selectContact(tblCntnt[1][tblRowIndx][1])">
@@ -38,7 +40,7 @@
         <p v-else>Empty</p>
       </template>
 
-      <template v-if="reports.includes('Task report: All') || reports.includes('user_Task report:')">
+      <template v-if="slctd.report.includes('Task report: All') || slctd.report.includes('user_Task report:')">
         <thead>
           <tr>
             <th v-for="tblTtl in tblCntnt[0]">{{ tblTtl }}</th>
@@ -57,7 +59,7 @@
         </tbody>
       </template>
 
-      <template v-if="reports == 'Contact categories'">
+      <template v-if="slctd.report == 'Contact categories'">
         <thead>
           <tr>
             <th style="width: 15%">Date</th>
@@ -85,7 +87,7 @@
         </tbody>
       </template>
 
-      <template v-if="reports.includes('Task stats:')">
+      <template v-if="slctd.report.includes('Task stats:')">
         <thead>
           <tr>
             <th style="width: 15%">Date</th>
@@ -147,7 +149,7 @@ export default {
     'contacts',
     'userSettings',
     'patchUserSettings',
-    'reports',
+    'slctd',
     'slctdCntctIndex',
     'tbCntntWdth',
     'times',
@@ -164,7 +166,7 @@ export default {
       let tblHdrs = [];
       let nmbrClmn = [];
       let tblClmns = [];
-      if (this.reports.includes('(min. info)')) {
+      if (this.slctd.report.includes('(min. info)')) {
         // Contact report: (min. info)
         cloneCntcts.forEach((contact) => {
           tblClmns.push([
@@ -186,7 +188,7 @@ export default {
             cntct.splice(0, 1);
           });
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
-      } else if (this.reports.includes('(more info)')) {
+      } else if (this.slctd.report.includes('(more info)')) {
         // (more info)
         cloneCntcts.forEach((contact) => {
           const addressArray = contact.Addresses[0]
@@ -220,10 +222,10 @@ export default {
           });
 
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
-      } else if (this.reports.includes('user_Contact report:')) {
+      } else if (this.slctd.report.includes('user_Contact report:')) {
         // user_Contact report:
         cloneCntcts.forEach((contact) => {
-          if (contact.Assigned == this.reports.split(':')[1]) {
+          if (contact.Assigned == this.slctd.report.split(':')[1]) {
             tblClmns.push([
               contact.id,
               contact.Members[0].Name ? contact.Members[0].Name : '',
@@ -244,7 +246,7 @@ export default {
             cntct.splice(0, 1);
           });
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
-      } else if (this.reports == 'Task report: All') {
+      } else if (this.slctd.report == 'Task report: All') {
         // Task report: All
         nmbrClmn = null;
         cloneCntcts.forEach((contact) => {
@@ -262,12 +264,12 @@ export default {
         });
         tblHdrs = ['#', 'Contact', 'Date', 'Owner', 'Description'];
         tblClmns.sort((a, b) => b[3].localeCompare(a[3]));
-      } else if (this.reports.includes('user_Task report:')) {
+      } else if (this.slctd.report.includes('user_Task report:')) {
         // 'user_Task report: '
         nmbrClmn = null;
         cloneCntcts.forEach((contact) => {
           contact.Tasks.forEach((task) => {
-            if (task.Date && this.reports.split(':')[1] == task?.Assign)
+            if (task.Date && this.slctd.report.split(':')[1] == task?.Assign)
               tblClmns.push([
                 contact?.id,
                 task?.Status == '1' ? 1 : 0,
@@ -280,7 +282,7 @@ export default {
         });
         tblHdrs = ['#', 'Contact', 'Date', 'Owner', 'Description'];
         tblClmns.sort((a, b) => b[3].localeCompare(a[3]));
-      } else if (this.reports == 'Contact categories') {
+      } else if (this.slctd.report == 'Contact categories') {
         nmbrClmn = null;
         const cntctCategArray = {};
         cloneCntcts.forEach((contact) => {
@@ -292,7 +294,7 @@ export default {
           }
         });
         tblClmns.push(cntctCategArray);
-      } else if (this.reports.includes('cntct_Task report:')) {
+      } else if (this.slctd.report.includes('cntct_Task report:')) {
         // 'cntct_Task report'
         nmbrClmn = null;
         this.contacts[this.slctdCntctIndex].Log.forEach((log, logIndex) => {
@@ -306,10 +308,10 @@ export default {
           ]);
         });
         tblHdrs = ['#', 'Contact', 'Category', 'Date', 'Activity', 'Owner'];
-      } else if (this.reports.includes('Task stats:')) {
+      } else if (this.slctd.report.includes('Task stats:')) {
         // 'Task stats:'
         nmbrClmn = null;
-        let userID = this.reports.split(':')[1];
+        let userID = this.slctd.report.split(':')[1];
         let currentDate = new Date(this.times.initialUsrTmstmp);
         let decreasingDate;
         let emailCount, callCount, taskCount;
@@ -380,7 +382,7 @@ export default {
         csv.push(row.join(','));
       });
       const csv_string = csv.join('\n');
-      const filename = new Date().toLocaleDateString() + '_' + this.reports + '.csv';
+      const filename = new Date().toLocaleDateString() + '_' + this.slctd.report + '.csv';
       const link = document.createElement('a');
       link.style.display = 'none';
       link.setAttribute('target', '_blank');

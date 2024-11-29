@@ -10,7 +10,7 @@
           </div>
           <div class="tasks-title-grid-item2">
             <button
-              v-if="eventIndex === null"
+              v-if="slctd.eventIndx === null"
               @click="
                 sortAscDesc = !sortAscDesc;
                 taskMemo = taskMemo + 1;
@@ -113,7 +113,7 @@
         </div>
       </template>
       <div
-        v-if="eventIndex !== null && contacts[slctdCntctIndex].Tasks.length > 1"
+        v-if="slctd.eventIndx !== null && contacts[slctdCntctIndex].Tasks.length > 1"
         class="tasks-body"
         style="background-color: lightblue; text-align: right"
       >
@@ -136,15 +136,13 @@
 export default {
   name: 'Tasks',
 
-  emits: ['eventIndex'],
-
   inject: [
     'contacts',
     'appName',
     'deleteContactInfo',
     'dsbld',
-    'eventIndex',
     'patchContactInfo',
+    'slctd',
     'slctdCntctIndex',
     'slctdY_m_d',
     'times',
@@ -155,11 +153,11 @@ export default {
 
   computed: {
     Tasks() {
-      return this.eventIndex !== null
+      return this.slctd.eventIndx !== null
         ? [
             {
-              ...this.contacts[this.slctdCntctIndex].Tasks[this.eventIndex],
-              clmnIndex: this.eventIndex,
+              ...this.contacts[this.slctdCntctIndex].Tasks[this.slctd.eventIndx],
+              clmnIndex: this.slctd.eventIndx,
             },
           ]
         : this.sortAscDesc
@@ -189,7 +187,7 @@ export default {
       ];
       const cloneCntct = this.contacts[this.slctdCntctIndex];
       cloneCntct.Tasks = newTasks;
-      this.$emit('eventIndex', this.contacts[this.slctdCntctIndex].Tasks.length - 1);
+      this.slctd.eventIndx = this.contacts[this.slctdCntctIndex].Tasks.length - 1;
       this.patchContactInfo(
         this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
         this.clmn,
@@ -218,13 +216,13 @@ export default {
       }
     },
     showAllTasks() {
-      this.$emit('eventIndex', null);
+      this.slctd.eventIndx = null;
       this.taskMemo = this.taskMemo + 1;
     },
   },
 
   watch: {
-    eventIndex() {
+    'slctd.eventIndx'() {
       this.taskMemo = this.taskMemo + 1;
     },
     slctdCntctIndex() {

@@ -44,22 +44,19 @@
 export default {
   name: 'Navigation',
 
-  emits: ['slctdDayIndex', 'slctdTmstmp'],
-
-  inject: ['days', 'slctdY_m_d', 'times', 'userSettings'],
+  inject: ['days', 'slctd', 'slctdY_m_d', 'times', 'userSettings'],
 
   methods: {
     changeDate(event) {
       if (event.target.value != this.slctdY_m_d) {
-        this.$emit(
-          'slctdDayIndex',
-          this.days.includes(event.target.value) ? this.days.findIndex((day) => day == event.target.value) : null
-        );
-        this.$emit('slctdTmstmp', new Date(event.target.value + 'T00:00:00').getTime());
+        this.slctd.dayIndex = this.days.includes(event.target.value)
+          ? this.days.findIndex((day) => day == event.target.value)
+          : null;
+        this.slctd.tmstmp = new Date(event.target.value + 'T00:00:00').getTime();
       }
     },
     getTime(newDate) {
-      this.$emit('slctdTmstmp', this.times.slctdTmstmp + newDate * 86400000);
+      this.slctd.tmstmp = this.slctd.tmstmp + newDate * 86400000;
     },
   },
 };

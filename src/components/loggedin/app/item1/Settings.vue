@@ -91,6 +91,7 @@ export default {
     'daysRangeArr',
     'patchUserSettings',
     'roles',
+    'slctd',
     'userData',
     'userList',
     'userRole',
@@ -98,7 +99,7 @@ export default {
     'wndw',
   ],
 
-  emits: ['slctdDayIndex', 'tempFiltersDays'],
+  emits: ['tempFiltersDays'],
 
   data() {
     return { userSlctd: this.userData.id };
@@ -115,7 +116,7 @@ export default {
       const cloneUserSettings = this.userSettings;
       cloneUserSettings.calendar.filters.days = event.target.value;
       this.$emit('tempFiltersDays', event.target.value);
-      this.$emit('slctdDayIndex', null);
+      this.slctd.dayIndex = null;
       this.patchUserSettings(cloneUserSettings);
     },
     ownersChange(event) {

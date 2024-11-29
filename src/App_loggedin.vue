@@ -7,17 +7,13 @@
         <sidemenu
           :sideMenuItems
           :wndw
-          @sideMenuSlctdLnk="(el) => ((eventIndex = null), (sideMenuSlctdLnk = el))"
+          @sideMenuSlctdLnk="(el) => ((slctd.eventIndx = null), (sideMenuSlctdLnk = el))"
         ></sidemenu>
         <component
           class="app-grid-item1-panel"
           :is="sideMenuSlctdLnk[0]"
-          @slctdReport="(el) => (reports = el)"
-          @slctdChatGroup="(el) => (chatGroup = el)"
           @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"
-          @eventIndex="(el) => (eventIndex = el)"
           @tempFiltersDays="(el) => (tempFiltersDays = el)"
-          @slctdDayIndex="(el) => (slctdDayIndex = el)"
           @contacts="(el) => (contacts = el)"
         ></component>
       </div>
@@ -34,10 +30,7 @@
         <component
           :is="sideMenuSlctdLnk[1]"
           @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"
-          @eventIndex="(el) => (eventIndex = el)"
           @tempFiltersDays="(el) => (tempFiltersDays = el)"
-          @slctdDayIndex="(el) => (slctdDayIndex = el)"
-          @slctdTmstmp="(el) => (times.slctdTmstmp = el)"
         ></component>
       </div>
     </div>
@@ -47,6 +40,11 @@
       <div id="loader"></div>
     </div>
   </template>
+  <form action="" method="POST" sytle="display: none" ref="deleteLogin">
+    <input type="hidden" name="loginMessage" ref="loginMessage" value="Logged out" />
+    <input type="hidden" name="_a_t" value="" />
+    <input type="hidden" name="_s_i" value="" />
+  </form>
 </template>
 
 <script>
@@ -57,27 +55,14 @@ export default {
 
   data() {
     return {
+      appName: app_name,
       accountSettings: {},
       activeUserList: {},
       chats: [],
-      slctd: { chatGroup: null },
       contacts: [],
-      currentUpdate: null,
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       dsbld: false,
       emails: [],
-      eventIndex: null,
-      reports: null,
-      slctdDayIndex: null,
-      sideMenuSlctdLnk: ['Contactinfo', 'Calendar'],
-      tempFiltersDays: null,
-      times: {
-        initialUsrTmstmp: '',
-        initialBrwsrTmstmp: '',
-        updtngY_m_d_H_i_s_z: null,
-        slctdTmstmp: '',
-        mstRcntChat: null,
-      },
       roles: [
         'inactive',
         'guest',
@@ -91,10 +76,20 @@ export default {
         'manager',
         'admin',
       ],
+      slctd: { chatGroup: null, dayIndex: null, eventIndx: null, report: null, tmstmp: '' },
+      sideMenuSlctdLnk: ['Contactinfo', 'Calendar'],
+      tempFiltersDays: null,
+      times: {
+        initialUsrTmstmp: '',
+        initialBrwsrTmstmp: '',
+        updtngY_m_d_H_i_s_z: null,
+        mstRcntChat: null,
+        mstRcntCntctUpdt: null,
+      },
+
       updating: 0,
       userData: {},
       userSettings: {},
-      appName: app_name,
     };
   },
 
@@ -104,16 +99,14 @@ export default {
       accountSettings: Vue.computed(() => this.accountSettings),
       activeUserList: Vue.computed(() => this.activeUserList),
       chats: Vue.computed(() => this.chats),
-      slctd: Vue.computed(() => this.slctd),
       contacts: Vue.computed(() => this.contacts),
       days: Vue.computed(() => this.days),
       dsbld: Vue.computed(() => this.dsbld),
       emails: Vue.computed(() => this.emails),
-      eventIndex: Vue.computed(() => this.eventIndex),
       firstDayTmstmp: Vue.computed(() => this.firstDayTmstmp),
       newChats: Vue.computed(() => this.newChats),
-      reports: Vue.computed(() => this.reports),
       sideMenuSlctdLnk: Vue.computed(() => this.sideMenuSlctdLnk),
+      slctd: Vue.computed(() => this.slctd),
       slctdCntctIndex: Vue.computed(() => this.slctdCntctIndex),
       slctdY_m_d: Vue.computed(() => this.slctdY_m_d),
       tbCntntWdth: Vue.computed(() => this.tbCntntWdth),
@@ -124,8 +117,8 @@ export default {
       userRole: Vue.computed(() => this.userRole),
       userSettings: Vue.computed(() => this.userSettings),
       // static
-      daysRangeArr: this.daysRangeArr,
       appName: this.appName,
+      daysRangeArr: this.daysRangeArr,
       roles: this.roles,
       // methods
       deleteContactInfo: this.deleteContactInfo,
@@ -139,20 +132,12 @@ export default {
     newChats() {
       let newChats = {};
       if (this.userSettings?.chats && this.chats) {
-        // console.log(this.chats);
         Object.entries(this.userSettings.chats).forEach(([chatGroupName, mstRcntChatTime], chatIndex) => {
-          // console.log(chatIndex);
-          // console.log(this.accountSettings.chats[chatGroupName]);
-          // console.log(mstRcntChatTime);
           this.chats.forEach((chat) => {
             if (
               JSON.stringify(chat.chatgroup) === JSON.stringify(this.accountSettings.chats[chatGroupName]) &&
               chat.chattime > mstRcntChatTime
             ) {
-              // console.log('-----------');
-              // console.log(mstRcntChatTime);
-              // console.log(chat.chattime);
-              // console.log(chat.chattime > mstRcntChatTime);
               if (!newChats[chatGroupName]) {
                 newChats[chatGroupName] = 1;
               } else {
@@ -210,26 +195,26 @@ export default {
         : Math.round((this.wndw.wdth - 75.02) * 100) / 100;
     },
     firstDayTmstmp() {
-      const cmptdDayNumber = this.slctdDayIndex != null ? this.slctdDayIndex : 1;
+      const cmptdDayNumber = this.slctd.dayIndex != null ? this.slctd.dayIndex : 1;
       const cmptdDayOfTheWeek = this.dayOfTheWeek == 0 ? 6 : this.dayOfTheWeek - 1;
-      const cmptdNoOfWeeks = this.slctdDayIndex != null ? Math.floor(this.slctdDayIndex / 7) : 1;
+      const cmptdNoOfWeeks = this.slctd.dayIndex != null ? Math.floor(this.slctd.dayIndex / 7) : 1;
       return this.userSettings.calendar.filters.days == 0
-        ? this.times.slctdTmstmp
+        ? this.slctd.tmstmp
         : this.userSettings.calendar.filters.days == 1
-        ? this.times.slctdTmstmp - cmptdDayNumber * 86400000
+        ? this.slctd.tmstmp - cmptdDayNumber * 86400000
         : this.userSettings.calendar.filters.days == 2
-        ? this.times.slctdTmstmp - cmptdDayOfTheWeek * 86400000
-        : this.times.slctdTmstmp - cmptdNoOfWeeks * 604800000 - cmptdDayOfTheWeek * 86400000;
+        ? this.slctd.tmstmp - cmptdDayOfTheWeek * 86400000
+        : this.slctd.tmstmp - cmptdNoOfWeeks * 604800000 - cmptdDayOfTheWeek * 86400000;
     },
     slctdY_m_d() {
       // prettier-ignore
-      return (new Date(this.times.slctdTmstmp).getFullYear() + '-' + (new Date(this.times.slctdTmstmp).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(this.times.slctdTmstmp).getDate().toString().padStart(2, '0'));
+      return (new Date(this.slctd.tmstmp).getFullYear() + '-' + (new Date(this.slctd.tmstmp).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(this.slctd.tmstmp).getDate().toString().padStart(2, '0'));
     },
     slctdCntctIndex() {
       return this.contacts.findIndex((contact) => contact.id == this.userSettings.selectedContactIndex);
     },
     dayOfTheWeek() {
-      return new Date(this.times.slctdTmstmp).getDay(); // 0 is Sunday, 1 is Monday, 2 is Tuesday, ...,
+      return new Date(this.slctd.tmstmp).getDay(); // 0 is Sunday, 1 is Monday, 2 is Tuesday, ...,
     },
     dayIndex() {
       return this.days.findIndex((day) => day == this.slctdY_m_d);
@@ -270,13 +255,14 @@ export default {
             this.dsbld = false;
             this.showMsg('Internet restored');
           }
-          if (this.currentUpdate != resJSON.data.datetime && this.currentUpdate != null) {
+          if (this.times.mstRcntCntctUpdt != resJSON.data.datetime && this.times.mstRcntCntctUpdt != null) {
             this.getContacts(resJSON.data.datetime);
-          } else if (this.currentUpdate == null) {
-            this.currentUpdate = resJSON.data.datetime;
+          } else if (this.times.mstRcntCntctUpdt === null) {
+            this.times.mstRcntCntctUpdt = resJSON.data.datetime;
           }
           if (this.times.mstRcntChat < resJSON.data.chatsdatetime) this.getChats(this.times.mstRcntChat);
         } else {
+          this.$refs.loginMessage.value = resJSON.messages[0] ? resJSON.messages[0] : 'Logged out with an error';
           this.deleteLogin();
         }
       } catch (error) {
@@ -301,20 +287,22 @@ export default {
           this.times.initialBrwsrTmstmp = new Date().getTime();
           this.times.initialUsrTmstmp = new Date(userDataResJSON.data.date_Y_m_d_H_i_s_z).getTime();
           this.times.updtngY_m_d_H_i_s_z = userDataResJSON.data.date_Y_m_d_H_i_s_z;
-          this.times.slctdTmstmp = new Date(this.times.updtngY_m_d_H_i_s_z).getTime();
+
+          this.userData = userDataResJSON.data.user;
+
+          this.slctd.chatGroup = Object.keys(userDataResJSON.data.accountSettings.chats)[0];
+          this.slctd.report = 'user_Contact report:' + this.userData.id;
+          this.slctd.tmstmp = new Date(this.times.updtngY_m_d_H_i_s_z).getTime();
 
           setInterval(() => {
             this.updateTime();
           }, 6000);
 
-          this.userData = userDataResJSON.data.user;
-          this.reports = 'user_Contact report:' + this.userData.id;
           // this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 5
           //   ? 'Contact list with min. info'
           //   : this.userData.FirstName + '\'s tasks';
           this.accountSettings = userDataResJSON.data.accountSettings;
           this.activeUserList = userDataResJSON.data.activeUserList;
-          this.slctd.chatGroup = Object.keys(userDataResJSON.data.accountSettings.chats)[0];
           this.tempFiltersDays = userDataResJSON.data.userSettings.calendar.filters.days;
           if (
             this.wndw.wdth < 768 &&
@@ -326,6 +314,7 @@ export default {
           this.getContacts(null);
           this.getEmailSettings();
         } else {
+          this.$refs.loginMessage.value = resJSON.messages[0] ? resJSON.messages[0] : 'Logged out with an error';
           this.deleteLogin();
         }
       } catch (error) {
@@ -344,9 +333,13 @@ export default {
             'Cache-Control': 'no-store',
           },
         });
-        location.reload();
+        const resJSON = await response.json();
+        this.$refs.loginMessage.value =
+          this.$refs.loginMessage.value && resJSON.success ? this.$refs.loginMessage.value : 'Logged out with an error';
+        this.$refs.deleteLogin.submit();
       } catch (error) {
-        location.reload();
+        this.$refs.loginMessage.value = 'Logged out with an error';
+        this.$refs.deleteLogin.submit();
       }
     },
 
@@ -374,7 +367,7 @@ export default {
               this.contacts = getContactsResJSON.data.contacts;
             }
           }
-          this.currentUpdate = updateTime;
+          this.mstRcntCntctUpdt = updateTime;
         }
       } catch (error) {
         this.dsbld = true;

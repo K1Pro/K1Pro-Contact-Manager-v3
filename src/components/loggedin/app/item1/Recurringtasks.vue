@@ -10,7 +10,7 @@
           </div>
           <div class="tasks-title-grid-item2">
             <button
-              v-if="eventIndex === null"
+              v-if="slctd.eventIndx === null"
               @click="
                 sortAscDesc = !sortAscDesc;
                 recurTaskMemo = recurTaskMemo + 1;
@@ -185,7 +185,7 @@
         </div>
       </template>
       <div
-        v-if="eventIndex !== null && contacts[slctdCntctIndex].RecurTasks.length > 1"
+        v-if="slctd.eventIndx !== null && contacts[slctdCntctIndex].RecurTasks.length > 1"
         class="recur-tasks-body"
         style="background-color: lightblue; text-align: right"
       >
@@ -208,16 +208,14 @@
 export default {
   name: 'Recur Tasks',
 
-  emits: ['eventIndex'],
-
   inject: [
     'appName',
     'contacts',
     'deleteContactInfo',
     'dsbld',
-    'eventIndex',
     'patchContactInfo',
     'slctdCntctIndex',
+    'slctd',
     'slctdY_m_d',
     'times',
     'userData',
@@ -227,11 +225,11 @@ export default {
 
   computed: {
     RecurTasks() {
-      return this.eventIndex !== null
+      return this.slctd.eventIndx !== null
         ? [
             {
-              ...this.contacts[this.slctdCntctIndex].RecurTasks[this.eventIndex],
-              clmnIndex: this.eventIndex,
+              ...this.contacts[this.slctdCntctIndex].RecurTasks[this.slctd.eventIndx],
+              clmnIndex: this.slctd.eventIndx,
             },
           ]
         : this.sortAscDesc
@@ -263,7 +261,7 @@ export default {
       ];
       const cloneCntct = this.contacts[this.slctdCntctIndex];
       cloneCntct.RecurTasks = newRecurTasks;
-      this.$emit('eventIndex', this.contacts[this.slctdCntctIndex].RecurTasks.length - 1);
+      this.slctd.eventIndx = this.contacts[this.slctdCntctIndex].RecurTasks.length - 1;
       this.patchContactInfo(
         this.slctdY_m_d,
         this.clmn,
@@ -332,13 +330,13 @@ export default {
       }
     },
     showAllRecurTasks() {
-      this.$emit('eventIndex', null);
+      this.slctd.eventIndx = null;
       this.recurTaskMemo = this.recurTaskMemo + 1;
     },
   },
 
   watch: {
-    eventIndex() {
+    'slctd.eventIndx'() {
       this.recurTaskMemo = this.recurTaskMemo + 1;
     },
     slctdCntctIndex() {

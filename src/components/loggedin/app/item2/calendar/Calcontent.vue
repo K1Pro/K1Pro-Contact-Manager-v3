@@ -25,7 +25,7 @@
           },
           {
             activeTask:
-              calContactTask.EventIndex == eventIndex &&
+              calContactTask.EventIndex == slctd.eventIndx &&
               calContactTask.ContactID == userSettings.selectedContactIndex &&
               calContactTask.Type == sideMenuSlctdLnk[0],
           },
@@ -73,15 +73,15 @@
 export default {
   name: 'Day Content',
 
-  emits: ['eventIndex', 'sideMenuSlctdLnk'],
+  emits: ['sideMenuSlctdLnk'],
 
   inject: [
     'contacts',
     'days',
-    'eventIndex',
     'firstDayTmstmp',
     'patchContactInfo',
     'patchUserSettings',
+    'slctd',
     'sideMenuSlctdLnk',
     'times',
     'wndw',
@@ -166,7 +166,7 @@ export default {
 
   methods: {
     selectContact(ContactID, sidemenuLink, eventIndex) {
-      this.$emit('eventIndex', eventIndex);
+      this.slctd.eventIndx = eventIndex;
       this.$emit('sideMenuSlctdLnk', [sidemenuLink, 'Calendar']);
       const cloneUserSettings = this.userSettings;
       cloneUserSettings.selectedContactIndex = ContactID;
@@ -199,8 +199,8 @@ export default {
         cloneCntct[clmn][clmnIndex][key] = eventDateTime;
         cloneCntct[clmn][clmnIndex].Update = this.userData.id;
         if (this.sideMenuSlctdLnk[0] == 'Tasks') {
-          this.$emit('eventIndex', null);
-          this.$emit('eventIndex', clmnIndex);
+          this.slctd.eventIndx = null;
+          this.slctd.eventIndx = clmnIndex;
         }
         // this.taskMemo = this.taskMemo + 1;
         this.patchContactInfo(eventDateTime, clmn, clmnIndex, key, cloneCntct);
