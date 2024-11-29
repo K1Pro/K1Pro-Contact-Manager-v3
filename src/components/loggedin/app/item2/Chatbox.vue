@@ -4,7 +4,7 @@
     <div class="chat-box-body">
       <div
         v-for="(chat, chatIndx) in chats.filter(
-          (chat) => JSON.stringify(chat.chatgroup) === JSON.stringify(chatGroups[slctd.chatGroup])
+          (chat) => JSON.stringify(chat.chatgroup) === JSON.stringify(accountSettings.chats[slctd.chatGroup])
         )"
       >
         <div
@@ -44,7 +44,19 @@
 export default {
   name: 'Chat box',
 
-  inject: ['activeUserList', 'chats', 'chatGroups', 'dsbld', 'showMsg', 'slctd', 'times', 'userData', 'usaDateFrmt'],
+  inject: [
+    'accountSettings',
+    'activeUserList',
+    'chats',
+    'dsbld',
+    'patchUserSettings',
+    'showMsg',
+    'slctd',
+    'times',
+    'userData',
+    'usaDateFrmt',
+    'userSettings',
+  ],
 
   data() {
     return {
@@ -55,7 +67,7 @@ export default {
   computed: {
     slctdChatAmount() {
       return this.chats.filter(
-        (chat) => JSON.stringify(chat.chatgroup) === JSON.stringify(this.chatGroups[this.slctd.chatGroup])
+        (chat) => JSON.stringify(chat.chatgroup) === JSON.stringify(this.accountSettings.chats[this.slctd.chatGroup])
       ).length;
     },
   },
@@ -67,11 +79,16 @@ export default {
       const mstRcntChatTime = this.times.updtngY_m_d_H_i_s_z;
       this.times.mstRcntChat = mstRcntChatTime.slice(0, 19).replace('T', ' ');
       if (this.chats === null) this.chats = [];
+
+      const cloneUserSettings = this.userSettings;
+      cloneUserSettings.chats[this.slctd.chatGroup] = mstRcntChatTime.slice(0, 19).replace('T', ' ');
+      this.patchUserSettings(cloneUserSettings);
+
       try {
         this.chats.push({
           chattime: mstRcntChatTime.slice(0, 19).replace('T', ' '),
           userid: this.userData.id,
-          chatgroup: this.chatGroups[this.slctd.chatGroup],
+          chatgroup: this.accountSettings.chats[this.slctd.chatGroup],
           chatmessage: chatBoxMsg,
         });
         const response = await fetch(app_api_url + '/chats/' + mstRcntChatTime.slice(0, 19), {
@@ -83,7 +100,7 @@ export default {
           },
           body: JSON.stringify({
             UserID: this.userData.id,
-            ChatGroup: this.chatGroups[this.slctd.chatGroup],
+            ChatGroup: this.accountSettings.chats[this.slctd.chatGroup],
             ChatMessage: chatBoxMsg,
           }),
         });

@@ -60,7 +60,6 @@ export default {
       accountSettings: {},
       activeUserList: {},
       chats: [],
-      chatGroups: {},
       slctd: { chatGroup: null },
       contacts: [],
       currentUpdate: null,
@@ -105,7 +104,6 @@ export default {
       accountSettings: Vue.computed(() => this.accountSettings),
       activeUserList: Vue.computed(() => this.activeUserList),
       chats: Vue.computed(() => this.chats),
-      chatGroups: Vue.computed(() => this.chatGroups),
       slctd: Vue.computed(() => this.slctd),
       contacts: Vue.computed(() => this.contacts),
       days: Vue.computed(() => this.days),
@@ -113,6 +111,7 @@ export default {
       emails: Vue.computed(() => this.emails),
       eventIndex: Vue.computed(() => this.eventIndex),
       firstDayTmstmp: Vue.computed(() => this.firstDayTmstmp),
+      newChats: Vue.computed(() => this.newChats),
       reports: Vue.computed(() => this.reports),
       sideMenuSlctdLnk: Vue.computed(() => this.sideMenuSlctdLnk),
       slctdCntctIndex: Vue.computed(() => this.slctdCntctIndex),
@@ -137,10 +136,36 @@ export default {
   },
 
   computed: {
-    userChatGroups() {
-      return this.chatGroups !== null
-        ? Object.entries(this.chatGroups).filter(([key, value]) => value.includes(this.userData?.id))
-        : [];
+    newChats() {
+      let newChats = {};
+      if (this.userSettings?.chats && this.chats) {
+        // console.log(this.chats);
+        Object.entries(this.userSettings.chats).forEach(([chatGroupName, mstRcntChatTime], chatIndex) => {
+          // console.log(chatIndex);
+          // console.log(this.accountSettings.chats[chatGroupName]);
+          // console.log(mstRcntChatTime);
+          this.chats.forEach((chat) => {
+            if (
+              JSON.stringify(chat.chatgroup) === JSON.stringify(this.accountSettings.chats[chatGroupName]) &&
+              chat.chattime > mstRcntChatTime
+            ) {
+              // console.log('-----------');
+              // console.log(mstRcntChatTime);
+              // console.log(chat.chattime);
+              // console.log(chat.chattime > mstRcntChatTime);
+              if (!newChats[chatGroupName]) {
+                newChats[chatGroupName] = 1;
+              } else {
+                newChats[chatGroupName]++;
+              }
+            }
+          });
+        });
+      }
+      return newChats;
+    },
+    allNewChats() {
+      return Object.values(this.newChats).reduce((a, b) => a + b, 0);
     },
     userList() {
       return { ...this.activeUserList, ...this.accountSettings.userList };
@@ -154,7 +179,7 @@ export default {
         ['fa fa-calendar-check', this.contacts[this.slctdCntctIndex]?.Tasks.length, 'Tasks', 'Calendar'],
         ['fa fa-repeat', this.contacts[this.slctdCntctIndex]?.RecurTasks.length, 'Recurring tasks', 'Calendar'],
         ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length > 0 ? '1' : null, 'Notes', 'Calendar'],
-        ['fa fa-comment', null, 'Chat', 'Chatbox'],
+        ['fa fa-comment', this.allNewChats, 'Chat', 'Chatbox'],
         ['fa fa-chart-pie', null, 'Reports', 'Reportstable'],
         ['fa fa-sliders', null, 'Settings', 'Calendar'],
         ['fa fa-user-gear', 'post-' + accountlogin_url, 'Account', '_a_t', access_token, '_s_i', session_id],
@@ -250,13 +275,7 @@ export default {
           } else if (this.currentUpdate == null) {
             this.currentUpdate = resJSON.data.datetime;
           }
-          if (this.times.mstRcntChat < resJSON.data.chatsdatetime) {
-            console.log('time to update chat');
-            this.getChats(this.times.mstRcntChat);
-          } else {
-            console.log('dont need to update chat');
-            // this.times.mstRcntChat = resJSON.data.chatsdatetime;
-          }
+          if (this.times.mstRcntChat < resJSON.data.chatsdatetime) this.getChats(this.times.mstRcntChat);
         } else {
           this.deleteLogin();
         }
@@ -289,14 +308,12 @@ export default {
           }, 6000);
 
           this.userData = userDataResJSON.data.user;
-          // prettier-ignore
-          this.reports = 'user_Contact report:' + this.userData.id
+          this.reports = 'user_Contact report:' + this.userData.id;
           // this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 5
           //   ? 'Contact list with min. info'
           //   : this.userData.FirstName + '\'s tasks';
           this.accountSettings = userDataResJSON.data.accountSettings;
           this.activeUserList = userDataResJSON.data.activeUserList;
-          this.chatGroups = userDataResJSON.data.accountSettings.chats;
           this.slctd.chatGroup = Object.keys(userDataResJSON.data.accountSettings.chats)[0];
           this.tempFiltersDays = userDataResJSON.data.userSettings.calendar.filters.days;
           if (

@@ -11,6 +11,7 @@
         @click="slctChatGroup(chatGroup)"
       >
         {{ chatGroup }}
+        <span v-if="newChats[chatGroup]">{{ newChats[chatGroup] }}</span>
       </div>
     </div>
   </div>
@@ -20,7 +21,7 @@
 export default {
   name: 'Chat',
 
-  inject: ['accountSettings', 'patchUserSettings', 'slctd', 'times', 'userData', 'userSettings'],
+  inject: ['accountSettings', 'newChats', 'patchUserSettings', 'slctd', 'times', 'userData', 'userSettings'],
 
   methods: {
     slctChatGroup(chatGroup) {
@@ -31,12 +32,11 @@ export default {
     },
   },
 
-  // mounted() {
-  //   setTimeout(() => {
-  //     console.log('what is this doing here?');
-  //     this.slctChatGroup(this.slctd.chatGroup);
-  //   }, 2000);
-  // },
+  mounted() {
+    setTimeout(() => {
+      this.slctChatGroup(this.slctd.chatGroup);
+    }, 2000);
+  },
 };
 </script>
 
@@ -79,5 +79,18 @@ export default {
 }
 .chat1 {
   background-color: lightblue;
+}
+.chat span {
+  position: absolute;
+  margin-top: -7.5px;
+  display: inline-block;
+  color: white;
+  background-color: #417cd9;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  padding-top: 3px;
+  font-size: 10px;
+  text-align: center;
 }
 </style>
