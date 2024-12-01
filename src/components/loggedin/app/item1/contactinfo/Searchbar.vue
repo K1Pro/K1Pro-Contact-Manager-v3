@@ -48,7 +48,7 @@
 export default {
   name: 'Search Bar',
 
-  inject: ['contacts', 'patchUserSettings', 'userData', 'userSettings'],
+  inject: ['contacts', 'patchUserSettings', 'sttngs', 'userData'],
 
   computed: {
     searchArray() {
@@ -118,9 +118,9 @@ export default {
     selectSearchedContact(event) {
       this.search = '';
       this.$refs.searchDropdown.size = 0;
-      const cloneUserSettings = this.userSettings;
-      cloneUserSettings.selectedContactIndex = this.contacts[event.target.value].id;
-      this.patchUserSettings(cloneUserSettings);
+      const cloneSttngs = this.sttngs.user;
+      cloneSttngs.selectedContactIndex = this.contacts[event.target.value].id;
+      this.patchUserSettings(cloneSttngs);
     },
 
     onWindowClick() {

@@ -4,10 +4,7 @@
       <calnav></calnav>
     </div>
     <div class="calendar-container-item2">
-      <calgrid
-        @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"
-        @tempFiltersDays="(el) => $emit('tempFiltersDays', el)"
-      ></calgrid>
+      <calgrid></calgrid>
     </div>
   </div>
 </template>
@@ -15,8 +12,6 @@
 <script>
 export default {
   name: 'Calendar',
-
-  emits: ['sideMenuSlctdLnk', 'tempFiltersDays'],
 };
 </script>
 

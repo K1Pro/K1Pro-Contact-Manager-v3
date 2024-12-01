@@ -21,25 +21,22 @@
         :class="[
           calContactTask.Status,
           {
-            active: calContactTask.ContactID == userSettings.selectedContactIndex,
+            active: calContactTask.ContactID == sttngs.user.selectedContactIndex,
           },
           {
             activeTask:
               calContactTask.EventIndex == slctd.eventIndx &&
-              calContactTask.ContactID == userSettings.selectedContactIndex &&
-              calContactTask.Type == sideMenuSlctdLnk[0],
+              calContactTask.ContactID == sttngs.user.selectedContactIndex &&
+              calContactTask.Type == slctd.sideMenuLnk[0],
           },
         ]"
         :style="{
           'grid-template-columns': calContactTask.Icon ? 'calc(100% - 20px) 20px' : '100%',
         }"
         v-show="
-          (userSettings.calendar.filters.owners == calContactTask.Assign ||
-            userSettings.calendar.filters.owners == '') &&
-          (userSettings.calendar.filters.status == calContactTask.Status ||
-            userSettings.calendar.filters.status == '') &&
-          (userSettings.calendar.filters.category == calContactTask.Categ ||
-            userSettings.calendar.filters.category == '')
+          (sttngs.user.calendar.filters.owners == calContactTask.Assign || sttngs.user.calendar.filters.owners == '') &&
+          (sttngs.user.calendar.filters.status == calContactTask.Status || sttngs.user.calendar.filters.status == '') &&
+          (sttngs.user.calendar.filters.category == calContactTask.Categ || sttngs.user.calendar.filters.category == '')
         "
       >
         <div
@@ -73,8 +70,6 @@
 export default {
   name: 'Day Content',
 
-  emits: ['sideMenuSlctdLnk'],
-
   inject: [
     'contacts',
     'days',
@@ -82,11 +77,10 @@ export default {
     'patchContactInfo',
     'patchUserSettings',
     'slctd',
-    'sideMenuSlctdLnk',
+    'sttngs',
     'times',
     'wndw',
     'userData',
-    'userSettings',
   ],
 
   props: ['dayIndex'],
@@ -103,7 +97,7 @@ export default {
               Name: contact.Members[0]?.Name,
               Time: task.Date.split('T')[1],
               Clock:
-                this.userSettings.clock == 12
+                this.sttngs.user.clock == 12
                   ? new Date(task.Date).toLocaleTimeString('en-US', {
                       hour12: true,
                       hour: 'numeric',
@@ -136,13 +130,13 @@ export default {
               Name: contact.Members[0]?.Name,
               Time: task.Time ? task.Time : '25:00',
               Clock:
-                task.Time && this.userSettings.clock == 12
+                task.Time && this.sttngs.user.clock == 12
                   ? new Date(this.days[this.dayIndex] + 'T' + task.Time).toLocaleTimeString('en-US', {
                       hour12: true,
                       hour: 'numeric',
                       minute: 'numeric',
                     })
-                  : task.Time && this.userSettings.clock == 24
+                  : task.Time && this.sttngs.user.clock == 24
                   ? task.Time
                   : '25:00',
               Type: 'Recurringtasks',
@@ -167,10 +161,10 @@ export default {
   methods: {
     selectContact(ContactID, sidemenuLink, eventIndex) {
       this.slctd.eventIndx = eventIndex;
-      this.$emit('sideMenuSlctdLnk', [sidemenuLink, 'Calendar']);
-      const cloneUserSettings = this.userSettings;
-      cloneUserSettings.selectedContactIndex = ContactID;
-      this.patchUserSettings(cloneUserSettings);
+      this.slctd.sideMenuLnk = [sidemenuLink, 'Calendar'];
+      const cloneSttngs = this.sttngs.user;
+      cloneSttngs.selectedContactIndex = ContactID;
+      this.patchUserSettings(cloneSttngs);
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }
@@ -187,9 +181,9 @@ export default {
       const eventDateTime = newDate + 'T' + eventInfo[3];
       const key = 'Date';
 
-      const cloneUserSettings = this.userSettings;
-      cloneUserSettings.selectedContactIndex = ContactID;
-      this.patchUserSettings(cloneUserSettings);
+      const cloneSttngs = this.sttngs.user;
+      cloneSttngs.selectedContactIndex = ContactID;
+      this.patchUserSettings(cloneSttngs);
 
       if (
         (eventDateTime != this.contacts[slctdCntctIndex][clmn][clmnIndex][key] && eventDateTime != '') ||
@@ -198,7 +192,7 @@ export default {
         const cloneCntct = this.contacts[slctdCntctIndex];
         cloneCntct[clmn][clmnIndex][key] = eventDateTime;
         cloneCntct[clmn][clmnIndex].Update = this.userData.id;
-        if (this.sideMenuSlctdLnk[0] == 'Tasks') {
+        if (this.slctd.sideMenuLnk[0] == 'Tasks') {
           this.slctd.eventIndx = null;
           this.slctd.eventIndx = clmnIndex;
         }

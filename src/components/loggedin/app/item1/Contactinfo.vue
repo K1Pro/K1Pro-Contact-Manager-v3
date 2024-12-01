@@ -3,7 +3,7 @@
     <searchbar></searchbar>
     <members @contacts="(el) => $emit('contacts', el)"></members>
     <addresses></addresses>
-    <connections @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"></connections>
+    <connections></connections>
     <assets></assets>
     <credentials></credentials>
     <ownercateg></ownercateg>
@@ -14,7 +14,7 @@
 export default {
   name: 'Contact Info',
 
-  emits: ['contacts', 'sideMenuSlctdLnk'],
+  emits: ['contacts'],
 };
 </script>
 

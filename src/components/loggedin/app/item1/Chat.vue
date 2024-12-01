@@ -3,7 +3,7 @@
     <div class="chat-title">Chat</div>
     <div class="chat-body">
       <div
-        v-for="([chatGroup, chatGroupMembers], chatGroupIndx) in Object.entries(accountSettings.chats).filter(
+        v-for="([chatGroup, chatGroupMembers], chatGroupIndx) in Object.entries(sttngs.accnt.chats).filter(
           ([key, value]) => value.includes(userData.id)
         )"
         class="chat-groups"
@@ -21,14 +21,14 @@
 export default {
   name: 'Chat',
 
-  inject: ['accountSettings', 'newChats', 'patchUserSettings', 'slctd', 'times', 'userData', 'userSettings'],
+  inject: ['newChats', 'patchUserSettings', 'sttngs', 'slctd', 'times', 'userData'],
 
   methods: {
     slctChatGroup(chatGroup) {
       this.slctd.chatGroup = chatGroup;
-      const cloneUserSettings = this.userSettings;
-      cloneUserSettings.chats[chatGroup] = this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
-      this.patchUserSettings(cloneUserSettings);
+      const cloneSttngs = this.sttngs.user;
+      cloneSttngs.chats[chatGroup] = this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
+      this.patchUserSettings(cloneSttngs);
     },
   },
 

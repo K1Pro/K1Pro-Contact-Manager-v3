@@ -2,13 +2,9 @@
   <div class="chat-box">
     <div class="chat-box-title">Chat with {{ slctd.chatGroup }}</div>
     <div class="chat-box-body">
-      <div
-        v-for="(chat, chatIndx) in chats.filter(
-          (chat) => JSON.stringify(chat.chatgroup) === JSON.stringify(accountSettings.chats[slctd.chatGroup])
-        )"
-      >
+      <div v-for="(chat, chatIndx) in slctdChats">
         <div
-          v-if="chats?.[chatIndx]?.chattime?.slice(5, 10) != chats?.[chatIndx - 1]?.chattime?.slice(5, 10)"
+          v-if="chat.chattime.slice(5, 10) != slctdChats?.[chatIndx - 1]?.chattime?.slice(5, 10)"
           class="chat-box-body-time"
         >
           <div class="chat-box-body-timedate">
@@ -45,17 +41,16 @@ export default {
   name: 'Chat box',
 
   inject: [
-    'accountSettings',
     'activeUserList',
     'chats',
     'dsbld',
     'patchUserSettings',
     'showMsg',
+    'sttngs',
     'slctd',
     'times',
     'userData',
     'usaDateFrmt',
-    'userSettings',
   ],
 
   data() {
@@ -65,10 +60,14 @@ export default {
   },
 
   computed: {
-    slctdChatAmount() {
+    slctdChats() {
       return this.chats.filter(
-        (chat) => JSON.stringify(chat.chatgroup) === JSON.stringify(this.accountSettings.chats[this.slctd.chatGroup])
-      ).length;
+        (chat) => JSON.stringify(chat.chatgroup) === JSON.stringify(this.sttngs.accnt.chats[this.slctd.chatGroup])
+      );
+    },
+
+    slctdChatAmount() {
+      return this.slctdChats.length;
     },
   },
 
@@ -80,15 +79,15 @@ export default {
       this.times.mstRcntChat = mstRcntChatTime.slice(0, 19).replace('T', ' ');
       if (this.chats === null) this.chats = [];
 
-      const cloneUserSettings = this.userSettings;
-      cloneUserSettings.chats[this.slctd.chatGroup] = mstRcntChatTime.slice(0, 19).replace('T', ' ');
-      this.patchUserSettings(cloneUserSettings);
+      const cloneSttngs = this.sttngs.user;
+      cloneSttngs.chats[this.slctd.chatGroup] = mstRcntChatTime.slice(0, 19).replace('T', ' ');
+      this.patchUserSettings(cloneSttngs);
 
       try {
         this.chats.push({
           chattime: mstRcntChatTime.slice(0, 19).replace('T', ' '),
           userid: this.userData.id,
-          chatgroup: this.accountSettings.chats[this.slctd.chatGroup],
+          chatgroup: this.sttngs.accnt.chats[this.slctd.chatGroup],
           chatmessage: chatBoxMsg,
         });
         const response = await fetch(app_api_url + '/chats/' + mstRcntChatTime.slice(0, 19), {
@@ -100,7 +99,7 @@ export default {
           },
           body: JSON.stringify({
             UserID: this.userData.id,
-            ChatGroup: this.accountSettings.chats[this.slctd.chatGroup],
+            ChatGroup: this.sttngs.accnt.chats[this.slctd.chatGroup],
             ChatMessage: chatBoxMsg,
           }),
         });

@@ -5,7 +5,7 @@
         Send email to
         {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
         {{ contacts[slctdCntctIndex].Members[0]?.Name }}
-        <i @click="$emit('sideMenuSlctdLnk', ['Contactinfo', 'Calendar'])" class="fa-solid fa-xmark"></i>
+        <i @click="slctd.sideMenuLnk = ['Contactinfo', 'Calendar']" class="fa-solid fa-xmark"></i>
       </div>
       <div class="emails-body">
         <div class="emailInputLabel">From:</div>
@@ -57,9 +57,7 @@
 export default {
   name: 'Emails',
 
-  emits: ['sideMenuSlctdLnk'],
-
-  inject: ['contacts', 'emails', 'slctdCntctIndex', 'times', 'userData', 'showMsg'],
+  inject: ['contacts', 'emails', 'slctd', 'slctdCntctIndex', 'times', 'userData', 'showMsg'],
 
   computed: {
     templateBody() {

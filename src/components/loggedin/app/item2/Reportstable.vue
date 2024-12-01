@@ -133,7 +133,7 @@
         </tbody>
       </template>
 
-      <custom_reports @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"></custom_reports>
+      <custom_reports></custom_reports>
     </table>
   </div>
 </template>
@@ -142,15 +142,13 @@
 export default {
   name: 'Reports table',
 
-  emits: ['sideMenuSlctdLnk'],
-
   inject: [
     'appName',
     'contacts',
-    'userSettings',
     'patchUserSettings',
     'slctd',
     'slctdCntctIndex',
+    'sttngs',
     'tbCntntWdth',
     'times',
     'userData',
@@ -363,10 +361,10 @@ export default {
   },
   methods: {
     selectContact(contactID) {
-      this.$emit('sideMenuSlctdLnk', ['Contactinfo', 'Calendar']);
-      const cloneUserSettings = this.userSettings;
-      cloneUserSettings.selectedContactIndex = contactID;
-      this.patchUserSettings(cloneUserSettings);
+      this.slctd.sideMenuLnk = ['Contactinfo', 'Calendar'];
+      const cloneSttngs = this.sttngs.user;
+      cloneSttngs.selectedContactIndex = contactID;
+      this.patchUserSettings(cloneSttngs);
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }

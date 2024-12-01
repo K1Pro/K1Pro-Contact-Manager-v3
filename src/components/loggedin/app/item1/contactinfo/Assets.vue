@@ -2,7 +2,7 @@
   <div class="assets">
     <div v-for="(asset, assetIndex) in contacts[slctdCntctIndex]?.Assets">
       <div v-for="(assetInfo, assetType) in asset">
-        <div v-for="assetInputs in accountSettings.contactInfo.keys.Assets[assetType]">
+        <div v-for="assetInputs in sttngs.accnt.contactInfo.keys.Assets[assetType]">
           <div v-if="assetInputs.icon" style="position: relative">
             <i class="asset-icon" :class="assetInputs.icon"></i>
             <input
@@ -70,12 +70,12 @@ export default {
   name: 'Assets',
 
   inject: [
-    'accountSettings',
     'appName',
     'contacts',
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',
+    'sttngs',
     'slctdCntctIndex',
     'userData',
     'userRole',

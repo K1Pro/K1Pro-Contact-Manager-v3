@@ -6,14 +6,13 @@
       <div class="app-grid-item1">
         <sidemenu
           :sideMenuItems
+          :sideMenuSlctdLnk="slctd.sideMenuLnk"
           :wndw
-          @sideMenuSlctdLnk="(el) => ((slctd.eventIndx = null), (sideMenuSlctdLnk = el))"
+          @sideMenuSlctdLnk="(el) => ((slctd.eventIndx = null), (slctd.sideMenuLnk = el))"
         ></sidemenu>
         <component
           class="app-grid-item1-panel"
-          :is="sideMenuSlctdLnk[0]"
-          @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"
-          @tempFiltersDays="(el) => (tempFiltersDays = el)"
+          :is="slctd.sideMenuLnk[0]"
           @contacts="(el) => (contacts = el)"
         ></component>
       </div>
@@ -27,11 +26,7 @@
       ></div>
 
       <div class="app-grid-item2">
-        <component
-          :is="sideMenuSlctdLnk[1]"
-          @sideMenuSlctdLnk="(el) => (sideMenuSlctdLnk = el)"
-          @tempFiltersDays="(el) => (tempFiltersDays = el)"
-        ></component>
+        <component :is="slctd.sideMenuLnk[1]"></component>
       </div>
     </div>
   </template>
@@ -56,7 +51,6 @@ export default {
   data() {
     return {
       appName: app_name,
-      accountSettings: {},
       activeUserList: {},
       chats: [],
       contacts: [],
@@ -76,9 +70,15 @@ export default {
         'manager',
         'admin',
       ],
-      slctd: { chatGroup: null, dayIndex: null, eventIndx: null, report: null, tmstmp: '' },
-      sideMenuSlctdLnk: ['Contactinfo', 'Calendar'],
-      tempFiltersDays: null,
+      slctd: {
+        chatGroup: null,
+        dayIndex: null,
+        eventIndx: null,
+        report: null,
+        sideMenuLnk: ['Contactinfo', 'Calendar'],
+        tmstmp: '',
+      },
+      sttngs: { accnt: {}, user: {}, temp: {} },
       times: {
         initialUsrTmstmp: '',
         initialBrwsrTmstmp: '',
@@ -86,17 +86,14 @@ export default {
         mstRcntChat: null,
         mstRcntCntctUpdt: null,
       },
-
       updating: 0,
       userData: {},
-      userSettings: {},
     };
   },
 
   provide() {
     return {
       // computed
-      accountSettings: Vue.computed(() => this.accountSettings),
       activeUserList: Vue.computed(() => this.activeUserList),
       chats: Vue.computed(() => this.chats),
       contacts: Vue.computed(() => this.contacts),
@@ -105,17 +102,15 @@ export default {
       emails: Vue.computed(() => this.emails),
       firstDayTmstmp: Vue.computed(() => this.firstDayTmstmp),
       newChats: Vue.computed(() => this.newChats),
-      sideMenuSlctdLnk: Vue.computed(() => this.sideMenuSlctdLnk),
       slctd: Vue.computed(() => this.slctd),
       slctdCntctIndex: Vue.computed(() => this.slctdCntctIndex),
       slctdY_m_d: Vue.computed(() => this.slctdY_m_d),
+      sttngs: Vue.computed(() => this.sttngs),
       tbCntntWdth: Vue.computed(() => this.tbCntntWdth),
       times: Vue.computed(() => this.times),
-      tempFiltersDays: Vue.computed(() => this.tempFiltersDays),
       userData: Vue.computed(() => this.userData),
       userList: Vue.computed(() => this.userList),
       userRole: Vue.computed(() => this.userRole),
-      userSettings: Vue.computed(() => this.userSettings),
       // static
       appName: this.appName,
       daysRangeArr: this.daysRangeArr,
@@ -129,35 +124,6 @@ export default {
   },
 
   computed: {
-    newChats() {
-      let newChats = {};
-      if (this.userSettings?.chats && this.chats) {
-        Object.entries(this.userSettings.chats).forEach(([chatGroupName, mstRcntChatTime], chatIndex) => {
-          this.chats.forEach((chat) => {
-            if (
-              JSON.stringify(chat.chatgroup) === JSON.stringify(this.accountSettings.chats[chatGroupName]) &&
-              chat.chattime > mstRcntChatTime
-            ) {
-              if (!newChats[chatGroupName]) {
-                newChats[chatGroupName] = 1;
-              } else {
-                newChats[chatGroupName]++;
-              }
-            }
-          });
-        });
-      }
-      return newChats;
-    },
-    allNewChats() {
-      return Object.values(this.newChats).reduce((a, b) => a + b, 0);
-    },
-    userList() {
-      return { ...this.activeUserList, ...this.accountSettings.userList };
-    },
-    userRole() {
-      return this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]);
-    },
     sideMenuItems() {
       const sideMenuItemsArray = [
         ['fa fa-house-chimney-user', null, 'Contact info', 'Calendar'],
@@ -170,8 +136,8 @@ export default {
         ['fa fa-user-gear', 'post-' + accountlogin_url, 'Account', '_a_t', access_token, '_s_i', session_id],
         ['fa fa-sign-out', null, 'Log out'],
       ];
-      if (this.accountSettings.sidemenu) {
-        this.accountSettings.sidemenu.forEach((sidemenu) => {
+      if (this.sttngs.accnt.sidemenu) {
+        this.sttngs.accnt.sidemenu.forEach((sidemenu) => {
           const sidemenuCustomItemsArray = [];
           sidemenu.forEach((sidemenuItem, sidemenuItemIndex) => {
             if (sidemenuItemIndex == 1 && sidemenuItem.includes('Custom')) {
@@ -189,20 +155,49 @@ export default {
       }
       return sideMenuItemsArray;
     },
+    newChats() {
+      let newChats = {};
+      if (this.sttngs.user?.chats && this.chats) {
+        Object.entries(this.sttngs.user.chats).forEach(([chatGroupName, mstRcntChatTime], chatIndex) => {
+          this.chats.forEach((chat) => {
+            if (
+              JSON.stringify(chat.chatgroup) === JSON.stringify(this.sttngs.accnt.chats[chatGroupName]) &&
+              chat.chattime > mstRcntChatTime
+            ) {
+              if (!newChats[chatGroupName]) {
+                newChats[chatGroupName] = 1;
+              } else {
+                newChats[chatGroupName]++;
+              }
+            }
+          });
+        });
+      }
+      return newChats;
+    },
+    allNewChats() {
+      return Object.values(this.newChats).reduce((a, b) => a + b, 0);
+    },
+    userList() {
+      return { ...this.activeUserList, ...this.sttngs.accnt.userList };
+    },
+    userRole() {
+      return this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]);
+    },
     tbCntntWdth() {
       return this.wndw.wdth > 768
-        ? Math.round((this.wndw.wdth * (this.userSettings?.layout?.['grid-size'] / 100) - 75.02) * 100) / 100
+        ? Math.round((this.wndw.wdth * (this.sttngs.user?.layout?.['grid-size'] / 100) - 75.02) * 100) / 100
         : Math.round((this.wndw.wdth - 75.02) * 100) / 100;
     },
     firstDayTmstmp() {
       const cmptdDayNumber = this.slctd.dayIndex != null ? this.slctd.dayIndex : 1;
       const cmptdDayOfTheWeek = this.dayOfTheWeek == 0 ? 6 : this.dayOfTheWeek - 1;
       const cmptdNoOfWeeks = this.slctd.dayIndex != null ? Math.floor(this.slctd.dayIndex / 7) : 1;
-      return this.userSettings.calendar.filters.days == 0
+      return this.sttngs.user.calendar.filters.days == 0
         ? this.slctd.tmstmp
-        : this.userSettings.calendar.filters.days == 1
+        : this.sttngs.user.calendar.filters.days == 1
         ? this.slctd.tmstmp - cmptdDayNumber * 86400000
-        : this.userSettings.calendar.filters.days == 2
+        : this.sttngs.user.calendar.filters.days == 2
         ? this.slctd.tmstmp - cmptdDayOfTheWeek * 86400000
         : this.slctd.tmstmp - cmptdNoOfWeeks * 604800000 - cmptdDayOfTheWeek * 86400000;
     },
@@ -211,7 +206,7 @@ export default {
       return (new Date(this.slctd.tmstmp).getFullYear() + '-' + (new Date(this.slctd.tmstmp).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(this.slctd.tmstmp).getDate().toString().padStart(2, '0'));
     },
     slctdCntctIndex() {
-      return this.contacts.findIndex((contact) => contact.id == this.userSettings.selectedContactIndex);
+      return this.contacts.findIndex((contact) => contact.id == this.sttngs.user.selectedContactIndex);
     },
     dayOfTheWeek() {
       return new Date(this.slctd.tmstmp).getDay(); // 0 is Sunday, 1 is Monday, 2 is Tuesday, ...,
@@ -226,7 +221,7 @@ export default {
       let dateRangeStart = 1;
       let dateArray = [];
       let currentDate = new Date(this.firstDayTmstmp);
-      while (dateRangeStart <= this.daysRangeArr[this.userSettings.calendar.filters.days]) {
+      while (dateRangeStart <= this.daysRangeArr[this.sttngs.user.calendar.filters.days]) {
         // prettier-ignore
         dateArray.push(currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' + currentDate.getDate().toString().padStart(2, '0'));
         currentDate.setDate(currentDate.getDate() + 1);
@@ -242,7 +237,6 @@ export default {
       this.times.updtngY_m_d_H_i_s_z = new Date(this.times.initialUsrTmstmp + timeDifference).toISOString();
       try {
         const response = await fetch(app_api_url + '/currentupdate', {
-          method: 'GET',
           headers: {
             Authorization: access_token,
             'Content-Type': 'application/json',
@@ -275,14 +269,13 @@ export default {
     async getUserData() {
       try {
         const response = await fetch(app_api_url + '/users', {
-          method: 'GET',
           headers: {
             Authorization: access_token,
             'Cache-Control': 'no-store',
           },
         });
         const userDataResJSON = await response.json();
-        // console.log(userDataResJSON);
+        console.log(userDataResJSON);
         if (userDataResJSON.success) {
           this.times.initialBrwsrTmstmp = new Date().getTime();
           this.times.initialUsrTmstmp = new Date(userDataResJSON.data.date_Y_m_d_H_i_s_z).getTime();
@@ -301,16 +294,19 @@ export default {
           // this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 5
           //   ? 'Contact list with min. info'
           //   : this.userData.FirstName + '\'s tasks';
-          this.accountSettings = userDataResJSON.data.accountSettings;
           this.activeUserList = userDataResJSON.data.activeUserList;
-          this.tempFiltersDays = userDataResJSON.data.userSettings.calendar.filters.days;
+          this.sttngs.accnt = userDataResJSON.data.accountSettings;
+          this.sttngs.temp = {
+            calendar: { filters: { days: userDataResJSON.data.userSettings.calendar.filters.days } },
+          };
+
           if (
             this.wndw.wdth < 768 &&
-            userDataResJSON.data.userSettings.calendar.filters.days != 0 &&
-            userDataResJSON.data.userSettings.calendar.filters.days != 1
+            (userDataResJSON.data.userSettings.calendar.filters.days != 0 ||
+              userDataResJSON.data.userSettings.calendar.filters.days != 1)
           )
             userDataResJSON.data.userSettings.calendar.filters.days = 1;
-          this.userSettings = userDataResJSON.data.userSettings;
+          this.sttngs.user = userDataResJSON.data.userSettings;
           this.getContacts(null);
           this.getEmailSettings();
         } else {
@@ -358,7 +354,7 @@ export default {
             this.contacts = getContactsResJSON.data.contacts;
           } else {
             const slctdCntctIndx = getContactsResJSON.data.contacts.findIndex(
-              (contact) => contact.id == this.userSettings.selectedContactIndex
+              (contact) => contact.id == this.sttngs.user.selectedContactIndex
             );
             if (slctdCntctIndx != null && slctdCntctIndx != undefined) {
               getContactsResJSON.data.contacts[slctdCntctIndx] = this.contacts[this.slctdCntctIndex];
@@ -491,7 +487,7 @@ export default {
               'Cache-Control': 'no-store',
             },
             body: JSON.stringify({
-              ID: this.userSettings.selectedContactIndex,
+              ID: this.sttngs.user.selectedContactIndex,
               Column: column,
               ColumnIndex: columnIndex,
             }),
@@ -514,9 +510,9 @@ export default {
       }
     },
 
-    async patchUserSettings(newUserSettings) {
-      const oldUserSettings = this.userSettings;
-      this.userSettings = newUserSettings;
+    async patchUserSettings(newSettings) {
+      const oldSettings = this.sttngs;
+      this.sttngs.user = newSettings;
       try {
         const response = await fetch(app_api_url + '/settings', {
           method: 'PATCH',
@@ -526,12 +522,12 @@ export default {
             'Cache-Control': 'no-store',
           },
           body: JSON.stringify({
-            Settings: this.userSettings,
+            Settings: this.sttngs.user,
           }),
         });
-        const patchUserSettingsResJSON = await response.json();
-        if (!patchUserSettingsResJSON.success) {
-          this.userSettings = oldUserSettings;
+        const resJSON = await response.json();
+        if (!resJSON.success) {
+          this.sttngs = oldSettings;
           this.showMsg('User settings not updated');
         }
       } catch (error) {

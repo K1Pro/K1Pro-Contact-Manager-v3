@@ -11,7 +11,7 @@
             :disabled="dsbld"
             @change="updateAddress($event, addressIndex, 'Type')"
           >
-            <option v-for="address in Object.keys(accountSettings.contactInfo.keys.Addresses)" :value="address">
+            <option v-for="address in Object.keys(sttngs.accnt.contactInfo.keys.Addresses)" :value="address">
               {{ address }}
             </option>
           </select>
@@ -27,8 +27,8 @@
       </div>
       <div class="address-grid-container">
         <div
-          v-for="addressInputs in accountSettings.contactInfo.keys.Addresses[
-            address.Type ? address.Type : Object.keys(this.accountSettings.contactInfo.keys.Addresses)[0]
+          v-for="addressInputs in sttngs.accnt.contactInfo.keys.Addresses[
+            address.Type ? address.Type : Object.keys(sttngs.accnt.contactInfo.keys.Addresses)[0]
           ]"
           :style="{ flex: '1 0 ' + addressInputsWidth + 'px' }"
         >
@@ -68,12 +68,12 @@ export default {
   name: 'Addresses',
 
   inject: [
-    'accountSettings',
     'appName',
     'contacts',
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',
+    'sttngs',
     'slctdCntctIndex',
     'tbCntntWdth',
     'userData',

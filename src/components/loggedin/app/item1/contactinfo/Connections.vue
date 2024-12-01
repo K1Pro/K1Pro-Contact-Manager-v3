@@ -2,7 +2,7 @@
   <div class="connections">
     <div v-for="(conn, connIndex) in connections">
       <div v-for="(connInfo, connType) in conn">
-        <div v-for="connInputs in accountSettings.contactInfo.keys.Connections[connType]">
+        <div v-for="connInputs in sttngs.accnt.contactInfo.keys.Connections[connType]">
           <button
             class="conn-icon"
             :style="{
@@ -59,20 +59,18 @@
 export default {
   name: 'Connections',
 
-  emits: ['sideMenuSlctdLnk'],
-
   inject: [
-    'accountSettings',
     'appName',
     'contacts',
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',
+    'sttngs',
+    'slctd',
     'slctdCntctIndex',
     'times',
     'userData',
     'userRole',
-    'userSettings',
   ],
 
   computed: {
@@ -107,7 +105,7 @@ export default {
                 'Cache-Control': 'no-store',
               },
               body: JSON.stringify({
-                ID: this.userSettings.selectedContactIndex,
+                ID: this.sttngs.user.selectedContactIndex,
                 Datetime: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
                 Phone: this.contacts[this.slctdCntctIndex].Connections[connIndex][connType],
               }),
@@ -128,7 +126,7 @@ export default {
           }
         }
         if (connType == 'Email') {
-          this.$emit('sideMenuSlctdLnk', ['Contactinfo', 'Emails']);
+          this.slctd.sideMenuLnk = ['Contactinfo', 'Emails'];
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }

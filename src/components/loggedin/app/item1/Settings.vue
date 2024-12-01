@@ -3,7 +3,7 @@
     <div class="settings-title">Settings for {{ userData.FirstName }}</div>
     <div class="settings-body">
       <div class="settings-body-label">Days:</div>
-      <select :value="userSettings.calendar.filters.days" @change="daysRangeChange">
+      <select :value="sttngs.user.calendar.filters.days" @change="daysRangeChange">
         <template v-if="wndw.wdth > 768">
           <option v-for="(daysRange, daysRangeIndex) in daysRangeArr" :value="daysRangeIndex">
             {{ daysRange }}
@@ -15,28 +15,28 @@
         </template>
       </select>
       <div class="settings-body-label">Owners:</div>
-      <select :value="userSettings.calendar.filters.owners" @change="ownersChange">
+      <select :value="sttngs.user.calendar.filters.owners" @change="ownersChange">
         <option value="">All</option>
         <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
           {{ userInfo[0] }}
         </option>
       </select>
       <div class="settings-body-label">Status:</div>
-      <select :value="userSettings.calendar.filters.status" @change="statusChange">
+      <select :value="sttngs.user.calendar.filters.status" @change="statusChange">
         <option value="">All</option>
         <option value="compltd">Completed</option>
         <option value="not-compltd">Not completed</option>
         <option value="renewal">Recurring</option>
       </select>
       <div class="settings-body-label">Category:</div>
-      <select :value="userSettings.calendar.filters.category" @change="categoryChange">
+      <select :value="sttngs.user.calendar.filters.category" @change="categoryChange">
         <option value="">All</option>
-        <option v-for="category in accountSettings.Categ" :value="category">
+        <option v-for="category in sttngs.accnt.Categ" :value="category">
           {{ category }}
         </option>
       </select>
       <div class="settings-body-label">Clock:</div>
-      <select :value="userSettings.clock" @change="clockChange">
+      <select :value="sttngs.user.clock" @change="clockChange">
         <option value="12">12-hour</option>
         <option value="24">24-hour</option>
       </select>
@@ -86,20 +86,17 @@ export default {
   name: 'Settings',
 
   inject: [
-    'accountSettings',
     'appName',
     'daysRangeArr',
     'patchUserSettings',
     'roles',
+    'sttngs',
     'slctd',
     'userData',
     'userList',
     'userRole',
-    'userSettings',
     'wndw',
   ],
-
-  emits: ['tempFiltersDays'],
 
   data() {
     return { userSlctd: this.userData.id };
@@ -113,31 +110,31 @@ export default {
 
   methods: {
     daysRangeChange(event) {
-      const cloneUserSettings = this.userSettings;
-      cloneUserSettings.calendar.filters.days = event.target.value;
-      this.$emit('tempFiltersDays', event.target.value);
+      const cloneSttngs = this.sttngs.user;
+      cloneSttngs.calendar.filters.days = event.target.value;
+      this.sttngs.temp.calendar.filters.days = event.target.value;
       this.slctd.dayIndex = null;
-      this.patchUserSettings(cloneUserSettings);
+      this.patchUserSettings(cloneSttngs);
     },
     ownersChange(event) {
-      const cloneUserSettings = this.userSettings;
-      cloneUserSettings.calendar.filters.owners = event.target.value;
-      this.patchUserSettings(cloneUserSettings);
+      const cloneSttngs = this.sttngs.user;
+      cloneSttngs.calendar.filters.owners = event.target.value;
+      this.patchUserSettings(cloneSttngs);
     },
     statusChange(event) {
-      const cloneUserSettings = this.userSettings;
-      cloneUserSettings.calendar.filters.status = event.target.value;
-      this.patchUserSettings(cloneUserSettings);
+      const cloneSttngs = this.sttngs.user;
+      cloneSttngs.calendar.filters.status = event.target.value;
+      this.patchUserSettings(cloneSttngs);
     },
     categoryChange(event) {
-      const cloneUserSettings = this.userSettings;
-      cloneUserSettings.calendar.filters.category = event.target.value;
-      this.patchUserSettings(cloneUserSettings);
+      const cloneSttngs = this.sttngs.user;
+      cloneSttngs.calendar.filters.category = event.target.value;
+      this.patchUserSettings(cloneSttngs);
     },
     clockChange(event) {
-      const cloneUserSettings = this.userSettings;
-      cloneUserSettings.clock = event.target.value;
-      this.patchUserSettings(cloneUserSettings);
+      const cloneSttngs = this.sttngs.user;
+      cloneSttngs.clock = event.target.value;
+      this.patchUserSettings(cloneSttngs);
     },
 
     patchAuthorization(event) {

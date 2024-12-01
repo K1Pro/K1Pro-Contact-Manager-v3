@@ -2,7 +2,7 @@
   <div class="credentials">
     <div v-for="(cred, credIndex) in contacts[slctdCntctIndex]?.Credentials">
       <div v-for="(credInfo, credType) in cred">
-        <div v-for="credInputs in accountSettings.contactInfo.keys.Credentials[credType]">
+        <div v-for="credInputs in sttngs.accnt.contactInfo.keys.Credentials[credType]">
           <div style="position: relative">
             <div class="credentials-group">
               <i class="cred-icon" :class="credInputs.icon"></i>
@@ -60,12 +60,12 @@ export default {
   name: 'Credentials',
 
   inject: [
-    'accountSettings',
     'appName',
     'contacts',
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',
+    'sttngs',
     'slctdCntctIndex',
     'userData',
     'userRole',

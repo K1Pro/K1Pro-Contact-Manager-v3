@@ -1,6 +1,6 @@
 <template>
   <div class="calendar-body">
-    <div :class="'calendar-body-grid-container' + userSettings.calendar.filters.days">
+    <div :class="'calendar-body-grid-container' + sttngs.user.calendar.filters.days">
       <template v-for="(day, dayIndex) in days">
         <div
           v-if="(dayIndex + 1) % 7 && (dayIndex + 2) % 7"
@@ -8,7 +8,7 @@
           :class="{ activeDay: days[dayIndex] == slctdY_m_d }"
           @click="changeDate(days[dayIndex], dayIndex)"
         >
-          <calcontent :dayIndex="dayIndex" @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"></calcontent>
+          <calcontent :dayIndex="dayIndex"></calcontent>
         </div>
 
         <div v-if="(dayIndex + 1) % 7 === 0" class="calendar-body-grid-item">
@@ -17,14 +17,14 @@
             :class="{ activeDay: days[dayIndex - 1] == slctdY_m_d }"
             @click="changeDate(days[dayIndex - 1], dayIndex - 1)"
           >
-            <calcontent :dayIndex="dayIndex - 1" @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"></calcontent>
+            <calcontent :dayIndex="dayIndex - 1"></calcontent>
           </div>
           <div
             class="day sunday"
             :class="{ activeDay: days[dayIndex] == slctdY_m_d }"
             @click="changeDate(days[dayIndex], dayIndex)"
           >
-            <calcontent :dayIndex="dayIndex" @sideMenuSlctdLnk="(el) => $emit('sideMenuSlctdLnk', el)"></calcontent>
+            <calcontent :dayIndex="dayIndex"></calcontent>
           </div>
         </div>
       </template>
@@ -36,9 +36,7 @@
 export default {
   name: 'Calendar body',
 
-  emits: ['sideMenuSlctdLnk', 'tempFiltersDays'],
-
-  inject: ['days', 'patchUserSettings', 'slctd', 'slctdY_m_d', 'tempFiltersDays', 'times', 'userSettings', 'wndw'],
+  inject: ['days', 'patchUserSettings', 'sttngs', 'slctd', 'slctdY_m_d', 'times', 'wndw'],
 
   methods: {
     changeDate(slctdY_m_d, slctdDayIndex) {
@@ -52,22 +50,26 @@ export default {
       if (
         newWidth < 768 &&
         oldWidth > 768 &&
-        this.userSettings.calendar.filters.days != 0 &&
-        this.userSettings.calendar.filters.days != 1
+        this.sttngs.user.calendar.filters.days != 0 &&
+        this.sttngs.user.calendar.filters.days != 1
       ) {
-        const cloneUserSettings = this.userSettings;
-        cloneUserSettings.calendar.filters.days = 1;
-        this.patchUserSettings(cloneUserSettings);
-      } else if (newWidth > 768 && oldWidth < 768 && this.userSettings.calendar.filters.days != this.tempFiltersDays) {
-        const cloneUserSettings = this.userSettings;
-        cloneUserSettings.calendar.filters.days = this.tempFiltersDays;
-        this.patchUserSettings(cloneUserSettings);
+        const cloneSttngs = this.sttngs.user;
+        cloneSttngs.calendar.filters.days = 1;
+        this.patchUserSettings(cloneSttngs);
+      } else if (
+        newWidth > 768 &&
+        oldWidth < 768 &&
+        this.sttngs.user.calendar.filters.days != this.sttngs.temp.calendar.filters.days
+      ) {
+        const cloneSttngs = this.sttngs.user;
+        cloneSttngs.calendar.filters.days = this.sttngs.temp.calendar.filters.days;
+        this.patchUserSettings(cloneSttngs);
       }
     },
   },
 
   mounted() {
-    this.$emit('tempFiltersDays', this.userSettings.calendar.filters.days);
+    this.sttngs.temp.calendar.filters.days = this.sttngs.user.calendar.filters.days;
   },
 };
 </script>

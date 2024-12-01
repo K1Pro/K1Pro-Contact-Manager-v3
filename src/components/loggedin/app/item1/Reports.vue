@@ -57,7 +57,7 @@
         Task stats: {{ activeUserList[slctdUser][0] }}
       </div>
 
-      <template v-for="(report, reportIndex) in accountSettings.reports">
+      <template v-for="(report, reportIndex) in sttngs.accnt.reports">
         <div
           v-if="roles.findIndex((role) => role === activeUserList[slctdUser][1]) > report.split('_')[0]"
           class="reports-report"
@@ -80,11 +80,11 @@ export default {
   name: 'Reports',
 
   inject: [
-    'accountSettings',
     'activeUserList',
     'appName',
     'contacts',
     'roles',
+    'sttngs',
     'slctd',
     'slctdCntctIndex',
     'userData',

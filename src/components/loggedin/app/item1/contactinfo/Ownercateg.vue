@@ -43,7 +43,7 @@
       :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
       @change="updateOwnerCateg($event.target.value, 'Categ')"
     >
-      <option v-for="category in accountSettings.Categ">
+      <option v-for="category in sttngs.accnt.Categ">
         {{ category }}
       </option>
     </select>
@@ -54,16 +54,7 @@
 export default {
   name: 'Owner and category',
 
-  inject: [
-    'accountSettings',
-    'contacts',
-    'dsbld',
-    'patchContactInfo',
-    'slctdCntctIndex',
-    'userData',
-    'userList',
-    'userRole',
-  ],
+  inject: ['contacts', 'dsbld', 'patchContactInfo', 'sttngs', 'slctdCntctIndex', 'userData', 'userList', 'userRole'],
 
   methods: {
     updateOwnerCateg(event, clmn) {
