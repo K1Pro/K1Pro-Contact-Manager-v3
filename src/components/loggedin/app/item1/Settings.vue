@@ -40,6 +40,7 @@
         <option value="12">12-hour</option>
         <option value="24">24-hour</option>
       </select>
+      <button @click="notificationsChange">Enable notifications</button>
 
       <template v-if="userRole > 7">
         <hr />
@@ -90,6 +91,7 @@ export default {
     'daysRangeArr',
     'patchUserSettings',
     'roles',
+    'showMsg',
     'sttngs',
     'slctd',
     'userData',
@@ -136,7 +138,17 @@ export default {
       cloneSttngs.clock = event.target.value;
       this.patchUserSettings(cloneSttngs);
     },
-
+    notificationsChange() {
+      Notification.requestPermission().then((result) => {
+        if (result == 'denied') {
+          this.showMsg('Notifications are turned off. Enable them in the browser');
+        } else if (result == 'granted') {
+          this.showMsg('Notifications are on');
+        } else {
+          this.showMsg('Enable notifications in the browser');
+        }
+      });
+    },
     patchAuthorization(event) {
       if (this.userSlctd == this.userData.id) {
         this.userData.AppPermissions[this.appName][1] = event.target.value;
@@ -211,14 +223,13 @@ export default {
   font-size: 14px;
   overflow: hidden;
 }
-.settings-body input[type='range'] {
-  width: calc(100% - 90px);
-  height: 20px;
-  overflow: hidden;
-}
 .settings-body textarea {
   width: calc(100% - 65px);
   resize: none;
+}
+.settings-body button {
+  margin-left: 65px;
+  width: calc(100% - 65px);
 }
 /* .settings-body div {
     padding: 5px 0px 5px 0px;
