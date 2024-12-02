@@ -41,8 +41,8 @@
             v-if="
               userRole > 5 ||
               (userRole <= 5 &&
-                task.Assign == userData.id &&
-                times.initialUsrTmstmp + 86400000 > new Date(task?.Created)?.getTime())
+                recurTask.Assign == userData.id &&
+                times.initialUsrTmstmp + 86400000 > new Date(recurTask?.Created)?.getTime())
             "
             class="fa-solid fa-trash"
             @click="deleteRecurTask(recurTask.clmnIndex)"
