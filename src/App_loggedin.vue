@@ -275,7 +275,7 @@ export default {
           },
         });
         const userDataResJSON = await response.json();
-        console.log(userDataResJSON);
+        // console.log(userDataResJSON);
         if (userDataResJSON.success) {
           this.times.initialBrwsrTmstmp = new Date().getTime();
           this.times.initialUsrTmstmp = new Date(userDataResJSON.data.date_Y_m_d_H_i_s_z).getTime();
@@ -308,6 +308,7 @@ export default {
             userDataResJSON.data.userSettings.calendar.filters.days = 1;
           this.sttngs.user = userDataResJSON.data.userSettings;
           this.getContacts(null);
+          this.getChats('1970-01-01T00:00:00');
           this.getEmailSettings();
         } else {
           this.$refs.loginMessage.value = resJSON.messages[0] ? resJSON.messages[0] : 'Logged out with an error';
@@ -392,6 +393,8 @@ export default {
               const newChat = new Notification(this.activeUserList[chat.userid][0] + ': ' + chat.chatmessage);
             });
           }
+        } else {
+          this.times.mstRcntChat = this.times?.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
         }
       } catch (error) {
         this.showMsg(error.toString());
@@ -410,7 +413,6 @@ export default {
         });
         const getEmailSettingsResJSON = await response.json();
         if (getEmailSettingsResJSON.success) {
-          // console.log(getEmailSettingsResJSON);
           this.emails = getEmailSettingsResJSON.data.emailSettings;
         }
       } catch (error) {
@@ -457,7 +459,6 @@ export default {
         });
         const patchContactInfoResJSON = await response.json();
         if (patchContactInfoResJSON.success) {
-          // console.log(patchContactInfoResJSON.data);
           cloneUpdating = this.updating;
           this.updating = cloneUpdating - 1;
         } else {
@@ -539,7 +540,6 @@ export default {
 
   created() {
     this.getUserData();
-    this.getChats('1970-01-01T00:00:00');
   },
 };
 </script>
