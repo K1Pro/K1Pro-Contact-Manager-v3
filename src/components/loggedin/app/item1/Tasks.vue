@@ -32,7 +32,16 @@
 
       <template v-for="(task, taskIndex) in Tasks" v-memo="[taskMemo]">
         <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }">
-          <i v-if="userRole > 5" class="fa-solid fa-trash" @click="deleteTask(task.clmnIndex)"></i>
+          <i
+            v-if="
+              userRole > 5 ||
+              (userRole <= 5 &&
+                task.Assign == userData.id &&
+                times.initialUsrTmstmp + 86400000 > new Date(task?.Created)?.getTime())
+            "
+            class="fa-solid fa-trash"
+            @click="deleteTask(task.clmnIndex)"
+          ></i>
           <span class="tasks-label">Date:</span>
           <input
             type="datetime-local"
@@ -183,6 +192,7 @@ export default {
           Assign: this.userData.id,
           Create: this.userData.id,
           Update: this.userData.id,
+          Created: this.times.updtngY_m_d_H_i_s_z,
         },
       ];
       const cloneCntct = this.contacts[this.slctdCntctIndex];

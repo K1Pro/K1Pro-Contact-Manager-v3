@@ -37,7 +37,16 @@
             'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white',
           }"
         >
-          <i v-if="userRole > 5" class="fa-solid fa-trash" @click="deleteRecurTask(recurTask.clmnIndex)"></i>
+          <i
+            v-if="
+              userRole > 5 ||
+              (userRole <= 5 &&
+                task.Assign == userData.id &&
+                times.initialUsrTmstmp + 86400000 > new Date(task?.Created)?.getTime())
+            "
+            class="fa-solid fa-trash"
+            @click="deleteRecurTask(recurTask.clmnIndex)"
+          ></i>
           <span class="recur-tasks-label">Start:</span>
           <input
             type="date"
@@ -257,6 +266,7 @@ export default {
           Assign: this.userData.id,
           Create: this.userData.id,
           Update: this.userData.id,
+          Created: this.times.updtngY_m_d_H_i_s_z,
         },
       ];
       const cloneCntct = this.contacts[this.slctdCntctIndex];
