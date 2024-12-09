@@ -26,7 +26,7 @@
         <div class="emailInputLabel">Template:</div>
         <select v-model="slctdTemplate" ref="emailTemplate">
           <option value="null">None</option>
-          <option v-for="(email, emailIndex) in emails" :value="emailIndex">
+          <option v-for="(email, emailIndex) in sttngs.entity.emails" :value="emailIndex">
             {{ email.placeholder }}
           </option>
         </select>
@@ -35,7 +35,7 @@
         <input
           ref="emailSubject"
           type="text"
-          :value="slctdTemplate != 'null' ? emails[slctdTemplate].subject : ''"
+          :value="slctdTemplate != 'null' ? sttngs.entity.emails[slctdTemplate].subject : ''"
           placeholder="Enter email subject"
         />
 
@@ -57,14 +57,14 @@
 export default {
   name: 'Emails',
 
-  inject: ['contacts', 'emails', 'slctd', 'slctdCntctIndex', 'times', 'userData', 'showMsg'],
+  inject: ['contacts', 'slctd', 'slctdCntctIndex', 'sttngs', 'times', 'userData', 'showMsg'],
 
   computed: {
     templateBody() {
       let slctdTemplateBody;
       if (this.slctdTemplate != 'null') {
         // prettier-ignore
-        slctdTemplateBody = this.emails[this.slctdTemplate].body
+        slctdTemplateBody = this.sttngs.entity.emails[this.slctdTemplate].body
           .replaceAll('___FirstName___', this.contacts[this.slctdCntctIndex].Members[0]?.First)
           .replaceAll('___Address___', this.contacts[this.slctdCntctIndex]?.Addresses?.[0]?.Address_1)
           .replaceAll('___Address2___', this.contacts[this.slctdCntctIndex]?.Addresses?.[0]?.Address_2)
@@ -110,7 +110,7 @@ export default {
         const emailTemplate =
           this.$refs['emailTemplate'].value == 'null'
             ? ''
-            : '"' + this.emails[this.slctdTemplate].placeholder.toLowerCase() + '" to ';
+            : '"' + this.sttngs.entity.emails[this.slctdTemplate].placeholder.toLowerCase() + '" to ';
         const sendEmailDatetime = this.times.updtngY_m_d_H_i_s_z.slice(0, 16);
         let formData = new FormData();
         Object.values(this.$refs['emailAttachment'].files).forEach((file) => {

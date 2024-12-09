@@ -11,7 +11,7 @@
             :disabled="dsbld"
             @change="updateMember($event, memberIndex, 'Type')"
           >
-            <option v-for="member in Object.keys(sttngs.accnt.contactInfo.keys.Members)" :value="member">
+            <option v-for="member in Object.keys(sttngs.entity.contactInfo.keys.Members)" :value="member">
               {{ member }}
             </option>
           </select>
@@ -63,8 +63,8 @@
       </div>
       <div class="member-grid-container">
         <div
-          v-for="memberInputs in sttngs.accnt.contactInfo.keys.Members[
-            member.Type ? member.Type : Object.keys(sttngs.accnt.contactInfo.keys.Members)[0]
+          v-for="memberInputs in sttngs.entity.contactInfo.keys.Members[
+            member.Type ? member.Type : Object.keys(sttngs.entity.contactInfo.keys.Members)[0]
           ]"
           :style="{ flex: '1 0 ' + memberInputsWidth + 'px' }"
         >
@@ -99,7 +99,7 @@ export default {
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',
-    'patchUserSettings',
+    'userSttngsReq',
     'sttngs',
     'showMsg',
     'slctdCntctIndex',
@@ -112,7 +112,7 @@ export default {
   computed: {
     addCntctInfoDropDown() {
       const cntctInfoDropDown = [];
-      Object.entries(this.sttngs.accnt.contactInfo.keys).forEach(([contactInfoGroup, contactInfoKeys]) => {
+      Object.entries(this.sttngs.entity.contactInfo.keys).forEach(([contactInfoGroup, contactInfoKeys]) => {
         Object.keys(contactInfoKeys).forEach((contactInfoKey) => {
           const cntctInfoDropDownOpt = {
             InfoGroup: contactInfoGroup,
@@ -155,7 +155,7 @@ export default {
         } else {
           event.srcElement.selectedIndex = 0;
           this.spinLogin = true;
-          console.log(Object.keys(this.sttngs.accnt.contactInfo.keys.Members)[0]);
+          console.log(Object.keys(this.sttngs.entity.contactInfo.keys.Members)[0]);
           try {
             const response = await fetch(app_api_url + '/contacts', {
               method: 'POST',
@@ -166,7 +166,7 @@ export default {
               },
               body: JSON.stringify({
                 Datetime: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
-                Member: Object.keys(this.sttngs.accnt.contactInfo.keys.Members)[0],
+                Member: Object.keys(this.sttngs.entity.contactInfo.keys.Members)[0],
               }),
             });
             const postContactInfoResJSON = await response.json();
@@ -177,7 +177,7 @@ export default {
                 id: newContactIndex,
                 Members: [
                   {
-                    Type: Object.keys(this.sttngs.accnt.contactInfo.keys.Members)[0],
+                    Type: Object.keys(this.sttngs.entity.contactInfo.keys.Members)[0],
                     Name: '',
                   },
                 ],
@@ -208,7 +208,7 @@ export default {
               this.$emit('contacts', [...cloneCntcts, newMember]);
               const cloneSttngs = this.sttngs.user;
               cloneSttngs.selectedContactIndex = newContactIndex;
-              this.patchUserSettings(cloneSttngs);
+              this.userSttngsReq('PATCH', cloneSttngs);
               this.spinLogin = false;
             } else {
               this.spinLogin = false;

@@ -140,13 +140,13 @@
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           >
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
-              {{ userInfo[0] }}
+              {{ userInfo.FirstName }}
             </option>
-            <option v-if="userList?.[recurTask?.Update]?.[0]" disabled>
-              Updated by {{ userList[recurTask.Update][0] }}
+            <option v-if="userList?.[recurTask?.Update]?.FirstName" disabled>
+              Updated by {{ userList[recurTask.Update].FirstName }}
             </option>
-            <option v-if="userList?.[recurTask?.Create]?.[0]" disabled>
-              Created by {{ userList[recurTask.Create][0] }}
+            <option v-if="userList?.[recurTask?.Create]?.FirstName" disabled>
+              Created by {{ userList[recurTask.Create].FirstName }}
             </option>
           </select>
           <span class="recur-tasks-label">Finished:</span>

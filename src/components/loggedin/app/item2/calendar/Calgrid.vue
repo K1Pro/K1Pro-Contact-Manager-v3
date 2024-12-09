@@ -1,6 +1,6 @@
 <template>
   <div class="calendar-body">
-    <div :class="'calendar-body-grid-container' + sttngs.user.calendar.filters.days">
+    <div :class="'calendar-body-grid-container' + tmpSttngs.user.calendar.filters.days">
       <template v-for="(day, dayIndex) in days">
         <div
           v-if="(dayIndex + 1) % 7 && (dayIndex + 2) % 7"
@@ -36,40 +36,13 @@
 export default {
   name: 'Calendar body',
 
-  inject: ['days', 'patchUserSettings', 'sttngs', 'slctd', 'slctdY_m_d', 'times', 'wndw'],
+  inject: ['days', 'userSttngsReq', 'slctd', 'slctdY_m_d', 'times', 'tmpSttngs', 'wndw'],
 
   methods: {
     changeDate(slctdY_m_d, slctdDayIndex) {
       this.slctd.tmstmp = new Date(slctdY_m_d + 'T00:00:00').getTime();
       this.slctd.dayIndex = slctdDayIndex;
     },
-  },
-
-  watch: {
-    'wndw.wdth'(newWidth, oldWidth) {
-      if (
-        newWidth < 768 &&
-        oldWidth > 768 &&
-        this.sttngs.user.calendar.filters.days != 0 &&
-        this.sttngs.user.calendar.filters.days != 1
-      ) {
-        const cloneSttngs = this.sttngs.user;
-        cloneSttngs.calendar.filters.days = 1;
-        this.patchUserSettings(cloneSttngs);
-      } else if (
-        newWidth > 768 &&
-        oldWidth < 768 &&
-        this.sttngs.user.calendar.filters.days != this.sttngs.temp.calendar.filters.days
-      ) {
-        const cloneSttngs = this.sttngs.user;
-        cloneSttngs.calendar.filters.days = this.sttngs.temp.calendar.filters.days;
-        this.patchUserSettings(cloneSttngs);
-      }
-    },
-  },
-
-  mounted() {
-    this.sttngs.temp.calendar.filters.days = this.sttngs.user.calendar.filters.days;
   },
 };
 </script>

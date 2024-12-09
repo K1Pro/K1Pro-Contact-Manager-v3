@@ -143,9 +143,8 @@ export default {
   name: 'Reports table',
 
   inject: [
-    'appName',
     'contacts',
-    'patchUserSettings',
+    'userSttngsReq',
     'slctd',
     'slctdCntctIndex',
     'sttngs',
@@ -255,7 +254,7 @@ export default {
                 task?.Status == '1' ? 1 : 0,
                 contact?.Members?.[0]?.Name,
                 task?.Date,
-                this.userList[task?.Assign]?.[0],
+                this.userList[task?.Assign]?.FirstName,
                 task?.Desc,
               ]);
           });
@@ -273,7 +272,7 @@ export default {
                 task?.Status == '1' ? 1 : 0,
                 contact?.Members?.[0]?.Name,
                 task?.Date,
-                this.userList[task?.Assign]?.[0],
+                this.userList[task?.Assign]?.FirstName,
                 task?.Desc,
               ]);
           });
@@ -302,7 +301,7 @@ export default {
             this.contacts[this.slctdCntctIndex].Categ,
             this.usaDateFrmt(log[1]),
             log[2],
-            this.userList[log[0]][0],
+            this.userList[log[0]].FirstName,
           ]);
         });
         tblHdrs = ['#', 'Contact', 'Category', 'Date', 'Activity', 'Owner'];
@@ -364,7 +363,7 @@ export default {
       this.slctd.sideMenuLnk = ['Contactinfo', 'Calendar'];
       const cloneSttngs = this.sttngs.user;
       cloneSttngs.selectedContactIndex = contactID;
-      this.patchUserSettings(cloneSttngs);
+      this.userSttngsReq('PATCH', cloneSttngs);
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }

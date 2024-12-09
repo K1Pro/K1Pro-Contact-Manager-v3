@@ -3,34 +3,39 @@
     <div class="navigation-grid-container">
       <div class="navigation-grid-item1"></div>
       <div class="navigation-grid-item2">
-        <button v-if="sttngs.user.calendar.filters.days <= 1" @click="getTime(-7)">
+        <button v-if="tmpSttngs.user.calendar.filters.days <= 1" @click="getTime(-7)">
           <i class="fa fa-caret-left"></i>
           <i class="fa fa-caret-left"></i>
         </button>
-        <button v-if="sttngs.user.calendar.filters.days > 1" @click="getTime(-28)">
+        <button v-if="tmpSttngs.user.calendar.filters.days > 1" @click="getTime(-28)">
           <i class="fa fa-caret-left"></i>
           <i class="fa fa-caret-left"></i>
         </button>
       </div>
       <div class="navigation-grid-item3">
-        <i v-if="sttngs.user.calendar.filters.days == 0" class="fa fa-caret-left" @click="getTime(-1)"></i>
-        <i v-if="sttngs.user.calendar.filters.days == 1" class="fa fa-caret-left" @click="getTime(-3)"></i>
-        <i v-if="sttngs.user.calendar.filters.days > 1" class="fa fa-caret-left" @click="getTime(-7)"></i>
+        <i v-if="tmpSttngs.user.calendar.filters.days == 0" class="fa fa-caret-left" @click="getTime(-1)"></i>
+        <i v-if="tmpSttngs.user.calendar.filters.days == 1" class="fa fa-caret-left" @click="getTime(-3)"></i>
+        <i v-if="tmpSttngs.user.calendar.filters.days > 1" class="fa fa-caret-left" @click="getTime(-7)"></i>
       </div>
       <div class="navigation-grid-item4">
-        <input type="date" :value="slctdY_m_d" @change="changeDate" />
+        <input
+          type="date"
+          :title="times.updtngY_m_d_H_i_s_z.slice(10, 16).replace('T', ' ')"
+          :value="slctdY_m_d"
+          @change="changeDate"
+        />
       </div>
       <div class="navigation-grid-item5">
-        <i v-if="sttngs.user.calendar.filters.days == 0" class="fa fa-caret-right" @click="getTime(1)"></i>
-        <i v-if="sttngs.user.calendar.filters.days == 1" class="fa fa-caret-right" @click="getTime(3)"></i>
-        <i v-if="sttngs.user.calendar.filters.days > 1" class="fa fa-caret-right" @click="getTime(7)"></i>
+        <i v-if="tmpSttngs.user.calendar.filters.days == 0" class="fa fa-caret-right" @click="getTime(1)"></i>
+        <i v-if="tmpSttngs.user.calendar.filters.days == 1" class="fa fa-caret-right" @click="getTime(3)"></i>
+        <i v-if="tmpSttngs.user.calendar.filters.days > 1" class="fa fa-caret-right" @click="getTime(7)"></i>
       </div>
       <div class="navigation-grid-item6">
-        <button v-if="sttngs.user.calendar.filters.days > 1" @click="getTime(28)">
+        <button v-if="tmpSttngs.user.calendar.filters.days > 1" @click="getTime(28)">
           <i class="fa fa-caret-right"></i>
           <i class="fa fa-caret-right"></i>
         </button>
-        <button v-if="sttngs.user.calendar.filters.days <= 1" @click="getTime(7)">
+        <button v-if="tmpSttngs.user.calendar.filters.days <= 1" @click="getTime(7)">
           <i class="fa fa-caret-right"></i>
           <i class="fa fa-caret-right"></i>
         </button>
@@ -44,7 +49,7 @@
 export default {
   name: 'Navigation',
 
-  inject: ['days', 'slctd', 'slctdY_m_d', 'sttngs', 'times'],
+  inject: ['days', 'slctd', 'slctdY_m_d', 'times', 'tmpSttngs'],
 
   methods: {
     changeDate(event) {

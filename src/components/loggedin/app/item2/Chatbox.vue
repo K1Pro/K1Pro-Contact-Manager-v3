@@ -15,7 +15,7 @@
         <div
           class="chat-box-body-msg"
           :title="
-            activeUserList[chat.userid][0] +
+            sttngs.entity.activeUserList[chat.userid].FirstName +
             ' sent this message on ' +
             this.usaDateFrmt(chat.chattime) +
             ' ' +
@@ -24,7 +24,9 @@
           :class="chat.userid === userData.id ? 'chat-box-right' : 'chat-box-left'"
         >
           {{ chat.chatmessage }}
-          <div class="chat-box-body-date">{{ activeUserList[chat.userid][0] }} - {{ chat.chattime.slice(11, 16) }}</div>
+          <div class="chat-box-body-date">
+            {{ sttngs.entity.activeUserList[chat.userid].FirstName }} - {{ chat.chattime.slice(11, 16) }}
+          </div>
         </div>
       </div>
       <div ref="bottomChatEl"></div>
@@ -40,18 +42,7 @@
 export default {
   name: 'Chat box',
 
-  inject: [
-    'activeUserList',
-    'chats',
-    'dsbld',
-    'patchUserSettings',
-    'showMsg',
-    'sttngs',
-    'slctd',
-    'times',
-    'userData',
-    'usaDateFrmt',
-  ],
+  inject: ['chats', 'dsbld', 'userSttngsReq', 'showMsg', 'sttngs', 'slctd', 'times', 'userData', 'usaDateFrmt'],
 
   data() {
     return {
@@ -62,7 +53,7 @@ export default {
   computed: {
     slctdChats() {
       return this.chats.filter(
-        (chat) => JSON.stringify(chat.chatgroup) === JSON.stringify(this.sttngs.accnt.chats[this.slctd.chatGroup])
+        (chat) => JSON.stringify(chat.chatgroup) === JSON.stringify(this.sttngs.entity.chats[this.slctd.chatGroup])
       );
     },
 
@@ -81,16 +72,16 @@ export default {
 
       const cloneSttngs = this.sttngs.user;
       cloneSttngs.chats[this.slctd.chatGroup] = mstRcntChatTime.slice(0, 19).replace('T', ' ');
-      this.patchUserSettings(cloneSttngs);
+      this.userSttngsReq('PATCH', cloneSttngs);
 
       try {
         this.chats.push({
           chattime: mstRcntChatTime.slice(0, 19).replace('T', ' '),
           userid: this.userData.id,
-          chatgroup: this.sttngs.accnt.chats[this.slctd.chatGroup],
+          chatgroup: this.sttngs.entity.chats[this.slctd.chatGroup],
           chatmessage: chatBoxMsg,
         });
-        const response = await fetch(app_api_url + '/chats/' + mstRcntChatTime.slice(0, 19), {
+        const response = await fetch(app_api_url + '/' + mstRcntChatTime.slice(0, 19) + '/chats', {
           method: 'POST',
           headers: {
             Authorization: access_token,
@@ -99,7 +90,7 @@ export default {
           },
           body: JSON.stringify({
             UserID: this.userData.id,
-            ChatGroup: this.sttngs.accnt.chats[this.slctd.chatGroup],
+            ChatGroup: this.sttngs.entity.chats[this.slctd.chatGroup],
             ChatMessage: chatBoxMsg,
           }),
         });

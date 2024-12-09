@@ -9,11 +9,11 @@
       @change="updateOwnerCateg($event.target.value, 'Assigned')"
     >
       <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
-        {{ userInfo[0] }}
+        {{ userInfo.FirstName }}
       </option>
       <option disabled>
         Updated by
-        {{ userList[Object.keys(contacts[slctdCntctIndex].Updated)][0] }}
+        {{ userList[Object.keys(contacts[slctdCntctIndex].Updated)].FirstName }}
         on
         {{ Object.values(contacts[slctdCntctIndex].Updated)[0].slice(5, 10).replace('-', '/') }}/{{
           Object.values(contacts[slctdCntctIndex].Updated)[0].slice(0, 4)
@@ -22,7 +22,7 @@
       </option>
       <option disabled>
         Created by
-        {{ userList[Object.keys(contacts[slctdCntctIndex].Created)][0] }}
+        {{ userList[Object.keys(contacts[slctdCntctIndex].Created)].FirstName }}
         on
         {{ Object.values(contacts[slctdCntctIndex].Created)[0].slice(5, 10).replace('-', '/') }}/{{
           Object.values(contacts[slctdCntctIndex].Created)[0].slice(0, 4)
@@ -43,7 +43,7 @@
       :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
       @change="updateOwnerCateg($event.target.value, 'Categ')"
     >
-      <option v-for="category in sttngs.accnt.Categ">
+      <option v-for="category in sttngs.entity.Categ">
         {{ category }}
       </option>
     </select>

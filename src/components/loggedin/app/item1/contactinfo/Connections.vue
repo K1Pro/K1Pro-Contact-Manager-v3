@@ -2,7 +2,7 @@
   <div class="connections">
     <div v-for="(conn, connIndex) in connections">
       <div v-for="(connInfo, connType) in conn">
-        <div v-for="connInputs in sttngs.accnt.contactInfo.keys.Connections[connType]">
+        <div v-for="connInputs in sttngs.entity.contactInfo.keys.Connections[connType]">
           <button
             class="conn-icon"
             :style="{

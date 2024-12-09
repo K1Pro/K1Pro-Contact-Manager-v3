@@ -1,7 +1,6 @@
 <template>
   <snackbar :msg @deleteMsg="msg = null"></snackbar>
-
-  <template v-if="contacts.length > 0">
+  <template v-if="contacts.length > 0 && sttngs.user != null && sttngs.entity != null && initialTimes">
     <div class="app-grid-container" :style="appGridContainer">
       <div class="app-grid-item1">
         <sidemenu
@@ -46,17 +45,16 @@
 export default {
   name: 'App',
 
-  mixins: [snackbarMixin, wndwWdthHghtMixin, appGridResizerMixin],
+  mixins: [appGridResizerMixin, snackbarMixin, settingsMixin, wndwWdthHghtMixin],
 
   data() {
     return {
       appName: app_name,
-      activeUserList: {},
       chats: [],
       contacts: [],
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       dsbld: false,
-      emails: [],
+      entity: entity,
       roles: [
         'inactive',
         'guest',
@@ -74,56 +72,68 @@ export default {
         chatGroup: null,
         dayIndex: null,
         eventIndx: null,
-        report: null,
+        report: 'user_Contact report:' + user_data.id,
         sideMenuLnk: ['Contactinfo', 'Calendar'],
         tmstmp: '',
       },
-      sttngs: { accnt: {}, user: {}, temp: {} },
       times: {
-        initialUsrTmstmp: '',
-        initialBrwsrTmstmp: '',
+        initialUsrTmstmp: null,
+        initialBrwsrTmstmp: null,
         updtngY_m_d_H_i_s_z: null,
         mstRcntChat: null,
         mstRcntCntctUpdt: null,
       },
       updating: 0,
-      userData: {},
+      userData: user_data,
     };
   },
 
   provide() {
     return {
       // computed
-      activeUserList: Vue.computed(() => this.activeUserList),
       chats: Vue.computed(() => this.chats),
       contacts: Vue.computed(() => this.contacts),
       days: Vue.computed(() => this.days),
       dsbld: Vue.computed(() => this.dsbld),
-      emails: Vue.computed(() => this.emails),
       firstDayTmstmp: Vue.computed(() => this.firstDayTmstmp),
       newChats: Vue.computed(() => this.newChats),
       slctd: Vue.computed(() => this.slctd),
       slctdCntctIndex: Vue.computed(() => this.slctdCntctIndex),
       slctdY_m_d: Vue.computed(() => this.slctdY_m_d),
-      sttngs: Vue.computed(() => this.sttngs),
       tbCntntWdth: Vue.computed(() => this.tbCntntWdth),
       times: Vue.computed(() => this.times),
+      tmpSttngs: Vue.computed(() => this.tmpSttngs),
       userData: Vue.computed(() => this.userData),
       userList: Vue.computed(() => this.userList),
       userRole: Vue.computed(() => this.userRole),
       // static
       appName: this.appName,
+      entity: this.entity,
       daysRangeArr: this.daysRangeArr,
       roles: this.roles,
       // methods
       deleteContactInfo: this.deleteContactInfo,
       patchContactInfo: this.patchContactInfo,
-      patchUserSettings: this.patchUserSettings,
       usaDateFrmt: this.usaDateFrmt,
     };
   },
 
   computed: {
+    initialTimes() {
+      if (this.times.initialBrwsrTmstmp === null && this.sttngs.entity.date_Y_m_d_H_i_s_z) {
+        this.times.initialBrwsrTmstmp = new Date().getTime();
+        this.times.initialUsrTmstmp = new Date(this.sttngs.entity.date_Y_m_d_H_i_s_z).getTime();
+        this.times.updtngY_m_d_H_i_s_z = this.sttngs.entity.date_Y_m_d_H_i_s_z;
+        this.slctd.chatGroup = Object.keys(this.sttngs.entity.chats)[0];
+        this.slctd.tmstmp = new Date(this.times.updtngY_m_d_H_i_s_z).getTime();
+        setInterval(() => {
+          const timeDifference = new Date().getTime() - this.times.initialBrwsrTmstmp;
+          this.times.updtngY_m_d_H_i_s_z = new Date(this.times.initialUsrTmstmp + timeDifference).toISOString();
+          this.updateTime();
+        }, 6000);
+      }
+      return this.times.initialBrwsrTmstmp === null && this.sttngs.entity.date_Y_m_d_H_i_s_z ? false : true;
+    },
     sideMenuItems() {
       const sideMenuItemsArray = [
         ['fa fa-house-chimney-user', null, 'Contact info', 'Calendar'],
@@ -133,11 +143,11 @@ export default {
         ['fa fa-comment', this.allNewChats, 'Chat', 'Chatbox'],
         ['fa fa-chart-pie', null, 'Reports', 'Reportstable'],
         ['fa fa-sliders', null, 'Settings', 'Calendar'],
-        ['fa fa-user-gear', 'post-' + accountlogin_url, 'Account', '_a_t', access_token, '_s_i', session_id],
+        ['fa fa-user-gear', 'post-' + url_path.login, 'Account', '_a_t', access_token, '_s_i', session_id],
         ['fa fa-sign-out', null, 'Log out'],
       ];
-      if (this.sttngs.accnt.sidemenu) {
-        this.sttngs.accnt.sidemenu.forEach((sidemenu) => {
+      if (this.sttngs.entity.sidemenu) {
+        this.sttngs.entity.sidemenu.forEach((sidemenu) => {
           const sidemenuCustomItemsArray = [];
           sidemenu.forEach((sidemenuItem, sidemenuItemIndex) => {
             if (sidemenuItemIndex == 1 && sidemenuItem.includes('Custom')) {
@@ -161,7 +171,7 @@ export default {
         Object.entries(this.sttngs.user.chats).forEach(([chatGroupName, mstRcntChatTime], chatIndex) => {
           this.chats.forEach((chat) => {
             if (
-              JSON.stringify(chat.chatgroup) === JSON.stringify(this.sttngs.accnt.chats[chatGroupName]) &&
+              JSON.stringify(chat.chatgroup) === JSON.stringify(this.sttngs.entity.chats[chatGroupName]) &&
               chat.chattime > mstRcntChatTime
             ) {
               if (!newChats[chatGroupName]) {
@@ -179,10 +189,10 @@ export default {
       return Object.values(this.newChats).reduce((a, b) => a + b, 0);
     },
     userList() {
-      return { ...this.activeUserList, ...this.sttngs.accnt.userList };
+      return { ...this.sttngs.entity.activeUserList, ...this.sttngs.entity.userList };
     },
     userRole() {
-      return this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]);
+      return this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][entity].role);
     },
     tbCntntWdth() {
       return this.wndw.wdth > 768
@@ -193,11 +203,11 @@ export default {
       const cmptdDayNumber = this.slctd.dayIndex != null ? this.slctd.dayIndex : 1;
       const cmptdDayOfTheWeek = this.dayOfTheWeek == 0 ? 6 : this.dayOfTheWeek - 1;
       const cmptdNoOfWeeks = this.slctd.dayIndex != null ? Math.floor(this.slctd.dayIndex / 7) : 1;
-      return this.sttngs.user.calendar.filters.days == 0
+      return this.tmpSttngs.user.calendar.filters.days == 0
         ? this.slctd.tmstmp
-        : this.sttngs.user.calendar.filters.days == 1
+        : this.tmpSttngs.user.calendar.filters.days == 1
         ? this.slctd.tmstmp - cmptdDayNumber * 86400000
-        : this.sttngs.user.calendar.filters.days == 2
+        : this.tmpSttngs.user.calendar.filters.days == 2
         ? this.slctd.tmstmp - cmptdDayOfTheWeek * 86400000
         : this.slctd.tmstmp - cmptdNoOfWeeks * 604800000 - cmptdDayOfTheWeek * 86400000;
     },
@@ -221,7 +231,7 @@ export default {
       let dateRangeStart = 1;
       let dateArray = [];
       let currentDate = new Date(this.firstDayTmstmp);
-      while (dateRangeStart <= this.daysRangeArr[this.sttngs.user.calendar.filters.days]) {
+      while (dateRangeStart <= this.daysRangeArr[this.tmpSttngs.user.calendar.filters.days]) {
         // prettier-ignore
         dateArray.push(currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' + currentDate.getDate().toString().padStart(2, '0'));
         currentDate.setDate(currentDate.getDate() + 1);
@@ -229,12 +239,26 @@ export default {
       }
       return dateArray;
     },
+    tmpSttngs() {
+      return {
+        user: {
+          calendar: {
+            filters: {
+              days:
+                this.wndw?.wdth < 768 &&
+                this.sttngs?.user?.calendar?.filters?.days &&
+                this.sttngs?.user?.calendar?.filters?.days > 1
+                  ? 1
+                  : this.sttngs.user.calendar.filters.days,
+            },
+          },
+        },
+      };
+    },
   },
 
   methods: {
     async updateTime() {
-      const timeDifference = Math.round((this.times.initialBrwsrTmstmp - new Date().getTime()) * -1);
-      this.times.updtngY_m_d_H_i_s_z = new Date(this.times.initialUsrTmstmp + timeDifference).toISOString();
       try {
         const response = await fetch(app_api_url + '/currentupdate', {
           headers: {
@@ -256,63 +280,9 @@ export default {
           }
           if (this.times.mstRcntChat < resJSON.data.chatsdatetime) this.getChats(this.times.mstRcntChat);
         } else {
-          this.$refs.loginMessage.value = resJSON.messages[0] ? resJSON.messages[0] : 'Logged out with an error';
-          this.deleteLogin();
-        }
-      } catch (error) {
-        this.dsbld = true;
-        this.showMsg('Internet connection issue');
-        console.log(error.toString());
-      }
-    },
-
-    async getUserData() {
-      try {
-        const response = await fetch(app_api_url + '/users', {
-          headers: {
-            Authorization: access_token,
-            'Cache-Control': 'no-store',
-          },
-        });
-        const userDataResJSON = await response.json();
-        // console.log(userDataResJSON);
-        if (userDataResJSON.success) {
-          this.times.initialBrwsrTmstmp = new Date().getTime();
-          this.times.initialUsrTmstmp = new Date(userDataResJSON.data.date_Y_m_d_H_i_s_z).getTime();
-          this.times.updtngY_m_d_H_i_s_z = userDataResJSON.data.date_Y_m_d_H_i_s_z;
-
-          this.userData = userDataResJSON.data.user;
-
-          this.slctd.chatGroup = Object.keys(userDataResJSON.data.accountSettings.chats)[0];
-          this.slctd.report = 'user_Contact report:' + this.userData.id;
-          this.slctd.tmstmp = new Date(this.times.updtngY_m_d_H_i_s_z).getTime();
-
-          setInterval(() => {
-            this.updateTime();
-          }, 6000);
-
-          // this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][1]) > 5
-          //   ? 'Contact list with min. info'
-          //   : this.userData.FirstName + '\'s tasks';
-          this.activeUserList = userDataResJSON.data.activeUserList;
-          this.sttngs.accnt = userDataResJSON.data.accountSettings;
-          this.sttngs.temp = {
-            calendar: { filters: { days: userDataResJSON.data.userSettings.calendar.filters.days } },
-          };
-
-          if (
-            this.wndw.wdth < 768 &&
-            (userDataResJSON.data.userSettings.calendar.filters.days != 0 ||
-              userDataResJSON.data.userSettings.calendar.filters.days != 1)
-          )
-            userDataResJSON.data.userSettings.calendar.filters.days = 1;
-          this.sttngs.user = userDataResJSON.data.userSettings;
-          this.getContacts(null);
-          this.getChats('1970-01-01T00:00:00');
-          this.getEmailSettings();
-        } else {
-          this.$refs.loginMessage.value = resJSON.messages[0] ? resJSON.messages[0] : 'Logged out with an error';
-          this.deleteLogin();
+          // this.$refs.loginMessage.value = resJSON.messages[0] ? resJSON.messages[0] : 'Logged out with an error';
+          // this.deleteLogin();
+          this.showMsg(resJSON?.messages[0]);
         }
       } catch (error) {
         this.dsbld = true;
@@ -343,7 +313,6 @@ export default {
     async getContacts(updateTime) {
       try {
         const response = await fetch(app_api_url + '/contacts', {
-          method: 'GET',
           headers: {
             Authorization: access_token,
             'Cache-Control': 'no-store',
@@ -375,22 +344,27 @@ export default {
 
     async getChats(updtngY_m_d_H_i_s_z) {
       try {
-        const response = await fetch(app_api_url + '/chats/' + updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T'), {
-          headers: {
-            Authorization: access_token,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-          },
-        });
-        const getChatsResJSON = await response.json();
-        if (getChatsResJSON.success) {
-          this.times.mstRcntChat = getChatsResJSON.data.date_Y_m_d_H_i_s;
+        const response = await fetch(
+          app_api_url + '/' + updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/chats',
+          {
+            headers: {
+              Authorization: access_token,
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store',
+            },
+          }
+        );
+        const resJSON = await response.json();
+        if (resJSON.success) {
+          this.times.mstRcntChat = resJSON.data.date_Y_m_d_H_i_s;
           if (updtngY_m_d_H_i_s_z == '1970-01-01T00:00:00') {
-            this.chats = getChatsResJSON.data.chats ? getChatsResJSON.data.chats : [];
+            this.chats = resJSON.data.chats ? resJSON.data.chats : [];
           } else {
-            getChatsResJSON.data.chats.forEach((chat) => {
+            resJSON.data.chats.forEach((chat) => {
               this.chats.push(chat);
-              const newChat = new Notification(this.activeUserList[chat.userid][0] + ': ' + chat.chatmessage);
+              const newChat = new Notification(
+                this.sttngs.entity.activeUserList[chat.userid].FirstName + ': ' + chat.chatmessage
+              );
             });
           }
         } else {
@@ -398,26 +372,6 @@ export default {
         }
       } catch (error) {
         this.showMsg(error.toString());
-        console.log(error.toString());
-      }
-    },
-
-    async getEmailSettings() {
-      try {
-        const response = await fetch(app_api_url + '/emails', {
-          method: 'GET',
-          headers: {
-            Authorization: access_token,
-            'Cache-Control': 'no-store',
-          },
-        });
-        const getEmailSettingsResJSON = await response.json();
-        if (getEmailSettingsResJSON.success) {
-          this.emails = getEmailSettingsResJSON.data.emailSettings;
-        }
-      } catch (error) {
-        this.dsbld = true;
-        this.showMsg('Internet connection issue');
         console.log(error.toString());
       }
     },
@@ -510,36 +464,13 @@ export default {
         }
       }
     },
-
-    async patchUserSettings(newSettings) {
-      const oldSettings = this.sttngs;
-      this.sttngs.user = newSettings;
-      try {
-        const response = await fetch(app_api_url + '/settings', {
-          method: 'PATCH',
-          headers: {
-            Authorization: access_token,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-          },
-          body: JSON.stringify({
-            Settings: this.sttngs.user,
-          }),
-        });
-        const resJSON = await response.json();
-        if (!resJSON.success) {
-          this.sttngs = oldSettings;
-          this.showMsg('User settings not updated');
-        }
-      } catch (error) {
-        console.log(error.toString());
-        this.showMsg('User settings not updated');
-      }
-    },
   },
 
   created() {
-    this.getUserData();
+    this.userSttngsReq('GET');
+    this.entitySttngsReq('GET');
+    this.getContacts(null);
+    this.getChats('1970-01-01T00:00:00');
   },
 };
 </script>

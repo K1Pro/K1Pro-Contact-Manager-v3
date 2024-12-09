@@ -75,7 +75,7 @@ export default {
     'days',
     'firstDayTmstmp',
     'patchContactInfo',
-    'patchUserSettings',
+    'userSttngsReq',
     'slctd',
     'sttngs',
     'times',
@@ -164,7 +164,7 @@ export default {
       this.slctd.sideMenuLnk = [sidemenuLink, 'Calendar'];
       const cloneSttngs = this.sttngs.user;
       cloneSttngs.selectedContactIndex = ContactID;
-      this.patchUserSettings(cloneSttngs);
+      this.userSttngsReq('PATCH', cloneSttngs);
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }
@@ -183,7 +183,7 @@ export default {
 
       const cloneSttngs = this.sttngs.user;
       cloneSttngs.selectedContactIndex = ContactID;
-      this.patchUserSettings(cloneSttngs);
+      this.userSttngsReq('PATCH', cloneSttngs);
 
       if (
         (eventDateTime != this.contacts[slctdCntctIndex][clmn][clmnIndex][key] && eventDateTime != '') ||

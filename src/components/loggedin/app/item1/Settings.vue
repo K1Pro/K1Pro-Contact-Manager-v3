@@ -4,21 +4,19 @@
     <div class="settings-body">
       <div class="settings-body-label">Days:</div>
       <select :value="sttngs.user.calendar.filters.days" @change="daysRangeChange">
-        <template v-if="wndw.wdth > 768">
-          <option v-for="(daysRange, daysRangeIndex) in daysRangeArr" :value="daysRangeIndex">
-            {{ daysRange }}
-          </option>
-        </template>
-        <template v-else>
-          <option value="0">1</option>
-          <option value="1">3</option>
-        </template>
+        <option
+          v-for="(daysRange, daysRangeIndex) in daysRangeArr"
+          :value="daysRangeIndex"
+          :disabled="wndw.wdth < 768 && daysRangeIndex > 1"
+        >
+          {{ daysRange }}
+        </option>
       </select>
       <div class="settings-body-label">Owners:</div>
       <select :value="sttngs.user.calendar.filters.owners" @change="ownersChange">
         <option value="">All</option>
         <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
-          {{ userInfo[0] }}
+          {{ userInfo.FirstName }}
         </option>
       </select>
       <div class="settings-body-label">Status:</div>
@@ -31,7 +29,7 @@
       <div class="settings-body-label">Category:</div>
       <select :value="sttngs.user.calendar.filters.category" @change="categoryChange">
         <option value="">All</option>
-        <option v-for="category in sttngs.accnt.Categ" :value="category">
+        <option v-for="category in sttngs.entity.Categ" :value="category">
           {{ category }}
         </option>
       </select>
@@ -40,7 +38,7 @@
         <option value="12">12-hour</option>
         <option value="24">24-hour</option>
       </select>
-      <button @click="notificationsChange">Enable notifications</button>
+      <button @click="notificationsChange">Toggle notifications</button>
 
       <template v-if="userRole > 7">
         <hr />
@@ -48,14 +46,15 @@
         <select v-model="userSlctd">
           <option value="" selected disabled>Select</option>
           <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
-            {{ userInfo[0] }}
+            {{ userInfo.FirstName }}
           </option>
         </select>
         <template v-if="userSlctd != ''">
           <div class="settings-body-label">Type:</div>
           <select
-            :disabled="userList[userSlctd][1] == 'inactive'"
-            v-model="userList[userSlctd][1]"
+            name="role"
+            :disabled="userList[userSlctd].role == 'inactive' || userSlctd == userData.id"
+            :value="userList[userSlctd].role"
             @change="patchAuthorization"
           >
             <template v-for="role in roles">
@@ -67,10 +66,11 @@
 
           <div class="settings-body-label">IPs:</div>
           <textarea
+            name="ip"
             rows="3"
-            :disabled="userList[userSlctd][1] == 'inactive'"
+            :disabled="userList[userSlctd].role == 'inactive' || userSlctd == userData.id"
+            :value="IPList ? IPList : userList[userSlctd].role == 'inactive' ? 'inactive' : 'all'"
             @change="patchIPList"
-            :value="IPList ? IPList : userList[userSlctd][1] == 'inactive' ? 'inactive' : 'all'"
           ></textarea>
           <div class="settings-body-label">Timezone:</div>
           <select>
@@ -89,7 +89,8 @@ export default {
   inject: [
     'appName',
     'daysRangeArr',
-    'patchUserSettings',
+    'entity',
+    'userSttngsReq',
     'roles',
     'showMsg',
     'sttngs',
@@ -106,7 +107,7 @@ export default {
 
   computed: {
     IPList() {
-      return this.userRole > 7 && this.userSlctd != '' ? this.userList?.[this.userSlctd]?.[2]?.join(', ') : null;
+      return this.userRole > 7 && this.userSlctd != '' ? this.userList?.[this.userSlctd]?.ip?.join(', ') : null;
     },
   },
 
@@ -114,29 +115,28 @@ export default {
     daysRangeChange(event) {
       const cloneSttngs = this.sttngs.user;
       cloneSttngs.calendar.filters.days = event.target.value;
-      this.sttngs.temp.calendar.filters.days = event.target.value;
       this.slctd.dayIndex = null;
-      this.patchUserSettings(cloneSttngs);
+      this.userSttngsReq('PATCH', cloneSttngs);
     },
     ownersChange(event) {
       const cloneSttngs = this.sttngs.user;
       cloneSttngs.calendar.filters.owners = event.target.value;
-      this.patchUserSettings(cloneSttngs);
+      this.userSttngsReq('PATCH', cloneSttngs);
     },
     statusChange(event) {
       const cloneSttngs = this.sttngs.user;
       cloneSttngs.calendar.filters.status = event.target.value;
-      this.patchUserSettings(cloneSttngs);
+      this.userSttngsReq('PATCH', cloneSttngs);
     },
     categoryChange(event) {
       const cloneSttngs = this.sttngs.user;
       cloneSttngs.calendar.filters.category = event.target.value;
-      this.patchUserSettings(cloneSttngs);
+      this.userSttngsReq('PATCH', cloneSttngs);
     },
     clockChange(event) {
       const cloneSttngs = this.sttngs.user;
       cloneSttngs.clock = event.target.value;
-      this.patchUserSettings(cloneSttngs);
+      this.userSttngsReq('PATCH', cloneSttngs);
     },
     notificationsChange() {
       Notification.requestPermission().then((result) => {
@@ -150,28 +150,26 @@ export default {
       });
     },
     patchAuthorization(event) {
-      if (this.userSlctd == this.userData.id) {
-        this.userData.AppPermissions[this.appName][1] = event.target.value;
+      if (this.userSlctd != this.userData.id) {
+        this.sttngs.entity.activeUserList[this.userSlctd][event.target.name] = event.target.value;
+        this.patchUserData(event.target.value, 'AppPermissions', null, event.target.name, this.userSlctd);
       }
-      this.patchUserData(event.target.value, null);
     },
 
     patchIPList(event) {
-      if (
-        event.target.value.replaceAll(' ', '') == '' ||
-        event.target.value.toLowerCase().replaceAll(' ', '').includes('all')
-      ) {
-        this.userList[this.userSlctd][2] = null;
-        this.patchUserData(null, null);
-      } else {
-        this.userList[this.userSlctd][2] = event.target.value.replaceAll(' ', '').split(',');
-        this.patchUserData(null, event.target.value.replaceAll(' ', '').split(','));
-      }
+      this.sttngs.entity.activeUserList[this.userSlctd].ip =
+        event.target.value.trim().toLowerCase() === 'all' ? null : event.target.value.replaceAll(' ', '').split(',');
+      this.patchUserData(
+        this.sttngs.entity.activeUserList[this.userSlctd].ip,
+        'AppPermissions',
+        null,
+        event.target.name,
+        this.userSlctd
+      );
     },
-
-    async patchUserData(authorization, IPList) {
+    async patchUserData(event, column, columnIndex, key, ID) {
       try {
-        const response = await fetch(app_api_url + '/users', {
+        const response = await fetch(api_path.login + '/userdata', {
           method: 'PATCH',
           headers: {
             Authorization: access_token,
@@ -179,13 +177,14 @@ export default {
             'Cache-Control': 'no-store',
           },
           body: JSON.stringify({
-            UserID: this.userSlctd,
-            IPList: IPList,
-            Authorization: authorization,
+            ID: ID,
+            Column: column,
+            ColumnIndex: columnIndex,
+            Key: key,
+            Value: event,
           }),
         });
-        const patchUserDataResJSON = await response.json();
-        console.log(patchUserDataResJSON);
+        const resJSON = await response.json();
       } catch (error) {
         console.log(error.toString());
       }

@@ -4,10 +4,10 @@
       Report:
       <select v-if="userRole > 5" v-model="slctdUser">
         <option
-          v-for="([activeUserKey, activeUserVal], activeUserIndex) in Object.entries(activeUserList)"
+          v-for="([activeUserKey, activeUserVal], activeUserIndex) in Object.entries(sttngs.entity.activeUserList)"
           :value="activeUserKey"
         >
-          {{ activeUserVal[0] }}
+          {{ activeUserVal.FirstName }}
         </option>
       </select>
     </div>
@@ -17,12 +17,12 @@
         :class="[slctd.report.includes('user_Contact report:' + slctdUser) ? 'reports-active' : 'reports0']"
         @click="selectReport('user_Contact report:' + slctdUser)"
       >
-        Contact report: {{ activeUserList[slctdUser][0] }}
+        Contact report: {{ sttngs.entity.activeUserList[slctdUser].FirstName }}
       </div>
 
       <template v-for="(report, reportIndex) in includedReports">
         <div
-          v-if="roles.findIndex((role) => role === activeUserList[slctdUser][1]) > report.split('_')[0]"
+          v-if="roles.findIndex((role) => role === sttngs.entity.activeUserList[slctdUser].role) > report.split('_')[0]"
           class="reports-report"
           :class="[
             slctd.report.includes(
@@ -46,7 +46,7 @@
         :class="[slctd.report.includes('user_Task report:' + slctdUser) ? 'reports-active' : 'reports0']"
         @click="selectReport('user_Task report:' + slctdUser)"
       >
-        Task report: {{ activeUserList[slctdUser][0] }}
+        Task report: {{ sttngs.entity.activeUserList[slctdUser].FirstName }}
       </div>
 
       <div
@@ -54,17 +54,18 @@
         :class="[slctd.report.includes('Task stats:' + slctdUser) ? 'reports-active' : 'reports1']"
         @click="selectReport('Task stats:' + slctdUser)"
       >
-        Task stats: {{ activeUserList[slctdUser][0] }}
+        Task stats: {{ sttngs.entity.activeUserList[slctdUser].FirstName }}
       </div>
 
-      <template v-for="(report, reportIndex) in sttngs.accnt.reports">
+      <template v-for="(report, reportIndex) in sttngs.entity.reports">
         <div
-          v-if="roles.findIndex((role) => role === activeUserList[slctdUser][1]) > report.split('_')[0]"
+          v-if="roles.findIndex((role) => role === sttngs.entity.activeUserList[slctdUser].role) > report.split('_')[0]"
           class="reports-report"
           :class="[
             slctd.report.includes(report.split('_')[1])
               ? 'reports-active'
-              : 'reports' + ((includedReports.length + Object.entries(activeUserList).length + reportIndex) % 2),
+              : 'reports' +
+                ((includedReports.length + Object.entries(sttngs.entity.activeUserList).length + reportIndex) % 2),
           ]"
           @click="selectReport(report.split('_')[1])"
         >
@@ -79,18 +80,7 @@
 export default {
   name: 'Reports',
 
-  inject: [
-    'activeUserList',
-    'appName',
-    'contacts',
-    'roles',
-    'sttngs',
-    'slctd',
-    'slctdCntctIndex',
-    'userData',
-    'userRole',
-    'wndw',
-  ],
+  inject: ['contacts', 'roles', 'sttngs', 'slctd', 'slctdCntctIndex', 'userData', 'userRole', 'wndw'],
 
   data() {
     return {
@@ -105,7 +95,7 @@ export default {
             : '') +
           this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.Name,
       ],
-      cntctReportAmnt: this.userRole > 5 ? Object.entries(this.activeUserList).length : 1,
+      cntctReportAmnt: this.userRole > 5 ? Object.entries(this.sttngs.entity.activeUserList).length : 1,
       slctdUser: this.userData.id,
     };
   },

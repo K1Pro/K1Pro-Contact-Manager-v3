@@ -88,10 +88,14 @@
             "
           >
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
-              {{ userInfo[0] }}
+              {{ userInfo.FirstName }}
             </option>
-            <option v-if="userList?.[task?.Update]?.[0]" disabled>Updated by {{ userList[task.Update][0] }}</option>
-            <option v-if="userList?.[task?.Create]?.[0]" disabled>Created by {{ userList[task.Create][0] }}</option>
+            <option v-if="userList?.[task?.Update]?.FirstName" disabled>
+              Updated by {{ userList[task.Update].FirstName }}
+            </option>
+            <option v-if="userList?.[task?.Create]?.FirstName" disabled>
+              Created by {{ userList[task.Create].FirstName }}
+            </option>
           </select>
           <span class="tasks-label">Finished:</span>
           <input
