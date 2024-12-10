@@ -111,7 +111,6 @@ export default {
           this.$refs['emailTemplate'].value == 'null'
             ? ''
             : '"' + this.sttngs.entity.emails[this.slctdTemplate].placeholder.toLowerCase() + '" to ';
-        const sendEmailDatetime = this.times.updtngY_m_d_H_i_s_z.slice(0, 16);
         let formData = new FormData();
         Object.values(this.$refs['emailAttachment'].files).forEach((file) => {
           formData.append('email_attachment[]', file);
@@ -121,30 +120,27 @@ export default {
         formData.append('Template', emailTemplate);
         formData.append('Body', this.$refs['emailBody'].innerHTML);
         formData.append('id', this.contacts[this.slctdCntctIndex].id);
-        formData.append('Datetime', sendEmailDatetime);
         formData.append('CC', this.$refs['CC'].checked);
         try {
-          const response = await fetch(app_api_url + '/emails', {
-            method: 'POST',
-            headers: {
-              Authorization: access_token,
-              'Cache-Control': 'no-store',
-            },
-            body: formData,
-          });
+          const response = await fetch(
+            app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/emails',
+            {
+              method: 'POST',
+              headers: {
+                Authorization: access_token,
+                'Cache-Control': 'no-store',
+              },
+              body: formData,
+            }
+          );
           const sendEmailResJSON = await response.json();
           if (sendEmailResJSON.success) {
-            this.showMsg('Email sent successfully');
-            console.log(sendEmailResJSON);
             this.spinLogin = false;
-            this.contacts[columnIndex].Log.unshift([
-              this.userData.id,
-              sendEmailDatetime,
-              'Emailed ' + emailTemplate + this.$refs['emailTo'].value,
-            ]);
+            this.showMsg(sendEmailResJSON.messages[0]);
+            this.contacts[columnIndex].Log.unshift(sendEmailResJSON.data.log);
           } else {
-            this.showMsg('Email error');
             this.spinLogin = false;
+            this.showMsg('Email error');
           }
         } catch (error) {
           this.spinLogin = false;

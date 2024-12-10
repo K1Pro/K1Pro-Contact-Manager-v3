@@ -1,6 +1,6 @@
 <template>
   <snackbar :msg @deleteMsg="msg = null"></snackbar>
-  <template v-if="contacts.length > 0 && sttngs.user != null && sttngs.entity != null && initialTimes">
+  <template v-if="contacts != null && sttngs.user != null && sttngs.entity != null && initialTimes">
     <div class="app-grid-container" :style="appGridContainer">
       <div class="app-grid-item1">
         <sidemenu
@@ -51,7 +51,7 @@ export default {
     return {
       appName: app_name,
       chats: [],
-      contacts: [],
+      contacts: null,
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       dsbld: false,
       entity: entity,
@@ -79,9 +79,9 @@ export default {
       times: {
         initialUsrTmstmp: null,
         initialBrwsrTmstmp: null,
-        updtngY_m_d_H_i_s_z: null,
-        mstRcntChat: null,
-        mstRcntCntctUpdt: null,
+        updtngY_m_d_H_i_s_z: '1970-01-01T00:00:00',
+        mstRcntChat: '1970-01-01T00:00:00',
+        mstRcntCntctUpdt: '1970-01-01T00:00:00',
       },
       updating: 0,
       userData: user_data,
@@ -121,6 +121,7 @@ export default {
   computed: {
     initialTimes() {
       if (this.times.initialBrwsrTmstmp === null && this.sttngs.entity.date_Y_m_d_H_i_s_z) {
+        this.getChats();
         this.times.initialBrwsrTmstmp = new Date().getTime();
         this.times.initialUsrTmstmp = new Date(this.sttngs.entity.date_Y_m_d_H_i_s_z).getTime();
         this.times.updtngY_m_d_H_i_s_z = this.sttngs.entity.date_Y_m_d_H_i_s_z;
@@ -152,6 +153,8 @@ export default {
           sidemenu.forEach((sidemenuItem, sidemenuItemIndex) => {
             if (sidemenuItemIndex == 1 && sidemenuItem.includes('Custom')) {
               sidemenuItem =
+                this.contacts !== null &&
+                this.contacts.length > 0 &&
                 this.contacts[this.slctdCntctIndex][sidemenuItem].length > 0
                   ? this.contacts[this.slctdCntctIndex][sidemenuItem].length.toString()
                   : null;
@@ -216,7 +219,7 @@ export default {
       return (new Date(this.slctd.tmstmp).getFullYear() + '-' + (new Date(this.slctd.tmstmp).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(this.slctd.tmstmp).getDate().toString().padStart(2, '0'));
     },
     slctdCntctIndex() {
-      return this.contacts.findIndex((contact) => contact.id == this.sttngs.user.selectedContactIndex);
+      return this.contacts.findIndex((contact) => contact.id == this.sttngs.user.slctdCntctID);
     },
     dayOfTheWeek() {
       return new Date(this.slctd.tmstmp).getDay(); // 0 is Sunday, 1 is Monday, 2 is Tuesday, ...,
@@ -273,16 +276,12 @@ export default {
             this.dsbld = false;
             this.showMsg('Internet restored');
           }
-          if (this.times.mstRcntCntctUpdt != resJSON.data.datetime && this.times.mstRcntCntctUpdt != null) {
-            this.getContacts(resJSON.data.datetime);
-          } else if (this.times.mstRcntCntctUpdt === null) {
-            this.times.mstRcntCntctUpdt = resJSON.data.datetime;
-          }
-          if (this.times.mstRcntChat < resJSON.data.chatsdatetime) this.getChats(this.times.mstRcntChat);
+          if (this.times.mstRcntCntctUpdt != resJSON.data.datetime) this.getContacts();
+          if (this.times.mstRcntChat != resJSON.data.chatsdatetime) this.getChats();
         } else {
-          // this.$refs.loginMessage.value = resJSON.messages[0] ? resJSON.messages[0] : 'Logged out with an error';
-          // this.deleteLogin();
-          this.showMsg(resJSON?.messages[0]);
+          this.$refs.loginMessage.value = resJSON?.messages?.[0] ? resJSON.messages[0] : 'Logged out with an error';
+          this.deleteLogin();
+          // this.showMsg(resJSON?.messages[0]);
         }
       } catch (error) {
         this.dsbld = true;
@@ -310,30 +309,53 @@ export default {
       }
     },
 
-    async getContacts(updateTime) {
+    async getContacts() {
       try {
-        const response = await fetch(app_api_url + '/contacts', {
-          headers: {
-            Authorization: access_token,
-            'Cache-Control': 'no-store',
-          },
-        });
-        const getContactsResJSON = await response.json();
-        if (getContactsResJSON.success && document.activeElement.tagName == 'BODY' && !this.updating) {
-          if (this.contacts.length == 0) {
-            this.contacts = getContactsResJSON.data.contacts;
+        const response = await fetch(
+          app_api_url + '/' + this.times.mstRcntCntctUpdt.slice(0, 19).replace(' ', 'T') + '/contacts',
+          {
+            headers: {
+              Authorization: access_token,
+              'Cache-Control': 'no-store',
+            },
+          }
+        );
+        const resJSON = await response.json();
+        // if (resJSON.success && document.activeElement.tagName == 'BODY' && !this.updating) {
+        if (resJSON.success) {
+          if (this.times.mstRcntCntctUpdt == '1970-01-01T00:00:00') {
+            this.contacts = resJSON.data.contacts ? resJSON.data.contacts : [];
           } else {
-            const slctdCntctIndx = getContactsResJSON.data.contacts.findIndex(
-              (contact) => contact.id == this.sttngs.user.selectedContactIndex
-            );
-            if (slctdCntctIndx != null && slctdCntctIndx != undefined) {
-              getContactsResJSON.data.contacts[slctdCntctIndx] = this.contacts[this.slctdCntctIndex];
-              this.contacts = getContactsResJSON.data.contacts;
+            if (resJSON.data.contacts.length > 0) {
+              resJSON.data.contacts.forEach((contact) => {
+                // if (contact.id == this.sttngs.user.slctdCntctID) console.log('editing the selected contact');
+                // if (Object.keys(contact.Updated)[0] == this.userData.id) console.log('editing the same contact');
+                // if (contact.id == this.sttngs.user.slctdCntctID && Object.keys(contact.Updated)[0] != this.userData.id)
+                //   console.log('this could cause errors');
+                if (contact.id != this.sttngs.user.slctdCntctID) {
+                  const slctdCntctIndx = this.contacts.findIndex((slctdCntct) => slctdCntct.id == contact.id);
+                  // console.log(slctdCntctIndx);
+                  this.contacts[slctdCntctIndx] = contact;
+                }
+              });
+              // const slctdCntctIndx = resJSON.data.contacts.findIndex(
+              //   (contact) => contact.id == this.sttngs.user.slctdCntctID
+              // );
+              // if (slctdCntctIndx != null && slctdCntctIndx != undefined) {
+              //   // if (Object.keys(resJSON.data.contacts[slctdCntctIndx].Updated) != this.userData.id) {
+              //   this.showMsg(Object.keys(resJSON.data.contacts[slctdCntctIndx]));
+              //   // }
+
+              //   // resJSON.data.contacts[slctdCntctIndx] = this.contacts[this.slctdCntctIndex];
+              //   // this.contacts = resJSON.data.contacts;
+              // } else {
+              //   // this.contacts = resJSON.data.contacts;
+              // }
             } else {
-              this.contacts = getContactsResJSON.data.contacts;
+              // this.showMsg('No contact updates');
             }
           }
-          this.mstRcntCntctUpdt = updateTime;
+          this.times.mstRcntCntctUpdt = resJSON.data.datetime;
         }
       } catch (error) {
         this.dsbld = true;
@@ -342,31 +364,30 @@ export default {
       }
     },
 
-    async getChats(updtngY_m_d_H_i_s_z) {
+    async getChats() {
       try {
         const response = await fetch(
-          app_api_url + '/' + updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/chats',
+          app_api_url + '/' + this.times.mstRcntChat.slice(0, 19).replace(' ', 'T') + '/chats',
           {
             headers: {
               Authorization: access_token,
-              'Content-Type': 'application/json',
               'Cache-Control': 'no-store',
             },
           }
         );
         const resJSON = await response.json();
         if (resJSON.success) {
-          this.times.mstRcntChat = resJSON.data.date_Y_m_d_H_i_s;
-          if (updtngY_m_d_H_i_s_z == '1970-01-01T00:00:00') {
-            this.chats = resJSON.data.chats ? resJSON.data.chats : [];
+          if (this.times.mstRcntChat == '1970-01-01T00:00:00') {
+            this.chats = resJSON?.data?.chats ? resJSON.data.chats : [];
           } else {
             resJSON.data.chats.forEach((chat) => {
               this.chats.push(chat);
               const newChat = new Notification(
-                this.sttngs.entity.activeUserList[chat.userid].FirstName + ': ' + chat.chatmessage
+                this.sttngs.entity.activeUserList[chat.userid].FirstName + ': ' + chat.chatmessage // this is not loading fast enough
               );
             });
           }
+          this.times.mstRcntChat = resJSON.data.date_Y_m_d_H_i_s;
         } else {
           this.times.mstRcntChat = this.times?.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
         }
@@ -393,73 +414,71 @@ export default {
       this.contacts[slctdCntctIndex].Updated = {
         [this.userData.id]: this.times.updtngY_m_d_H_i_s_z,
       };
-      let cloneUpdating = this.updating;
-      this.updating = cloneUpdating + 1;
+      this.updating++;
       try {
-        const response = await fetch(app_api_url + '/contacts', {
-          method: 'PATCH',
-          headers: {
-            Authorization: access_token,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-          },
-          body: JSON.stringify({
-            ID: newCntctInfo.id,
-            Column: column,
-            ColumnIndex: columnIndex,
-            Key: key,
-            Value: event,
-          }),
-        });
-        const patchContactInfoResJSON = await response.json();
-        if (patchContactInfoResJSON.success) {
-          cloneUpdating = this.updating;
-          this.updating = cloneUpdating - 1;
-        } else {
-          this.showMsg('Update error');
-          cloneUpdating = this.updating;
-          this.updating = cloneUpdating - 1;
-        }
-      } catch (error) {
-        this.showMsg('Update error');
-        cloneUpdating = this.updating;
-        this.updating = cloneUpdating - 1;
-        this.showMsg(error.toString());
-      }
-    },
-
-    async deleteContactInfo(column, columnIndex, prevConfirm) {
-      let cloneUpdating = this.updating;
-      this.updating = cloneUpdating + 1;
-      if (prevConfirm || confirm('Are you sure you would like to delete this?') == true) {
-        this.contacts[this.slctdCntctIndex][column].splice(columnIndex, 1);
-        try {
-          const response = await fetch(app_api_url + '/contacts', {
-            method: 'DELETE',
+        const response = await fetch(
+          app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z.replace(' ', 'T').trim() + '/contacts',
+          {
+            method: 'PATCH',
             headers: {
               Authorization: access_token,
               'Content-Type': 'application/json',
               'Cache-Control': 'no-store',
             },
             body: JSON.stringify({
-              ID: this.sttngs.user.selectedContactIndex,
+              ID: newCntctInfo.id,
               Column: column,
               ColumnIndex: columnIndex,
+              Key: key,
+              Value: event,
             }),
-          });
-          const deleteContactInfoResJSON = await response.json();
-          if (deleteContactInfoResJSON.success) {
-            cloneUpdating = this.updating;
-            this.updating = cloneUpdating - 1;
+          }
+        );
+        const resJSON = await response.json();
+        if (resJSON.success) {
+          this.updating--;
+        } else {
+          this.showMsg('Update error');
+          this.updating--;
+        }
+      } catch (error) {
+        this.showMsg('Update error');
+        this.updating--;
+        this.showMsg(error.toString());
+      }
+    },
+
+    async deleteContactInfo(column, columnIndex, prevConfirm) {
+      this.updating++;
+      if (prevConfirm || confirm('Are you sure you would like to delete this?') == true) {
+        this.contacts[this.slctdCntctIndex][column].splice(columnIndex, 1);
+        try {
+          const response = await fetch(
+            app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z.replace(' ', 'T').trim() + '/contacts',
+            {
+              method: 'PATCH',
+              headers: {
+                Authorization: access_token,
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-store',
+              },
+              body: JSON.stringify({
+                ID: this.sttngs.user.slctdCntctID,
+                Column: column,
+                ColumnIndex: columnIndex,
+              }),
+            }
+          );
+          const resJSON = await response.json();
+          if (resJSON.success) {
+            this.updating--;
           } else {
             this.showMsg('Delete error');
-            cloneUpdating = this.updating;
-            this.updating = cloneUpdating - 1;
+            this.updating--;
           }
         } catch (error) {
           this.showMsg('Delete error');
-          cloneUpdating = this.updating;
-          this.updating = cloneUpdating - 1;
+          this.updating--;
           this.showMsg(error.toString());
         }
       }
@@ -469,8 +488,7 @@ export default {
   created() {
     this.userSttngsReq('GET');
     this.entitySttngsReq('GET');
-    this.getContacts(null);
-    this.getChats('1970-01-01T00:00:00');
+    this.getContacts();
   },
 };
 </script>

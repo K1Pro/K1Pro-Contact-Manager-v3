@@ -119,7 +119,7 @@ export default {
       this.search = '';
       this.$refs.searchDropdown.size = 0;
       const cloneSttngs = this.sttngs.user;
-      cloneSttngs.selectedContactIndex = this.contacts[event.target.value].id;
+      cloneSttngs.slctdCntctID = this.contacts[event.target.value].id;
       this.userSttngsReq('PATCH', cloneSttngs);
     },
 

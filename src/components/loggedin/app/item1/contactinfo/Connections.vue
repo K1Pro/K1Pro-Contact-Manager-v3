@@ -75,9 +75,13 @@ export default {
 
   computed: {
     connections() {
-      return this.contacts[this.slctdCntctIndex].Connections.map((val, index) => {
-        return { ...val, RealIndex: index };
-      }).sort((a, b) => Object.keys(b)[0].localeCompare(Object.keys(a)[0]));
+      if (this.contacts === null || this.contacts.length === 0) {
+        return [];
+      } else {
+        return this.contacts[this.slctdCntctIndex].Connections.map((val, index) => {
+          return { ...val, RealIndex: index };
+        }).sort((a, b) => Object.keys(b)[0].localeCompare(Object.keys(a)[0]));
+      }
     },
   },
 
@@ -97,19 +101,21 @@ export default {
             'tel:' + this.contacts[this.slctdCntctIndex].Connections[connIndex][connType].replace(/\D/g, '');
           const clmnIndex = this.slctdCntctIndex;
           try {
-            const response = await fetch(app_api_url + '/calls', {
-              method: 'POST',
-              headers: {
-                Authorization: access_token,
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-store',
-              },
-              body: JSON.stringify({
-                ID: this.sttngs.user.selectedContactIndex,
-                Datetime: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
-                Phone: this.contacts[this.slctdCntctIndex].Connections[connIndex][connType],
-              }),
-            });
+            const response = await fetch(
+              app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/calls',
+              {
+                method: 'POST',
+                headers: {
+                  Authorization: access_token,
+                  'Content-Type': 'application/json',
+                  'Cache-Control': 'no-store',
+                },
+                body: JSON.stringify({
+                  ID: this.sttngs.user.slctdCntctID,
+                  Phone: this.contacts[this.slctdCntctIndex].Connections[connIndex][connType],
+                }),
+              }
+            );
             const postConnectResJSON = await response.json();
             if (postConnectResJSON.success) {
               // this.msg.snackBar = 'Updated ';

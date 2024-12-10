@@ -362,7 +362,7 @@ export default {
     selectContact(contactID) {
       this.slctd.sideMenuLnk = ['Contactinfo', 'Calendar'];
       const cloneSttngs = this.sttngs.user;
-      cloneSttngs.selectedContactIndex = contactID;
+      cloneSttngs.slctdCntctID = contactID;
       this.userSttngsReq('PATCH', cloneSttngs);
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });

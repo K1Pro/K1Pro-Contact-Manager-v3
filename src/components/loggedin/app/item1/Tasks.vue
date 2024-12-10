@@ -1,6 +1,6 @@
 <template>
   <div class="tasks">
-    <template v-if="contacts[slctdCntctIndex].Tasks">
+    <template v-if="contacts?.[slctdCntctIndex]?.Tasks">
       <div class="tasks-title">
         <div class="tasks-title-grid-container">
           <div class="tasks-title-grid-item1">
@@ -142,6 +142,7 @@
         <div>No tasks</div>
       </div>
     </template>
+    <template v-else>Create a contact first</template>
   </div>
 </template>
 

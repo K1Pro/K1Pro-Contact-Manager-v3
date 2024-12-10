@@ -1,6 +1,6 @@
 <template>
   <div class="recur-tasks">
-    <template v-if="contacts[slctdCntctIndex].RecurTasks">
+    <template v-if="contacts?.[slctdCntctIndex]?.RecurTasks">
       <div class="recur-tasks-title">
         <div class="recur-tasks-title-grid-container">
           <div class="recur-tasks-title-grid-item1">
@@ -210,6 +210,7 @@
         <div>No recurring tasks</div>
       </div>
     </template>
+    <template v-else>Create a contact first</template>
   </div>
 </template>
 

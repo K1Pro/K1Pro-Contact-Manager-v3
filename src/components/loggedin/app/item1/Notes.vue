@@ -1,6 +1,6 @@
 <template>
   <div class="notes">
-    <template v-if="contacts">
+    <template v-if="contacts !== null && contacts.length !== 0">
       <div class="notes-title">
         Notes for
         {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
@@ -13,7 +13,7 @@
         :disabled="dsbld"
       ></textarea>
     </template>
-    <template v-else> Notes </template>
+    <template v-else>Create a contact first</template>
   </div>
 </template>
 

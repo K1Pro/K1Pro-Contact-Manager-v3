@@ -21,12 +21,12 @@
         :class="[
           calContactTask.Status,
           {
-            active: calContactTask.ContactID == sttngs.user.selectedContactIndex,
+            active: calContactTask.ContactID == sttngs.user.slctdCntctID,
           },
           {
             activeTask:
               calContactTask.EventIndex == slctd.eventIndx &&
-              calContactTask.ContactID == sttngs.user.selectedContactIndex &&
+              calContactTask.ContactID == sttngs.user.slctdCntctID &&
               calContactTask.Type == slctd.sideMenuLnk[0],
           },
         ]"
@@ -163,7 +163,7 @@ export default {
       this.slctd.eventIndx = eventIndex;
       this.slctd.sideMenuLnk = [sidemenuLink, 'Calendar'];
       const cloneSttngs = this.sttngs.user;
-      cloneSttngs.selectedContactIndex = ContactID;
+      cloneSttngs.slctdCntctID = ContactID;
       this.userSttngsReq('PATCH', cloneSttngs);
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
@@ -182,7 +182,7 @@ export default {
       const key = 'Date';
 
       const cloneSttngs = this.sttngs.user;
-      cloneSttngs.selectedContactIndex = ContactID;
+      cloneSttngs.slctdCntctID = ContactID;
       this.userSttngsReq('PATCH', cloneSttngs);
 
       if (

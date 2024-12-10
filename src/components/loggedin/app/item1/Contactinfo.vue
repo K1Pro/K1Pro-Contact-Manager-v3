@@ -6,7 +6,7 @@
     <connections></connections>
     <assets></assets>
     <credentials></credentials>
-    <ownercateg></ownercateg>
+    <ownercateg v-if="contacts !== null && contacts.length !== 0"></ownercateg>
   </div>
 </template>
 
@@ -15,6 +15,8 @@ export default {
   name: 'Contact Info',
 
   emits: ['contacts'],
+
+  inject: ['contacts'],
 };
 </script>
 
