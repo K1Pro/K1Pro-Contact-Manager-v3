@@ -219,7 +219,12 @@ export default {
       return (new Date(this.slctd.tmstmp).getFullYear() + '-' + (new Date(this.slctd.tmstmp).getMonth() + 1).toString().padStart(2, '0') + '-' + new Date(this.slctd.tmstmp).getDate().toString().padStart(2, '0'));
     },
     slctdCntctIndex() {
-      return this.contacts.findIndex((contact) => contact.id == this.sttngs.user.slctdCntctID);
+      const selectdContactIndex = this.contacts.findIndex((contact) => contact.id == this.sttngs.user.slctdCntctID);
+      if (selectdContactIndex === -1) {
+        this.sttngs.user.slctdCntctID = this.contacts[this.contacts.length - 1].id;
+        this.userSttngsReq('PATCH', this.sttngs.user);
+      }
+      return selectdContactIndex;
     },
     dayOfTheWeek() {
       return new Date(this.slctd.tmstmp).getDay(); // 0 is Sunday, 1 is Monday, 2 is Tuesday, ...,
