@@ -79,7 +79,7 @@ export default {
       times: {
         initialUsrTmstmp: null,
         initialBrwsrTmstmp: null,
-        updtngY_m_d_H_i_s_z: '1970-01-01T00:00:00',
+        updtngY_m_d_H_i_s_z: null,
         mstRcntChat: '1970-01-01T00:00:00',
         mstRcntCntctUpdt: '1970-01-01T00:00:00',
       },
@@ -130,8 +130,8 @@ export default {
         setInterval(() => {
           const timeDifference = new Date().getTime() - this.times.initialBrwsrTmstmp;
           this.times.updtngY_m_d_H_i_s_z = new Date(this.times.initialUsrTmstmp + timeDifference).toISOString();
-          this.updateTime();
-        }, 6000);
+          this.appUpdate();
+        }, 5000);
       }
       return this.times.initialBrwsrTmstmp === null && this.sttngs.entity.date_Y_m_d_H_i_s_z ? false : true;
     },
@@ -266,23 +266,26 @@ export default {
   },
 
   methods: {
-    async updateTime() {
+    async appUpdate() {
       try {
-        const response = await fetch(app_api_url + '/currentupdate', {
-          headers: {
-            Authorization: access_token,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-          },
-        });
+        const response = await fetch(
+          app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z + '/' + this.sttngs.user.slctdCntctID + '/update',
+          {
+            headers: {
+              Authorization: access_token,
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store',
+            },
+          }
+        );
         const resJSON = await response.json();
         if (resJSON.success) {
           if (this.dsbld == true) {
             this.dsbld = false;
             this.showMsg('Internet restored');
           }
-          if (this.times.mstRcntCntctUpdt != resJSON.data.datetime) this.getContacts();
-          if (this.times.mstRcntChat != resJSON.data.chatsdatetime) this.getChats();
+          if (this.times.mstRcntCntctUpdt != resJSON.data.mstRcntCntctUpdt) this.getContacts();
+          if (this.times.mstRcntChat != resJSON.data.mstRcntChat) this.getChats();
         } else {
           this.$refs.loginMessage.value = resJSON?.messages?.[0] ? resJSON.messages[0] : 'Logged out with an error';
           this.deleteLogin();
@@ -360,7 +363,7 @@ export default {
               // this.showMsg('No contact updates');
             }
           }
-          this.times.mstRcntCntctUpdt = resJSON.data.datetime;
+          this.times.mstRcntCntctUpdt = resJSON.data.mstRcntCntctUpdt;
         }
       } catch (error) {
         this.dsbld = true;
@@ -388,11 +391,11 @@ export default {
             resJSON.data.chats.forEach((chat) => {
               this.chats.push(chat);
               const newChat = new Notification(
-                this.sttngs.entity.activeUserList[chat.userid].FirstName + ': ' + chat.chatmessage // this is not loading fast enough
+                this.sttngs.entity.activeUserList[chat.userid].FirstName + ': ' + chat.chatmessage
               );
             });
           }
-          this.times.mstRcntChat = resJSON.data.date_Y_m_d_H_i_s;
+          this.times.mstRcntChat = resJSON.data.mstRcntChat;
         } else {
           this.times.mstRcntChat = this.times?.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
         }
