@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       appName: app_name,
-      chats: [],
+      chats: null,
       contacts: null,
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       deletedIDs: [],
@@ -124,7 +124,6 @@ export default {
   computed: {
     initialTimes() {
       if (this.times.initialBrwsrTmstmp === null && this.sttngs.entity.date_Y_m_d_H_i_s_z) {
-        this.getChats();
         this.times.initialBrwsrTmstmp = new Date().getTime();
         this.times.initialUsrTmstmp = new Date(this.sttngs.entity.date_Y_m_d_H_i_s_z).getTime();
         this.times.updtngY_m_d_H_i_s_z = this.sttngs.entity.date_Y_m_d_H_i_s_z;
@@ -173,7 +172,7 @@ export default {
     },
     newChats() {
       let newChats = {};
-      if (this.sttngs.user?.chats && this.chats) {
+      if (this.sttngs.user?.chats && this.chats !== null) {
         Object.entries(this.sttngs.user.chats).forEach(([chatGroupName, mstRcntChatTime], chatIndex) => {
           this.chats.forEach((chat) => {
             if (
@@ -364,7 +363,9 @@ export default {
             setTimeout(() => {
               if (Object.keys(this.todaysEvents).length > 0) {
                 const newChat = new Notification(
-                  'You have ' + Object.keys(this.todaysEvents).length + ' tasks scheduled for today'
+                  Object.keys(this.todaysEvents).length +
+                    (Object.keys(this.todaysEvents).length > 1 ? ' tasks are' : ' task is') +
+                    ' scheduled for today'
                 );
               }
             }, 1000);
@@ -453,9 +454,13 @@ export default {
         if (resJSON.success) {
           if (this.times.mstRcntChat == '1970-01-01T00:00:00') {
             this.chats = resJSON?.data?.chats ? resJSON.data.chats : [];
-            if (this.allNewChats) {
-              const newChat = new Notification('You have ' + this.allNewChats + ' unread messages in your chat');
-            }
+            setTimeout(() => {
+              if (this.allNewChats) {
+                const newChat = new Notification(
+                  this.allNewChats + ' unread ' + (this.allNewChats > 1 ? 'messages' : 'message') + ' in your chat'
+                );
+              }
+            }, 2000);
           } else {
             resJSON.data.chats.forEach((chat) => {
               this.chats.push(chat);
@@ -575,11 +580,36 @@ export default {
     this.userSttngsReq('GET');
     this.entitySttngsReq('GET');
     this.getContacts();
+    this.getChats();
+
+    setTimeout(() => {
+      // Initial app checks
+      if (this.sttngs.entity === null) this.userSttngsReq('GET');
+      if (this.sttngs.user === null) this.entitySttngsReq('GET');
+      if (this.contacts === null) this.getContacts();
+      if (this.chats === null) this.getChats();
+    }, 2000);
+
+    setTimeout(() => {
+      // Initial app checks
+      if (
+        this.sttngs.entity === null ||
+        this.sttngs.user === null ||
+        this.contacts === null ||
+        this.chats === null ||
+        !this.initialTimes
+      )
+        location.reload();
+    }, 4000);
+
     setInterval(() => {
       if (this.allNewChats) {
-        const newChat = new Notification('You have ' + this.allNewChats + ' unread messages in your chat');
+        const newChat = new Notification(
+          this.allNewChats + ' unread ' + (this.allNewChats > 1 ? 'messages' : 'message') + ' in your chat'
+        );
       }
     }, 600000);
+
     setInterval(() => {
       const updtngH_i = this.times.updtngY_m_d_H_i_s_z?.split('T')[1].slice(0, 5);
       if (Object.keys(this.todaysEvents).includes(updtngH_i)) {

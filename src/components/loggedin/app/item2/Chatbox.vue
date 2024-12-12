@@ -52,7 +52,7 @@ export default {
 
   computed: {
     slctdChats() {
-      return this.chats.filter(
+      return this.chats?.filter(
         (chat) => JSON.stringify(chat.chatgroup) === JSON.stringify(this.sttngs.entity.chats[this.slctd.chatGroup])
       );
     },
