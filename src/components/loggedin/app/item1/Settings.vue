@@ -49,6 +49,18 @@
             {{ userInfo.FirstName }}
           </option>
         </select>
+        <div class="settings-body-label">Online:</div>
+        <input
+          type="text"
+          disabled
+          :value="
+            userData.id == userSlctd
+              ? times.updtngY_m_d_H_i_s_z.replace('T', ' ').slice(0, 16)
+              : times.mstRcntUpdates[userSlctd]
+              ? times.mstRcntUpdates[userSlctd].slice(0, 16)
+              : 'Never'
+          "
+        />
         <template v-if="userSlctd != ''">
           <div class="settings-body-label">Type:</div>
           <select
@@ -95,6 +107,7 @@ export default {
     'showMsg',
     'sttngs',
     'slctd',
+    'times',
     'userData',
     'userList',
     'userRole',
@@ -229,6 +242,10 @@ export default {
 .settings-body button {
   margin-left: 65px;
   width: calc(100% - 65px);
+}
+.settings-body input[type='text'] {
+  width: calc(100% - 65px);
+  border: 1px solid lightgrey;
 }
 /* .settings-body div {
     padding: 5px 0px 5px 0px;

@@ -75,7 +75,7 @@
               :value="member[memberInputs.value]"
               :disabled="dsbld"
               :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
-              v-on:blur="updateMember($event, memberIndex, memberInputs.value)"
+              v-on:blur="updateMember($event, memberIndex, memberInputs.value, member[memberInputs.value])"
               style="background-color: white"
             />
           </div>
@@ -298,7 +298,7 @@ export default {
         }
       }
     },
-    updateMember(event, clmnIndex, key) {
+    updateMember(event, clmnIndex, key, oldValue) {
       if (
         (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] &&
           event.target.value != '') ||
@@ -306,7 +306,7 @@ export default {
       ) {
         const cloneCntct = this.contacts[this.slctdCntctIndex];
         cloneCntct[this.clmn][clmnIndex][key] = event.target.value;
-        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key, cloneCntct);
+        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key, cloneCntct, oldValue);
       }
     },
   },
