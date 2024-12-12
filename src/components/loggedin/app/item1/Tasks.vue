@@ -239,6 +239,7 @@ export default {
   watch: {
     'slctd.eventIndx'() {
       this.taskMemo = this.taskMemo + 1;
+      console.log('taskMemo changed');
     },
     slctdCntctIndex() {
       this.taskMemo = this.taskMemo + 1;

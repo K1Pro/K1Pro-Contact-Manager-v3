@@ -205,7 +205,7 @@ export default {
       this.contacts.forEach((contact, contactIndex) => {
         contact.Tasks.forEach((task) => {
           calDay = task?.Date?.split('T')[0];
-          if (todaysDate == calDay && task?.Assign == this.userData.id) {
+          if (todaysDate == calDay && task?.Assign == this.userData.id && task?.Status != 1) {
             contactArray[
               new Date(new Date(task.Date).getTime() - 300000).getHours().toString().padStart(2, '0') +
                 ':' +
@@ -356,12 +356,11 @@ export default {
           }
         );
         const resJSON = await response.json();
-        // if (resJSON.success && document.activeElement.tagName == 'BODY' && !this.updating) {
         if (resJSON.success) {
           if (this.times.mstRcntCntctUpdt == '1970-01-01T00:00:00') {
+            this.deletedIDs = resJSON.data.deleted_IDs;
             this.times.mstRcntCntctUpdt = resJSON.data.mstRcntCntctUpdt;
             this.contacts = resJSON.data.contacts ? resJSON.data.contacts : [];
-
             setTimeout(() => {
               if (Object.keys(this.todaysEvents).length > 0) {
                 const newChat = new Notification(
@@ -386,15 +385,37 @@ export default {
                   }
                 } else {
                   if (this.userData.id != Object.keys(contact.Updated)[0]) {
+                    const oldValueActvEl =
+                      document.activeElement.tagName == 'SPAN'
+                        ? ['innerHTML', document.activeElement.innerHTML]
+                        : document.activeElement.tagName == 'TEXTAREA'
+                        ? ['value', document.activeElement.value]
+                        : document.activeElement.tagName == 'INPUT'
+                        ? ['value', document.activeElement.value]
+                        : false;
+                    const oldEventIndx = this.slctd.eventIndx !== null ? this.slctd.eventIndx : null;
                     // prettier-ignore
                     this.showMsg(this.sttngs.entity.activeUserList[Object.keys(contact.Updated)[0]].FirstName + ' edited this contact on ' + Object.values(contact.Updated)[0]?.replace('T', ' '));
                     this.contacts[this.slctdCntctIndex] = contact;
+                    if (['Recurringtasks', 'Tasks'].includes(this.slctd.sideMenuLnk[0])) {
+                      if (oldEventIndx !== null) {
+                        this.slctd.eventIndx = null;
+                        setTimeout(() => {
+                          this.slctd.eventIndx = oldEventIndx;
+                        }, 1);
+                      } else {
+                        this.slctd.eventIndx = 0;
+                        setTimeout(() => {
+                          this.slctd.eventIndx = null;
+                        }, 1);
+                      }
+                    }
+                    if (oldValueActvEl && !['Chatbox', 'Emails', 'Reportstable'].includes(this.slctd.sideMenuLnk[0])) {
+                      setTimeout(() => {
+                        document.activeElement[oldValueActvEl[0]] = oldValueActvEl[1];
+                      }, 2);
+                    }
                   }
-                  // if (JSON.stringify(contact) != JSON.stringify(this.contacts[this.slctdCntctIndex])) {
-                  //   console.log(JSON.stringify(contact));
-                  //   console.log(JSON.stringify(this.contacts[this.slctdCntctIndex]));
-                  //   this.showMsg('Contact info mismatch');
-                  // }
                 }
               });
             } else {
@@ -464,18 +485,17 @@ export default {
       return newDateString;
     },
 
-    async patchContactInfo(event, column, columnIndex, key, newCntctInfo, oldValue) {
-      // possibly implement a message if someone is currently editing the same contact
-      // if (Object.values(this.slctd.IDs).includes(newCntctInfo.id)) {
-      //   this.showMsg(
-      //     'Contact is locked by ' +
-      //       this.sttngs.entity.activeUserList[Object.keys(this.slctd.IDs)[0]].FirstName +
-      //       ' at ' +
-      //       this.times.mstRcntUpdates[Object.keys(this.slctd.IDs)[0]]
-      //   );
-      //   this.contacts[this.slctdCntctIndex][column][columnIndex][key] = oldValue;
-      // } else {
+    async patchContactInfo(event, column, columnIndex, key, newCntctInfo) {
       const slctdCntctIndex = this.contacts.findIndex((contact) => contact.id == newCntctInfo.id);
+      if (
+        new Date(new Date(this.times.updtngY_m_d_H_i_s_z.slice(0, 19)) - 300000).getTime() <
+        new Date(Object.values(this.contacts[slctdCntctIndex].Updated)[0]).getTime()
+      )
+        this.showMsg(
+          this.sttngs.entity.activeUserList[Object.keys(this.contacts[slctdCntctIndex].Updated)[0]].FirstName +
+            ' also edited this contact recently'
+        );
+
       this.contacts[slctdCntctIndex] = newCntctInfo;
       this.contacts[slctdCntctIndex].Updated = {
         [this.userData.id]: this.times.updtngY_m_d_H_i_s_z,
@@ -512,7 +532,6 @@ export default {
         this.updating--;
         this.showMsg(error.toString());
       }
-      // }
     },
 
     async deleteContactInfo(column, columnIndex, prevConfirm) {
