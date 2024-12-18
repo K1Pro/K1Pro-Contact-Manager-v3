@@ -144,7 +144,7 @@ export default {
 
   inject: [
     'contacts',
-    'userSttngsReq',
+    'sttngsReq',
     'slctd',
     'slctdCntctIndex',
     'sttngs',
@@ -361,9 +361,8 @@ export default {
   methods: {
     selectContact(contactID) {
       this.slctd.sideMenuLnk = ['Contactinfo', 'Calendar'];
-      const cloneSttngs = this.sttngs.user;
-      cloneSttngs.slctdCntctID = contactID;
-      this.userSttngsReq('PATCH', cloneSttngs);
+      this.sttngs.user.slctdCntctID = contactID;
+      this.sttngsReq('PATCH', 'user');
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }

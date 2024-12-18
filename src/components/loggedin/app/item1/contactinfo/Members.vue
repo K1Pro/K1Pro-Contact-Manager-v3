@@ -133,7 +133,7 @@ export default {
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',
-    'userSttngsReq',
+    'sttngsReq',
     'sttngs',
     'showMsg',
     'slctdCntctIndex',
@@ -208,12 +208,11 @@ export default {
               );
               const resJSON = await response.json();
               if (resJSON.success) {
-                const cloneSttngs = this.sttngs.user;
-                cloneSttngs.slctdCntctID =
+                this.sttngs.user.slctdCntctID =
                   this.contacts[this.contacts.length - 1].id == this.sttngs.user.slctdCntctID
                     ? this.contacts[this.contacts.length - 2].id
                     : this.contacts[this.contacts.length - 1].id;
-                this.userSttngsReq('PATCH', cloneSttngs);
+                this.sttngsReq('PATCH', 'user');
                 this.contacts.splice(oldSlctdCntctIndex, 1);
                 this.spinLogin = false;
               } else {
@@ -282,9 +281,8 @@ export default {
               };
               const cloneCntcts = this.contacts;
               this.$emit('contacts', [...cloneCntcts, newMember]);
-              const cloneSttngs = this.sttngs.user;
-              cloneSttngs.slctdCntctID = newCntctID;
-              this.userSttngsReq('PATCH', cloneSttngs);
+              this.sttngs.user.slctdCntctID = newCntctID;
+              this.sttngsReq('PATCH', 'user');
               this.spinLogin = false;
             } else {
               this.spinLogin = false;

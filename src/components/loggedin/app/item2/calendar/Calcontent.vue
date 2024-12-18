@@ -75,7 +75,7 @@ export default {
     'days',
     'firstDayTmstmp',
     'patchContactInfo',
-    'userSttngsReq',
+    'sttngsReq',
     'slctd',
     'sttngs',
     'times',
@@ -162,9 +162,8 @@ export default {
     selectContact(ContactID, sidemenuLink, eventIndex) {
       this.slctd.eventIndx = eventIndex;
       this.slctd.sideMenuLnk = [sidemenuLink, 'Calendar'];
-      const cloneSttngs = this.sttngs.user;
-      cloneSttngs.slctdCntctID = ContactID;
-      this.userSttngsReq('PATCH', cloneSttngs);
+      this.sttngs.user.slctdCntctID = ContactID;
+      this.sttngsReq('PATCH', 'user');
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }
@@ -181,9 +180,8 @@ export default {
       const eventDateTime = newDate + 'T' + eventInfo[3];
       const key = 'Date';
 
-      const cloneSttngs = this.sttngs.user;
-      cloneSttngs.slctdCntctID = ContactID;
-      this.userSttngsReq('PATCH', cloneSttngs);
+      this.sttngs.user.slctdCntctID = ContactID;
+      this.sttngsReq('PATCH', 'user');
 
       if (
         (eventDateTime != this.contacts[slctdCntctIndex][clmn][clmnIndex][key] && eventDateTime != '') ||

@@ -42,7 +42,7 @@
 export default {
   name: 'Chat box',
 
-  inject: ['chats', 'dsbld', 'userSttngsReq', 'showMsg', 'sttngs', 'slctd', 'times', 'userData', 'usaDateFrmt'],
+  inject: ['chats', 'dsbld', 'sttngsReq', 'showMsg', 'sttngs', 'slctd', 'times', 'userData', 'usaDateFrmt'],
 
   data() {
     return {
@@ -69,10 +69,8 @@ export default {
       const mstRcntChatTime = this.times.updtngY_m_d_H_i_s_z;
       this.times.mstRcntChat = mstRcntChatTime.slice(0, 19).replace('T', ' ');
       if (this.chats === null) this.chats = [];
-
-      const cloneSttngs = this.sttngs.user;
-      cloneSttngs.chats[this.slctd.chatGroup] = mstRcntChatTime.slice(0, 19).replace('T', ' ');
-      this.userSttngsReq('PATCH', cloneSttngs);
+      this.sttngs.user.chats[this.slctd.chatGroup] = mstRcntChatTime.slice(0, 19).replace('T', ' ');
+      this.sttngsReq('PATCH', 'user');
 
       try {
         this.chats.push({

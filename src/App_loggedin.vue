@@ -55,7 +55,6 @@ export default {
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       deletedIDs: [],
       dsbld: false,
-      entity: entity,
       roles: [
         'inactive',
         'guest',
@@ -111,7 +110,6 @@ export default {
       userRole: Vue.computed(() => this.userRole),
       // static
       appName: this.appName,
-      entity: this.entity,
       daysRangeArr: this.daysRangeArr,
       roles: this.roles,
       // methods
@@ -125,7 +123,7 @@ export default {
     initialTimes() {
       if (this.times.initialBrwsrTmstmp === null && this.sttngs.entity.date_Y_m_d_H_i_s_z) {
         this.times.initialBrwsrTmstmp = new Date().getTime();
-        this.times.initialUsrTmstmp = new Date(this.sttngs.entity.date_Y_m_d_H_i_s_z).getTime();
+        this.times.initialUsrTmstmp = this.sttngs.entity.timestamp;
         this.times.updtngY_m_d_H_i_s_z = this.sttngs.entity.date_Y_m_d_H_i_s_z;
         this.slctd.chatGroup = Object.keys(this.sttngs.entity.chats)[0];
         this.slctd.tmstmp = new Date(this.times.updtngY_m_d_H_i_s_z).getTime();
@@ -205,11 +203,7 @@ export default {
         contact.Tasks.forEach((task) => {
           calDay = task?.Date?.split('T')[0];
           if (todaysDate == calDay && task?.Assign == this.userData.id && task?.Status != 1) {
-            contactArray[
-              new Date(new Date(task.Date).getTime() - 300000).getHours().toString().padStart(2, '0') +
-                ':' +
-                new Date(new Date(task.Date).getTime() - 300000).getMinutes().toString().padStart(2, '0')
-            ] = contactIndex;
+            contactArray[task.Date.split('T')[1].slice(0, 5)] = contactIndex;
           }
         });
       });
@@ -219,7 +213,7 @@ export default {
       return { ...this.sttngs.entity.activeUserList, ...this.sttngs.entity.userList };
     },
     userRole() {
-      return this.roles.findIndex((role) => role === this.userData.AppPermissions[this.appName][entity].role);
+      return this.roles.findIndex((role) => role === user_data.AppPermissions[app_name].role);
     },
     tbCntntWdth() {
       return this.wndw.wdth > 768
@@ -246,7 +240,7 @@ export default {
       const selectdContactIndex = this.contacts.findIndex((contact) => contact.id == this.sttngs.user.slctdCntctID);
       if (selectdContactIndex === -1) {
         this.sttngs.user.slctdCntctID = this.contacts[this.contacts.length - 1].id;
-        this.userSttngsReq('PATCH', this.sttngs.user);
+        this.sttngsReq('PATCH', 'user');
       }
       return selectdContactIndex;
     },
@@ -361,13 +355,23 @@ export default {
             this.times.mstRcntCntctUpdt = resJSON.data.mstRcntCntctUpdt;
             this.contacts = resJSON.data.contacts ? resJSON.data.contacts : [];
             setTimeout(() => {
-              if (Object.keys(this.todaysEvents).length > 0) {
-                const newChat = new Notification(
-                  Object.keys(this.todaysEvents).length +
-                    (Object.keys(this.todaysEvents).length > 1 ? ' tasks are' : ' task is') +
-                    ' scheduled for today'
-                );
-              }
+              const newChat = new Notification(
+                'Hi ' +
+                  this.userData.FirstName +
+                  ', \n' +
+                  (this.userData.Entity == this.userData.id
+                    ? ''
+                    : 'You are logged in under ' +
+                      this.userData.Entity.slice(0, 1).toUpperCase() +
+                      this.userData.Entity.slice(1) +
+                      '.\n') +
+                  (Object.keys(this.todaysEvents).length > 0
+                    ? 'You have ' +
+                      Object.keys(this.todaysEvents).length +
+                      (Object.keys(this.todaysEvents).length > 1 ? ' tasks' : ' task') +
+                      ' scheduled for today.'
+                    : '')
+              );
             }, 1000);
           } else {
             this.times.mstRcntCntctUpdt = resJSON.data.mstRcntCntctUpdt;
@@ -494,7 +498,8 @@ export default {
       const slctdCntctIndex = this.contacts.findIndex((contact) => contact.id == newCntctInfo.id);
       if (
         new Date(new Date(this.times.updtngY_m_d_H_i_s_z.slice(0, 19)) - 300000).getTime() <
-        new Date(Object.values(this.contacts[slctdCntctIndex].Updated)[0]).getTime()
+          new Date(Object.values(this.contacts[slctdCntctIndex].Updated)[0]).getTime() &&
+        Object.keys(this.contacts[slctdCntctIndex].Updated)[0] != this.userData.id
       )
         this.showMsg(
           this.sttngs.entity.activeUserList[Object.keys(this.contacts[slctdCntctIndex].Updated)[0]].FirstName +
@@ -577,15 +582,15 @@ export default {
   },
 
   created() {
-    this.userSttngsReq('GET');
-    this.entitySttngsReq('GET');
+    this.sttngsReq('GET', 'user');
+    this.sttngsReq('GET', 'entity');
     this.getContacts();
     this.getChats();
 
     setTimeout(() => {
       // Initial app checks
-      if (this.sttngs.entity === null) this.userSttngsReq('GET');
-      if (this.sttngs.user === null) this.entitySttngsReq('GET');
+      if (this.sttngs.entity === null) this.sttngsReq('GET', 'user');
+      if (this.sttngs.user === null) this.sttngsReq('GET', 'entity');
       if (this.contacts === null) this.getContacts();
       if (this.chats === null) this.getChats();
     }, 2000);
@@ -611,10 +616,30 @@ export default {
     }, 600000);
 
     setInterval(() => {
-      const updtngH_i = this.times.updtngY_m_d_H_i_s_z?.split('T')[1].slice(0, 5);
+      const updtingHour = this.times.updtngY_m_d_H_i_s_z?.split('T')[1].slice(0, 2);
+      const updtingMin = this.times.updtngY_m_d_H_i_s_z?.split('T')[1].slice(3, 5);
+      const updtngH_iLess5Min =
+        new Date(new Date().setHours(updtingHour, updtingMin) - 300000).getHours().toString().padStart(2, '0') +
+        ':' +
+        new Date(new Date().setHours(updtingHour, updtingMin) - 300000).getMinutes().toString().padStart(2, '0');
+      const updtngH_i = updtingHour + ':' + updtingMin;
+      const updtngH_iPlus5Min =
+        new Date(new Date().setHours(updtingHour, updtingMin) + 300000).getHours().toString().padStart(2, '0') +
+        ':' +
+        new Date(new Date().setHours(updtingHour, updtingMin) + 300000).getMinutes().toString().padStart(2, '0');
+      if (Object.keys(this.todaysEvents).includes(updtngH_iPlus5Min)) {
+        const newChat = new Notification(
+          '5 minute task reminder (' + this.contacts[this.todaysEvents[updtngH_iPlus5Min]]?.Members?.[0]?.Name + ')'
+        );
+      }
       if (Object.keys(this.todaysEvents).includes(updtngH_i)) {
         const newChat = new Notification(
-          '5 minute task reminder (' + this.contacts[this.todaysEvents[updtngH_i]]?.Members?.[0]?.Name + ')'
+          'Urgent task reminder (' + this.contacts[this.todaysEvents[updtngH_i]]?.Members?.[0]?.Name + ')'
+        );
+      }
+      if (Object.keys(this.todaysEvents).includes(updtngH_iLess5Min)) {
+        const newChat = new Notification(
+          'Task past due (' + this.contacts[this.todaysEvents[updtngH_iLess5Min]]?.Members?.[0]?.Name + ')'
         );
       }
     }, 60000);

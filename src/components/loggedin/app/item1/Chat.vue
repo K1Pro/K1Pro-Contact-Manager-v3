@@ -21,14 +21,13 @@
 export default {
   name: 'Chat',
 
-  inject: ['newChats', 'userSttngsReq', 'sttngs', 'slctd', 'times', 'userData'],
+  inject: ['newChats', 'sttngsReq', 'sttngs', 'slctd', 'times', 'userData'],
 
   methods: {
     slctChatGroup(chatGroup) {
       this.slctd.chatGroup = chatGroup;
-      const cloneSttngs = this.sttngs.user;
-      cloneSttngs.chats[chatGroup] = this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
-      this.userSttngsReq('PATCH', cloneSttngs);
+      this.sttngs.user.chats[chatGroup] = this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
+      this.sttngsReq('PATCH', 'user');
     },
   },
 

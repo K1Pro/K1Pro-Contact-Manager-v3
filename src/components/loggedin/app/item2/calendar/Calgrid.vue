@@ -36,7 +36,7 @@
 export default {
   name: 'Calendar body',
 
-  inject: ['days', 'userSttngsReq', 'slctd', 'slctdY_m_d', 'times', 'tmpSttngs', 'wndw'],
+  inject: ['days', 'slctd', 'slctdY_m_d', 'times', 'tmpSttngs', 'wndw'],
 
   methods: {
     changeDate(slctdY_m_d, slctdDayIndex) {

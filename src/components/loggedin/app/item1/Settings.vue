@@ -101,8 +101,7 @@ export default {
   inject: [
     'appName',
     'daysRangeArr',
-    'entity',
-    'userSttngsReq',
+    'sttngsReq',
     'roles',
     'showMsg',
     'sttngs',
@@ -126,30 +125,25 @@ export default {
 
   methods: {
     daysRangeChange(event) {
-      const cloneSttngs = this.sttngs.user;
-      cloneSttngs.calendar.filters.days = event.target.value;
+      this.sttngs.user.calendar.filters.days = event.target.value;
       this.slctd.dayIndex = null;
-      this.userSttngsReq('PATCH', cloneSttngs);
+      this.sttngsReq('PATCH', 'user');
     },
     ownersChange(event) {
-      const cloneSttngs = this.sttngs.user;
-      cloneSttngs.calendar.filters.owners = event.target.value;
-      this.userSttngsReq('PATCH', cloneSttngs);
+      this.sttngs.user.calendar.filters.owners = event.target.value;
+      this.sttngsReq('PATCH', 'user');
     },
     statusChange(event) {
-      const cloneSttngs = this.sttngs.user;
-      cloneSttngs.calendar.filters.status = event.target.value;
-      this.userSttngsReq('PATCH', cloneSttngs);
+      this.sttngs.user.calendar.filters.status = event.target.value;
+      this.sttngsReq('PATCH', 'user');
     },
     categoryChange(event) {
-      const cloneSttngs = this.sttngs.user;
-      cloneSttngs.calendar.filters.category = event.target.value;
-      this.userSttngsReq('PATCH', cloneSttngs);
+      this.sttngs.user.calendar.filters.category = event.target.value;
+      this.sttngsReq('PATCH', 'user');
     },
     clockChange(event) {
-      const cloneSttngs = this.sttngs.user;
-      cloneSttngs.clock = event.target.value;
-      this.userSttngsReq('PATCH', cloneSttngs);
+      this.sttngs.user.clock = event.target.value;
+      this.sttngsReq('PATCH', 'user');
     },
     notificationsChange() {
       Notification.requestPermission().then((result) => {
