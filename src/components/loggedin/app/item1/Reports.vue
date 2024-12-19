@@ -2,7 +2,7 @@
   <div class="reports">
     <div class="reports-title">
       Report:
-      <select v-if="userRole > 5" v-model="slctdUser">
+      <select v-if="userRole > 5" v-model="slctdUser" @change="updateSlctdReport">
         <option
           v-for="([activeUserKey, activeUserVal], activeUserIndex) in Object.entries(sttngs.entity.activeUserList)"
           :value="activeUserKey"
@@ -20,9 +20,10 @@
         Contact report: {{ sttngs.entity.activeUserList[slctdUser].FirstName }}
       </div>
 
-      <template v-for="(report, reportIndex) in includedReports">
+      <template
+        v-for="(report, reportIndex) in includedReports.filter((el) => Number(el.split('_')[0]) < slctdUserRole)"
+      >
         <div
-          v-if="roles.findIndex((role) => role === sttngs.entity.activeUserList[slctdUser].role) > report.split('_')[0]"
           class="reports-report"
           :class="[
             slctd.report.includes(
@@ -51,21 +52,23 @@
 
       <div
         class="reports-report"
-        :class="[slctd.report.includes('Task stats:' + slctdUser) ? 'reports-active' : 'reports1']"
-        @click="selectReport('Task stats:' + slctdUser)"
+        :class="[slctd.report.includes('user_Task stats:' + slctdUser) ? 'reports-active' : 'reports1']"
+        @click="selectReport('user_Task stats:' + slctdUser)"
       >
         Task stats: {{ sttngs.entity.activeUserList[slctdUser].FirstName }}
       </div>
 
-      <template v-for="(report, reportIndex) in sttngs.entity.reports">
+      <template
+        v-for="(report, reportIndex) in sttngs.entity.reports.filter((el) => Number(el.split('_')[0]) < slctdUserRole)"
+      >
         <div
-          v-if="roles.findIndex((role) => role === sttngs.entity.activeUserList[slctdUser].role) > report.split('_')[0]"
           class="reports-report"
           :class="[
             slctd.report.includes(report.split('_')[1])
               ? 'reports-active'
               : 'reports' +
-                ((includedReports.length + Object.entries(sttngs.entity.activeUserList).length + reportIndex) % 2),
+                ((3 + includedReports.filter((el) => Number(el.split('_')[0]) < slctdUserRole).length + reportIndex) %
+                  2),
           ]"
           @click="selectReport(report.split('_')[1])"
         >
@@ -84,16 +87,17 @@ export default {
 
   data() {
     return {
+      // make includedReports into an array of arrays along with entity reports for future
       includedReports: [
         '5__Contact report: All ' + this.contacts?.length + ' (min. info)',
         '5__Contact report: All ' + this.contacts?.length + ' (more info)',
         '5__Contact categories',
-        '5__Task report: All',
-        '4_cntct_Task report: ' +
+        '4_cntct_Calls/Emails: ' +
           (this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.First
             ? this.contacts[this.slctdCntctIndex].Members[0].First + ' '
             : '') +
           this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.Name,
+        '5__Task report: All',
       ],
       cntctReportAmnt: this.userRole > 5 ? Object.entries(this.sttngs.entity.activeUserList).length : 1,
       slctdUser: this.userData.id,
@@ -107,6 +111,31 @@ export default {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     },
+    updateSlctdReport() {
+      if (this.slctd.report.split('_')[0] == 'user') {
+        this.slctd.report = this.slctd.report.split(':')[0] + ':' + this.slctdUser;
+      }
+    },
+  },
+
+  computed: {
+    slctdUserRole() {
+      return this.roles.findIndex((role) => role === this.sttngs.entity.activeUserList[this.slctdUser].role);
+    },
+  },
+
+  mounted() {
+    if (this.slctd.report.split('_')[0] == 'cntct') {
+      this.slctd.report =
+        this.slctd.report.split(':')[0] +
+        ': ' +
+        (this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.First
+          ? this.contacts[this.slctdCntctIndex].Members[0].First + ' '
+          : '') +
+        this.contacts?.[this.slctdCntctIndex]?.Members?.[0]?.Name;
+    } else if (this.slctd.report.split('_')[0] == 'user') {
+      this.slctd.report = this.slctd.report.split(':')[0] + ':' + this.slctdUser;
+    }
   },
 };
 </script>

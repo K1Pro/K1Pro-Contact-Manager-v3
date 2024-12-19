@@ -11,7 +11,7 @@
         v-if="
           slctd.report.includes('(min. info)') ||
           slctd.report.includes('(more info)') ||
-          slctd.report.includes('cntct_Task report:') ||
+          slctd.report.includes('cntct_Calls/Emails:') ||
           slctd.report.includes('user_Contact report:')
         "
       >
@@ -24,7 +24,7 @@
           <tr
             v-for="(tblRow, tblRowIndx) in tblCntnt[2]"
             :class="
-              slctd.report.includes('cntct_Task report:')
+              slctd.report.includes('cntct_Calls/Emails:')
                 ? 'taskCell' + (tblRowIndx % 2) + '1'
                 : 'cell' + (tblRowIndx % 2)
             "
@@ -87,7 +87,7 @@
         </tbody>
       </template>
 
-      <template v-if="slctd.report.includes('Task stats:')">
+      <template v-if="slctd.report.includes('user_Task stats:')">
         <thead>
           <tr>
             <th style="width: 15%">Date</th>
@@ -276,6 +276,10 @@ export default {
                 task?.Desc,
               ]);
           });
+          contact.Log.forEach((log) => {
+            if (this.slctd.report.split(':')[1] == log[0])
+              tblClmns.push([log[0], 1, contact?.Members?.[0]?.Name, log[1], this.userList[log[0]]?.FirstName, log[2]]);
+          });
         });
         tblHdrs = ['#', 'Contact', 'Date', 'Owner', 'Description'];
         tblClmns.sort((a, b) => b[3].localeCompare(a[3]));
@@ -291,8 +295,8 @@ export default {
           }
         });
         tblClmns.push(cntctCategArray);
-      } else if (this.slctd.report.includes('cntct_Task report:')) {
-        // 'cntct_Task report'
+      } else if (this.slctd.report.includes('cntct_Calls/Emails:')) {
+        // 'cntct_Calls/Emails'
         nmbrClmn = null;
         this.contacts[this.slctdCntctIndex].Log.forEach((log, logIndex) => {
           tblClmns.push([
@@ -305,8 +309,8 @@ export default {
           ]);
         });
         tblHdrs = ['#', 'Contact', 'Category', 'Date', 'Activity', 'Owner'];
-      } else if (this.slctd.report.includes('Task stats:')) {
-        // 'Task stats:'
+      } else if (this.slctd.report.includes('user_Task stats:')) {
+        // 'user_Task stats:'
         nmbrClmn = null;
         let userID = this.slctd.report.split(':')[1];
         let currentDate = new Date(this.times.initialUsrTmstmp);
