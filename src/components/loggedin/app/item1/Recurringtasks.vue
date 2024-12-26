@@ -283,6 +283,7 @@ export default {
       this.recurTaskMemo = this.recurTaskMemo + 1;
     },
     updateRecurTask(event, clmnIndex, key) {
+      event = typeof event === 'boolean' ? event : event.trim();
       if (
         (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
         (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])

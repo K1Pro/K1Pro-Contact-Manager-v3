@@ -10,7 +10,7 @@
               style="border: none; background-color: transparent"
               :value="member.Type"
               :disabled="dsbld"
-              @change="updateMember($event, memberIndex, 'Type')"
+              @change="updateMember($event.target.value, memberIndex, 'Type')"
             >
               <option v-for="member in Object.keys(sttngs.entity.contactInfo.keys.Members)" :value="member">
                 {{ member }}
@@ -75,7 +75,7 @@
               :value="member[memberInputs.value]"
               :disabled="dsbld"
               :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
-              v-on:blur="updateMember($event, memberIndex, memberInputs.value)"
+              v-on:blur="updateMember($event.target.value, memberIndex, memberInputs.value)"
               style="background-color: white"
             />
           </div>
@@ -297,14 +297,14 @@ export default {
       }
     },
     updateMember(event, clmnIndex, key) {
+      event = typeof event === 'boolean' ? event : event.trim();
       if (
-        (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] &&
-          event.target.value != '') ||
-        (event.target.value == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
+        (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
+        (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
       ) {
         const cloneCntct = this.contacts[this.slctdCntctIndex];
-        cloneCntct[this.clmn][clmnIndex][key] = event.target.value;
-        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key, cloneCntct);
+        cloneCntct[this.clmn][clmnIndex][key] = event;
+        this.patchContactInfo(event, this.clmn, clmnIndex, key, cloneCntct);
       }
     },
   },

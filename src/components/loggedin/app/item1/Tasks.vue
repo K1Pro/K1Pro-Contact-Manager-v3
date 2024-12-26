@@ -185,7 +185,7 @@ export default {
   },
 
   data() {
-    return { clmn: 'Tasks', sortAscDesc: false, taskMemo: false };
+    return { clmn: 'Tasks', sortAscDesc: false, taskMemo: 0 };
   },
 
   methods: {
@@ -213,6 +213,7 @@ export default {
       this.taskMemo = this.taskMemo + 1;
     },
     updateTask(event, clmnIndex, key) {
+      event = typeof event === 'boolean' ? event : event.trim();
       if (
         (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
         (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])

@@ -58,6 +58,7 @@ export default {
 
   methods: {
     updateOwnerCateg(event, clmn) {
+      event = typeof event === 'boolean' ? event : event.trim();
       if (event != this.contacts[this.slctdCntctIndex][clmn] && event != '') {
         const cloneCntct = this.contacts[this.slctdCntctIndex];
         cloneCntct[clmn] = event;

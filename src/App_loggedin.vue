@@ -589,14 +589,6 @@ export default {
 
     setTimeout(() => {
       // Initial app checks
-      if (this.sttngs.entity === null) this.sttngsReq('GET', 'user');
-      if (this.sttngs.user === null) this.sttngsReq('GET', 'entity');
-      if (this.contacts === null) this.getContacts();
-      if (this.chats === null) this.getChats();
-    }, 2000);
-
-    setTimeout(() => {
-      // Initial app checks
       if (
         this.sttngs.entity === null ||
         this.sttngs.user === null ||
@@ -605,7 +597,7 @@ export default {
         !this.initialTimes
       )
         location.reload();
-    }, 4000);
+    }, 4500);
 
     setInterval(() => {
       if (this.allNewChats) {

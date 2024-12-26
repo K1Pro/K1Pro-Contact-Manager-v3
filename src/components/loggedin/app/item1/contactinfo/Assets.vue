@@ -11,7 +11,7 @@
               :value="assetInfo"
               :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
               :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
-              @change="updateAsset($event, assetIndex, assetType)"
+              @change="updateAsset($event.target.value, assetIndex, assetType)"
               :style="{
                 'border-bottom':
                   assetIndex !== contacts[slctdCntctIndex].Assets.length - 1 ? '2px solid lightgray' : '0',
@@ -38,7 +38,7 @@
               :value="assetInfo"
               :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
               :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
-              @change="updateAsset($event, assetIndex, assetType)"
+              @change="updateAsset($event.target.value, assetIndex, assetType)"
               :style="{
                 width:
                   !dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)
@@ -87,14 +87,14 @@ export default {
 
   methods: {
     updateAsset(event, clmnIndex, key) {
+      event = typeof event === 'boolean' ? event : event.trim();
       if (
-        (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] &&
-          event.target.value != '') ||
-        (event.target.value == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
+        (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
+        (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
       ) {
         const cloneCntct = this.contacts[this.slctdCntctIndex];
-        cloneCntct[this.clmn][clmnIndex][key] = event.target.value;
-        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key, cloneCntct);
+        cloneCntct[this.clmn][clmnIndex][key] = event;
+        this.patchContactInfo(event, this.clmn, clmnIndex, key, cloneCntct);
       }
     },
   },

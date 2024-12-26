@@ -29,7 +29,7 @@
             :value="connInfo"
             :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
             :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
-            @change="updateConnection($event, conn.RealIndex, connType)"
+            @change="updateConnection($event.target.value, conn.RealIndex, connType)"
           />
           <button
             v-if="!dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
@@ -138,17 +138,18 @@ export default {
       }
     },
     updateConnection(event, clmnIndex, key) {
+      event = typeof event === 'boolean' ? event : event.trim();
       if (
-        (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] &&
-          event.target.value != '') ||
-        (event.target.value == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
+        (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
+        (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
       ) {
         const cloneCntct = this.contacts[this.slctdCntctIndex];
-        cloneCntct[this.clmn][clmnIndex][key] = event.target.value;
-        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key, cloneCntct);
+        cloneCntct[this.clmn][clmnIndex][key] = event;
+        this.patchContactInfo(event, this.clmn, clmnIndex, key, cloneCntct);
       }
     },
     updateDNC(event, clmn) {
+      event = typeof event === 'boolean' ? event : event.trim();
       const cloneCntct = this.contacts[this.slctdCntctIndex];
       cloneCntct[clmn] = event;
       this.patchContactInfo(event, clmn, null, null, cloneCntct);

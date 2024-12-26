@@ -29,6 +29,7 @@ export default {
 
   methods: {
     updateNotes(event) {
+      event = typeof event === 'boolean' ? event : event.trim();
       if (
         (event != this.contacts[this.slctdCntctIndex][this.clmn] && event != '') ||
         (event == '' && this.contacts[this.slctdCntctIndex][this.clmn])

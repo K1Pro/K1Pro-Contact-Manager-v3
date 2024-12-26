@@ -14,7 +14,7 @@
                 :ref="'credInput' + credIndex"
                 :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
                 :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
-                @change="updateCred($event, credIndex, credType)"
+                @change="updateCred($event.target.value, credIndex, credType)"
                 @focusin="revealCred(credIndex)"
                 :style="{
                   'border-bottom':
@@ -77,14 +77,14 @@ export default {
 
   methods: {
     updateCred(event, clmnIndex, key) {
+      event = typeof event === 'boolean' ? event : event.trim();
       if (
-        (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] &&
-          event.target.value != '') ||
-        (event.target.value == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
+        (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
+        (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
       ) {
         const cloneCntct = this.contacts[this.slctdCntctIndex];
-        cloneCntct[this.clmn][clmnIndex][key] = event.target.value;
-        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key, cloneCntct);
+        cloneCntct[this.clmn][clmnIndex][key] = event;
+        this.patchContactInfo(event, this.clmn, clmnIndex, key, cloneCntct);
       }
     },
     toggleCred(credIndex) {

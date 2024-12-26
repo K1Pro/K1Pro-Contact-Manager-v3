@@ -9,7 +9,7 @@
             style="border: none; background-color: transparent"
             :value="address.Type"
             :disabled="dsbld"
-            @change="updateAddress($event, addressIndex, 'Type')"
+            @change="updateAddress($event.target.value, addressIndex, 'Type')"
           >
             <option v-for="address in Object.keys(sttngs.entity.contactInfo.keys.Addresses)" :value="address">
               {{ address }}
@@ -37,7 +37,7 @@
             :disabled="dsbld || (userRole < 6 && contacts[slctdCntctIndex].Assigned != userData.id)"
             :value="address[addressInputs.value]"
             style="background-color: #ffffff; opacity: 1"
-            @change="updateAddress($event, addressIndex, addressInputs.value)"
+            @change="updateAddress($event.target.value, addressIndex, addressInputs.value)"
           >
             <option value="" disabled selected>State</option>
             <option v-for="state in stateList" :value="state">
@@ -52,7 +52,7 @@
             :disabled="dsbld"
             :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
             style="background-color: white"
-            @change="updateAddress($event, addressIndex, addressInputs.value)"
+            @change="updateAddress($event.target.value, addressIndex, addressInputs.value)"
           />
         </div>
       </div>
@@ -96,14 +96,14 @@ export default {
 
   methods: {
     updateAddress(event, clmnIndex, key) {
+      event = typeof event === 'boolean' ? event : event.trim();
       if (
-        (event.target.value != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] &&
-          event.target.value != '') ||
-        (event.target.value == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
+        (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
+        (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
       ) {
         const cloneCntct = this.contacts[this.slctdCntctIndex];
-        cloneCntct[this.clmn][clmnIndex][key] = event.target.value;
-        this.patchContactInfo(event.target.value, this.clmn, clmnIndex, key, cloneCntct);
+        cloneCntct[this.clmn][clmnIndex][key] = event;
+        this.patchContactInfo(event, this.clmn, clmnIndex, key, cloneCntct);
       }
     },
   },
