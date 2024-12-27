@@ -375,12 +375,32 @@ export default {
             }, 1000);
           } else {
             this.times.mstRcntCntctUpdt = resJSON.data.mstRcntCntctUpdt;
+            let oldValueActvEl;
             if (resJSON.data.contacts.length > 0) {
               resJSON.data.contacts.forEach((contact) => {
+                oldValueActvEl = false;
+                if (
+                  ['SPAN', 'TEXTAREA', 'INPUT'].includes(document.activeElement.tagName) &&
+                  document.activeElement.readOnly !== true &&
+                  document.activeElement.disabled !== true
+                ) {
+                  oldValueActvEl =
+                    document.activeElement.tagName == 'SPAN'
+                      ? ['innerHTML', document.activeElement.innerHTML]
+                      : document.activeElement.tagName == 'TEXTAREA'
+                      ? ['value', document.activeElement.value]
+                      : document.activeElement.tagName == 'INPUT'
+                      ? ['value', document.activeElement.value]
+                      : false;
+                }
                 if (contact.id != this.sttngs.user.slctdCntctID) {
+                  // this checks if other contacts have been modified
                   const slctdCntctIndx = this.contacts.findIndex((slctdCntct) => slctdCntct.id == contact.id);
                   if (slctdCntctIndx !== -1) {
                     this.contacts[slctdCntctIndx] = contact;
+                    // prettier-ignore
+                    if (oldValueActvEl && !['Contactinfo', 'Tasks', 'Recurringtasks', 'Notes', 'Chat', 'Settings'].includes(this.slctd.sideMenuLnk[0]))
+                      setTimeout(() => {document.activeElement[oldValueActvEl[0]] = oldValueActvEl[1];}, 1);
                   } else {
                     if (contact.id > this.contacts[this.contacts.length - 1].id) {
                       const prevContacts = this.contacts;
@@ -390,19 +410,12 @@ export default {
                   }
                 } else {
                   if (this.userData.id != Object.keys(contact.Updated)[0]) {
-                    const oldValueActvEl =
-                      document.activeElement.tagName == 'SPAN'
-                        ? ['innerHTML', document.activeElement.innerHTML]
-                        : document.activeElement.tagName == 'TEXTAREA'
-                        ? ['value', document.activeElement.value]
-                        : document.activeElement.tagName == 'INPUT'
-                        ? ['value', document.activeElement.value]
-                        : false;
+                    // this checks if the currently selected contact has been modified
                     const oldEventIndx = this.slctd.eventIndx !== null ? this.slctd.eventIndx : null;
                     // prettier-ignore
                     this.showMsg(this.sttngs.entity.activeUserList[Object.keys(contact.Updated)[0]].FirstName + ' edited this contact on ' + Object.values(contact.Updated)[0]?.replace('T', ' '));
                     this.contacts[this.slctdCntctIndex] = contact;
-                    if (['Recurringtasks', 'Tasks'].includes(this.slctd.sideMenuLnk[0])) {
+                    if (['Tasks', 'Recurringtasks'].includes(this.slctd.sideMenuLnk[0])) {
                       if (oldEventIndx !== null) {
                         this.slctd.eventIndx = null;
                         setTimeout(() => {
@@ -415,7 +428,7 @@ export default {
                         }, 1);
                       }
                     }
-                    if (oldValueActvEl && !['Chatbox', 'Emails', 'Reportstable'].includes(this.slctd.sideMenuLnk[0])) {
+                    if (oldValueActvEl && !['Chat'].includes(this.slctd.sideMenuLnk[0])) {
                       setTimeout(() => {
                         document.activeElement[oldValueActvEl[0]] = oldValueActvEl[1];
                       }, 2);
