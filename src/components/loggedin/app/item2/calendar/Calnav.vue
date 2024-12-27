@@ -53,7 +53,7 @@ export default {
 
   methods: {
     changeDate(event) {
-      if (event.target.value != this.slctdY_m_d) {
+      if (event.target.value != this.slctdY_m_d && event.target.value != '') {
         this.slctd.dayIndex = this.days.includes(event.target.value)
           ? this.days.findIndex((day) => day == event.target.value)
           : null;

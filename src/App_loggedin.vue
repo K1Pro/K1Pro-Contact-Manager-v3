@@ -383,7 +383,7 @@ export default {
                   ['SPAN', 'TEXTAREA', 'INPUT'].includes(document.activeElement.tagName) &&
                   document.activeElement.readOnly !== true &&
                   document.activeElement.disabled !== true
-                ) {
+                )
                   oldValueActvEl =
                     document.activeElement.tagName == 'SPAN'
                       ? ['innerHTML', document.activeElement.innerHTML]
@@ -392,7 +392,6 @@ export default {
                       : document.activeElement.tagName == 'INPUT'
                       ? ['value', document.activeElement.value]
                       : false;
-                }
                 if (contact.id != this.sttngs.user.slctdCntctID) {
                   // this checks if other contacts have been modified
                   const slctdCntctIndx = this.contacts.findIndex((slctdCntct) => slctdCntct.id == contact.id);
