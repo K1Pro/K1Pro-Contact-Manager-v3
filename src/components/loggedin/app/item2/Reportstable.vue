@@ -305,7 +305,7 @@ export default {
             this.contacts[this.slctdCntctIndex].Categ,
             this.usaDateFrmt(log[1]),
             log[2],
-            this.userList[log[0]].FirstName,
+            this.userList[log[0]]?.FirstName ? this.userList[log[0]]?.FirstName : log[0],
           ]);
         });
         tblHdrs = ['#', 'Contact', 'Category', 'Date', 'Activity', 'Owner'];

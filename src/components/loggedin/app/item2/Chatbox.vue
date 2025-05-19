@@ -1,8 +1,51 @@
 <template>
   <div class="chat-box">
-    <div class="chat-box-title">Chat with {{ slctd.chatGroup }}</div>
+    <div class="chat-box-title">
+      {{ slctd.chatType }} with
+      {{
+        slctd.chatType == 'SMS'
+          ? contacts[slctdCntctIndex].Members[0].First +
+            ' ' +
+            contacts[slctdCntctIndex].Members[0].Name +
+            ' (' +
+            slctd.smsGroup +
+            ')'
+          : slctd.chatGroup
+      }}
+    </div>
     <div class="chat-box-body">
-      <div v-for="(chat, chatIndx) in slctdChats">
+      <div
+        v-if="slctd.chatType == 'SMS'"
+        v-for="(log, logIndx) in contacts[slctdCntctIndex].Log?.sort((a, b) => a[1].localeCompare(b[1]))?.filter(
+          (logInfo) =>
+            (logInfo[2].includes('SMS received:') && logInfo[0] == slctd.smsGroup.replace(/[^0-9]/g, '')) ||
+            (logInfo[2]?.split(':')?.[0]?.includes('SMS sent') &&
+              logInfo[2]
+                ?.split(':')[0]
+                ?.replace(/[^0-9]/g, '')
+                ?.includes(slctd.smsGroup.replace(/[^0-9]/g, '')))
+        )"
+      >
+        <div
+          class="chat-box-body-msg"
+          :title="contacts[slctdCntctIndex].Members[0].Name + ' sent this SMS on ' + log[1]"
+          :class="log[0] == userData.id ? 'chat-box-right' : 'chat-box-left'"
+        >
+          {{ log[2].includes('SMS sent') ? log[2].split(':')[1] : log[2].replace('SMS received:', '') }}
+          <div class="chat-box-body-date">
+            {{
+              sttngs.entity.activeUserList?.[log[0]]?.FirstName
+                ? sttngs.entity.activeUserList?.[log[0]]?.FirstName
+                : contacts[slctdCntctIndex].Members[0].First
+                ? contacts[slctdCntctIndex].Members[0].First + ' ' + contacts[slctdCntctIndex].Members[0].Name
+                : contacts[slctdCntctIndex].Members[0].Name
+            }}
+            - {{ this.usaDateFrmt(log[1]) }}
+          </div>
+        </div>
+      </div>
+
+      <div v-else v-for="(chat, chatIndx) in slctdChats">
         <div
           v-if="chat.chattime.slice(5, 10) != slctdChats?.[chatIndx - 1]?.chattime?.slice(5, 10)"
           class="chat-box-body-time"
@@ -32,8 +75,17 @@
       <div ref="bottomChatEl"></div>
     </div>
     <div class="chat-box-new-message">
-      <textarea v-model="chatBoxMsg" v-on:keyup.enter="sendChat" :disabled="dsbld"></textarea>
-      <button :disabled="!chatBoxMsg || dsbld" @click="sendChat">Send</button>
+      <textarea
+        v-model="chatBoxMsg"
+        v-on:keyup.enter="sttngs.entity.sms.enabled === true && slctd.chatType == 'SMS' ? sendSMS() : sendChat()"
+        :disabled="dsbld"
+      ></textarea>
+      <button
+        :disabled="!chatBoxMsg || dsbld"
+        @click="sttngs.entity.sms.enabled === true && slctd.chatType == 'SMS' ? sendSMS() : sendChat()"
+      >
+        Send
+      </button>
     </div>
   </div>
 </template>
@@ -42,7 +94,19 @@
 export default {
   name: 'Chat box',
 
-  inject: ['chats', 'dsbld', 'sttngsReq', 'showMsg', 'sttngs', 'slctd', 'times', 'userData', 'usaDateFrmt'],
+  inject: [
+    'chats',
+    'contacts',
+    'dsbld',
+    'sttngsReq',
+    'showMsg',
+    'slctdCntctIndex',
+    'sttngs',
+    'slctd',
+    'times',
+    'userData',
+    'usaDateFrmt',
+  ],
 
   data() {
     return {
@@ -101,6 +165,44 @@ export default {
         console.log(error.toString());
       }
     },
+    async sendSMS() {
+      console.log('sending sms');
+      console.log(this.contacts[this.slctdCntctIndex]);
+      const chatBoxMsg = this.chatBoxMsg;
+      this.chatBoxMsg = '';
+      const contactLog = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex].Log));
+      contactLog.unshift([
+        this.userData.id.toString(),
+        this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
+        'SMS sent to ' + this.slctd.smsGroup + ': ' + chatBoxMsg,
+      ]);
+      this.contacts[this.slctdCntctIndex].Log = contactLog;
+      console.log(this.contacts[this.slctdCntctIndex].Log);
+
+      try {
+        const response = await fetch(this.userData.AppPermissions.ContactManager.smsAPIurl, {
+          method: 'POST',
+          headers: {
+            Authorization: access_token,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          },
+          body: JSON.stringify({
+            ID: this.sttngs.user.slctdCntctID,
+            To: this.slctd.smsGroup.replace(/[^0-9]/g, ''),
+            ChatMessage: chatBoxMsg,
+          }),
+        });
+        const sendChatResJSON = await response.json();
+        console.log(sendChatResJSON);
+        if (!sendChatResJSON.success) {
+          this.showMsg('SMS was not sent');
+        }
+      } catch (error) {
+        this.showMsg('SMS was not sent');
+        console.log(error.toString());
+      }
+    },
   },
 
   watch: {
@@ -109,10 +211,26 @@ export default {
         this.$refs.bottomChatEl.scrollIntoView();
       }, 1);
     },
+    'slctd.chatType'() {
+      setTimeout(() => {
+        this.$refs.bottomChatEl.scrollIntoView();
+      }, 1);
+    },
+    'slctd.smsGroup'() {
+      setTimeout(() => {
+        this.$refs.bottomChatEl.scrollIntoView();
+      }, 1);
+    },
+    'slctd.chatGroup'() {
+      setTimeout(() => {
+        this.$refs.bottomChatEl.scrollIntoView();
+      }, 1);
+    },
   },
 
   mounted() {
     setTimeout(() => {
+      console.log('test');
       this.$refs.bottomChatEl.scrollIntoView();
     }, 1);
   },

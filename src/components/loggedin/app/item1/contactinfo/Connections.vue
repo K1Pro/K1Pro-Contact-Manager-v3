@@ -6,6 +6,7 @@
           <button
             class="conn-icon"
             :style="{
+              'border-right': '2px solid lightgray',
               'border-bottom':
                 connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '2px solid lightgray' : '0',
             }"
@@ -13,6 +14,22 @@
             :disabled="dsbld || userRole < 4"
           >
             <i :class="connInputs.icon"></i>
+          </button>
+          <button
+            class="conn-icon"
+            v-if="connInputs.sms"
+            :style="{
+              'border-right': '2px solid lightgray',
+              'border-bottom':
+                connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '2px solid lightgray' : '0',
+            }"
+            @click="
+              slctd.sideMenuLnk = ['Chat', 'Chatbox'];
+              slctd.smsGroup = connInfo;
+              slctd.chatType = 'SMS';
+            "
+          >
+            <i class="fa-solid fa-comment-sms"></i>
           </button>
           <input
             :type="connInputs.type"
@@ -22,8 +39,8 @@
                 connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '2px solid lightgray' : '0',
               width:
                 !dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)
-                  ? 'calc(100% - 60px)'
-                  : 'calc(100% - 30px)',
+                  ? 'calc(100% - ' + (connInputs.sms ? '90px' : '60px') + ')'
+                  : 'calc(100% - ' + (connInputs.sms ? '60px' : '30px') + ')',
             }"
             style="background-color: #ffffff; opacity: 1"
             :value="connInfo"

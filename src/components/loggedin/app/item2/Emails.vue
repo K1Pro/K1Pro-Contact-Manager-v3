@@ -42,7 +42,7 @@
         <div class="emailInputLabel">Attachment:</div>
         <input ref="emailAttachment" type="file" multiple />
 
-        <span ref="emailBody" spellcheck="false" contenteditable="plaintext-only" v-html="templateBody"></span>
+        <span ref="emailBody" spellcheck="false" contenteditable="true" v-html="templateBody"></span>
 
         <button :disabled="spinLogin" @click="sendEmail" style="cursor: pointer">
           <i v-if="spinLogin" class="spin fa-sharp fa-solid fa-circle-notch"></i>

@@ -7,12 +7,39 @@
           ([key, value]) => value.includes(userData.id)
         )"
         class="chat-groups"
-        :class="[slctd.chatGroup == chatGroup ? 'chat-groups-active' : 'chat' + (chatGroupIndx % 2)]"
+        :class="[
+          slctd.chatGroup == chatGroup && slctd.chatType == 'Chat'
+            ? 'chat-groups-active'
+            : 'chat' + (chatGroupIndx % 2),
+        ]"
         @click="slctChatGroup(chatGroup)"
       >
         {{ chatGroup }}
         <span v-if="newChats[chatGroup]">{{ newChats[chatGroup] }}</span>
       </div>
+      <template v-if="sttngs.entity.sms.enabled === true">
+        <hr />
+        <div class="chat-title">
+          SMS ({{ contacts[slctdCntctIndex].Members[0].First }} {{ contacts[slctdCntctIndex].Members[0].Name }})
+        </div>
+        <template
+          v-for="(connection, connectionIndx) in contacts[slctdCntctIndex].Connections.filter(
+            (connectionType) => connectionType.Phone
+          )"
+        >
+          <div
+            class="chat-groups"
+            :class="[
+              slctd.smsGroup == connection.Phone && slctd.chatType == 'SMS'
+                ? 'chat-groups-active'
+                : 'chat' + (connectionIndx % 2),
+            ]"
+            @click="slctSMSGroup(connection.Phone)"
+          >
+            {{ connection.Phone }}
+          </div>
+        </template>
+      </template>
     </div>
   </div>
 </template>
@@ -21,19 +48,25 @@
 export default {
   name: 'Chat',
 
-  inject: ['newChats', 'sttngsReq', 'sttngs', 'slctd', 'times', 'userData'],
+  inject: ['contacts', 'newChats', 'sttngsReq', 'sttngs', 'slctd', 'slctdCntctIndex', 'times', 'userData'],
 
   methods: {
     slctChatGroup(chatGroup) {
       this.slctd.chatGroup = chatGroup;
+      this.slctd.chatType = 'Chat';
       this.sttngs.user.chats[chatGroup] = this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
       this.sttngsReq('PATCH', 'user');
+    },
+    slctSMSGroup(SMSGroup) {
+      console.log(SMSGroup);
+      this.slctd.smsGroup = SMSGroup;
+      this.slctd.chatType = 'SMS';
     },
   },
 
   mounted() {
     setTimeout(() => {
-      this.slctChatGroup(this.slctd.chatGroup);
+      if (this.slctd.chatType != 'SMS') this.slctChatGroup(this.slctd.chatGroup);
     }, 2000);
   },
 };

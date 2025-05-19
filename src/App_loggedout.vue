@@ -1,7 +1,5 @@
 <template>
-  <div id="login-container">
-    <login></login>
-  </div>
+  <login></login>
 </template>
 
 <script>
@@ -10,4 +8,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.login-container {
+  height: 100vh;
+}
+</style>

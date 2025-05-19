@@ -70,10 +70,12 @@ export default {
       ],
       slctd: {
         chatGroup: null,
+        chatType: 'Chat',
         dayIndex: null,
         eventIndx: null,
         report: 'user_Contact report:' + user_data.id,
         sideMenuLnk: ['Contactinfo', 'Calendar'],
+        smsGroup: null,
         tmstmp: '',
         IDs: {},
       },
@@ -304,6 +306,7 @@ export default {
           }
           if (this.times.mstRcntCntctUpdt != resJSON.data.mstRcntCntctUpdt) this.getContacts();
           if (this.times.mstRcntChat != resJSON.data.mstRcntChat) this.getChats();
+          // if (this.sttngs.entity.sms.enabled === true) console.log('check SMSs');
           this.times.mstRcntUpdates = resJSON.data.mstRcntUpdate;
           this.slctd.IDs = resJSON.data.selected_IDs;
         } else {
@@ -409,11 +412,14 @@ export default {
                   }
                 } else {
                   if (this.userData.id != Object.keys(contact.Updated)[0]) {
-                    // this checks if the currently selected contact has been modified
-                    const oldEventIndx = this.slctd.eventIndx !== null ? this.slctd.eventIndx : null;
-                    // prettier-ignore
-                    this.showMsg(this.sttngs.entity.activeUserList[Object.keys(contact.Updated)[0]].FirstName + ' edited this contact on ' + Object.values(contact.Updated)[0]?.replace('T', ' '));
+                    this.showMsg(
+                      this.sttngs.entity.activeUserList[Object.keys(contact.Updated)[0]].FirstName +
+                        ' edited this contact on ' +
+                        Object.values(contact.Updated)[0]?.replace('T', ' ')
+                    );
+
                     this.contacts[this.slctdCntctIndex] = contact;
+                    const oldEventIndx = this.slctd.eventIndx !== null ? this.slctd.eventIndx : null;
                     if (['Tasks', 'Recurringtasks'].includes(this.slctd.sideMenuLnk[0])) {
                       if (oldEventIndx !== null) {
                         this.slctd.eventIndx = null;
@@ -427,11 +433,15 @@ export default {
                         }, 1);
                       }
                     }
-                    if (oldValueActvEl && !['Chat'].includes(this.slctd.sideMenuLnk[0])) {
+                    if (oldValueActvEl && !['Chat'].includes(this.slctd.sideMenuLnk[0]))
                       setTimeout(() => {
                         document.activeElement[oldValueActvEl[0]] = oldValueActvEl[1];
                       }, 2);
-                    }
+                  } else {
+                    console.log('syncing logs');
+                    console.log(this.contacts[this.slctdCntctIndex].Log);
+                    console.log(contact.Log);
+                    this.contacts[this.slctdCntctIndex].Log = contact.Log;
                   }
                 }
               });
