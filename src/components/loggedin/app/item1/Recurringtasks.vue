@@ -258,32 +258,25 @@ export default {
 
   methods: {
     newRecurTask() {
-      const newRecurTasks = [
-        ...this.contacts[this.slctdCntctIndex].RecurTasks,
-        {
-          Start: this.slctdY_m_d,
-          Recur: [this.slctdY_m_d.slice(5, 10)],
-          Freq: 'Annually',
-          Assign: this.userData.id,
-          Create: this.userData.id,
-          Update: this.userData.id,
-          Created: this.times.updtngY_m_d_H_i_s_z,
-        },
-      ];
+      const prevRecurTasksLen = this.contacts[this.slctdCntctIndex].RecurTasks.length;
+      const newRecurTask = {
+        Start: this.slctdY_m_d,
+        Recur: [this.slctdY_m_d.slice(5, 10)],
+        Freq: 'Annually',
+        Assign: this.userData.id,
+        Create: this.userData.id,
+        Update: this.userData.id,
+        Created: this.times.updtngY_m_d_H_i_s_z,
+      };
+      const newRecurTasks = [...this.contacts[this.slctdCntctIndex].RecurTasks, newRecurTask];
       const cloneCntct = this.contacts[this.slctdCntctIndex];
       cloneCntct.RecurTasks = newRecurTasks;
       this.slctd.eventIndx = this.contacts[this.slctdCntctIndex].RecurTasks.length - 1;
-      this.patchContactInfo(
-        this.slctdY_m_d,
-        this.clmn,
-        this.contacts[this.slctdCntctIndex].RecurTasks.length,
-        'Start',
-        cloneCntct
-      );
+      this.patchContactInfo(newRecurTask, this.clmn, prevRecurTasksLen, cloneCntct);
       this.recurTaskMemo = this.recurTaskMemo + 1;
     },
     updateRecurTask(event, clmnIndex, key) {
-      event = typeof event === 'boolean' ? event : event.trim();
+      event = typeof event === 'boolean' ? event : event.trim().replaceAll('<br>', '');
       if (
         (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
         (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
@@ -292,7 +285,7 @@ export default {
         cloneCntct[this.clmn][clmnIndex][key] = event;
         cloneCntct[this.clmn][clmnIndex].Update = this.userData.id;
         this.recurTaskMemo = this.recurTaskMemo + 1;
-        this.patchContactInfo(event, this.clmn, clmnIndex, key, cloneCntct);
+        this.patchContactInfo({ [key]: event, Update: this.userData.id }, this.clmn, clmnIndex, cloneCntct);
       }
     },
     updateRecurTaskFreq(clmnIndex, start, freq) {
@@ -300,39 +293,41 @@ export default {
         start != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Start ||
         freq != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Freq
       ) {
-        let recurTaskEvent, newRecurTask;
+        let recur;
         if (freq == 'Annually') {
-          recurTaskEvent = start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28';
+          recur = [start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28'];
         } else if (freq == 'Semiannually') {
           const halfYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 6);
-          // prettier-ignore
-          recurTaskEvent = (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28') + '_' + new Date(halfYearLater).toISOString().slice(5, 10);
-          // prettier-ignore
-          newRecurTask = [(start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28'), new Date(halfYearLater).toISOString().slice(5, 10),];
+          recur = [
+            start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28',
+            new Date(halfYearLater).toISOString().slice(5, 10),
+          ];
         } else if (freq == 'Quarterly') {
           const quarterYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 3);
           const halfYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 6);
           const thirdYearLater = new Date(start + 'T00:00:00').setMonth(new Date(start + 'T00:00:00').getMonth() + 9);
-          // prettier-ignore
-          recurTaskEvent = (start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28') + '_' + new Date(quarterYearLater).toISOString().slice(5, 10) + '_' + new Date(halfYearLater).toISOString().slice(5, 10) + '_' + new Date(thirdYearLater).toISOString().slice(5, 10);
-          // prettier-ignore
-          newRecurTask = [(start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28'), new Date(quarterYearLater).toISOString().slice(5, 10), new Date(halfYearLater).toISOString().slice(5, 10), new Date(thirdYearLater).toISOString().slice(5, 10),];
+          recur = [
+            start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28',
+            new Date(quarterYearLater).toISOString().slice(5, 10),
+            new Date(halfYearLater).toISOString().slice(5, 10),
+            new Date(thirdYearLater).toISOString().slice(5, 10),
+          ];
         } else if (freq == 'Monthly') {
-          recurTaskEvent = start.slice(8, 10);
+          recur = start.slice(8, 10);
         } else if (freq == 'Weekly') {
-          recurTaskEvent = new Date(start + 'T00:00:00').getDay().toString();
+          recur = new Date(start + 'T00:00:00').getDay().toString();
         } else if (freq == 'Daily') {
-          recurTaskEvent = 'everyday';
+          recur = 'everyday';
         }
 
         const cloneCntct = this.contacts[this.slctdCntctIndex];
         cloneCntct[this.clmn][clmnIndex].Start = start;
-        cloneCntct[this.clmn][clmnIndex].Recur =
-          freq == 'Semiannually' || freq == 'Quarterly' ? newRecurTask : [recurTaskEvent];
+        cloneCntct[this.clmn][clmnIndex].Recur = recur;
         cloneCntct[this.clmn][clmnIndex].Freq = freq;
         cloneCntct[this.clmn][clmnIndex].Update = this.userData.id;
         this.recurTaskMemo = this.recurTaskMemo + 1;
-        this.patchContactInfo(freq + '+' + start + '+' + recurTaskEvent, this.clmn, clmnIndex, 'Freq', cloneCntct);
+        // prettier-ignore
+        this.patchContactInfo({ Start: start, Freq: freq, Recur: recur, Update: this.userData.id }, this.clmn, clmnIndex, cloneCntct);
       }
     },
     deleteRecurTask(clmnIndex) {

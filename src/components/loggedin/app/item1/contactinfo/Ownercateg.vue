@@ -62,7 +62,7 @@ export default {
       if (event != this.contacts[this.slctdCntctIndex][clmn] && event != '') {
         const cloneCntct = this.contacts[this.slctdCntctIndex];
         cloneCntct[clmn] = event;
-        this.patchContactInfo(event, clmn, null, null, cloneCntct);
+        this.patchContactInfo(event, clmn, null, cloneCntct);
       }
     },
   },

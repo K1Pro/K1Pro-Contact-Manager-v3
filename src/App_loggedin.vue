@@ -439,8 +439,12 @@ export default {
                       }, 2);
                   } else {
                     console.log('syncing logs');
-                    console.log(this.contacts[this.slctdCntctIndex].Log);
-                    console.log(contact.Log);
+                    // console.log(this.contacts[this.slctdCntctIndex].Log);
+                    // console.log(contact.Log);
+                    this.contacts[this.slctdCntctIndex].Email = contact.Email;
+                    this.contacts[this.slctdCntctIndex].Tel = contact.Tel;
+                    this.contacts[this.slctdCntctIndex].Msg = contact.Msg;
+                    this.contacts[this.slctdCntctIndex].Fax = contact.Fax;
                     this.contacts[this.slctdCntctIndex].Log = contact.Log;
                   }
                 }
@@ -516,7 +520,7 @@ export default {
       return newDateString;
     },
 
-    async patchContactInfo(event, column, columnIndex, key, newCntctInfo) {
+    async patchContactInfo(event, column, columnIndex, newCntctInfo) {
       const slctdCntctIndex = this.contacts.findIndex((contact) => contact.id == newCntctInfo.id);
       if (
         new Date(new Date(this.times.updtngY_m_d_H_i_s_z.slice(0, 19)) - 300000).getTime() <
@@ -533,6 +537,7 @@ export default {
         [this.userData.id]: this.times.updtngY_m_d_H_i_s_z,
       };
       this.updating++;
+      console.log(columnIndex);
       try {
         const response = await fetch(
           app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z.replace(' ', 'T').trim() + '/contacts',
@@ -547,19 +552,21 @@ export default {
               ID: newCntctInfo.id,
               Column: column,
               ColumnIndex: columnIndex,
-              Key: key,
-              Value: event,
+              NewData: event,
             }),
           }
         );
         const resJSON = await response.json();
         if (resJSON.success) {
+          console.log(resJSON);
           this.updating--;
         } else {
+          console.log(resJSON);
           this.showMsg('Update error');
           this.updating--;
         }
       } catch (error) {
+        console.log(error.toString());
         this.showMsg('Update error');
         this.updating--;
         this.showMsg(error.toString());
@@ -574,7 +581,7 @@ export default {
           const response = await fetch(
             app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z.replace(' ', 'T').trim() + '/contacts',
             {
-              method: 'PATCH',
+              method: 'DELETE',
               headers: {
                 Authorization: access_token,
                 'Content-Type': 'application/json',
@@ -594,6 +601,7 @@ export default {
             this.showMsg('Delete error');
             this.updating--;
           }
+          console.log(resJSON);
         } catch (error) {
           this.showMsg('Delete error');
           this.updating--;

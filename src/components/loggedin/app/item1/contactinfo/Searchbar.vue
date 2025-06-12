@@ -61,6 +61,7 @@ export default {
               if (member.First && !member?.Name) fullName = member.First;
               if (member?.Name && !member.First) fullName = member?.Name;
               if (member.First && member?.Name) fullName = member.First + ' ' + member?.Name;
+              if (!member?.First && !member?.Name) fullName = contact;
               searchResultArray.push(`${fullName}_${contactIndex}`);
             });
           }
@@ -78,7 +79,7 @@ export default {
           if (member.First && !member?.Name) fullName = member.First;
           if (member?.Name && !member.First) fullName = member?.Name;
           if (member.First && member?.Name) fullName = member.First + ' ' + member?.Name;
-          stringArray[contactIndex] += (fullName + ' ').toLowerCase();
+          stringArray[contactIndex] += ((fullName ? fullName : '') + ' ').toLowerCase();
         });
 
         contact.Addresses.forEach((addres) => {

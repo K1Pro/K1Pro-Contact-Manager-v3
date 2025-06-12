@@ -190,30 +190,23 @@ export default {
 
   methods: {
     newTask() {
-      const newTasks = [
-        ...this.contacts[this.slctdCntctIndex].Tasks,
-        {
-          Date: this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
-          Assign: this.userData.id,
-          Create: this.userData.id,
-          Update: this.userData.id,
-          Created: this.times.updtngY_m_d_H_i_s_z,
-        },
-      ];
+      const prevTasksLen = this.contacts[this.slctdCntctIndex].Tasks.length;
+      const newTask = {
+        Date: this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
+        Assign: this.userData.id,
+        Create: this.userData.id,
+        Update: this.userData.id,
+        Created: this.times.updtngY_m_d_H_i_s_z,
+      };
+      const newTasks = [...this.contacts[this.slctdCntctIndex].Tasks, newTask];
       const cloneCntct = this.contacts[this.slctdCntctIndex];
       cloneCntct.Tasks = newTasks;
       this.slctd.eventIndx = this.contacts[this.slctdCntctIndex].Tasks.length - 1;
-      this.patchContactInfo(
-        this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
-        this.clmn,
-        this.contacts[this.slctdCntctIndex].Tasks.length,
-        'Date',
-        cloneCntct
-      );
+      this.patchContactInfo(newTask, this.clmn, prevTasksLen, cloneCntct);
       this.taskMemo = this.taskMemo + 1;
     },
     updateTask(event, clmnIndex, key) {
-      event = typeof event === 'boolean' ? event : event.trim();
+      event = typeof event === 'boolean' ? event : event.trim().replaceAll('<br>', '');
       if (
         (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
         (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
@@ -222,7 +215,7 @@ export default {
         cloneCntct[this.clmn][clmnIndex][key] = event;
         cloneCntct[this.clmn][clmnIndex].Update = this.userData.id;
         this.taskMemo = this.taskMemo + 1;
-        this.patchContactInfo(event, this.clmn, clmnIndex, key, cloneCntct);
+        this.patchContactInfo({ [key]: event, Update: this.userData.id }, this.clmn, clmnIndex, cloneCntct);
       }
     },
     deleteTask(clmnIndex) {

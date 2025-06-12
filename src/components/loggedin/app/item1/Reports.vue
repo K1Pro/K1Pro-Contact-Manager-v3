@@ -41,7 +41,7 @@
           {{ report.split('_')[2] }}
         </div>
       </template>
-
+      <hr />
       <div
         class="reports-report"
         :class="[slctd.report.includes('user_Task report:' + slctdUser) ? 'reports-active' : 'reports0']"
@@ -57,7 +57,7 @@
       >
         Task stats: {{ sttngs.entity.activeUserList[slctdUser].FirstName }}
       </div>
-
+      <hr />
       <template
         v-for="(report, reportIndex) in sttngs.entity.reports.filter((el) => Number(el.split('_')[0]) < slctdUserRole)"
       >

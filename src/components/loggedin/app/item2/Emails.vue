@@ -48,6 +48,14 @@
           <i v-if="spinLogin" class="spin fa-sharp fa-solid fa-circle-notch"></i>
           <template v-else>Send</template>
         </button>
+        <select style="width: calc(85% - 15px); border: none">
+          <option v-for="email in contacts[slctdCntctIndex].Email">
+            {{ userList?.[email.frm]?.FirstName }} sent an email
+            {{ emailTemplates.includes(email.msg?.toLowerCase()) ? '(' + email.msg + ')' : '' }} on
+            {{ usaDateFrmt(email.dat) }} to
+            {{ email.to }}
+          </option>
+        </select>
       </div>
     </template>
   </div>
@@ -57,7 +65,7 @@
 export default {
   name: 'Emails',
 
-  inject: ['contacts', 'slctd', 'slctdCntctIndex', 'sttngs', 'times', 'userData', 'showMsg'],
+  inject: ['contacts', 'slctd', 'slctdCntctIndex', 'sttngs', 'times', 'userData', 'userList', 'showMsg', 'usaDateFrmt'],
 
   computed: {
     templateBody() {
@@ -94,6 +102,11 @@ export default {
         slctdTemplateBody = '';
       }
       return slctdTemplateBody.replaceAll('undefined', '');
+    },
+    emailTemplates() {
+      let emailTemplatesArray = [];
+      this.sttngs.entity.emails.forEach((email) => emailTemplatesArray.push(email.placeholder?.toLowerCase()));
+      return emailTemplatesArray;
     },
   },
 
@@ -137,7 +150,12 @@ export default {
           if (sendEmailResJSON.success) {
             this.spinLogin = false;
             this.showMsg(sendEmailResJSON.messages[0]);
-            this.contacts[columnIndex].Log.unshift(sendEmailResJSON.data.log);
+            this.contacts[columnIndex].Email.unshift({
+              frm: this.userData.id,
+              dat: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
+              to: this.$refs['emailTo'].value,
+              msg: emailTemplate,
+            });
           } else {
             this.spinLogin = false;
             this.showMsg('Email error');
@@ -200,7 +218,7 @@ export default {
 }
 .emails-body button {
   padding: 5px;
-  width: 50%;
+  width: 15%;
   margin: 5px;
 }
 .emails-body span {

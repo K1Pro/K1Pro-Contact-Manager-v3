@@ -103,7 +103,7 @@ export default {
       ) {
         const cloneCntct = this.contacts[this.slctdCntctIndex];
         cloneCntct[this.clmn][clmnIndex][key] = event;
-        this.patchContactInfo(event, this.clmn, clmnIndex, key, cloneCntct);
+        this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, cloneCntct);
       }
     },
   },

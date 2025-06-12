@@ -36,7 +36,7 @@ export default {
       ) {
         const cloneCntct = this.contacts[this.slctdCntctIndex];
         cloneCntct[this.clmn] = event;
-        this.patchContactInfo(event, this.clmn, null, null, cloneCntct);
+        this.patchContactInfo(event, this.clmn, null, cloneCntct);
       }
     },
   },

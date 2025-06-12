@@ -16,31 +16,33 @@
     <div class="chat-box-body">
       <div
         v-if="slctd.chatType == 'SMS'"
-        v-for="(log, logIndx) in contacts[slctdCntctIndex].Log?.sort((a, b) => a[1].localeCompare(b[1]))?.filter(
-          (logInfo) =>
-            (logInfo[2].includes('SMS received:') && logInfo[0] == slctd.smsGroup.replace(/[^0-9]/g, '')) ||
-            (logInfo[2]?.split(':')?.[0]?.includes('SMS sent') &&
-              logInfo[2]
-                ?.split(':')[0]
-                ?.replace(/[^0-9]/g, '')
-                ?.includes(slctd.smsGroup.replace(/[^0-9]/g, '')))
+        v-for="(msg, msgIndx) in contacts[slctdCntctIndex].Msg?.sort((a, b) => a.dat.localeCompare(b.dat))?.filter(
+          (msgInfo) =>
+            msgInfo?.frm?.includes(slctd.smsGroup.replace(/[^0-9]/g, '')) ||
+            msgInfo?.to?.includes(slctd.smsGroup.replace(/[^0-9]/g, ''))
         )"
       >
         <div
           class="chat-box-body-msg"
-          :title="contacts[slctdCntctIndex].Members[0].Name + ' sent this SMS on ' + log[1]"
-          :class="log[0] == userData.id ? 'chat-box-right' : 'chat-box-left'"
+          :title="contacts[slctdCntctIndex].Members[0].Name + ' sent this SMS on ' + msg.dat"
+          :class="msg.frm == userData.id ? 'chat-box-right' : 'chat-box-left'"
         >
-          {{ log[2].includes('SMS sent') ? log[2].split(':')[1] : log[2].replace('SMS received:', '') }}
+          <template v-if="msg.tp == 'mms'">
+            <a :href="msg.msg" target="_blank"><img :src="msg.msg" alt="pic" style="width: 50%" /></a>
+          </template>
+          <template v-else>
+            <i v-if="msg.err" class="fa-solid fa-circle-exclamation" :title="msg.err"></i> {{ msg.msg }}
+          </template>
+
           <div class="chat-box-body-date">
             {{
-              sttngs.entity.activeUserList?.[log[0]]?.FirstName
-                ? sttngs.entity.activeUserList?.[log[0]]?.FirstName
+              sttngs.entity.activeUserList?.[msg.frm]?.FirstName
+                ? sttngs.entity.activeUserList?.[msg.frm]?.FirstName
                 : contacts[slctdCntctIndex].Members[0].First
                 ? contacts[slctdCntctIndex].Members[0].First + ' ' + contacts[slctdCntctIndex].Members[0].Name
                 : contacts[slctdCntctIndex].Members[0].Name
             }}
-            - {{ this.usaDateFrmt(log[1]) }}
+            - {{ this.usaDateFrmt(msg.dat) }}
           </div>
         </div>
       </div>
@@ -78,13 +80,15 @@
       <textarea
         v-model="chatBoxMsg"
         v-on:keyup.enter="sttngs.entity.sms.enabled === true && slctd.chatType == 'SMS' ? sendSMS() : sendChat()"
-        :disabled="dsbld"
+        :disabled="dsbld || spinLogin"
       ></textarea>
+      <button :disabled="dsbld || spinLogin"><i class="fa-solid fa-paperclip"></i></button>
       <button
-        :disabled="!chatBoxMsg || dsbld"
+        :disabled="spinLogin || !chatBoxMsg || dsbld"
         @click="sttngs.entity.sms.enabled === true && slctd.chatType == 'SMS' ? sendSMS() : sendChat()"
       >
-        Send
+        <i v-if="spinLogin" class="spin fa-sharp fa-solid fa-circle-notch"></i>
+        <template v-else>Send</template>
       </button>
     </div>
   </div>
@@ -111,6 +115,7 @@ export default {
   data() {
     return {
       chatBoxMsg: '',
+      spinLogin: false,
     };
   },
 
@@ -122,85 +127,113 @@ export default {
     },
 
     slctdChatAmount() {
-      return this.slctdChats.length;
+      return this.sttngs.entity.sms.enabled === true && this.slctd.chatType == 'SMS'
+        ? this.contacts[this.slctdCntctIndex].Msg?.filter(
+            (msg) =>
+              msg?.frm?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, '')) ||
+              msg?.to?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, ''))
+          )?.length
+        : this.slctdChats.length;
     },
   },
 
   methods: {
     async sendChat() {
-      const chatBoxMsg = this.chatBoxMsg;
-      this.chatBoxMsg = '';
-      const mstRcntChatTime = this.times.updtngY_m_d_H_i_s_z;
-      this.times.mstRcntChat = mstRcntChatTime.slice(0, 19).replace('T', ' ');
-      if (this.chats === null) this.chats = [];
-      this.sttngs.user.chats[this.slctd.chatGroup] = mstRcntChatTime.slice(0, 19).replace('T', ' ');
-      this.sttngsReq('PATCH', 'user');
+      if (this.chatBoxMsg.replaceAll('\n', '') != '') {
+        this.spinLogin = true;
+        const chatBoxMsg = this.chatBoxMsg.replaceAll('\n', '');
+        this.chatBoxMsg = '';
+        const mstRcntChatTime = this.times.updtngY_m_d_H_i_s_z;
+        this.times.mstRcntChat = mstRcntChatTime.slice(0, 19).replace('T', ' ');
+        if (this.chats === null) this.chats = [];
+        this.sttngs.user.chats[this.slctd.chatGroup] = mstRcntChatTime.slice(0, 19).replace('T', ' ');
+        this.sttngsReq('PATCH', 'user');
 
-      try {
-        this.chats.push({
-          chattime: mstRcntChatTime.slice(0, 19).replace('T', ' '),
-          userid: this.userData.id,
-          chatgroup: this.sttngs.entity.chats[this.slctd.chatGroup],
-          chatmessage: chatBoxMsg,
-        });
-        const response = await fetch(app_api_url + '/' + mstRcntChatTime.slice(0, 19) + '/chats', {
-          method: 'POST',
-          headers: {
-            Authorization: access_token,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-          },
-          body: JSON.stringify({
-            UserID: this.userData.id,
-            ChatGroup: this.sttngs.entity.chats[this.slctd.chatGroup],
-            ChatMessage: chatBoxMsg,
-          }),
-        });
-        const sendChatResJSON = await response.json();
-        if (!sendChatResJSON.success) {
+        try {
+          this.chats.push({
+            chattime: mstRcntChatTime.slice(0, 19).replace('T', ' '),
+            userid: this.userData.id,
+            chatgroup: this.sttngs.entity.chats[this.slctd.chatGroup],
+            chatmessage: chatBoxMsg,
+          });
+          const response = await fetch(app_api_url + '/' + mstRcntChatTime.slice(0, 19) + '/chats', {
+            method: 'POST',
+            headers: {
+              Authorization: access_token,
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store',
+            },
+            body: JSON.stringify({
+              UserID: this.userData.id,
+              ChatGroup: this.sttngs.entity.chats[this.slctd.chatGroup],
+              ChatMessage: chatBoxMsg,
+            }),
+          });
+          const resJSON = await response.json();
+          if (!resJSON.success) {
+            this.spinLogin = false;
+            this.showMsg('Chat was not sent');
+          } else {
+            this.spinLogin = false;
+          }
+        } catch (error) {
+          this.spinLogin = false;
           this.showMsg('Chat was not sent');
+          console.log(error.toString());
         }
-      } catch (error) {
-        this.showMsg('Chat was not sent');
-        console.log(error.toString());
+      } else {
+        this.showMsg('Message cannot be blank');
+        this.chatBoxMsg = '';
       }
     },
     async sendSMS() {
-      console.log('sending sms');
-      console.log(this.contacts[this.slctdCntctIndex]);
-      const chatBoxMsg = this.chatBoxMsg;
-      this.chatBoxMsg = '';
-      const contactLog = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex].Log));
-      contactLog.unshift([
-        this.userData.id.toString(),
-        this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
-        'SMS sent to ' + this.slctd.smsGroup + ': ' + chatBoxMsg,
-      ]);
-      this.contacts[this.slctdCntctIndex].Log = contactLog;
-      console.log(this.contacts[this.slctdCntctIndex].Log);
+      if (this.chatBoxMsg.replaceAll('\n', '') != '') {
+        this.spinLogin = true;
+        const frm = this.userData.id.toString();
+        const dat = this.times.updtngY_m_d_H_i_s_z.slice(0, 19);
+        const tp = 'sms';
+        const to = this.slctd.smsGroup.replace(/[^0-9]/g, '');
+        const msg = this.chatBoxMsg.replaceAll('\n', '');
+        const contactMsg = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex].Msg));
+        this.chatBoxMsg = '';
 
-      try {
-        const response = await fetch(this.userData.AppPermissions.ContactManager.smsAPIurl, {
-          method: 'POST',
-          headers: {
-            Authorization: access_token,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-          },
-          body: JSON.stringify({
-            ID: this.sttngs.user.slctdCntctID,
-            To: this.slctd.smsGroup.replace(/[^0-9]/g, ''),
-            ChatMessage: chatBoxMsg,
-          }),
-        });
-        const sendChatResJSON = await response.json();
-        console.log(sendChatResJSON);
-        if (!sendChatResJSON.success) {
+        try {
+          const response = await fetch(this.userData.AppPermissions.ContactManager.smsAPIurl, {
+            method: 'POST',
+            headers: {
+              Authorization: access_token,
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store',
+            },
+            body: JSON.stringify({
+              ID: this.sttngs.user.slctdCntctID,
+              To: to,
+              ChatMessage: msg,
+            }),
+          });
+          const resJSON = await response.json();
+          console.log(resJSON);
+          if (resJSON.success) {
+            this.spinLogin = false;
+            contactMsg.unshift({ frm: frm, dat: dat, tp: tp, to: to, msg: msg });
+          } else {
+            this.spinLogin = false;
+            contactMsg.unshift({ frm: frm, dat: dat, tp: tp, to: to, msg: msg, err: true });
+            if (resJSON?.data?.errors?.[0]?.title) {
+              this.showMsg(resJSON?.data?.errors?.[0]?.title);
+            } else {
+              this.showMsg('SMS was not sent');
+            }
+          }
+          this.contacts[this.slctdCntctIndex].Msg = contactMsg;
+        } catch (error) {
+          this.spinLogin = false;
           this.showMsg('SMS was not sent');
+          console.log(error.toString());
         }
-      } catch (error) {
-        this.showMsg('SMS was not sent');
-        console.log(error.toString());
+      } else {
+        this.showMsg('Message cannot be blank');
+        this.chatBoxMsg = '';
       }
     },
   },
@@ -310,13 +343,13 @@ export default {
 .chat-box textarea {
   float: left;
   resize: none;
-  width: calc(100% - 95px);
+  width: calc(100% - 170px);
   height: 100%;
 }
 .chat-box button {
   /* float: right; */
   height: 100%;
-  width: 85px;
+  width: 75px;
 }
 @media only screen and (min-width: 768px) {
   .chat-box {

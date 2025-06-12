@@ -179,12 +179,12 @@ export default {
             const cloneCntcts = [...this.contacts[this.slctdCntctIndex][InfoGroup], { Type: InfoKey }];
             const cloneCntct = this.contacts[this.slctdCntctIndex];
             cloneCntct[InfoGroup] = cloneCntcts;
-            this.patchContactInfo(InfoKey, InfoGroup, clmnIndex, 'Type', cloneCntct);
+            this.patchContactInfo({ Type: InfoKey }, InfoGroup, clmnIndex, cloneCntct);
           } else {
             const cloneCntcts = [...this.contacts[this.slctdCntctIndex][InfoGroup], { [InfoKey]: '' }];
             const cloneCntct = this.contacts[this.slctdCntctIndex];
             cloneCntct[InfoGroup] = cloneCntcts;
-            this.patchContactInfo('', InfoGroup, clmnIndex, InfoKey, cloneCntct);
+            this.patchContactInfo({ [InfoKey]: '' }, InfoGroup, clmnIndex, cloneCntct);
           }
         } else if (InfoGroup == 'deleteContact') {
           event.srcElement.selectedIndex = 0;
@@ -304,7 +304,7 @@ export default {
       ) {
         const cloneCntct = this.contacts[this.slctdCntctIndex];
         cloneCntct[this.clmn][clmnIndex][key] = event;
-        this.patchContactInfo(event, this.clmn, clmnIndex, key, cloneCntct);
+        this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, cloneCntct);
       }
     },
   },

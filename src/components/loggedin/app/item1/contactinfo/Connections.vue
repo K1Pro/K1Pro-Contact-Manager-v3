@@ -129,20 +129,21 @@ export default {
                 },
                 body: JSON.stringify({
                   ID: this.sttngs.user.slctdCntctID,
-                  Phone: this.contacts[this.slctdCntctIndex].Connections[connIndex][connType],
+                  Phone: this.contacts[this.slctdCntctIndex].Connections[connIndex][connType].replace(/\D/g, ''),
                 }),
               }
             );
-            const postConnectResJSON = await response.json();
-            if (postConnectResJSON.success) {
+            const resJSON = await response.json();
+            if (resJSON.success) {
               // this.msg.snackBar = 'Updated ';
-              this.contacts[clmnIndex].Log.unshift([
-                this.userData.id,
-                this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
-                'Called ' + this.contacts[clmnIndex].Connections[connIndex][connType],
-              ]);
+              this.contacts[clmnIndex].Tel.unshift({
+                frm: this.userData.id,
+                dat: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
+                to: this.contacts[clmnIndex].Connections[connIndex][connType].replace(/\D/g, ''),
+              });
             } else {
             }
+            console.log(resJSON);
           } catch (error) {
             // this.msg.snackBar = error.toString();
             console.log(error.toString());
@@ -162,14 +163,14 @@ export default {
       ) {
         const cloneCntct = this.contacts[this.slctdCntctIndex];
         cloneCntct[this.clmn][clmnIndex][key] = event;
-        this.patchContactInfo(event, this.clmn, clmnIndex, key, cloneCntct);
+        this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, cloneCntct);
       }
     },
     updateDNC(event, clmn) {
       event = typeof event === 'boolean' ? event : event.trim();
       const cloneCntct = this.contacts[this.slctdCntctIndex];
       cloneCntct[clmn] = event;
-      this.patchContactInfo(event, clmn, null, null, cloneCntct);
+      this.patchContactInfo(event, clmn, null, cloneCntct);
     },
   },
 };
