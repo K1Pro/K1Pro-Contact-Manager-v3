@@ -78,10 +78,12 @@
     </div>
     <div class="chat-box-new-message">
       <textarea
+        :placeholder="'Enter ' + slctd.chatType + ' here'"
         v-model="chatBoxMsg"
         v-on:keyup.enter="sttngs.entity.sms.enabled === true && slctd.chatType == 'SMS' ? sendSMS() : sendChat()"
         :disabled="dsbld || spinLogin"
       ></textarea>
+      <div class="chat-msg-len">{{ Math.ceil(chatBoxMsg.length / 160) }} / {{ chatBoxMsg.length }}</div>
       <button :disabled="dsbld || spinLogin"><i class="fa-solid fa-paperclip"></i></button>
       <button
         :disabled="spinLogin || !chatBoxMsg || dsbld"
@@ -288,7 +290,7 @@ export default {
 .chat-box-body {
   background-color: white;
   width: 100%;
-  height: calc(100vh - 100px);
+  height: calc(100vh - 125px);
   font-family: 'Helvetica', sans-serif;
   padding: 5px;
   border: none;
@@ -308,6 +310,12 @@ export default {
 }
 .chat-box-body-msg {
   font-size: 20px;
+}
+.chat-msg-len {
+  position: absolute;
+  margin-top: 45px;
+  text-align: right;
+  right: 200px;
 }
 .chat-box-left {
   border: 1px solid rgb(255, 205, 205);
@@ -334,7 +342,7 @@ export default {
 .chat-box-new-message {
   background-color: white;
   width: 100%;
-  height: 50px;
+  height: 75px;
   font-family: 'Helvetica', sans-serif;
   padding: 5px;
   border: none;
