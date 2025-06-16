@@ -37,6 +37,25 @@
             @click="slctSMSGroup(connection.Phone)"
           >
             {{ connection.Phone }}
+            <span v-if="newMsgs?.msgs && newMsgs?.msgs?.[connection.Phone?.replace(/[^0-9]/g, '')]">{{
+              newMsgs?.msgs?.[connection.Phone?.replace(/[^0-9]/g, '')].amnt
+            }}</span>
+          </div>
+        </template>
+
+        <hr />
+        <div class="chat-title">New SMS (Others)</div>
+        <template v-if="newMsgs?.msgs">
+          <div
+            v-for="([msgKey, msgVal], msgIndx) in Object.entries(newMsgs?.msgs).filter(
+              ([key, value]) => value.id != sttngs.user.slctdCntctID
+            )"
+            class="chat-groups"
+            :class="['chat' + (msgIndx % 2)]"
+            @click="selectContact(msgKey, msgVal)"
+          >
+            {{ msgVal.phone }}
+            <span v-if="msgVal.amnt">{{ msgVal.amnt }}</span>
           </div>
         </template>
       </template>
@@ -48,7 +67,7 @@
 export default {
   name: 'Chat',
 
-  inject: ['contacts', 'newChats', 'sttngsReq', 'sttngs', 'slctd', 'slctdCntctIndex', 'times', 'userData'],
+  inject: ['contacts', 'newChats', 'newMsgs', 'sttngsReq', 'sttngs', 'slctd', 'slctdCntctIndex', 'times', 'userData'],
 
   methods: {
     slctChatGroup(chatGroup) {
@@ -59,8 +78,38 @@ export default {
     },
     slctSMSGroup(SMSGroup) {
       console.log(SMSGroup);
+      this.deleteMsg(SMSGroup);
       this.slctd.smsGroup = SMSGroup;
       this.slctd.chatType = 'SMS';
+    },
+    async selectContact(msgKey, msgVal) {
+      this.deleteMsg(msgKey);
+      this.slctd.smsGroup = msgVal.smsGroup;
+      this.slctd.chatType = 'SMS';
+      this.sttngs.user.slctdCntctID = msgVal.id;
+      this.sttngsReq('PATCH', 'user');
+    },
+    async deleteMsg(msgKey) {
+      try {
+        const response = await fetch(app_api_url + '/msg', {
+          method: 'DELETE',
+          headers: {
+            Authorization: access_token,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+          },
+          body: JSON.stringify({
+            Phone: msgKey.replace(/[^0-9]/g, ''),
+          }),
+        });
+        const resJSON = await response.json();
+        if (resJSON.success) {
+        } else {
+        }
+        console.log(resJSON);
+      } catch (error) {
+        console.log(error.toString());
+      }
     },
   },
 

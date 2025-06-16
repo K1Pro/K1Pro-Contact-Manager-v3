@@ -84,6 +84,7 @@ export default {
         initialBrwsrTmstmp: null,
         updtngY_m_d_H_i_s_z: null,
         mstRcntChat: '1970-01-01T00:00:00',
+        mstRcntMsg: null,
         mstRcntCntctUpdt: '1970-01-01T00:00:00',
         mstRcntUpdates: {},
       },
@@ -101,6 +102,7 @@ export default {
       dsbld: Vue.computed(() => this.dsbld),
       firstDayTmstmp: Vue.computed(() => this.firstDayTmstmp),
       newChats: Vue.computed(() => this.newChats),
+      newMsgs: Vue.computed(() => this.newMsgs),
       slctd: Vue.computed(() => this.slctd),
       slctdCntctIndex: Vue.computed(() => this.slctdCntctIndex),
       slctdY_m_d: Vue.computed(() => this.slctdY_m_d),
@@ -190,8 +192,33 @@ export default {
       }
       return newChats;
     },
+    newMsgs() {
+      let newChats = {};
+      let newChatsTotal = 0;
+      if (this.times.mstRcntMsg !== null)
+        this.times.mstRcntMsg.forEach((msg) => {
+          console.log(msg);
+          this.contacts.forEach((contact, contactIndx) => {
+            contact.Connections.forEach((conn) => {
+              if (conn.Phone && conn.Phone.replace(/[^0-9]/g, '') == msg) {
+                newChatsTotal++;
+                newChats[msg] = {
+                  id: contact.id,
+                  phone: msg.slice(0, 3) + '-' + msg.slice(3, 6) + '-' + msg.slice(6, 10),
+                  smsGroup: conn.Phone,
+                  amnt: this.times.mstRcntMsg.filter((x) => x == msg).length,
+                };
+              }
+            });
+          });
+        });
+      return { total: newChatsTotal, msgs: newChats };
+    },
     allNewChats() {
-      return Object.values(this.newChats).reduce((a, b) => a + b, 0);
+      return (
+        Object.values(this.newChats).reduce((a, b) => a + b, 0) +
+        (this.sttngs.entity.sms.enabled === true && this.times.mstRcntMsg !== null ? this.newMsgs.total : 0)
+      );
     },
     todaysEvents() {
       let contactArray = {};
@@ -306,7 +333,11 @@ export default {
           }
           if (this.times.mstRcntCntctUpdt != resJSON.data.mstRcntCntctUpdt) this.getContacts();
           if (this.times.mstRcntChat != resJSON.data.mstRcntChat) this.getChats();
-          // if (this.sttngs.entity.sms.enabled === true) console.log('check SMSs');
+          if (
+            this.sttngs.entity.sms.enabled === true &&
+            JSON.stringify(this.times.mstRcntMsg) !== JSON.stringify(resJSON.data.mstRcntMsg)
+          )
+            this.times.mstRcntMsg = resJSON.data.mstRcntMsg;
           this.times.mstRcntUpdates = resJSON.data.mstRcntUpdate;
           this.slctd.IDs = resJSON.data.selected_IDs;
         } else {
@@ -521,6 +552,9 @@ export default {
     },
 
     async patchContactInfo(event, column, columnIndex, newCntctInfo) {
+      console.log(event);
+      console.log(column);
+      console.log(columnIndex);
       const slctdCntctIndex = this.contacts.findIndex((contact) => contact.id == newCntctInfo.id);
       if (
         new Date(new Date(this.times.updtngY_m_d_H_i_s_z.slice(0, 19)) - 300000).getTime() <

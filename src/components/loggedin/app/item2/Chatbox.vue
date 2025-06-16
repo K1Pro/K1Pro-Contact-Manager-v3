@@ -4,7 +4,7 @@
       {{ slctd.chatType }} with
       {{
         slctd.chatType == 'SMS'
-          ? contacts[slctdCntctIndex].Members[0].First +
+          ? (contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '') +
             ' ' +
             contacts[slctdCntctIndex].Members[0].Name +
             ' (' +
@@ -74,6 +74,7 @@
           </div>
         </div>
       </div>
+
       <div ref="bottomChatEl"></div>
     </div>
     <div class="chat-box-new-message">
@@ -265,7 +266,6 @@ export default {
 
   mounted() {
     setTimeout(() => {
-      console.log('test');
       this.$refs.bottomChatEl.scrollIntoView();
     }, 1);
   },

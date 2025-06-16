@@ -11,7 +11,7 @@
               :value="assetInfo"
               :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
               :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
-              @focusin="updateAsset($event.target.value, assetIndex, assetType)"
+              @change="updateAsset($event.target.value, assetIndex, assetType)"
               :style="{
                 'border-bottom':
                   assetIndex !== contacts[slctdCntctIndex].Assets.length - 1 ? '2px solid lightgray' : '0',
@@ -38,7 +38,7 @@
               :value="assetInfo"
               :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
               :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
-              @focusin="updateAsset($event.target.value, assetIndex, assetType)"
+              @change="updateAsset($event.target.value, assetIndex, assetType)"
               :style="{
                 width:
                   !dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)
