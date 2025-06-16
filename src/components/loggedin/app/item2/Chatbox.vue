@@ -26,6 +26,13 @@
           class="chat-box-body-msg"
           :title="contacts[slctdCntctIndex].Members[0].Name + ' sent this SMS on ' + msg.dat"
           :class="msg.frm == userData.id ? 'chat-box-right' : 'chat-box-left'"
+          :style="{
+            backgroundColor: sttngs?.entity?.chatColors?.[msg?.frm]
+              ? sttngs.entity.chatColors[msg?.frm]
+              : msg?.frm == userData.id
+              ? '#F08784'
+              : '#A1FB8E',
+          }"
         >
           <template v-if="msg.tp == 'mms'">
             <a :href="msg.msg" target="_blank"><img :src="msg.msg" alt="pic" style="width: 50%" /></a>
@@ -67,6 +74,13 @@
             chat.chattime.slice(11, 16)
           "
           :class="chat.userid === userData.id ? 'chat-box-right' : 'chat-box-left'"
+          :style="{
+            backgroundColor: sttngs?.entity?.chatColors?.[chat?.userid]
+              ? sttngs.entity.chatColors[chat.userid]
+              : chat?.userid === userData.id
+              ? '#F08784'
+              : '#A1FB8E',
+          }"
         >
           {{ chat.chatmessage }}
           <div class="chat-box-body-date">
@@ -85,7 +99,9 @@
         :disabled="dsbld || spinLogin"
       ></textarea>
       <div class="chat-msg-len">{{ Math.ceil(chatBoxMsg.length / 160) }} / {{ chatBoxMsg.length }}</div>
-      <button :disabled="dsbld || spinLogin"><i class="fa-solid fa-paperclip"></i></button>
+      <!-- <button :disabled="dsbld || spinLogin"><i class="fa-solid fa-paperclip"></i></button> -->
+      <label for="chat-upload-btn"><i class="fa-solid fa-paperclip"></i></label>
+      <input type="file" id="chat-upload-btn" hidden />
       <button
         :disabled="spinLogin || !chatBoxMsg || dsbld"
         @click="sttngs.entity.sms.enabled === true && slctd.chatType == 'SMS' ? sendSMS() : sendChat()"
@@ -318,22 +334,22 @@ export default {
   right: 200px;
 }
 .chat-box-left {
-  border: 1px solid rgb(255, 205, 205);
+  /* border: 1px solid rgb(255, 205, 205); */
+  /* background-color: rgb(255, 205, 205); */
   border-radius: 10px;
   margin-right: 50px;
   margin-bottom: 10px;
   padding: 5px;
   text-align: left;
-  background-color: rgb(255, 205, 205);
 }
 .chat-box-right {
-  border: 1px solid rgb(205, 255, 205);
+  /* border: 1px solid rgb(205, 255, 205); */
+  /* background-color: rgb(205, 255, 205); */
   border-radius: 10px;
   margin-left: 50px;
   margin-bottom: 10px;
   padding: 5px;
   text-align: right;
-  background-color: rgb(205, 255, 205);
 }
 .chat-box-body-date {
   color: grey;
@@ -354,8 +370,22 @@ export default {
   width: calc(100% - 170px);
   height: 100%;
 }
+.chat-box label {
+  display: inline-block;
+  background-color: #eeeeee;
+  border-radius: 2px;
+  border: 1px solid black;
+  /* cursor: pointer; */
+  height: 100%;
+  width: 75px;
+  padding: 23.5px 32px;
+  color: black;
+  font-size: 13px;
+  /* margin-bottom: -28px; */
+}
 .chat-box button {
   /* float: right; */
+  display: inline-block;
   height: 100%;
   width: 75px;
 }
