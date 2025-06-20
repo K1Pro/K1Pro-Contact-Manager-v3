@@ -10,6 +10,7 @@
 /sync.ffs_db
 /src/components/loggedin/custom1
 /src/components/loggedin/reports
+/src/assets/images
 *.png
 *.ico
 *.env

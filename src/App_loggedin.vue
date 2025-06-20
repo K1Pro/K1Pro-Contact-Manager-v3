@@ -178,8 +178,8 @@ export default {
         Object.entries(this.sttngs.user.chats).forEach(([chatGroupName, mstRcntChatTime], chatIndex) => {
           this.chats.forEach((chat) => {
             if (
-              JSON.stringify(chat.chatgroup) === JSON.stringify(this.sttngs.entity.chats[chatGroupName]) &&
-              chat.chattime > mstRcntChatTime
+              JSON.stringify(chat.tow) === JSON.stringify(this.sttngs.entity.chats[chatGroupName]) &&
+              chat.dat > mstRcntChatTime
             ) {
               if (!newChats[chatGroupName]) {
                 newChats[chatGroupName] = 1;
@@ -197,7 +197,6 @@ export default {
       let newChatsTotal = 0;
       if (this.times.mstRcntMsg !== null)
         this.times.mstRcntMsg.forEach((msg) => {
-          console.log(msg);
           this.contacts.forEach((contact, contactIndx) => {
             contact.Connections.forEach((conn) => {
               if (conn.Phone && conn.Phone.replace(/[^0-9]/g, '') == msg) {
@@ -525,14 +524,12 @@ export default {
           } else {
             resJSON.data.chats.forEach((chat) => {
               this.chats.push(chat);
-              const newChat = new Notification(
-                this.sttngs.entity.activeUserList[chat.userid].FirstName + ': ' + chat.chatmessage
-              );
+              const newChat = new Notification(this.sttngs.entity.activeUserList[chat.frm].FirstName + ': ' + chat.msg);
             });
           }
-          this.times.mstRcntChat = resJSON.data.mstRcntChat;
+          this.times.mstRcntChat = resJSON?.data?.mstRcntChat ? resJSON.data.mstRcntChat : '1970-01-01T00:00:00';
         } else {
-          this.times.mstRcntChat = this.times?.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
+          this.times.mstRcntChat = this.times?.updtngY_m_d_H_i_s_z?.slice(0, 19)?.replace('T', ' ');
         }
       } catch (error) {
         this.showMsg(error.toString());

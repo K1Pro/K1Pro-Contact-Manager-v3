@@ -116,38 +116,14 @@ export default {
         if (connType == 'Phone') {
           window.location.href =
             'tel:' + this.contacts[this.slctdCntctIndex].Connections[connIndex][connType].replace(/\D/g, '');
-          const clmnIndex = this.slctdCntctIndex;
-          try {
-            const response = await fetch(
-              app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/calls',
-              {
-                method: 'POST',
-                headers: {
-                  Authorization: access_token,
-                  'Content-Type': 'application/json',
-                  'Cache-Control': 'no-store',
-                },
-                body: JSON.stringify({
-                  ID: this.sttngs.user.slctdCntctID,
-                  Phone: this.contacts[this.slctdCntctIndex].Connections[connIndex][connType].replace(/\D/g, ''),
-                }),
-              }
-            );
-            const resJSON = await response.json();
-            if (resJSON.success) {
-              // this.msg.snackBar = 'Updated ';
-              this.contacts[clmnIndex].Tel.unshift({
-                frm: this.userData.id,
-                dat: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
-                to: this.contacts[clmnIndex].Connections[connIndex][connType].replace(/\D/g, ''),
-              });
-            } else {
-            }
-            console.log(resJSON);
-          } catch (error) {
-            // this.msg.snackBar = error.toString();
-            console.log(error.toString());
-          }
+          const newConn = {
+            frm: this.userData.id,
+            dat: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
+            tow: this.contacts[this.slctdCntctIndex].Connections[connIndex][connType].replace(/\D/g, ''),
+          };
+          const cloneCntct = this.contacts[this.slctdCntctIndex];
+          cloneCntct.Tel.unshift(newConn);
+          this.patchContactInfo(newConn, 'Tel', this.contacts[this.slctdCntctIndex].Tel.length - 1, cloneCntct);
         }
         if (connType == 'Email') {
           this.slctd.sideMenuLnk = ['Contactinfo', 'Emails'];

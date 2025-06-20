@@ -53,7 +53,7 @@
             {{ userList?.[email.frm]?.FirstName }} sent an email
             {{ emailTemplates.includes(email.msg?.toLowerCase()) ? '(' + email.msg + ')' : '' }} on
             {{ usaDateFrmt(email.dat) }} to
-            {{ email.to }}
+            {{ email.tow }}
           </option>
         </select>
       </div>
@@ -153,7 +153,7 @@ export default {
             this.contacts[columnIndex].Email.unshift({
               frm: this.userData.id,
               dat: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
-              to: this.$refs['emailTo'].value,
+              tow: this.$refs['emailTo'].value,
               msg: emailTemplate,
             });
           } else {
