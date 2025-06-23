@@ -76,7 +76,13 @@
 
     <div class="chat-box-new-message">
       <div v-if="uploadedFiles.length > 0" class="chat-box-uploaded-files">
-        <template v-for="uploadedFile in uploadedFiles">
+        <template v-for="(uploadedFile, uploadedFileIndx) in uploadedFiles">
+          <i
+            class="fa-solid fa-trash"
+            style="cursor: pointer"
+            @click="this.uploadedFiles.splice(uploadedFileIndx, 1)"
+          ></i
+          >&nbsp;
           <a :href="uploadedFile.path + uploadedFile.filename" target="_blank">{{ uploadedFile.filename }}</a>
           <br />
         </template>
@@ -405,6 +411,7 @@ export default {
 .chat-box-uploaded-files {
   border-radius: 2px;
   border: 1px solid black;
+  font-size: 13px;
 }
 .chat-box-uploaded-files,
 .chat-box textarea {
