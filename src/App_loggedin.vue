@@ -502,7 +502,7 @@ export default {
     async getChats() {
       try {
         const response = await fetch(
-          app_api_url + '/' + this.times.mstRcntChat.slice(0, 19).replace(' ', 'T') + '/chats',
+          app_api_url + '/' + this.times.mstRcntChat.slice(0, 19).replace(' ', 'T') + '/chat',
           {
             headers: {
               Authorization: access_token,

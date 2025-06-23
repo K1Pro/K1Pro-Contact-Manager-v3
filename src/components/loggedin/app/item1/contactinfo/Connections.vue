@@ -77,7 +77,6 @@ export default {
   name: 'Connections',
 
   inject: [
-    'appName',
     'contacts',
     'deleteContactInfo',
     'dsbld',
