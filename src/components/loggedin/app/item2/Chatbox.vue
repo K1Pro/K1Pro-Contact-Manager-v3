@@ -2,27 +2,27 @@
   <div class="chat-box">
     <div class="chat-box-title">{{ chatBoxTitle }}</div>
     <div class="chat-box-body">
-      <div v-for="(msg, msgIndx) in slctdMsgs">
-        <div v-if="msg.dat.slice(5, 10) != slctdMsgs?.[msgIndx - 1]?.dat?.slice(5, 10)" class="chat-box-body-time">
-          <div class="chat-box-body-timedate">{{ this.usaDateFrmt(msg.dat).slice(0, 10) }}</div>
+      <div v-for="(chat, chatIndx) in slctdChats">
+        <div v-if="chat.dat.slice(5, 10) != slctdChats?.[chatIndx - 1]?.dat?.slice(5, 10)" class="chat-box-body-time">
+          <div class="chat-box-body-timedate">{{ this.usaDateFrmt(chat.dat).slice(0, 10) }}</div>
         </div>
 
         <div
           class="chat-box-msg"
           :title="
-            (sttngs.entity.activeUserList[msg.frm]
-              ? sttngs.entity.activeUserList[msg.frm].FirstName
+            (sttngs.entity.activeUserList[chat.frm]
+              ? sttngs.entity.activeUserList[chat.frm].FirstName
               : contacts[slctdCntctIndex].Members[0].Name) +
             ' sent this on ' +
-            this.usaDateFrmt(msg.dat) +
+            this.usaDateFrmt(chat.dat) +
             ' ' +
-            msg.dat.slice(11, 16)
+            chat.dat.slice(11, 16)
           "
-          :class="msg.frm == userData.id ? 'chat-box-right' : 'chat-box-left'"
+          :class="chat.frm == userData.id ? 'chat-box-right' : 'chat-box-left'"
           :style="{
-            backgroundColor: sttngs?.entity?.msgColors?.[msg?.frm]
-              ? sttngs.entity.msgColors[msg.frm]
-              : msg?.frm == userData.id
+            backgroundColor: sttngs?.entity?.msgColors?.[chat?.frm]
+              ? sttngs.entity.msgColors[chat.frm]
+              : chat?.frm == userData.id
               ? '#F08784'
               : '#A1FB8E',
           }"
@@ -31,42 +31,42 @@
             class="chat-box-img-grid-container"
             :style="{
               gridTemplateColumns:
-                msg?.frm == userData.id && msg.tp.includes('image')
+                chat?.frm == userData.id && chat.tp.includes('image')
                   ? '60% 40%'
-                  : msg?.frm != userData.id && msg.tp.includes('image')
+                  : chat?.frm != userData.id && chat.tp.includes('image')
                   ? '40% 60%'
                   : '100%',
             }"
           >
-            <div v-if="msg?.frm == userData.id && msg.tp.includes('image')"></div>
-            <div v-if="msg.tp.includes('image')">
-              <a :href="'src/assets/images/' + userData.Entity + '/' + secDir + msgLctn + msg.msg" target="_blank">
-                <img :src="'src/assets/images/' + userData.Entity + '/' + secDir + msgLctn + msg.msg" alt="pic" />
+            <div v-if="chat?.frm == userData.id && chat.tp.includes('image')"></div>
+            <div v-if="chat.tp.includes('image')">
+              <a :href="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg" target="_blank">
+                <img :src="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg" alt="pic" />
               </a>
             </div>
-            <div v-if="msg?.frm != userData.id && msg.tp.includes('image')"></div>
+            <div v-if="chat?.frm != userData.id && chat.tp.includes('image')"></div>
           </div>
 
-          <div v-if="!msg.tp.includes('image')">
-            <i v-if="msg.err || msg?.err == ''" class="fa-solid fa-circle-exclamation" :title="msg.err"></i>
-            <template v-if="msg.tp == 'msg'">{{ msg.msg }}</template>
+          <div v-if="!chat.tp.includes('image')">
+            <i v-if="chat.err || chat?.err == ''" class="fa-solid fa-circle-exclamation" :title="chat.err"></i>
+            <template v-if="chat.tp == 'msg'">{{ chat.msg }}</template>
             <a
               v-else
-              :href="'src/assets/images/' + userData.Entity + '/' + secDir + msgLctn + msg.msg"
+              :href="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg"
               target="_blank"
-              >{{ msg.msg.split('/')[msg.msg.split('/').length - 1] }}</a
+              >{{ chat.msg.split('/')[chat.msg.split('/').length - 1] }}</a
             >
           </div>
 
           <div class="chat-box-msg-date">
             {{
-              sttngs.entity.activeUserList?.[msg.frm]?.FirstName
-                ? sttngs.entity.activeUserList?.[msg.frm]?.FirstName
+              sttngs.entity.activeUserList?.[chat.frm]?.FirstName
+                ? sttngs.entity.activeUserList?.[chat.frm]?.FirstName
                 : contacts[slctdCntctIndex].Members[0].First
                 ? contacts[slctdCntctIndex].Members[0].First + ' ' + contacts[slctdCntctIndex].Members[0].Name
                 : contacts[slctdCntctIndex].Members[0].Name
             }}
-            - {{ this.usaDateFrmt(msg.dat) }}
+            - {{ this.usaDateFrmt(chat.dat) }}
           </div>
         </div>
       </div>
@@ -93,7 +93,7 @@
         :disabled="dsbld || spinLogin || uploadingFiles"
         :placeholder="'Enter ' + slctd.chatType + ' here'"
         v-model="chatBoxMsg"
-        v-on:keyup.enter="sendSMS()"
+        v-on:keyup.enter="sendChat()"
       ></textarea>
 
       <div v-if="slctd.chatType == 'SMS' && uploadedFiles.length === 0" class="chat-msg-len">
@@ -108,7 +108,7 @@
 
       <button
         :disabled="uploadedFiles.length === 0 && (spinLogin || !chatBoxMsg || dsbld || uploadingFiles)"
-        @click="sendSMS()"
+        @click="sendChat()"
       >
         <i v-if="spinLogin" class="spin fa-sharp fa-solid fa-circle-notch"></i>
         <template v-else>Send</template>
@@ -141,24 +141,15 @@ export default {
       spinLogin: false,
       uploadingFiles: false,
       uploadedFiles: [],
-      fileTypeColors: {
-        pdf: { body: '#B30B00', text: '#FFFFFF' },
-        doc: { body: '#103F91', text: '#FFFFFF' },
-        docx: { body: '#185ABD', text: '#FFFFFF' },
-        ods: { body: '#185ABD', text: '#FFFFFF' },
-        csv: { body: '#107C41', text: '#FFFFFF' },
-        xls: { body: '#107C41', text: '#FFFFFF' },
-        xlsx: { body: '#107C41', text: '#FFFFFF' },
-      },
       secDir: sec_dir,
     };
   },
 
   computed: {
-    msgLctn() {
+    chatFldr() {
       return this.sttngs.entity.sms.enabled === true && this.slctd.chatType == 'SMS' ? '/msg/' : '/chat/';
     },
-    slctdMsgs() {
+    slctdChats() {
       return this.sttngs.entity.sms.enabled === true && this.slctd.chatType == 'SMS'
         ? this.contacts[this.slctdCntctIndex].Msg?.sort((a, b) => a.dat.localeCompare(b.dat))?.filter(
             (msgInfo) =>
@@ -170,34 +161,49 @@ export default {
           );
     },
 
-    slctdMsgAmount() {
+    slctdChatAmount() {
       return this.sttngs.entity.sms.enabled === true && this.slctd.chatType == 'SMS'
         ? this.contacts[this.slctdCntctIndex].Msg?.filter(
             (msg) =>
               msg?.frm?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, '')) ||
               msg?.tow?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, ''))
           )?.length
-        : this.slctdMsgs.length;
+        : this.slctdChats.length;
     },
     chatBoxTitle() {
-      // prettier-ignore
-      return (this.slctd.chatType + ' with ' +
+      const firstName =
+        this.contacts[this.slctdCntctIndex].Members[0].First &&
+        this.contacts[this.slctdCntctIndex].Members[0].First != ''
+          ? this.contacts[this.slctdCntctIndex].Members[0].First
+          : '';
+      const name =
+        this.contacts[this.slctdCntctIndex].Members[0].Name && this.contacts[this.slctdCntctIndex].Members[0].Name != ''
+          ? this.contacts[this.slctdCntctIndex].Members[0].Name
+          : '';
+      return (
+        this.slctd.chatType +
+        ' with ' +
         (this.slctd.chatType == 'SMS'
-          ? (this.contacts[this.slctdCntctIndex].Members[0].First ? this.contacts[this.slctdCntctIndex].Members[0].First : '') + ' ' + this.contacts[this.slctdCntctIndex].Members[0].Name + ' (' + this.slctd.smsGroup + ')'
+          ? firstName +
+            (firstName != '' ? ' ' : '') +
+            name +
+            (firstName != '' || name != '' ? ' (' : '') +
+            this.slctd.smsGroup +
+            (firstName != '' || name != '' ? ')' : '')
           : this.slctd.chatGroup)
       );
     },
   },
 
   methods: {
-    sendSMS() {
+    sendChat() {
       if (this.chatBoxMsg.replaceAll('\n', '') != '' || this.uploadedFiles.length > 0) {
         this.spinLogin = true;
         const dat = this.times.updtngY_m_d_H_i_s_z.slice(0, 19);
         const frm = this.slctd.chatType == 'SMS' ? this.userData.id.toString() : this.userData.id;
         // prettier-ignore
         const tow = this.slctd.chatType == 'SMS' ? this.slctd.smsGroup.replace(/[^0-9]/g, '') : this.sttngs.entity.chats[this.slctd.chatGroup];
-        const msg = this.uploadedFiles.length > 0 ? this.uploadedFiles : [{ filename: this.chatBoxMsg }];
+        const chat = this.uploadedFiles.length > 0 ? this.uploadedFiles : [{ filename: this.chatBoxMsg }];
 
         if (this.slctd.chatType == 'Chat') {
           this.times.mstRcntChat = dat.slice(0, 19).replace('T', ' ');
@@ -208,7 +214,7 @@ export default {
         this.chatBoxMsg = '';
         this.uploadedFiles = [];
 
-        msg.forEach((uploadedFile) => {
+        chat.forEach((uploadedFile) => {
           const chatBody = {
             frm: frm,
             tow: tow,
@@ -216,7 +222,7 @@ export default {
             tp: uploadedFile.type ? uploadedFile.type : 'msg',
           };
           if (this.slctd.chatType == 'SMS') chatBody.id = this.sttngs.user.slctdCntctID;
-          this.postMsg(dat, chatBody, this.slctd.chatType, this.slctdCntctIndex);
+          this.postChat(dat, chatBody, this.slctd.chatType, this.slctdCntctIndex);
         });
       } else {
         this.showMsg('Message cannot be blank');
@@ -224,7 +230,7 @@ export default {
         this.uploadedFiles = [];
       }
     },
-    async postMsg(dat, chatBody, chatType, slctdCntctIndex) {
+    async postChat(dat, chatBody, chatType, slctdCntctIndex) {
       try {
         // prettier-ignore
         const response = await fetch((chatType == 'Chat' ? app_api_url : this.userData.AppPermissions.ContactManager.smsAPIurl) + '/' + dat.slice(0, 19).replace(' ', 'T') + '/' + chatType.toLowerCase(),
@@ -282,7 +288,6 @@ export default {
           this.uploadingFiles = false;
           this.uploadedFiles = [];
         }
-        console.log(resJSON);
       } catch (error) {
         this.uploadingFiles = false;
         this.uploadedFiles = [];
@@ -293,7 +298,7 @@ export default {
   },
 
   watch: {
-    slctdMsgAmount() {
+    slctdChatAmount() {
       setTimeout(() => {
         this.$refs.bottomChatEl.scrollIntoView();
       }, 1);

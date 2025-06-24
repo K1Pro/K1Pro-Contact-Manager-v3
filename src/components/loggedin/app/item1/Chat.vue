@@ -18,16 +18,14 @@
         <span v-if="newChats[chatGroup]">{{ newChats[chatGroup] }}</span>
       </div>
       <template v-if="sttngs.entity.sms.enabled === true">
-        <hr />
-        <div class="chat-title">
-          SMS ({{ contacts[slctdCntctIndex].Members[0].First }} {{ contacts[slctdCntctIndex].Members[0].Name }})
-        </div>
-        <template
-          v-for="(connection, connectionIndx) in contacts[slctdCntctIndex].Connections.filter(
-            (connectionType) => connectionType.Phone
-          )"
-        >
+        <template v-if="somePhone">
+          <hr />
+          <div class="chat-title">
+            SMS ({{ contacts[slctdCntctIndex].Members[0].First }} {{ contacts[slctdCntctIndex].Members[0].Name }})
+          </div>
+
           <div
+            v-for="(connection, connectionIndx) in connections.filter((connectionType) => connectionType.Phone)"
             class="chat-groups"
             :class="[
               slctd.smsGroup == connection.Phone && slctd.chatType == 'SMS'
@@ -43,9 +41,9 @@
           </div>
         </template>
 
-        <hr />
-        <div class="chat-title">New SMS (Others)</div>
-        <template v-if="newMsgs?.msgs">
+        <template v-if="newMsgsFltr">
+          <hr />
+          <div class="chat-title">New SMS (Others)</div>
           <div
             v-for="([msgKey, msgVal], msgIndx) in Object.entries(newMsgs?.msgs).filter(
               ([key, value]) => value.id != sttngs.user.slctdCntctID
@@ -71,18 +69,19 @@ export default {
 
   methods: {
     slctChatGroup(chatGroup) {
+      // console.log('whats going on here?');
       this.slctd.chatGroup = chatGroup;
       this.slctd.chatType = 'Chat';
       this.sttngs.user.chats[chatGroup] = this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
       this.sttngsReq('PATCH', 'user');
     },
     slctSMSGroup(SMSGroup) {
-      console.log(SMSGroup);
+      // console.log(SMSGroup);
       this.deleteMsg(SMSGroup);
       this.slctd.smsGroup = SMSGroup;
       this.slctd.chatType = 'SMS';
     },
-    async selectContact(msgKey, msgVal) {
+    selectContact(msgKey, msgVal) {
       this.deleteMsg(msgKey);
       this.slctd.smsGroup = msgVal.smsGroup;
       this.slctd.chatType = 'SMS';
@@ -103,17 +102,42 @@ export default {
           }),
         });
         const resJSON = await response.json();
-        if (resJSON.success) {
-        } else {
-        }
-        console.log(resJSON);
       } catch (error) {
         console.log(error.toString());
       }
     },
   },
 
+  computed: {
+    connections() {
+      return this.contacts[this.slctdCntctIndex].Connections;
+    },
+    somePhone() {
+      return this.connections.some((cnnctns) => cnnctns.Phone);
+    },
+    phoneMatch() {
+      return this.slctd.smsGroup ? this.connections.some((cnnctns) => cnnctns.Phone == this.slctd.smsGroup) : false;
+    },
+    phoneFltr() {
+      return this.connections.filter((connectionType) => connectionType.Phone);
+    },
+    newMsgsFltr() {
+      return (
+        JSON.stringify(
+          Object.entries(this.newMsgs?.msgs)?.filter(([key, value]) => value.id != this.sttngs.user.slctdCntctID)
+        ) != '[]'
+      );
+    },
+  },
+
   mounted() {
+    if (this.slctd.chatType == 'SMS' && this.slctd.smsGroup !== null) {
+      if (this.somePhone) {
+        if (!this.phoneMatch) this.slctd.smsGroup = Object.values(this.phoneFltr)[0].Phone;
+      } else {
+        this.slctChatGroup(this.slctd.chatGroup);
+      }
+    }
     setTimeout(() => {
       if (this.slctd.chatType != 'SMS') this.slctChatGroup(this.slctd.chatGroup);
     }, 2000);
