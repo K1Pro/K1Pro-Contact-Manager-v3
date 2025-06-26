@@ -68,7 +68,6 @@ export default {
   name: 'Addresses',
 
   inject: [
-    'appName',
     'contacts',
     'deleteContactInfo',
     'dsbld',

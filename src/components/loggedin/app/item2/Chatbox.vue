@@ -2,7 +2,7 @@
   <div class="chat-box">
     <div class="chat-box-title">{{ chatBoxTitle }}</div>
     <div class="chat-box-body">
-      <div v-for="(chat, chatIndx) in slctdChats">
+      <div v-if="slctdChatAmount" v-for="(chat, chatIndx) in slctdChats?.sort((a, b) => a?.dat.localeCompare(b?.dat))">
         <div v-if="chat.dat.slice(5, 10) != slctdChats?.[chatIndx - 1]?.dat?.slice(5, 10)" class="chat-box-body-time">
           <div class="chat-box-body-timedate">{{ this.usaDateFrmt(chat.dat).slice(0, 10) }}</div>
         </div>
@@ -28,28 +28,30 @@
           }"
         >
           <div
+            v-if="chat.tp.includes('image')"
             class="chat-box-img-grid-container"
             :style="{
-              gridTemplateColumns:
-                chat?.frm == userData.id && chat.tp.includes('image')
-                  ? '60% 40%'
-                  : chat?.frm != userData.id && chat.tp.includes('image')
-                  ? '40% 60%'
-                  : '100%',
+              gridTemplateColumns: chat?.frm == userData.id ? '60% 40%' : '40% 60%',
             }"
           >
-            <div v-if="chat?.frm == userData.id && chat.tp.includes('image')"></div>
-            <div v-if="chat.tp.includes('image')">
+            <div v-if="chat?.frm == userData.id"></div>
+            <div>
               <a :href="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg" target="_blank">
                 <img :src="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg" alt="pic" />
               </a>
             </div>
-            <div v-if="chat?.frm != userData.id && chat.tp.includes('image')"></div>
+            <div v-if="chat?.frm != userData.id"></div>
           </div>
 
-          <div v-if="!chat.tp.includes('image')">
+          <div v-if="!chat.tp.includes('image')" style="word-break: break-all">
             <i v-if="chat.err || chat?.err == ''" class="fa-solid fa-circle-exclamation" :title="chat.err"></i>
-            <template v-if="chat.tp == 'msg'">{{ chat.msg }}</template>
+            <template v-if="chat.tp == 'msg'">
+              <template v-if="chat.msg.includes('https://bundle-insurance.com/secure-link/')">
+                <a :href="chat.msg.split(' - ')[0]" target="_blank">{{ chat.msg.split(' - ')[0] }}</a> -
+                {{ chat.msg.split(' - ')[1] }}
+              </template>
+              <template v-else>{{ chat.msg }}</template>
+            </template>
             <a
               v-else
               :href="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg"
@@ -70,6 +72,13 @@
           </div>
         </div>
       </div>
+      <table v-else>
+        <tbody>
+          <tr>
+            <td><div class="chat-box-no-msg">No messages</div></td>
+          </tr>
+        </tbody>
+      </table>
 
       <div ref="bottomChatEl"></div>
     </div>
@@ -92,9 +101,17 @@
         v-else
         :disabled="dsbld || spinLogin || uploadingFiles"
         :placeholder="'Enter ' + slctd.chatType + ' here'"
+        :style="{ height: slctd.chatType == 'SMS' ? 'calc(100% - 20px)' : '100%' }"
         v-model="chatBoxMsg"
         v-on:keyup.enter="sendChat()"
       ></textarea>
+
+      <select v-if="slctd.chatType == 'SMS' && sttngs.entity.smss" @change="changeSMSTemplate">
+        <option disabled selected>Choose SMS template</option>
+        <option v-for="(smsTemplate, smsTemplateIndx) in sttngs.entity.smss" :value="smsTemplateIndx">
+          {{ smsTemplate.placeholder }}
+        </option>
+      </select>
 
       <div v-if="slctd.chatType == 'SMS' && uploadedFiles.length === 0" class="chat-msg-len">
         {{ Math.ceil(chatBoxMsg.length / 160) }} / {{ chatBoxMsg.length }}
@@ -151,24 +168,21 @@ export default {
     },
     slctdChats() {
       return this.sttngs.entity.sms.enabled === true && this.slctd.chatType == 'SMS'
-        ? this.contacts[this.slctdCntctIndex].Msg?.sort((a, b) => a.dat.localeCompare(b.dat))?.filter(
-            (msgInfo) =>
-              msgInfo?.frm?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, '')) ||
-              msgInfo?.tow?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, ''))
-          )
+        ? this.contacts[this.slctdCntctIndex].Msg?.filter((msgInfo) => {
+            return (
+              (msgInfo.frm &&
+                msgInfo?.frm?.replace(/[^0-9]/g, '')?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, ''))) ||
+              (msgInfo.tow &&
+                msgInfo?.tow?.replace(/[^0-9]/g, '')?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, '')))
+            );
+          })
         : this.chats?.filter(
             (chat) => JSON.stringify(chat.tow) === JSON.stringify(this.sttngs.entity.chats[this.slctd.chatGroup])
           );
     },
 
     slctdChatAmount() {
-      return this.sttngs.entity.sms.enabled === true && this.slctd.chatType == 'SMS'
-        ? this.contacts[this.slctdCntctIndex].Msg?.filter(
-            (msg) =>
-              msg?.frm?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, '')) ||
-              msg?.tow?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, ''))
-          )?.length
-        : this.slctdChats.length;
+      return this.slctdChats.length;
     },
     chatBoxTitle() {
       const firstName =
@@ -222,7 +236,7 @@ export default {
             tp: uploadedFile.type ? uploadedFile.type : 'msg',
           };
           if (this.slctd.chatType == 'SMS') chatBody.id = this.sttngs.user.slctdCntctID;
-          this.postChat(dat, chatBody, this.slctd.chatType, this.slctdCntctIndex);
+          this.postChat(dat, chatBody, this.slctd.chatType);
         });
       } else {
         this.showMsg('Message cannot be blank');
@@ -230,7 +244,7 @@ export default {
         this.uploadedFiles = [];
       }
     },
-    async postChat(dat, chatBody, chatType, slctdCntctIndex) {
+    async postChat(dat, chatBody, chatType) {
       try {
         // prettier-ignore
         const response = await fetch((chatType == 'Chat' ? app_api_url : this.userData.AppPermissions.ContactManager.smsAPIurl) + '/' + dat.slice(0, 19).replace(' ', 'T') + '/' + chatType.toLowerCase(),
@@ -245,16 +259,8 @@ export default {
           }
         );
         const resJSON = await response.json();
-        if (resJSON !== null) this.spinLogin = false;
-        if (resJSON.success) {
-          // prettier-ignore
-          chatType == 'Chat' ? this.chats.push(resJSON.data) : this.contacts[slctdCntctIndex].Msg.unshift(resJSON.data);
-          setTimeout(() => {
-            this.$refs.bottomChatEl.scrollIntoView();
-          }, 1);
-        } else {
-          this.showMsg('Message not sent');
-        }
+        if (resJSON.success && chatType == 'Chat') this.chats.push(resJSON.data); // Msg success is handled at syncing logs after getContacts()
+        if (!resJSON.success) this.showMsg('Message not sent');
       } catch (error) {
         this.spinLogin = false;
         this.showMsg('Message not sent');
@@ -295,38 +301,39 @@ export default {
         console.log(error.toString());
       }
     },
+    changeSMSTemplate(event) {
+      // prettier-ignore
+      let chatBoxMsg = this.sttngs.entity.smss[event.target.value].body?.replaceAll('___FirstName___', this.contacts[this.slctdCntctIndex]?.Members?.[0]?.First);
+      this.chatBoxMsg = chatBoxMsg.replaceAll('undefined', '');
+      event.srcElement.selectedIndex = 0;
+    },
+    resetChatbox() {
+      setTimeout(() => {
+        this.$refs.bottomChatEl.scrollIntoView();
+      }, 100);
+      this.chatBoxMsg = '';
+      this.uploadedFiles = [];
+      this.spinLogin = false;
+    },
   },
 
   watch: {
     slctdChatAmount() {
-      setTimeout(() => {
-        this.$refs.bottomChatEl.scrollIntoView();
-      }, 1);
+      this.resetChatbox();
     },
     'slctd.chatType'() {
-      setTimeout(() => {
-        this.$refs.bottomChatEl.scrollIntoView();
-      }, 1);
-      this.uploadedFiles = [];
+      this.resetChatbox();
     },
     'slctd.smsGroup'() {
-      setTimeout(() => {
-        this.$refs.bottomChatEl.scrollIntoView();
-      }, 1);
-      this.uploadedFiles = [];
+      this.resetChatbox();
     },
     'slctd.chatGroup'() {
-      setTimeout(() => {
-        this.$refs.bottomChatEl.scrollIntoView();
-      }, 1);
-      this.uploadedFiles = [];
+      this.resetChatbox();
     },
   },
 
   mounted() {
-    setTimeout(() => {
-      this.$refs.bottomChatEl.scrollIntoView();
-    }, 1);
+    this.resetChatbox();
   },
 };
 </script>
@@ -358,6 +365,23 @@ export default {
   border: none;
   overflow: hidden scroll;
 }
+.chat-box table {
+  height: 100%;
+  width: 100%;
+}
+.chat-box td {
+  text-align: center;
+  vertical-align: middle;
+}
+.chat-box-no-msg {
+  padding: 5px;
+  border: 1px solid rgb(176, 176, 176);
+  background-color: rgb(176, 176, 176);
+  color: white;
+  border-radius: 10px;
+  margin-left: calc(50% - 50px);
+  margin-right: calc(50% - 50px);
+}
 .chat-box-body-time {
   text-align: center;
 }
@@ -382,19 +406,19 @@ export default {
 }
 .chat-msg-len {
   position: absolute;
-  margin-top: 45px;
+  margin-top: 25px;
   text-align: right;
   right: 200px;
 }
 .chat-box-left {
-  border-radius: 10px;
+  border-radius: 10px 10px 10px 0px;
   margin-right: 25%;
   margin-bottom: 10px;
   padding: 5px;
   text-align: left;
 }
 .chat-box-right {
-  border-radius: 10px;
+  border-radius: 10px 10px 0px 10px;
   margin-left: 25%;
   margin-bottom: 10px;
   padding: 5px;
@@ -423,9 +447,13 @@ export default {
   float: left;
   resize: none;
   width: calc(100% - 170px);
-  height: 100%;
   padding: 5px;
   overflow-y: scroll;
+}
+.chat-box select {
+  float: left;
+  width: calc(100% - 170px);
+  height: 20px;
 }
 .chat-box label {
   display: inline-block;

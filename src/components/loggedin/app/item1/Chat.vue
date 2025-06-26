@@ -21,7 +21,10 @@
         <template v-if="somePhone">
           <hr />
           <div class="chat-title">
-            SMS ({{ contacts[slctdCntctIndex].Members[0].First }} {{ contacts[slctdCntctIndex].Members[0].Name }})
+            SMS
+            {{ contacts[slctdCntctIndex].Members[0].First || contacts[slctdCntctIndex].Members[0].Name ? '(' : ''
+            }}{{ contacts[slctdCntctIndex].Members[0].First }} {{ contacts[slctdCntctIndex].Members[0].Name
+            }}{{ contacts[slctdCntctIndex].Members[0].First || contacts[slctdCntctIndex].Members[0].Name ? ')' : '' }}
           </div>
 
           <div
@@ -137,6 +140,8 @@ export default {
       } else {
         this.slctChatGroup(this.slctd.chatGroup);
       }
+    } else if (this.slctd.chatGroup === null) {
+      this.slctd.chatGroup = Object.keys(this.sttngs.entity.chats)[0];
     }
     setTimeout(() => {
       if (this.slctd.chatType != 'SMS') this.slctChatGroup(this.slctd.chatGroup);

@@ -219,7 +219,6 @@ export default {
   name: 'Recur Tasks',
 
   inject: [
-    'appName',
     'contacts',
     'deleteContactInfo',
     'dsbld',

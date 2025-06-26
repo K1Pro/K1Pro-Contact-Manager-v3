@@ -1,6 +1,6 @@
 <template>
   <snackbar :msg @deleteMsg="msg = null"></snackbar>
-  <template v-if="contacts != null && sttngs.user != null && sttngs.entity != null && initialTimes">
+  <template v-if="contacts != null && sttngs.user != null && sttngs.entity != null">
     <div class="app-grid-container" :style="appGridContainer">
       <div class="app-grid-item1">
         <sidemenu
@@ -49,7 +49,6 @@ export default {
 
   data() {
     return {
-      appName: app_name,
       chats: null,
       contacts: null,
       daysRangeArr: [1, 3, 7, 14, 21, 28],
@@ -76,16 +75,16 @@ export default {
         report: 'user_Contact report:' + user_data.id,
         sideMenuLnk: ['Contactinfo', 'Calendar'],
         smsGroup: null,
-        tmstmp: '',
+        tmstmp: new Date(date_Y_m_d_H_i_s_z).getTime(),
         IDs: {},
       },
       times: {
-        initialUsrTmstmp: null,
-        initialBrwsrTmstmp: null,
-        updtngY_m_d_H_i_s_z: null,
-        mstRcntChat: '1970-01-01T00:00:00',
+        initialUsrTmstmp: date_tmstmp,
+        initialBrwsrTmstmp: new Date().getTime(),
+        updtngY_m_d_H_i_s_z: date_Y_m_d_H_i_s_z,
+        mstRcntChat: unixEpoch,
         mstRcntMsg: null,
-        mstRcntCntctUpdt: '1970-01-01T00:00:00',
+        mstRcntCntctUpdt: unixEpoch,
         mstRcntUpdates: {},
       },
       updating: 0,
@@ -113,7 +112,6 @@ export default {
       userList: Vue.computed(() => this.userList),
       userRole: Vue.computed(() => this.userRole),
       // static
-      appName: this.appName,
       daysRangeArr: this.daysRangeArr,
       roles: this.roles,
       // methods
@@ -124,21 +122,6 @@ export default {
   },
 
   computed: {
-    initialTimes() {
-      if (this.times.initialBrwsrTmstmp === null && this.sttngs.entity.date_Y_m_d_H_i_s_z) {
-        this.times.initialBrwsrTmstmp = new Date().getTime();
-        this.times.initialUsrTmstmp = this.sttngs.entity.timestamp;
-        this.times.updtngY_m_d_H_i_s_z = this.sttngs.entity.date_Y_m_d_H_i_s_z;
-        this.slctd.chatGroup = Object.keys(this.sttngs.entity.chats)[0];
-        this.slctd.tmstmp = new Date(this.times.updtngY_m_d_H_i_s_z).getTime();
-        setInterval(() => {
-          const timeDifference = new Date().getTime() - this.times.initialBrwsrTmstmp;
-          this.times.updtngY_m_d_H_i_s_z = new Date(this.times.initialUsrTmstmp + timeDifference).toISOString();
-          this.appUpdate();
-        }, 5000);
-      }
-      return this.times.initialBrwsrTmstmp === null && this.sttngs.entity.date_Y_m_d_H_i_s_z ? false : true;
-    },
     sideMenuItems() {
       const sideMenuItemsArray = [
         ['fa fa-house-chimney-user', null, 'Contact info', 'Calendar'],
@@ -197,7 +180,7 @@ export default {
       let newChatsTotal = 0;
       if (this.times.mstRcntMsg !== null)
         this.times.mstRcntMsg.forEach((msg) => {
-          this.contacts.forEach((contact, contactIndx) => {
+          this.contacts?.forEach((contact, contactIndx) => {
             contact.Connections.forEach((conn) => {
               if (conn.Phone && conn.Phone.replace(/[^0-9]/g, '') == msg) {
                 newChatsTotal++;
@@ -313,9 +296,10 @@ export default {
 
   methods: {
     async appUpdate() {
+      const userSlctdCntctID = this.sttngs?.user?.slctdCntctID ? this.sttngs.user.slctdCntctID : null;
       try {
         const response = await fetch(
-          app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z + '/' + this.sttngs.user.slctdCntctID + '/update',
+          app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z + '/' + userSlctdCntctID + '/update',
           {
             headers: {
               Authorization: access_token,
@@ -330,13 +314,25 @@ export default {
             this.dsbld = false;
             this.showMsg('Internet restored');
           }
-          if (this.times.mstRcntCntctUpdt != resJSON.data.mstRcntCntctUpdt) this.getContacts();
-          if (this.times.mstRcntChat != resJSON.data.mstRcntChat) this.getChats();
+
+          (this.times.mstRcntCntctUpdt == unixEpoch || this.times.mstRcntCntctUpdt != resJSON.data.mstRcntCntctUpdt) &&
+            this.getContacts();
+          (this.times.mstRcntChat == unixEpoch || this.times.mstRcntChat != resJSON.data.mstRcntChat) &&
+            this.getChats();
+
           if (
-            this.sttngs.entity.sms.enabled === true &&
-            JSON.stringify(this.times.mstRcntMsg) !== JSON.stringify(resJSON.data.mstRcntMsg)
+            this.times.mstRcntMsg !== null &&
+            JSON.stringify(this.times.mstRcntMsg) != JSON.stringify(resJSON.data.mstRcntMsg)
           )
-            this.times.mstRcntMsg = resJSON.data.mstRcntMsg;
+            if (resJSON.data.mstRcntMsg.length > this.times.mstRcntMsg.length) {
+              const newChat = new Notification(
+                'There is ' + (resJSON.data.mstRcntMsg.length - this.times.mstRcntMsg.length) + ' new text message'
+              );
+            }
+
+          this.times.mstRcntCntctUpdt = resJSON.data.mstRcntCntctUpdt;
+          this.times.mstRcntChat = resJSON.data.mstRcntChat;
+          this.times.mstRcntMsg = resJSON.data.mstRcntMsg;
           this.times.mstRcntUpdates = resJSON.data.mstRcntUpdate;
           this.slctd.IDs = resJSON.data.selected_IDs;
         } else {
@@ -383,9 +379,8 @@ export default {
         );
         const resJSON = await response.json();
         if (resJSON.success) {
-          if (this.times.mstRcntCntctUpdt == '1970-01-01T00:00:00') {
+          if (this.contacts === null || this.times.mstRcntCntctUpdt == unixEpoch) {
             this.deletedIDs = resJSON.data.deleted_IDs;
-            this.times.mstRcntCntctUpdt = resJSON.data.mstRcntCntctUpdt;
             this.contacts = resJSON.data.contacts ? resJSON.data.contacts : [];
             setTimeout(() => {
               const newChat = new Notification(
@@ -407,7 +402,6 @@ export default {
               );
             }, 1000);
           } else {
-            this.times.mstRcntCntctUpdt = resJSON.data.mstRcntCntctUpdt;
             let oldValueActvEl;
             if (resJSON.data.contacts.length > 0) {
               resJSON.data.contacts.forEach((contact) => {
@@ -469,8 +463,6 @@ export default {
                       }, 2);
                   } else {
                     console.log('syncing logs');
-                    // console.log(this.contacts[this.slctdCntctIndex].Log);
-                    // console.log(contact.Log);
                     this.contacts[this.slctdCntctIndex].Email = contact.Email;
                     this.contacts[this.slctdCntctIndex].Tel = contact.Tel;
                     this.contacts[this.slctdCntctIndex].Msg = contact.Msg;
@@ -479,8 +471,6 @@ export default {
                   }
                 }
               });
-            } else {
-              // this.showMsg('No contact updates');
             }
             if (JSON.stringify(this.deletedIDs) != JSON.stringify(resJSON.data.deleted_IDs)) {
               resJSON.data.deleted_IDs.forEach((deleted_ID) => {
@@ -512,7 +502,7 @@ export default {
         );
         const resJSON = await response.json();
         if (resJSON.success) {
-          if (this.times.mstRcntChat == '1970-01-01T00:00:00') {
+          if (this.chats === null || this.times.mstRcntChat == unixEpoch) {
             this.chats = resJSON?.data?.chats ? resJSON.data.chats : [];
             setTimeout(() => {
               if (this.allNewChats) {
@@ -527,9 +517,6 @@ export default {
               const newChat = new Notification(this.sttngs.entity.activeUserList[chat.frm].FirstName + ': ' + chat.msg);
             });
           }
-          this.times.mstRcntChat = resJSON?.data?.mstRcntChat ? resJSON.data.mstRcntChat : '1970-01-01T00:00:00';
-        } else {
-          this.times.mstRcntChat = this.times?.updtngY_m_d_H_i_s_z?.slice(0, 19)?.replace('T', ' ');
         }
       } catch (error) {
         this.showMsg(error.toString());
@@ -549,9 +536,6 @@ export default {
     },
 
     async patchContactInfo(event, column, columnIndex, newCntctInfo) {
-      console.log(event);
-      console.log(column);
-      console.log(columnIndex);
       const slctdCntctIndex = this.contacts.findIndex((contact) => contact.id == newCntctInfo.id);
       if (
         new Date(new Date(this.times.updtngY_m_d_H_i_s_z.slice(0, 19)) - 300000).getTime() <
@@ -643,21 +627,18 @@ export default {
   },
 
   created() {
+    this.appUpdate();
+    setInterval(() => {
+      const timeDifference = new Date().getTime() - this.times.initialBrwsrTmstmp;
+      this.times.updtngY_m_d_H_i_s_z = new Date(this.times.initialUsrTmstmp + timeDifference).toISOString();
+      this.appUpdate();
+    }, 5000);
     this.sttngsReq('GET', 'user');
     this.sttngsReq('GET', 'entity');
-    this.getContacts();
-    this.getChats();
 
     setTimeout(() => {
       // Initial app checks
-      if (
-        this.sttngs.entity === null ||
-        this.sttngs.user === null ||
-        this.contacts === null ||
-        this.chats === null ||
-        !this.initialTimes
-      )
-        location.reload();
+      if (this.sttngs.entity === null || this.sttngs.user === null || this.contacts === null) location.reload();
     }, 4500);
 
     setInterval(() => {

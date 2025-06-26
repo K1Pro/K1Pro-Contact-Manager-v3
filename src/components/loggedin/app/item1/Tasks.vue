@@ -152,7 +152,6 @@ export default {
 
   inject: [
     'contacts',
-    'appName',
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',

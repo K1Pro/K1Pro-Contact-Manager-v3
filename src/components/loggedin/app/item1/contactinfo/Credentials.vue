@@ -60,7 +60,6 @@ export default {
   name: 'Credentials',
 
   inject: [
-    'appName',
     'contacts',
     'deleteContactInfo',
     'dsbld',

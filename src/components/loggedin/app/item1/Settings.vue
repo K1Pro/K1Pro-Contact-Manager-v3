@@ -99,7 +99,6 @@ export default {
   name: 'Settings',
 
   inject: [
-    'appName',
     'daysRangeArr',
     'sttngsReq',
     'roles',

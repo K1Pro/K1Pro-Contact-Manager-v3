@@ -128,7 +128,6 @@ export default {
   emits: ['contacts'],
 
   inject: [
-    'appName',
     'contacts',
     'deleteContactInfo',
     'dsbld',
