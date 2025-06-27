@@ -72,7 +72,7 @@ export default {
         chatType: 'Chat',
         dayIndex: null,
         eventIndx: null,
-        report: 'user_Contact report:' + user_data.id,
+        report: null,
         sideMenuLnk: ['Contactinfo', 'Calendar'],
         smsGroup: null,
         tmstmp: new Date(date_Y_m_d_H_i_s_z).getTime(),

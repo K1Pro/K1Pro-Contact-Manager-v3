@@ -9,10 +9,10 @@
     <table>
       <template
         v-if="
-          slctd.report.includes('(min. info)') ||
-          slctd.report.includes('(more info)') ||
-          slctd.report.includes('cntct_Calls/Emails:') ||
-          slctd.report.includes('user_Contact report:')
+          slctd.report.name == 'Contacts (min. info)' ||
+          slctd.report.name == 'Contacts (more info)' ||
+          ['Emails', 'Calls', 'SMS', 'Faxes'].includes(this.slctd.report.name) ||
+          (slctd.report.name == 'Contacts' && slctd.report.type == 'user')
         "
       >
         <thead v-if="tblCntnt[2].length > 0">
@@ -24,7 +24,7 @@
           <tr
             v-for="(tblRow, tblRowIndx) in tblCntnt[2]"
             :class="
-              slctd.report.includes('cntct_Calls/Emails:')
+              ['Emails', 'Calls', 'SMS', 'Faxes'].includes(this.slctd.report.name)
                 ? 'taskCell' + (tblRowIndx % 2) + '1'
                 : 'cell' + (tblRowIndx % 2)
             "
@@ -32,7 +32,12 @@
             <td v-if="tblCntnt[1]" class="cellHover" @click="selectContact(tblCntnt[1][tblRowIndx][1])">
               {{ tblCntnt[1][tblRowIndx][0] }}
             </td>
-            <td v-for="tblCell in tblRow" class="cellHover" @click="selectContact(tblCntnt[1][tblRowIndx][1])">
+            <td
+              v-for="(tblCell, tblCellIndx) in tblRow"
+              class="cellHover"
+              :style="{ minWidth: tblCellIndx !== 0 ? '125px' : false }"
+              @click="selectContact(tblCntnt[1][tblRowIndx][1])"
+            >
               {{ tblCell }}
             </td>
           </tr>
@@ -40,7 +45,12 @@
         <p v-else>Empty</p>
       </template>
 
-      <template v-if="slctd.report.includes('Task report: All') || slctd.report.includes('user_Task report:')">
+      <template
+        v-if="
+          (slctd.report.name == 'Tasks' && !slctd.report.type) ||
+          (slctd.report.name == 'Tasks' && slctd.report.type == 'user')
+        "
+      >
         <thead>
           <tr>
             <th v-for="tblTtl in tblCntnt[0]">{{ tblTtl }}</th>
@@ -59,7 +69,7 @@
         </tbody>
       </template>
 
-      <template v-if="slctd.report == 'Contact categories'">
+      <template v-if="slctd.report.name == 'Contact categories'">
         <thead>
           <tr>
             <th style="width: 15%">Date</th>
@@ -87,7 +97,7 @@
         </tbody>
       </template>
 
-      <template v-if="slctd.report.includes('user_Task stats:')">
+      <template v-if="slctd.report.name == 'Task stats'">
         <thead>
           <tr>
             <th style="width: 15%">Date</th>
@@ -163,7 +173,7 @@ export default {
       let tblHdrs = [];
       let nmbrClmn = [];
       let tblClmns = [];
-      if (this.slctd.report.includes('(min. info)')) {
+      if (this.slctd.report.name == 'Contacts (min. info)') {
         // Contact report: (min. info)
         cloneCntcts.forEach((contact) => {
           tblClmns.push([
@@ -185,7 +195,7 @@ export default {
             cntct.splice(0, 1);
           });
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
-      } else if (this.slctd.report.includes('(more info)')) {
+      } else if (this.slctd.report.name == 'Contacts (more info)') {
         // (more info)
         cloneCntcts.forEach((contact) => {
           const addressArray = contact.Addresses[0]
@@ -219,10 +229,10 @@ export default {
           });
 
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
-      } else if (this.slctd.report.includes('user_Contact report:')) {
+      } else if (this.slctd.report.name == 'Contacts' && this.slctd.report.type == 'user') {
         // user_Contact report:
         cloneCntcts.forEach((contact) => {
-          if (contact.Assigned == this.slctd.report.split(':')[1]) {
+          if (contact.Assigned == this.slctd.report.user) {
             tblClmns.push([
               contact.id,
               contact.Members[0].Name ? contact.Members[0].Name : '',
@@ -243,7 +253,7 @@ export default {
             cntct.splice(0, 1);
           });
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
-      } else if (this.slctd.report == 'Task report: All') {
+      } else if (this.slctd.report.name == 'Tasks' && !this.slctd.report.type) {
         // Task report: All
         nmbrClmn = null;
         cloneCntcts.forEach((contact) => {
@@ -261,12 +271,12 @@ export default {
         });
         tblHdrs = ['#', 'Contact', 'Date', 'Owner', 'Description'];
         tblClmns.sort((a, b) => b[3].localeCompare(a[3]));
-      } else if (this.slctd.report.includes('user_Task report:')) {
+      } else if (this.slctd.report.name == 'Tasks' && this.slctd.report.type == 'user') {
         // 'user_Task report: '
         nmbrClmn = null;
         cloneCntcts.forEach((contact) => {
           contact.Tasks.forEach((task) => {
-            if (task.Date && this.slctd.report.split(':')[1] == task?.Assign)
+            if (task.Date && this.slctd.report.user == task?.Assign)
               tblClmns.push([
                 contact?.id,
                 task?.Status == '1' ? 1 : 0,
@@ -276,14 +286,14 @@ export default {
                 task?.Desc,
               ]);
           });
-          contact.Log.forEach((log) => {
-            if (this.slctd.report.split(':')[1] == log[0])
-              tblClmns.push([log[0], 1, contact?.Members?.[0]?.Name, log[1], this.userList[log[0]]?.FirstName, log[2]]);
-          });
+          // contact.Log.forEach((log) => {
+          //   if (this.slctd.report.user == log[0])
+          //     tblClmns.push([log[0], 1, contact?.Members?.[0]?.Name, log[1], this.userList[log[0]]?.FirstName, log[2]]);
+          // });
         });
         tblHdrs = ['#', 'Contact', 'Date', 'Owner', 'Description'];
         tblClmns.sort((a, b) => b[3].localeCompare(a[3]));
-      } else if (this.slctd.report == 'Contact categories') {
+      } else if (this.slctd.report.name == 'Contact categories') {
         nmbrClmn = null;
         const cntctCategArray = {};
         cloneCntcts.forEach((contact) => {
@@ -295,24 +305,32 @@ export default {
           }
         });
         tblClmns.push(cntctCategArray);
-      } else if (this.slctd.report.includes('cntct_Calls/Emails:')) {
+      } else if (['Emails', 'Calls', 'SMS', 'Faxes'].includes(this.slctd.report.name)) {
         // 'cntct_Calls/Emails'
+        const dtBsClmns = { Emails: 'Email', Calls: 'Tel', SMS: 'Msg', Faxes: 'Fax' };
         nmbrClmn = null;
-        this.contacts[this.slctdCntctIndex].Log.forEach((log, logIndex) => {
+        this.contacts[this.slctdCntctIndex][dtBsClmns[this.slctd.report.name]].forEach((log, logIndex) => {
           tblClmns.push([
-            this.contacts[this.slctdCntctIndex].Log.length - logIndex,
-            this.contacts[this.slctdCntctIndex].Members?.[0]?.Name,
-            this.contacts[this.slctdCntctIndex].Categ,
-            this.usaDateFrmt(log[1]),
-            log[2],
-            this.userList[log[0]]?.FirstName ? this.userList[log[0]]?.FirstName : log[0],
+            this.contacts[this.slctdCntctIndex][dtBsClmns[this.slctd.report.name]].length - logIndex,
+            // this.contacts[this.slctdCntctIndex].Members?.[0]?.Name,
+            // this.contacts[this.slctdCntctIndex].Categ,
+            this.usaDateFrmt(log.dat),
+            this.userList[log.frm]?.FirstName ? this.userList[log.frm]?.FirstName : log?.frm?.replaceAll('+1', ''),
+            this.userList[log.tow]?.FirstName ? this.userList[log.tow]?.FirstName : log?.tow?.replaceAll('+1', ''),
           ]);
+          if (['Emails', 'SMS'].includes(this.slctd.report.name)) {
+            tblClmns[tblClmns.length - 1].push(log.msg ? log.msg : null);
+          }
         });
-        tblHdrs = ['#', 'Contact', 'Category', 'Date', 'Activity', 'Owner'];
-      } else if (this.slctd.report.includes('user_Task stats:')) {
+
+        tblHdrs = ['Emails', 'SMS'].includes(this.slctd.report.name)
+          ? ['#', 'Date', 'From', 'To', 'Description']
+          : ['#', 'Date', 'From', 'To'];
+        // ['#', 'Contact', 'Category', 'Date', 'From', 'To'];
+      } else if (this.slctd.report.name == 'Task stats') {
         // 'user_Task stats:'
         nmbrClmn = null;
-        let userID = this.slctd.report.split(':')[1];
+        let userID = this.slctd.report.user;
         let currentDate = new Date(this.times.initialUsrTmstmp);
         let decreasingDate;
         let emailCount, callCount, taskCount;
@@ -324,11 +342,13 @@ export default {
           callCount = 0;
           taskCount = 0;
           cloneCntcts.forEach((contact) => {
-            contact.Log.forEach((log) => {
-              if (log[0] == userID && log[1].includes(decreasingDate) && log[2].includes('Emailed')) {
+            contact.Email.forEach((email) => {
+              if (email.frm == userID && email.dat.includes(decreasingDate)) {
                 emailCount += 1;
               }
-              if (log[0] == userID && log[1].includes(decreasingDate) && log[2].includes('Called')) {
+            });
+            contact.Tel.forEach((tel) => {
+              if (tel.frm == userID && tel.dat.includes(decreasingDate)) {
                 callCount += 1;
               }
             });
