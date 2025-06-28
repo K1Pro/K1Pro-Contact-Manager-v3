@@ -84,7 +84,7 @@
     </div>
 
     <div class="chat-box-new-message">
-      <div v-if="uploadedFiles.length > 0" class="chat-box-uploaded-files">
+      <div v-if="uploadedFiles.length > 0" class="chat-box-uploaded-files" style="height: 100%">
         <template v-for="(uploadedFile, uploadedFileIndx) in uploadedFiles">
           <i
             class="fa-solid fa-trash"
@@ -106,7 +106,10 @@
         v-on:keyup.enter="sendChat()"
       ></textarea>
 
-      <select v-if="slctd.chatType == 'SMS' && sttngs.entity.smss" @change="changeSMSTemplate">
+      <select
+        v-if="slctd.chatType == 'SMS' && sttngs.entity.smss && uploadedFiles.length === 0"
+        @change="changeSMSTemplate"
+      >
         <option disabled selected>Choose SMS template</option>
         <option v-for="(smsTemplate, smsTemplateIndx) in sttngs.entity.smss" :value="smsTemplateIndx">
           {{ smsTemplate.placeholder }}
