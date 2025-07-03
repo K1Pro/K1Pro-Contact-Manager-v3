@@ -43,7 +43,7 @@
             <div v-if="chat?.frm != userData.id"></div>
           </div>
 
-          <div v-if="!chat.tp.includes('image')" style="word-break: break-all">
+          <div v-if="!chat.tp.includes('image')" style="word-break: break-word">
             <i v-if="chat.err || chat?.err == ''" class="fa-solid fa-circle-exclamation" :title="chat.err"></i>
             <template v-if="chat.tp == 'msg'">
               <template v-if="chat.msg.includes('https://bundle-insurance.com/secure-link/')">
