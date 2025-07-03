@@ -108,6 +108,7 @@
 
       <select
         v-if="slctd.chatType == 'SMS' && sttngs.entity.smss && uploadedFiles.length === 0"
+        :disabled="dsbld || spinLogin || uploadingFiles"
         @change="changeSMSTemplate"
       >
         <option disabled selected>Choose SMS template</option>
