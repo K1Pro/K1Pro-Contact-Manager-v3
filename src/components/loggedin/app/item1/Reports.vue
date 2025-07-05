@@ -95,6 +95,7 @@ export default {
           { id: 10, role: 8, name: 'Contacts (more info)' },
           { id: 11, role: 8, name: 'Contact categories' },
           { id: 12, role: 8, name: 'Tasks' },
+          { id: 13, role: 8, name: 'SMS' },
         ],
       ];
     },
