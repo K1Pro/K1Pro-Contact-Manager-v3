@@ -11,7 +11,7 @@
         v-if="
           slctd.report.name == 'Contacts (min. info)' ||
           slctd.report.name == 'Contacts (more info)' ||
-          ['Emails', 'Calls', 'SMS', 'Faxes'].includes(this.slctd.report.name) ||
+          ['Emails', 'Calls', 'SMS', 'Faxes'].includes(slctd.report.name) ||
           (slctd.report.name == 'Contacts' && slctd.report.type == 'user')
         "
       >
@@ -24,7 +24,7 @@
           <tr
             v-for="(tblRow, tblRowIndx) in tblCntnt[2]"
             :class="
-              ['Emails', 'Calls', 'SMS', 'Faxes'].includes(this.slctd.report.name)
+              ['Emails', 'Calls', 'SMS', 'Faxes'].includes(slctd.report.name) && slctd.report.type == 'cntct'
                 ? 'taskCell' + (tblRowIndx % 2) + '1'
                 : 'cell' + (tblRowIndx % 2)
             "
@@ -173,6 +173,7 @@ export default {
       let tblHdrs = [];
       let nmbrClmn = [];
       let tblClmns = [];
+      console.log(this.slctd.report.name);
       if (this.slctd.report.name == 'Contacts (min. info)') {
         // Contact report: (min. info)
         cloneCntcts.forEach((contact) => {
@@ -305,7 +306,10 @@ export default {
           }
         });
         tblClmns.push(cntctCategArray);
-      } else if (['Emails', 'Calls', 'SMS', 'Faxes'].includes(this.slctd.report.name)) {
+      } else if (
+        ['Emails', 'Calls', 'SMS', 'Faxes'].includes(this.slctd.report.name) &&
+        this.slctd.report.type == 'cntct'
+      ) {
         // 'cntct_Calls/Emails'
         const dtBsClmns = { Emails: 'Email', Calls: 'Tel', SMS: 'Msg', Faxes: 'Fax' };
         nmbrClmn = null;
@@ -327,6 +331,24 @@ export default {
           ? ['#', 'Date', 'From', 'To', 'Description']
           : ['#', 'Date', 'From', 'To'];
         // ['#', 'Contact', 'Category', 'Date', 'From', 'To'];
+      } else if (this.slctd.report.name == 'SMS') {
+        console.log('SMS Test');
+        nmbrClmn = null;
+        cloneCntcts.forEach((contact) => {
+          contact.Msg.forEach((msg) => {
+            tblClmns.push([
+              contact?.Members?.[0]?.Name,
+              this.usaDateFrmt(msg?.dat),
+              this.userList[msg?.frm]?.FirstName ? this.userList[msg?.frm]?.FirstName : msg?.frm?.replace('+1', ''),
+              msg?.tow
+                ? msg?.tow?.replace('+1', '')
+                : this.userData?.AppPermissions?.ContactManager?.smsPhone?.replace('+1', ''),
+              msg?.msg,
+            ]);
+          });
+        });
+        tblHdrs = ['Contact', 'Date', 'From', 'To', 'Description'];
+        tblClmns.sort((a, b) => b[1].localeCompare(a[1]));
       } else if (this.slctd.report.name == 'Task stats') {
         // 'user_Task stats:'
         nmbrClmn = null;
