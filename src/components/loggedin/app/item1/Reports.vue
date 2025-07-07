@@ -88,14 +88,13 @@ export default {
           { id: 5, role: 3, name: 'Calls', type: 'cntct', user: this },
           { id: 6, role: 3, name: 'SMS', type: 'cntct', user: this },
           { id: 7, role: 3, name: 'Faxes', type: 'cntct', user: this },
-          { id: 8, role: 3, name: 'Tasks', type: 'cntct', user: this },
         ],
         [
           { id: 9, role: 8, name: 'Contacts (min. info)' },
           { id: 10, role: 8, name: 'Contacts (more info)' },
           { id: 11, role: 8, name: 'Contact categories' },
-          { id: 12, role: 8, name: 'SMS' },
-          { id: 13, role: 8, name: 'Tasks' },
+          { id: 12, role: 8, name: 'Tasks' },
+          { id: 13, role: 8, name: 'SMS' },
         ],
       ];
     },

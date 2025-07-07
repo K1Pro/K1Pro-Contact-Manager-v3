@@ -9,10 +9,10 @@
     <table>
       <template
         v-if="
+          slctd.report.name == 'Contacts' ||
           slctd.report.name == 'Contacts (min. info)' ||
           slctd.report.name == 'Contacts (more info)' ||
-          ['Emails', 'Calls', 'SMS', 'Faxes'].includes(slctd.report.name) ||
-          slctd.report.name == 'Contacts'
+          ['Emails', 'Calls', 'SMS', 'Faxes'].includes(slctd.report.name)
         "
       >
         <thead v-if="tblCntnt[2].length > 0">
@@ -38,12 +38,7 @@
         <p v-else>Empty</p>
       </template>
 
-      <template
-        v-if="
-          (slctd.report.name == 'Tasks' && !slctd.report.type) ||
-          (slctd.report.name == 'Tasks' && slctd.report.type == 'user')
-        "
-      >
+      <template v-if="slctd.report.name == 'Tasks'">
         <thead>
           <tr>
             <th v-for="tblTtl in tblCntnt[0]">{{ tblTtl }}</th>
@@ -273,7 +268,7 @@ export default {
         tblHdrs = ['#', 'Contact', 'Date', 'Owner', 'Description'];
         tblClmns.sort((a, b) => b[3].localeCompare(a[3]));
       } else if (this.slctd.report.name == 'Tasks' && this.slctd.report.type == 'user') {
-        // 'user_Task report: '
+        // User Tasks report
         nmbrClmn = null;
         cloneCntcts.forEach((contact) => {
           contact.Tasks.forEach((task) => {

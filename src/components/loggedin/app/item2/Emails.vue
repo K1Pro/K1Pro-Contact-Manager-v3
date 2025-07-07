@@ -123,7 +123,7 @@ export default {
         const emailTemplate =
           this.$refs['emailTemplate'].value == 'null'
             ? ''
-            : '"' + this.sttngs.entity.emails[this.slctdTemplate].placeholder.toLowerCase() + '" to ';
+            : this.sttngs.entity.emails[this.slctdTemplate].placeholder.toLowerCase();
         let formData = new FormData();
         Object.values(this.$refs['emailAttachment'].files).forEach((file) => {
           formData.append('email_attachment[]', file);
