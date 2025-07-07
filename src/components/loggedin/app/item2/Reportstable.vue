@@ -12,7 +12,7 @@
           slctd.report.name == 'Contacts (min. info)' ||
           slctd.report.name == 'Contacts (more info)' ||
           ['Emails', 'Calls', 'SMS', 'Faxes'].includes(slctd.report.name) ||
-          (slctd.report.name == 'Contacts' && slctd.report.type == 'user')
+          slctd.report.name == 'Contacts'
         "
       >
         <thead v-if="tblCntnt[2].length > 0">
@@ -27,9 +27,9 @@
             </td>
             <td
               v-for="(tblCell, tblCellIndx) in tblRow"
-              class="cellHover"
+              :class="[tblCntnt[1] ? 'cellHover' : '']"
               :style="{ minWidth: tblCellIndx !== 0 ? '125px' : false }"
-              @click="selectContact(tblCntnt[1][tblRowIndx][1])"
+              @click="tblCntnt[1] ? selectContact(tblCntnt[1][tblRowIndx][1]) : false"
             >
               {{ tblCell }}
             </td>
@@ -166,13 +166,16 @@ export default {
       let tblHdrs = [];
       let nmbrClmn = [];
       let tblClmns = [];
-      console.log(this.slctd.report.name);
       if (this.slctd.report.name == 'Contacts (min. info)') {
-        // Contact report: (min. info)
+        // Contacts (min. info)
         cloneCntcts.forEach((contact) => {
           tblClmns.push([
             contact.id,
-            contact.Members[0].Name ? contact.Members[0].Name : '',
+            contact.Members[0].Name
+              ? contact.Members[0].Name
+              : contact.Members[0].First
+              ? contact.Members[0].First
+              : '',
             contact.Addresses[0]?.Address_1 ? contact.Addresses[0].Address_1 : '',
             contact.Assets[0] ? Object.values(contact.Assets[0])[0] : '',
             contact.Connections[0] ? Object.values(contact.Connections[0])[0] : '',
@@ -190,7 +193,7 @@ export default {
           });
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
       } else if (this.slctd.report.name == 'Contacts (more info)') {
-        // (more info)
+        // Contacts (more info)
         cloneCntcts.forEach((contact) => {
           const addressArray = contact.Addresses[0]
             ? Object.entries(contact.Addresses[0]).map(([addressKey, addressValue]) => {
@@ -223,13 +226,17 @@ export default {
           });
 
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
-      } else if (this.slctd.report.name == 'Contacts' && this.slctd.report.type == 'user') {
-        // user_Contact report:
+      } else if (this.slctd.report.name == 'Contacts') {
+        // User contact report
         cloneCntcts.forEach((contact) => {
           if (contact.Assigned == this.slctd.report.user) {
             tblClmns.push([
               contact.id,
-              contact.Members[0].Name ? contact.Members[0].Name : '',
+              contact.Members[0].Name
+                ? contact.Members[0].Name
+                : contact.Members[0].First
+                ? contact.Members[0].First
+                : '',
               contact.Addresses[0]?.Address_1 ? contact.Addresses[0].Address_1 : '',
               contact.Assets[0] ? Object.values(contact.Assets[0])[0] : '',
               contact.Connections[0] ? Object.values(contact.Connections[0])[0] : '',
@@ -248,7 +255,7 @@ export default {
           });
         tblHdrs = ['#', 'Contact', 'Address', 'Assets', 'Connections', 'Category'];
       } else if (this.slctd.report.name == 'Tasks' && !this.slctd.report.type) {
-        // Task report: All
+        // Tasks
         nmbrClmn = null;
         cloneCntcts.forEach((contact) => {
           contact.Tasks.forEach((task) => {
@@ -280,10 +287,6 @@ export default {
                 task?.Desc,
               ]);
           });
-          // contact.Log.forEach((log) => {
-          //   if (this.slctd.report.user == log[0])
-          //     tblClmns.push([log[0], 1, contact?.Members?.[0]?.Name, log[1], this.userList[log[0]]?.FirstName, log[2]]);
-          // });
         });
         tblHdrs = ['#', 'Contact', 'Date', 'Owner', 'Description'];
         tblClmns.sort((a, b) => b[3].localeCompare(a[3]));
@@ -303,17 +306,19 @@ export default {
         ['Emails', 'Calls', 'SMS', 'Faxes'].includes(this.slctd.report.name) &&
         this.slctd.report.type == 'cntct'
       ) {
-        // 'cntct_Calls/Emails'
+        // contact Emails, Calls, SMS and Faxes
         const dtBsClmns = { Emails: 'Email', Calls: 'Tel', SMS: 'Msg', Faxes: 'Fax' };
         nmbrClmn = null;
         this.contacts[this.slctdCntctIndex][dtBsClmns[this.slctd.report.name]].forEach((log, logIndex) => {
           tblClmns.push([
             this.contacts[this.slctdCntctIndex][dtBsClmns[this.slctd.report.name]].length - logIndex,
-            // this.contacts[this.slctdCntctIndex].Members?.[0]?.Name,
-            // this.contacts[this.slctdCntctIndex].Categ,
             this.usaDateFrmt(log.dat),
             this.userList[log.frm]?.FirstName ? this.userList[log.frm]?.FirstName : log?.frm?.replaceAll('+1', ''),
-            this.userList[log.tow]?.FirstName ? this.userList[log.tow]?.FirstName : log?.tow?.replaceAll('+1', ''),
+            this.userList[log.tow]?.FirstName
+              ? this.userList[log.tow]?.FirstName
+              : log?.tow
+              ? log?.tow?.replaceAll('+1', '')
+              : this.userData?.AppPermissions?.ContactManager?.smsPhone?.replace('+1', ''),
           ]);
           if (['Emails', 'SMS'].includes(this.slctd.report.name)) {
             tblClmns[tblClmns.length - 1].push(log.msg ? log.msg : null);
@@ -323,14 +328,16 @@ export default {
         tblHdrs = ['Emails', 'SMS'].includes(this.slctd.report.name)
           ? ['#', 'Date', 'From', 'To', 'Description']
           : ['#', 'Date', 'From', 'To'];
-        // ['#', 'Contact', 'Category', 'Date', 'From', 'To'];
       } else if (this.slctd.report.name == 'SMS') {
-        console.log('SMS Test');
-        nmbrClmn = null;
         cloneCntcts.forEach((contact) => {
           contact.Msg.forEach((msg) => {
             tblClmns.push([
-              contact?.Members?.[0]?.Name,
+              contact.id,
+              contact?.Members?.[0]?.Name
+                ? contact?.Members?.[0]?.Name
+                : contact?.Members?.[0]?.First
+                ? contact?.Members?.[0]?.First
+                : '',
               this.usaDateFrmt(msg?.dat),
               this.userList[msg?.frm]?.FirstName ? this.userList[msg?.frm]?.FirstName : msg?.frm?.replace('+1', ''),
               msg?.tow
@@ -340,10 +347,18 @@ export default {
             ]);
           });
         });
-        tblHdrs = ['Contact', 'Date', 'From', 'To', 'Description'];
-        tblClmns.sort((a, b) => b[1].localeCompare(a[1]));
+        tblClmns
+          .sort((a, b) => b[2].localeCompare(a[2]))
+          .map((cntct, cntctIndx) => {
+            const nmbrClmnArray = [];
+            nmbrClmnArray.push(cntctIndx + 1);
+            nmbrClmnArray.push(cntct[0]);
+            nmbrClmn.push(nmbrClmnArray);
+            cntct.splice(0, 1);
+          });
+        tblHdrs = ['#', 'Contact', 'Date', 'From', 'To', 'Description'];
       } else if (this.slctd.report.name == 'Task stats') {
-        // 'user_Task stats:'
+        // Task stats
         nmbrClmn = null;
         let userID = this.slctd.report.user;
         let currentDate = new Date(this.times.initialUsrTmstmp);
