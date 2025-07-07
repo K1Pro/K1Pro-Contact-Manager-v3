@@ -21,14 +21,7 @@
           </tr>
         </thead>
         <tbody v-if="tblCntnt[2].length > 0">
-          <tr
-            v-for="(tblRow, tblRowIndx) in tblCntnt[2]"
-            :class="
-              ['Emails', 'Calls', 'SMS', 'Faxes'].includes(slctd.report.name) && slctd.report.type == 'cntct'
-                ? 'taskCell' + (tblRowIndx % 2) + '1'
-                : 'cell' + (tblRowIndx % 2)
-            "
-          >
+          <tr v-for="(tblRow, tblRowIndx) in tblCntnt[2]" :class="'cell' + (tblRowIndx % 2)">
             <td v-if="tblCntnt[1]" class="cellHover" @click="selectContact(tblCntnt[1][tblRowIndx][1])">
               {{ tblCntnt[1][tblRowIndx][0] }}
             </td>
