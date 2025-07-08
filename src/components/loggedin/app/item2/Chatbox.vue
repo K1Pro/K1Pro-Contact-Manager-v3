@@ -101,7 +101,10 @@
         v-else
         :disabled="dsbld || spinLogin || uploadingFiles"
         :placeholder="'Enter ' + slctd.chatType + ' here'"
-        :style="{ height: slctd.chatType == 'SMS' ? 'calc(100% - 20px)' : '100%' }"
+        :style="{
+          height: slctd.chatType == 'SMS' ? 'calc(100% - 20px)' : '100%',
+          borderBottomWidth: slctd.chatType == 'SMS' ? '0px' : '1px',
+        }"
         v-model="chatBoxMsg"
         v-on:keyup.enter="sendChat()"
       ></textarea>
@@ -410,9 +413,10 @@ export default {
 }
 .chat-msg-len {
   position: absolute;
-  margin-top: 25px;
+  margin-top: 5px;
   text-align: right;
   right: 200px;
+  background-color: white;
 }
 .chat-box-left {
   border-radius: 10px 10px 10px 0px;
@@ -453,11 +457,14 @@ export default {
   width: calc(100% - 170px);
   padding: 5px;
   overflow-y: scroll;
+  outline: none;
 }
 .chat-box select {
   float: left;
   width: calc(100% - 170px);
   height: 20px;
+  border-top-width: 0px;
+  outline: none;
 }
 .chat-box label {
   display: inline-block;
