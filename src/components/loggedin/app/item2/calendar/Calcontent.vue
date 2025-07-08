@@ -94,7 +94,11 @@ export default {
           calDay = task?.Date?.split('T')[0];
           if (this.days[this.dayIndex] == calDay) {
             contactArray[contactIndex + 'Task' + taskIndex] = {
-              Name: contact.Members[0]?.Name,
+              Name: contact.Members[0]?.Name
+                ? contact.Members[0].Name
+                : contact.Members[0]?.First
+                ? contact.Members[0]?.First
+                : '',
               Time: task.Date.split('T')[1],
               Clock:
                 this.sttngs.user.clock == 12
@@ -127,7 +131,11 @@ export default {
               (task?.Recur.includes('everyday') && task?.Freq == 'Daily'))
           ) {
             contactArray[contactIndex + 'Recur' + taskIndex] = {
-              Name: contact.Members[0]?.Name,
+              Name: contact.Members[0]?.Name
+                ? contact.Members[0].Name
+                : contact.Members[0]?.First
+                ? contact.Members[0]?.First
+                : '',
               Time: task.Time ? task.Time : '25:00',
               Clock:
                 task.Time && this.sttngs.user.clock == 12
