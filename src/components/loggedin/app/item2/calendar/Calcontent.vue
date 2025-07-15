@@ -13,6 +13,7 @@
     <span v-else>
       {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : '' }}
     </span>
+    <i v-if="!dsbld" @click="newTask(days[dayIndex])" class="fa-solid fa-square-plus"></i>
   </div>
   <div class="task-grid-day-content" v-if="firstDayY_m_d && calContactTasks">
     <template v-for="calContactTask in calContactTasks">
@@ -73,10 +74,12 @@ export default {
   inject: [
     'contacts',
     'days',
+    'dsbld',
     'firstDayTmstmp',
     'patchContactInfo',
     'sttngsReq',
     'slctd',
+    'slctdCntctIndex',
     'sttngs',
     'times',
     'wndw',
@@ -167,6 +170,22 @@ export default {
   },
 
   methods: {
+    newTask(slctdY_m_d) {
+      const prevTasksLen = this.contacts[this.slctdCntctIndex].Tasks.length;
+      const newTask = {
+        Date: slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
+        Assign: this.userData.id,
+        Create: this.userData.id,
+        Update: this.userData.id,
+        Created: this.times.updtngY_m_d_H_i_s_z,
+      };
+      const newTasks = [...this.contacts[this.slctdCntctIndex].Tasks, newTask];
+      const cloneCntct = this.contacts[this.slctdCntctIndex];
+      cloneCntct.Tasks = newTasks;
+      this.slctd.eventIndx = this.contacts[this.slctdCntctIndex].Tasks.length - 1;
+      this.patchContactInfo(newTask, 'Tasks', prevTasksLen, cloneCntct);
+      this.selectContact(this.sttngs.user.slctdCntctID, 'Tasks', prevTasksLen);
+    },
     selectContact(ContactID, sidemenuLink, eventIndex) {
       this.slctd.eventIndx = eventIndex;
       this.slctd.sideMenuLnk = [sidemenuLink, 'Calendar'];
@@ -219,6 +238,14 @@ export default {
   padding-bottom: 2px;
   overflow: hidden;
   background-color: inherit;
+}
+.task-grid-day-title i {
+  padding-right: 5px;
+  padding-top: 2px;
+  cursor: pointer;
+  color: #417cd9;
+  float: right;
+  /* font-size: 14px; */
 }
 .task-grid-day-content {
   overflow: hidden;

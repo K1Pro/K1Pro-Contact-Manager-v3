@@ -309,8 +309,9 @@ export default {
       }
     },
     changeSMSTemplate(event) {
-      // prettier-ignore
-      let chatBoxMsg = this.sttngs.entity.smss[event.target.value].body?.replaceAll('___FirstName___', this.contacts[this.slctdCntctIndex]?.Members?.[0]?.First);
+      let chatBoxMsg = this.sttngs.entity.smss[event.target.value].body
+        ?.replaceAll('___FirstName___', this.contacts[this.slctdCntctIndex]?.Members?.[0]?.First)
+        ?.replaceAll('___UserFirstname___', this.userData.FirstName);
       this.chatBoxMsg = chatBoxMsg.replaceAll('undefined', '');
       event.srcElement.selectedIndex = 0;
     },
