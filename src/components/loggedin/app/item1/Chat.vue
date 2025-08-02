@@ -168,12 +168,13 @@ export default {
   height: calc(100vh - 50px);
 }
 .chat-groups {
+  position: relative;
   font-weight: normal;
   color: black;
   height: 29px;
   padding: 5px;
   cursor: pointer;
-  overflow: hidden;
+  overflow: visible;
   white-space: nowrap;
   user-select: none;
 }
