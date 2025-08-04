@@ -186,6 +186,14 @@ export default {
                 newChatsTotal++;
                 newChats[msg] = {
                   id: contact.id,
+                  name:
+                    contact.Members[0]?.First && contact.Members[0]?.Name
+                      ? contact.Members[0]?.First + ' ' + contact.Members[0]?.Name
+                      : contact.Members[0]?.Name
+                      ? contact.Members[0]?.Name
+                      : contact.Members[0]?.First
+                      ? contact.Members[0]?.First
+                      : '',
                   phone: msg.slice(0, 3) + '-' + msg.slice(3, 6) + '-' + msg.slice(6, 10),
                   smsGroup: conn.Phone,
                   amnt: this.times.mstRcntMsg.filter((x) => x == msg).length,

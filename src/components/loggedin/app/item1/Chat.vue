@@ -53,6 +53,7 @@
             )"
             class="chat-groups"
             :class="['chat' + (msgIndx % 2)]"
+            :title="msgVal?.name ? msgVal.name : false"
             @click="selectContact(msgKey, msgVal)"
           >
             {{ msgVal.phone }}
