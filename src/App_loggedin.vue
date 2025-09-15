@@ -379,6 +379,7 @@ export default {
         const response = await fetch(
           app_api_url + '/' + this.times.mstRcntCntctUpdt.slice(0, 19).replace(' ', 'T') + '/contacts',
           {
+            signal: AbortSignal.timeout(timeout),
             headers: {
               Authorization: access_token,
               'Cache-Control': 'no-store',
@@ -491,9 +492,13 @@ export default {
           }
         }
       } catch (error) {
-        this.dsbld = true;
-        this.showMsg('Internet connection issue');
-        console.log(error.toString());
+        if (this.contacts === null) {
+          location.assign(url_no_params + '?timeout=' + (Number(timeout) + 4500));
+        } else {
+          this.dsbld = true;
+          this.showMsg('Internet connection issue');
+          console.log(error.toString());
+        }
       }
     },
 
@@ -643,11 +648,6 @@ export default {
     }, 5000);
     this.sttngsReq('GET', 'user');
     this.sttngsReq('GET', 'entity');
-
-    setTimeout(() => {
-      // Initial app checks
-      if (this.sttngs.entity === null || this.sttngs.user === null || this.contacts === null) location.reload();
-    }, 4500);
 
     setInterval(() => {
       if (this.allNewChats) {
