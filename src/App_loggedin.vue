@@ -649,40 +649,34 @@ export default {
     this.sttngsReq('GET', 'user');
     this.sttngsReq('GET', 'entity');
 
+    // This notifies how many chats there are
     setInterval(() => {
       if (this.allNewChats) {
-        const newChat = new Notification(
-          this.allNewChats + ' unread ' + (this.allNewChats > 1 ? 'messages' : 'message') + ' in your chat'
-        );
+        // prettier-ignore
+        const newChat = new Notification(this.allNewChats + ' unread ' + (this.allNewChats > 1 ? 'messages' : 'message') + ' in your chat');
       }
     }, 600000);
 
+    // This is a task reminder
     setInterval(() => {
       const updtingHour = this.times.updtngY_m_d_H_i_s_z?.split('T')[1].slice(0, 2);
       const updtingMin = this.times.updtngY_m_d_H_i_s_z?.split('T')[1].slice(3, 5);
-      const updtngH_iLess5Min =
-        new Date(new Date().setHours(updtingHour, updtingMin) - 300000).getHours().toString().padStart(2, '0') +
-        ':' +
-        new Date(new Date().setHours(updtingHour, updtingMin) - 300000).getMinutes().toString().padStart(2, '0');
+      // prettier-ignore
+      const updtngH_iLess5Min = new Date(new Date().setHours(updtingHour, updtingMin) - 300000).getHours().toString().padStart(2, '0') + ':' + new Date(new Date().setHours(updtingHour, updtingMin) - 300000).getMinutes().toString().padStart(2, '0');
       const updtngH_i = updtingHour + ':' + updtingMin;
-      const updtngH_iPlus5Min =
-        new Date(new Date().setHours(updtingHour, updtingMin) + 300000).getHours().toString().padStart(2, '0') +
-        ':' +
-        new Date(new Date().setHours(updtingHour, updtingMin) + 300000).getMinutes().toString().padStart(2, '0');
+      // prettier-ignore
+      const updtngH_iPlus5Min = new Date(new Date().setHours(updtingHour, updtingMin) + 300000).getHours().toString().padStart(2, '0') + ':' + new Date(new Date().setHours(updtingHour, updtingMin) + 300000).getMinutes().toString().padStart(2, '0');
       if (Object.keys(this.todaysEvents).includes(updtngH_iPlus5Min)) {
-        const newChat = new Notification(
-          '5 minute task reminder (' + this.contacts[this.todaysEvents[updtngH_iPlus5Min]]?.Members?.[0]?.Name + ')'
-        );
+        // prettier-ignore
+        const newChat = new Notification('5 minute task reminder (' + this.contacts[this.todaysEvents[updtngH_iPlus5Min]]?.Members?.[0]?.Name + ')');
       }
       if (Object.keys(this.todaysEvents).includes(updtngH_i)) {
-        const newChat = new Notification(
-          'Urgent task reminder (' + this.contacts[this.todaysEvents[updtngH_i]]?.Members?.[0]?.Name + ')'
-        );
+        // prettier-ignore
+        const newChat = new Notification('Urgent task reminder (' + this.contacts[this.todaysEvents[updtngH_i]]?.Members?.[0]?.Name + ')');
       }
       if (Object.keys(this.todaysEvents).includes(updtngH_iLess5Min)) {
-        const newChat = new Notification(
-          'Task past due (' + this.contacts[this.todaysEvents[updtngH_iLess5Min]]?.Members?.[0]?.Name + ')'
-        );
+        // prettier-ignore
+        const newChat = new Notification('Task past due (' + this.contacts[this.todaysEvents[updtngH_iLess5Min]]?.Members?.[0]?.Name + ')');
       }
     }, 60000);
   },
