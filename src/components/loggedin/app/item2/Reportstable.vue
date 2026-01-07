@@ -326,20 +326,21 @@ export default {
       } else if (this.slctd.report.name == 'SMS') {
         cloneCntcts.forEach((contact) => {
           contact.Msg.forEach((msg) => {
-            tblClmns.push([
-              contact.id,
-              contact?.Members?.[0]?.Name
-                ? contact?.Members?.[0]?.Name
-                : contact?.Members?.[0]?.First
-                ? contact?.Members?.[0]?.First
-                : '',
-              this.usaDateFrmt(msg?.dat),
-              this.userList[msg?.frm]?.FirstName ? this.userList[msg?.frm]?.FirstName : msg?.frm?.replace('+1', ''),
-              msg?.tow
-                ? msg?.tow?.replace('+1', '')
-                : this.userData?.AppPermissions?.ContactManager?.smsPhone?.replace('+1', ''),
-              msg?.msg,
-            ]);
+            if (msg?.dat && msg?.frm)
+              tblClmns.push([
+                contact.id,
+                contact?.Members?.[0]?.Name
+                  ? contact?.Members?.[0]?.Name
+                  : contact?.Members?.[0]?.First
+                  ? contact?.Members?.[0]?.First
+                  : '',
+                this.usaDateFrmt(msg?.dat),
+                this.userList[msg?.frm]?.FirstName ? this.userList[msg?.frm]?.FirstName : msg?.frm?.replace('+1', ''),
+                msg?.tow
+                  ? msg?.tow?.replace('+1', '')
+                  : this.userData?.AppPermissions?.ContactManager?.smsPhone?.replace('+1', ''),
+                msg?.msg ? msg?.msg : '',
+              ]);
           });
         });
         tblClmns
