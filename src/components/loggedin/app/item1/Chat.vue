@@ -1,6 +1,11 @@
 <template>
   <div class="chat">
-    <div class="chat-title">Chat</div>
+    <div class="chat-title">
+      Chat
+      <button>
+        <i class="fa-solid fa-comment-slash"></i>
+      </button>
+    </div>
     <div class="chat-body">
       <div
         v-for="([chatGroup, chatGroupMembers], chatGroupIndx) in Object.entries(sttngs.entity.chats).filter(
@@ -21,10 +26,12 @@
         <template v-if="somePhone">
           <hr />
           <div class="chat-title">
-            SMS
-            {{ contacts[slctdCntctIndex].Members[0].First || contacts[slctdCntctIndex].Members[0].Name ? '(' : ''
+            SMS {{ contacts[slctdCntctIndex].Members[0].First || contacts[slctdCntctIndex].Members[0].Name ? '(' : ''
             }}{{ contacts[slctdCntctIndex].Members[0].First }} {{ contacts[slctdCntctIndex].Members[0].Name
             }}{{ contacts[slctdCntctIndex].Members[0].First || contacts[slctdCntctIndex].Members[0].Name ? ')' : '' }}
+            <button>
+              <i class="fa-solid fa-comment-slash"></i>
+            </button>
           </div>
 
           <div
@@ -46,7 +53,12 @@
 
         <template v-if="newMsgsFltr">
           <hr />
-          <div class="chat-title">New SMS (Others)</div>
+          <div class="chat-title">
+            New SMS (Others)
+            <button>
+              <i class="fa-solid fa-comment-slash"></i>
+            </button>
+          </div>
           <div
             v-for="([msgKey, msgVal], msgIndx) in Object.entries(newMsgs?.msgs).filter(
               ([key, value]) => value.id != sttngs.user.slctdCntctID
@@ -155,6 +167,7 @@ export default {
 .chat {
 }
 .chat-title {
+  position: relative;
   background-color: lightblue;
   font-weight: bold;
   padding: 5px;
@@ -163,6 +176,14 @@ export default {
   overflow: hidden;
   white-space: nowrap;
   user-select: none;
+}
+.chat-title button {
+  position: absolute;
+  right: 0px;
+  background-color: lightblue;
+  border: 0px;
+  cursor: pointer;
+  color: #417cd9;
 }
 .chat-body {
   background-color: white;
