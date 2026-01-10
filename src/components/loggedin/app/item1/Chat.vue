@@ -2,9 +2,9 @@
   <div class="chat">
     <div class="chat-title">
       Chat
-      <button>
+      <!-- <button @click="dltAllMsgs">
         <i class="fa-solid fa-comment-slash"></i>
-      </button>
+      </button> -->
     </div>
     <div class="chat-body">
       <div
@@ -29,7 +29,7 @@
             SMS {{ contacts[slctdCntctIndex].Members[0].First || contacts[slctdCntctIndex].Members[0].Name ? '(' : ''
             }}{{ contacts[slctdCntctIndex].Members[0].First }} {{ contacts[slctdCntctIndex].Members[0].Name
             }}{{ contacts[slctdCntctIndex].Members[0].First || contacts[slctdCntctIndex].Members[0].Name ? ')' : '' }}
-            <button>
+            <button v-if="Object.keys(this.newMsgs?.msgs).length > 1" @click="dltAllMsgs">
               <i class="fa-solid fa-comment-slash"></i>
             </button>
           </div>
@@ -55,7 +55,7 @@
           <hr />
           <div class="chat-title">
             New SMS (Others)
-            <button>
+            <button v-if="Object.keys(this.newMsgs?.msgs).length > 1" @click="dltAllMsgs">
               <i class="fa-solid fa-comment-slash"></i>
             </button>
           </div>
@@ -93,18 +93,27 @@ export default {
     },
     slctSMSGroup(SMSGroup) {
       // console.log(SMSGroup);
-      this.deleteMsg(SMSGroup);
+      this.dltMsg(SMSGroup);
       this.slctd.smsGroup = SMSGroup;
       this.slctd.chatType = 'SMS';
     },
     selectContact(msgKey, msgVal) {
-      this.deleteMsg(msgKey);
+      this.dltMsg(msgKey);
       this.slctd.smsGroup = msgVal.smsGroup;
       this.slctd.chatType = 'SMS';
       this.sttngs.user.slctdCntctID = msgVal.id;
       this.sttngsReq('PATCH', 'user');
     },
-    async deleteMsg(msgKey) {
+    dltAllMsgs() {
+      if (confirm('Are you sure you would like to delete all text messages?') == true) {
+        Object.entries(this.newMsgs?.msgs).forEach(([msgKey, msgVal]) => {
+          // for (let i = 0; i < msgVal.amnt; i++) { // I don't think that we need this for loop
+          this.dltMsg(msgKey);
+          // }
+        });
+      }
+    },
+    async dltMsg(msgKey) {
       try {
         const response = await fetch(app_api_url + '/msg', {
           method: 'DELETE',
