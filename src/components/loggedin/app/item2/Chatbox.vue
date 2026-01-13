@@ -1,6 +1,11 @@
 <template>
   <div class="chat-box">
-    <div class="chat-box-title">{{ chatBoxTitle }}</div>
+    <div class="chat-box-title">
+      {{ chatBoxTitle }}
+      <span style="position: absolute; right: 5px"
+        ><input type="date" :value="strtTime" />-<input type="date" :value="endTime"
+      /></span>
+    </div>
     <div class="chat-box-body">
       <div v-if="slctdChatAmount" v-for="(chat, chatIndx) in slctdChats?.sort((a, b) => a?.dat.localeCompare(b?.dat))">
         <div v-if="chat.dat.slice(5, 10) != slctdChats?.[chatIndx - 1]?.dat?.slice(5, 10)" class="chat-box-body-time">
@@ -166,6 +171,13 @@ export default {
       uploadingFiles: false,
       uploadedFiles: [],
       secDir: sec_dir,
+      strtTime:
+        new Date(this.times.initialUsrTmstmp - 60 * 86400000)?.getFullYear() +
+        '-' +
+        (new Date(this.times?.initialUsrTmstmp - 60 * 86400000)?.getMonth() + 1)?.toString()?.padStart(2, '0') +
+        '-' +
+        new Date(this.times?.initialUsrTmstmp - 60 * 86400000)?.getDate()?.toString()?.padStart(2, '0'),
+      endTime: this.times.updtngY_m_d_H_i_s_z.slice(0, 10),
     };
   },
 
@@ -327,7 +339,10 @@ export default {
 
   watch: {
     slctdChatAmount() {
-      this.resetChatbox();
+      setTimeout(() => {
+        this.$refs.bottomChatEl.scrollIntoView();
+      }, 100);
+      this.spinLogin = false;
     },
     'slctd.chatType'() {
       this.resetChatbox();
@@ -355,6 +370,7 @@ export default {
   text-decoration: none;
 }
 .chat-box-title {
+  position: relative;
   background-color: lightblue;
   font-weight: bold;
   padding: 5px;
