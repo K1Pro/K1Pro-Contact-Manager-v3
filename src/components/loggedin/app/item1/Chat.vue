@@ -29,7 +29,14 @@
             SMS {{ contacts[slctdCntctIndex].Members[0].First || contacts[slctdCntctIndex].Members[0].Name ? '(' : ''
             }}{{ contacts[slctdCntctIndex].Members[0].First }} {{ contacts[slctdCntctIndex].Members[0].Name
             }}{{ contacts[slctdCntctIndex].Members[0].First || contacts[slctdCntctIndex].Members[0].Name ? ')' : '' }}
-            <button v-if="Object.keys(this.newMsgs?.msgs).length > 1" @click="dltAllMsgs">
+            <button
+              v-if="
+                Object.entries(newMsgs?.msgs).filter(([key, value]) => value.id == sttngs.user.slctdCntctID)?.length > 1
+              "
+              @click="
+                dltAllMsgs(Object.entries(newMsgs?.msgs).filter(([key, value]) => value.id == sttngs.user.slctdCntctID))
+              "
+            >
               <i class="fa-solid fa-comment-slash"></i>
             </button>
           </div>
@@ -55,7 +62,12 @@
           <hr />
           <div class="chat-title">
             New SMS (Others)
-            <button v-if="Object.keys(this.newMsgs?.msgs).length > 1" @click="dltAllMsgs">
+            <button
+              v-if="Object.keys(this.newMsgs?.msgs).length > 1"
+              @click="
+                dltAllMsgs(Object.entries(newMsgs?.msgs).filter(([key, value]) => value.id != sttngs.user.slctdCntctID))
+              "
+            >
               <i class="fa-solid fa-comment-slash"></i>
             </button>
           </div>
@@ -85,33 +97,29 @@ export default {
 
   methods: {
     slctChatGroup(chatGroup) {
-      // console.log('whats going on here?');
       this.slctd.chatGroup = chatGroup;
       this.slctd.chatType = 'Chat';
       this.sttngs.user.chats[chatGroup] = this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
       this.sttngsReq('PATCH', 'user');
     },
     slctSMSGroup(SMSGroup) {
-      // console.log(SMSGroup);
-      this.dltMsg(SMSGroup);
+      this.dltMsg([SMSGroup?.replace(/[^0-9]/g, '')]);
       this.slctd.smsGroup = SMSGroup;
       this.slctd.chatType = 'SMS';
     },
     selectContact(msgKey, msgVal) {
-      this.dltMsg(msgKey);
+      this.dltMsg([msgKey?.replace(/[^0-9]/g, '')]);
       this.slctd.smsGroup = msgVal.smsGroup;
       this.slctd.chatType = 'SMS';
       this.sttngs.user.slctdCntctID = msgVal.id;
       this.sttngsReq('PATCH', 'user');
     },
-    dltAllMsgs() {
-      if (confirm('Are you sure you would like to delete all text messages?') == true) {
-        Object.entries(this.newMsgs?.msgs).forEach(([msgKey, msgVal]) => {
-          // for (let i = 0; i < msgVal.amnt; i++) { // I don't think that we need this for loop
-          this.dltMsg(msgKey);
-          // }
-        });
-      }
+    dltAllMsgs(cnnctns) {
+      let cnnctnsArr = [];
+      cnnctns.forEach((cnnctn) => {
+        if (Object.values(cnnctn)[0]) cnnctnsArr.push(Object.values(cnnctn)[0]?.replace(/[^0-9]/g, ''));
+      });
+      if (cnnctnsArr.length > 0) this.dltMsg(cnnctnsArr);
     },
     async dltMsg(msgKey) {
       try {
@@ -123,7 +131,7 @@ export default {
             'Cache-Control': 'no-store',
           },
           body: JSON.stringify({
-            Phone: msgKey.replace(/[^0-9]/g, ''),
+            Phone: msgKey,
           }),
         });
         const resJSON = await response.json();
