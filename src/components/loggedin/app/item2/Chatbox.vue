@@ -23,16 +23,11 @@
             ' ' +
             chat.dat.slice(11, 16)
           "
-          :class="chat.frm == userData.id ? 'chat-box-right' : 'chat-box-left'"
           :style="{
-            backgroundColor: sttngs?.entity?.msgColors?.[chat?.frm]
-              ? sttngs.entity.msgColors[chat.frm]
-              : chat?.frm == userData.id
-              ? '#F08784'
-              : '#A1FB8E',
+            justifyContent: chat.frm == userData.id ? 'flex-end' : 'flex-start',
           }"
         >
-          <div
+          <!-- <div
             v-if="chat.tp.includes('image')"
             class="chat-box-img-grid-container"
             :style="{
@@ -46,16 +41,27 @@
               </a>
             </div>
             <div v-if="chat?.frm != userData.id"></div>
-          </div>
+          </div> -->
 
-          <div v-if="!chat.tp.includes('image')" style="word-break: break-word">
+          <div
+            v-if="!chat.tp.includes('image')"
+            :style="{
+              backgroundColor: sttngs?.entity?.msgColors?.[chat?.frm]
+                ? sttngs.entity.msgColors[chat.frm]
+                : chat?.frm == userData.id
+                ? '#F08784'
+                : '#A1FB8E',
+            }"
+            :class="chat.frm == userData.id ? 'chat-box-right' : 'chat-box-left'"
+            class="chat-box-msg-cntnr"
+          >
             <i v-if="chat.err || chat?.err == ''" class="fa-solid fa-circle-exclamation" :title="chat.err"></i>
             <template v-if="chat.tp == 'msg'">
               <template v-if="chat.msg.includes('https://bundle-insurance.com/secure-link/')">
                 <a :href="chat.msg.split(' - ')[0]" target="_blank">{{ chat.msg.split(' - ')[0] }}</a> -
                 {{ chat.msg.split(' - ')[1] }}
               </template>
-              <template v-else>{{ chat.msg }}</template>
+              <div v-else style="word-break: break-word" v-html="chat.msg"></div>
             </template>
             <a
               v-else
@@ -63,17 +69,16 @@
               target="_blank"
               >{{ chat.msg.split('/')[chat.msg.split('/').length - 1] }}</a
             >
-          </div>
-
-          <div class="chat-box-msg-date">
-            {{
-              sttngs.entity.activeUserList?.[chat.frm]?.FirstName
-                ? sttngs.entity.activeUserList?.[chat.frm]?.FirstName
-                : contacts[slctdCntctIndex].Members[0].First
-                ? contacts[slctdCntctIndex].Members[0].First + ' ' + contacts[slctdCntctIndex].Members[0].Name
-                : contacts[slctdCntctIndex].Members[0].Name
-            }}
-            - {{ this.usaDateFrmt(chat.dat) }}
+            <div class="chat-box-msg-date">
+              {{
+                sttngs.entity.activeUserList?.[chat.frm]?.FirstName
+                  ? sttngs.entity.activeUserList?.[chat.frm]?.FirstName
+                  : contacts[slctdCntctIndex].Members[0].First
+                  ? contacts[slctdCntctIndex].Members[0].First + ' ' + contacts[slctdCntctIndex].Members[0].Name
+                  : contacts[slctdCntctIndex].Members[0].Name
+              }}
+              - {{ chat.dat.slice(11, 16) }}
+            </div>
           </div>
         </div>
       </div>
@@ -238,12 +243,7 @@ export default {
         const tow = this.slctd.chatType == 'SMS' ? this.slctd.smsGroup.replace(/[^0-9]/g, '') : this.sttngs.entity.chats[this.slctd.chatGroup];
         const chat = this.uploadedFiles.length > 0 ? this.uploadedFiles : [{ filename: this.chatBoxMsg }];
 
-        if (this.slctd.chatType == 'Chat') {
-          this.times.mstRcntChat = dat.slice(0, 19).replace('T', ' ');
-          if (this.chats === null) this.chats = [];
-          this.sttngs.user.chats[this.slctd.chatGroup] = dat.slice(0, 19).replace('T', ' ');
-          this.sttngsReq('PATCH', 'user');
-        }
+        if (this.slctd.chatType == 'Chat' && this.chats === null) this.chats = [];
         this.chatBoxMsg = '';
         this.uploadedFiles = [];
 
@@ -278,7 +278,12 @@ export default {
           }
         );
         const resJSON = await response.json();
-        if (resJSON.success && chatType == 'Chat') this.chats.push(resJSON.data); // Msg success is handled at syncing logs after getContacts()
+        if (resJSON.success && chatType == 'Chat') {
+          this.times.mstRcntChat = dat.slice(0, 19).replace('T', ' ');
+          this.sttngs.user.chats[this.slctd.chatGroup] = dat.slice(0, 19).replace('T', ' ');
+          this.sttngsReq('PATCH', 'user');
+          this.chats.push(resJSON.data);
+        }
         if (!resJSON.success) this.showMsg('Message not sent');
       } catch (error) {
         this.spinLogin = false;
@@ -412,14 +417,21 @@ export default {
 .chat-box-body-timedate {
   margin: 10px auto;
   padding: 5px;
-  border: 1px solid rgb(176, 176, 176);
-  background-color: rgb(176, 176, 176);
+  border: 1px solid rgb(110, 110, 110);
+  background-color: rgb(110, 110, 110);
   color: white;
   border-radius: 10px;
   width: 75px;
 }
 .chat-box-msg {
+  display: flex;
   font-size: 20px;
+}
+.chat-box-msg-cntnr {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid gray;
+  max-width: 75%;
 }
 .chat-box-img-grid-container {
   display: grid;
@@ -437,21 +449,14 @@ export default {
 }
 .chat-box-left {
   border-radius: 10px 10px 10px 0px;
-  margin-right: 25%;
-  margin-bottom: 10px;
-  padding: 5px;
   text-align: left;
 }
 .chat-box-right {
   border-radius: 10px 10px 0px 10px;
-  margin-left: 25%;
-  margin-bottom: 10px;
-  padding: 5px;
   text-align: right;
 }
 .chat-box-msg-date {
-  color: grey;
-  font-size: 12px;
+  font-size: 11px;
 }
 .chat-box-new-message {
   background-color: white;

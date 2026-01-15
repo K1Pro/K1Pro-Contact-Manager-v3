@@ -526,8 +526,12 @@ export default {
             }, 2000);
           } else {
             resJSON.data.chats.forEach((chat) => {
-              this.chats.push(chat);
-              const newChat = new Notification(this.sttngs.entity.activeUserList[chat.frm].FirstName + ': ' + chat.msg);
+              if (!this.chats.find((chatObj) => chatObj.id == chat.id)) {
+                this.chats.push(chat);
+                const newChat = new Notification(
+                  this.sttngs.entity.activeUserList[chat.frm].FirstName + ': ' + chat.msg
+                );
+              }
             });
           }
         }
