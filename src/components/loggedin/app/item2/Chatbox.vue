@@ -2,9 +2,7 @@
   <div class="chat-box">
     <div class="chat-box-title">
       {{ chatBoxTitle }}
-      <span style="position: absolute; right: 5px"
-        ><input type="date" :value="strtTime" />-<input type="date" :value="endTime"
-      /></span>
+      <span><input type="date" :value="strtTime" /> - <input type="date" :value="endTime" /></span>
     </div>
     <div class="chat-box-body">
       <div v-if="slctdChatAmount" v-for="(chat, chatIndx) in slctdChats?.sort((a, b) => a?.dat.localeCompare(b?.dat))">
@@ -27,24 +25,7 @@
             justifyContent: chat.frm == userData.id ? 'flex-end' : 'flex-start',
           }"
         >
-          <!-- <div
-            v-if="chat.tp.includes('image')"
-            class="chat-box-img-grid-container"
-            :style="{
-              gridTemplateColumns: chat?.frm == userData.id ? '60% 40%' : '40% 60%',
-            }"
-          >
-            <div v-if="chat?.frm == userData.id"></div>
-            <div>
-              <a :href="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg" target="_blank">
-                <img :src="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg" alt="pic" />
-              </a>
-            </div>
-            <div v-if="chat?.frm != userData.id"></div>
-          </div> -->
-
           <div
-            v-if="!chat.tp.includes('image')"
             :style="{
               backgroundColor: sttngs?.entity?.msgColors?.[chat?.frm]
                 ? sttngs.entity.msgColors[chat.frm]
@@ -55,20 +36,29 @@
             :class="chat.frm == userData.id ? 'chat-box-right' : 'chat-box-left'"
             class="chat-box-msg-cntnr"
           >
-            <i v-if="chat.err || chat?.err == ''" class="fa-solid fa-circle-exclamation" :title="chat.err"></i>
-            <template v-if="chat.tp == 'msg'">
-              <template v-if="chat.msg.includes('https://bundle-insurance.com/secure-link/')">
-                <a :href="chat.msg.split(' - ')[0]" target="_blank">{{ chat.msg.split(' - ')[0] }}</a> -
-                {{ chat.msg.split(' - ')[1] }}
-              </template>
-              <div v-else style="word-break: break-word" v-html="chat.msg"></div>
-            </template>
             <a
-              v-else
+              v-if="chat.tp.includes('image')"
               :href="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg"
               target="_blank"
-              >{{ chat.msg.split('/')[chat.msg.split('/').length - 1] }}</a
             >
+              <img :src="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg" alt="pic" />
+            </a>
+            <template v-if="!chat.tp.includes('image')">
+              <i v-if="chat.err || chat?.err == ''" class="fa-solid fa-circle-exclamation" :title="chat.err"></i>
+              <template v-if="chat.tp == 'msg'">
+                <template v-if="chat.msg.includes('https://bundle-insurance.com/secure-link/')">
+                  <a :href="chat.msg.split(' - ')[0]" target="_blank">{{ chat.msg.split(' - ')[0] }}</a> -
+                  {{ chat.msg.split(' - ')[1] }}
+                </template>
+                <div v-else style="word-break: break-word" v-html="chat.msg"></div>
+              </template>
+              <a
+                v-else
+                :href="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg"
+                target="_blank"
+                >{{ chat.msg.split('/')[chat.msg.split('/').length - 1] }}</a
+              >
+            </template>
             <div class="chat-box-msg-date">
               {{
                 sttngs.entity.activeUserList?.[chat.frm]?.FirstName
@@ -385,6 +375,14 @@ export default {
   white-space: nowrap;
   font-size: 16px;
 }
+.chat-box-title span {
+  position: absolute;
+  right: 5px;
+}
+.chat-box-title input[type='date'] {
+  font-family: 'Helvetica', sans-serif;
+  width: 95px;
+}
 .chat-box-body {
   background-color: white;
   width: 100%;
@@ -433,10 +431,7 @@ export default {
   border: 1px solid gray;
   max-width: 75%;
 }
-.chat-box-img-grid-container {
-  display: grid;
-}
-.chat-box-img-grid-container img {
+.chat-box-msg-cntnr img {
   width: 100%;
   border-radius: 5px;
 }
