@@ -2,76 +2,88 @@
   <div class="chat-box">
     <div class="chat-box-title">
       {{ chatBoxTitle }}
-      <span><input type="date" :value="strtTime" /> - <input type="date" :value="endTime" /></span>
+      <span><input type="date" v-model="strtTime" /> - <input type="date" v-model="endTime" /></span>
     </div>
     <div class="chat-box-body">
-      <div v-if="slctdChatAmount" v-for="(chat, chatIndx) in slctdChats?.sort((a, b) => a?.dat.localeCompare(b?.dat))">
-        <div v-if="chat.dat.slice(5, 10) != slctdChats?.[chatIndx - 1]?.dat?.slice(5, 10)" class="chat-box-body-time">
-          <div class="chat-box-body-timedate">{{ this.usaDateFrmt(chat.dat).slice(0, 10) }}</div>
-        </div>
-
+      <template
+        v-if="slctdChatAmount"
+        v-for="(chat, chatIndx) in slctdChats?.sort((a, b) => a?.dat.localeCompare(b?.dat))"
+      >
         <div
-          class="chat-box-msg"
-          :title="
-            (sttngs.entity.activeUserList[chat.frm]
-              ? sttngs.entity.activeUserList[chat.frm].FirstName
-              : contacts[slctdCntctIndex].Members[0].Name) +
-            ' sent this on ' +
-            this.usaDateFrmt(chat.dat) +
-            ' ' +
-            chat.dat.slice(11, 16)
+          v-if="
+            (Date.parse(strtTime).toString().slice(0, 5) <= Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
+              Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) <= Date.parse(endTime).toString().slice(0, 5)) ||
+            (Date.parse(strtTime).toString().slice(0, 5) >= Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
+              Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) >= Date.parse(endTime).toString().slice(0, 5))
           "
-          :style="{
-            justifyContent: chat.frm == userData.id ? 'flex-end' : 'flex-start',
-          }"
         >
+          <div v-if="chat.dat.slice(5, 10) != slctdChats?.[chatIndx - 1]?.dat?.slice(5, 10)" class="chat-box-body-time">
+            <div class="chat-box-body-timedate">{{ this.usaDateFrmt(chat.dat).slice(0, 10) }}</div>
+          </div>
+
           <div
+            class="chat-box-msg"
+            :title="
+              (sttngs.entity.activeUserList[chat.frm]
+                ? sttngs.entity.activeUserList[chat.frm].FirstName
+                : contacts[slctdCntctIndex].Members[0].Name) +
+              ' sent this on ' +
+              this.usaDateFrmt(chat.dat) +
+              ' ' +
+              chat.dat.slice(11, 16)
+            "
             :style="{
-              backgroundColor: sttngs?.entity?.msgColors?.[chat?.frm]
-                ? sttngs.entity.msgColors[chat.frm]
-                : chat?.frm == userData.id
-                ? '#F08784'
-                : '#A1FB8E',
+              justifyContent: chat.frm == userData.id ? 'flex-end' : 'flex-start',
             }"
-            :class="chat.frm == userData.id ? 'chat-box-right' : 'chat-box-left'"
-            class="chat-box-msg-cntnr"
           >
-            <a
-              v-if="chat.tp.includes('image')"
-              :href="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg"
-              target="_blank"
+            <div
+              :style="{
+                backgroundColor: sttngs?.entity?.msgColors?.[chat?.frm]
+                  ? sttngs.entity.msgColors[chat.frm]
+                  : chat?.frm == userData.id
+                    ? '#F08784'
+                    : '#A1FB8E',
+              }"
+              :class="chat.frm == userData.id ? 'chat-box-right' : 'chat-box-left'"
+              class="chat-box-msg-cntnr"
             >
-              <img :src="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg" alt="pic" />
-            </a>
-            <template v-if="!chat.tp.includes('image')">
-              <i v-if="chat.err || chat?.err == ''" class="fa-solid fa-circle-exclamation" :title="chat.err"></i>
-              <template v-if="chat.tp == 'msg'">
-                <template v-if="chat.msg.includes('https://bundle-insurance.com/secure-link/')">
-                  <a :href="chat.msg.split(' - ')[0]" target="_blank">{{ chat.msg.split(' - ')[0] }}</a> -
-                  {{ chat.msg.split(' - ')[1] }}
-                </template>
-                <div v-else style="word-break: break-word" v-html="chat.msg"></div>
-              </template>
               <a
-                v-else
+                v-if="chat.tp.includes('image')"
                 :href="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg"
                 target="_blank"
-                >{{ chat.msg.split('/')[chat.msg.split('/').length - 1] }}</a
               >
-            </template>
-            <div class="chat-box-msg-date">
-              {{
-                sttngs.entity.activeUserList?.[chat.frm]?.FirstName
-                  ? sttngs.entity.activeUserList?.[chat.frm]?.FirstName
-                  : contacts[slctdCntctIndex].Members[0].First
-                  ? contacts[slctdCntctIndex].Members[0].First + ' ' + contacts[slctdCntctIndex].Members[0].Name
-                  : contacts[slctdCntctIndex].Members[0].Name
-              }}
-              - {{ chat.dat.slice(11, 16) }}
+                <img :src="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg" alt="pic" />
+              </a>
+              <template v-if="!chat.tp.includes('image')">
+                <i v-if="chat.err || chat?.err == ''" class="fa-solid fa-circle-exclamation" :title="chat.err"></i>
+                <template v-if="chat.tp == 'msg'">
+                  <template v-if="chat.msg.includes('https://bundle-insurance.com/secure-link/')">
+                    <a :href="chat.msg.split(' - ')[0]" target="_blank">{{ chat.msg.split(' - ')[0] }}</a> -
+                    {{ chat.msg.split(' - ')[1] }}
+                  </template>
+                  <div v-else style="word-break: break-word" v-html="chat.msg"></div>
+                </template>
+                <a
+                  v-else
+                  :href="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg"
+                  target="_blank"
+                  >{{ chat.msg.split('/')[chat.msg.split('/').length - 1] }}</a
+                >
+              </template>
+              <div class="chat-box-msg-date">
+                {{
+                  sttngs.entity.activeUserList?.[chat.frm]?.FirstName
+                    ? sttngs.entity.activeUserList?.[chat.frm]?.FirstName
+                    : contacts[slctdCntctIndex].Members[0].First
+                      ? contacts[slctdCntctIndex].Members[0].First + ' ' + contacts[slctdCntctIndex].Members[0].Name
+                      : contacts[slctdCntctIndex].Members[0].Name
+                }}
+                - {{ chat.dat.slice(11, 16) }}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </template>
       <table v-else>
         <tbody>
           <tr>
@@ -167,11 +179,11 @@ export default {
       uploadedFiles: [],
       secDir: sec_dir,
       strtTime:
-        new Date(this.times.initialUsrTmstmp - 60 * 86400000)?.getFullYear() +
+        new Date(this.times.initialUsrTmstmp - 30 * 86400000)?.getFullYear() +
         '-' +
-        (new Date(this.times?.initialUsrTmstmp - 60 * 86400000)?.getMonth() + 1)?.toString()?.padStart(2, '0') +
+        (new Date(this.times?.initialUsrTmstmp - 30 * 86400000)?.getMonth() + 1)?.toString()?.padStart(2, '0') +
         '-' +
-        new Date(this.times?.initialUsrTmstmp - 60 * 86400000)?.getDate()?.toString()?.padStart(2, '0'),
+        new Date(this.times?.initialUsrTmstmp - 30 * 86400000)?.getDate()?.toString()?.padStart(2, '0'),
       endTime: this.times.updtngY_m_d_H_i_s_z.slice(0, 10),
     };
   },
@@ -191,7 +203,7 @@ export default {
             );
           })
         : this.chats?.filter(
-            (chat) => JSON.stringify(chat.tow) === JSON.stringify(this.sttngs.entity.chats[this.slctd.chatGroup])
+            (chat) => JSON.stringify(chat.tow) === JSON.stringify(this.sttngs.entity.chats[this.slctd.chatGroup]),
           );
     },
 
@@ -269,12 +281,16 @@ export default {
         );
         const resJSON = await response.json();
         if (resJSON.success && chatType == 'Chat') {
+          console.log(resJSON);
           this.times.mstRcntChat = dat.slice(0, 19).replace('T', ' ');
           this.sttngs.user.chats[this.slctd.chatGroup] = dat.slice(0, 19).replace('T', ' ');
           this.sttngsReq('PATCH', 'user');
           this.chats.push(resJSON.data);
         }
-        if (!resJSON.success) this.showMsg('Message not sent');
+        if (!resJSON.success) {
+          this.spinLogin = false;
+          this.showMsg('Message not sent');
+        }
       } catch (error) {
         this.spinLogin = false;
         this.showMsg('Message not sent');

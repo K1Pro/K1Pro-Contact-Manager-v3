@@ -190,10 +190,10 @@ export default {
                     contact.Members[0]?.First && contact.Members[0]?.Name
                       ? contact.Members[0]?.First + ' ' + contact.Members[0]?.Name
                       : contact.Members[0]?.Name
-                      ? contact.Members[0]?.Name
-                      : contact.Members[0]?.First
-                      ? contact.Members[0]?.First
-                      : '',
+                        ? contact.Members[0]?.Name
+                        : contact.Members[0]?.First
+                          ? contact.Members[0]?.First
+                          : '',
                   phone: msg.slice(0, 3) + '-' + msg.slice(3, 6) + '-' + msg.slice(6, 10),
                   smsGroup: conn.Phone,
                   amnt: this.times.mstRcntMsg.filter((x) => x == msg).length,
@@ -246,10 +246,10 @@ export default {
       return this.tmpSttngs.user.calendar.filters.days == 0
         ? this.slctd.tmstmp
         : this.tmpSttngs.user.calendar.filters.days == 1
-        ? this.slctd.tmstmp - cmptdDayNumber * 86400000
-        : this.tmpSttngs.user.calendar.filters.days == 2
-        ? this.slctd.tmstmp - cmptdDayOfTheWeek * 86400000
-        : this.slctd.tmstmp - cmptdNoOfWeeks * 604800000 - cmptdDayOfTheWeek * 86400000;
+          ? this.slctd.tmstmp - cmptdDayNumber * 86400000
+          : this.tmpSttngs.user.calendar.filters.days == 2
+            ? this.slctd.tmstmp - cmptdDayOfTheWeek * 86400000
+            : this.slctd.tmstmp - cmptdNoOfWeeks * 604800000 - cmptdDayOfTheWeek * 86400000;
     },
     slctdY_m_d() {
       // prettier-ignore
@@ -314,7 +314,7 @@ export default {
               'Content-Type': 'application/json',
               'Cache-Control': 'no-store',
             },
-          }
+          },
         );
         const resJSON = await response.json();
         if (resJSON.success) {
@@ -334,7 +334,7 @@ export default {
           )
             if (resJSON.data.mstRcntMsg.length > this.times.mstRcntMsg.length) {
               const newChat = new Notification(
-                'There is ' + (resJSON.data.mstRcntMsg.length - this.times.mstRcntMsg.length) + ' new text message'
+                'There is ' + (resJSON.data.mstRcntMsg.length - this.times.mstRcntMsg.length) + ' new text message',
               );
             }
 
@@ -384,7 +384,7 @@ export default {
               Authorization: access_token,
               'Cache-Control': 'no-store',
             },
-          }
+          },
         );
         const resJSON = await response.json();
         if (resJSON.success) {
@@ -407,7 +407,7 @@ export default {
                       Object.keys(this.todaysEvents).length +
                       (Object.keys(this.todaysEvents).length > 1 ? ' tasks' : ' task') +
                       ' scheduled for today.'
-                    : '')
+                    : ''),
               );
             }, 1000);
           } else {
@@ -424,10 +424,10 @@ export default {
                     document.activeElement.tagName == 'SPAN'
                       ? ['innerHTML', document.activeElement.innerHTML]
                       : document.activeElement.tagName == 'TEXTAREA'
-                      ? ['value', document.activeElement.value]
-                      : document.activeElement.tagName == 'INPUT'
-                      ? ['value', document.activeElement.value]
-                      : false;
+                        ? ['value', document.activeElement.value]
+                        : document.activeElement.tagName == 'INPUT'
+                          ? ['value', document.activeElement.value]
+                          : false;
                 if (contact.id != this.sttngs.user.slctdCntctID) {
                   // this checks if other contacts have been modified
                   const slctdCntctIndx = this.contacts.findIndex((slctdCntct) => slctdCntct.id == contact.id);
@@ -448,7 +448,7 @@ export default {
                     this.showMsg(
                       this.sttngs.entity.activeUserList[Object.keys(contact.Updated)[0]].FirstName +
                         ' edited this contact on ' +
-                        Object.values(contact.Updated)[0]?.replace('T', ' ')
+                        Object.values(contact.Updated)[0]?.replace('T', ' '),
                     );
 
                     this.contacts[this.slctdCntctIndex] = contact;
@@ -511,7 +511,7 @@ export default {
               Authorization: access_token,
               'Cache-Control': 'no-store',
             },
-          }
+          },
         );
         const resJSON = await response.json();
         if (resJSON.success) {
@@ -520,16 +520,16 @@ export default {
             setTimeout(() => {
               if (this.allNewChats) {
                 const newChat = new Notification(
-                  this.allNewChats + ' unread ' + (this.allNewChats > 1 ? 'messages' : 'message') + ' in your chat'
+                  this.allNewChats + ' unread ' + (this.allNewChats > 1 ? 'messages' : 'message') + ' in your chat',
                 );
               }
             }, 2000);
           } else {
             resJSON.data.chats.forEach((chat) => {
-              if (!this.chats.find((chatObj) => chatObj.id == chat.id)) {
+              if (!this.chats.find((chatObj) => chatObj.id == chat.id || Number(chatObj.id) == Number(chat.id))) {
                 this.chats.push(chat);
                 const newChat = new Notification(
-                  this.sttngs.entity.activeUserList[chat.frm].FirstName + ': ' + chat.msg
+                  this.sttngs.entity.activeUserList[chat.frm].FirstName + ': ' + chat.msg,
                 );
               }
             });
@@ -561,7 +561,7 @@ export default {
       )
         this.showMsg(
           this.sttngs.entity.activeUserList[Object.keys(this.contacts[slctdCntctIndex].Updated)[0]].FirstName +
-            ' also edited this contact recently'
+            ' also edited this contact recently',
         );
 
       this.contacts[slctdCntctIndex] = newCntctInfo;
@@ -586,7 +586,7 @@ export default {
               ColumnIndex: columnIndex,
               NewData: event,
             }),
-          }
+          },
         );
         const resJSON = await response.json();
         if (resJSON.success) {
@@ -624,7 +624,7 @@ export default {
                 Column: column,
                 ColumnIndex: columnIndex,
               }),
-            }
+            },
           );
           const resJSON = await response.json();
           if (resJSON.success) {

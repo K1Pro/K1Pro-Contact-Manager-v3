@@ -97,6 +97,7 @@
               Created by {{ userList[task.Create].FirstName }}
             </option>
           </select>
+          <input type="checkbox" :checked="task.Assign" />
           <span class="tasks-label">Finished:</span>
           <input
             type="checkbox"
@@ -174,12 +175,12 @@ export default {
             },
           ]
         : this.sortAscDesc
-        ? this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
-            return { ...val, clmnIndex: index };
-          }).sort((a, b) => a.Date.localeCompare(b.Date))
-        : this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
-            return { ...val, clmnIndex: index };
-          }).sort((a, b) => b.Date.localeCompare(a.Date));
+          ? this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
+              return { ...val, clmnIndex: index };
+            }).sort((a, b) => a.Date.localeCompare(b.Date))
+          : this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
+              return { ...val, clmnIndex: index };
+            }).sort((a, b) => b.Date.localeCompare(a.Date));
     },
   },
 
