@@ -77,15 +77,24 @@
             <option value="fa-solid fa-pen">Write</option>
           </select>
           <span class="tasks-label">Owner:</span>
+          <input
+            checked
+            :id="'taskOwnerChckBx' + taskIndex"
+            type="checkbox"
+            @change="updateTask($event.target.checked, task.clmnIndex, 'Assign')"
+          />
           <select
+            class="taskOwners"
+            style="width: calc(100% - 120px)"
             :value="task.Assign"
-            :ref="'taskOwner' + task.clmnIndex"
+            :id="'task' + task.clmnIndex"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
             :disabled="
               dsbld ||
               userRole < 4 ||
               (userRole < 7 && task.Create != userData.id && task.Assign != userData.id && task.Update != userData.id)
             "
+            @change="getTaskOwners"
           >
             <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
               {{ userInfo.FirstName }}
@@ -97,11 +106,6 @@
               Created by {{ userList[task.Create].FirstName }}
             </option>
           </select>
-          <input
-            type="checkbox"
-            :checked="task.Assign"
-            @change="updateTask($event.target.checked, task.clmnIndex, 'Assign')"
-          />
           <span class="tasks-label">Finished:</span>
           <input
             type="checkbox"
@@ -233,14 +237,21 @@ export default {
       this.slctd.eventIndx = null;
       this.taskMemo = this.taskMemo + 1;
     },
+    getTaskOwners() {
+      Array.from(document.getElementsByClassName('taskOwners')).forEach((el, elIndx) => {
+        this.contacts[this.slctdCntctIndex].Tasks[el.id.slice(4)].Assign.includes(el.value)
+          ? (document.getElementById('taskOwnerChckBx' + elIndx).checked = true)
+          : (document.getElementById('taskOwnerChckBx' + elIndx).checked = false);
+      });
+    },
   },
 
-  updated() {
-    // console.log(this.$refs);
-    Object.values(this.$refs).forEach((ownerInput, ownerInputIndx) =>
-      console.log({ [ownerInputIndx]: ownerInput?.[0]?.value }),
-    );
-  },
+  // mounted() {
+  //   this.getTaskOwners();
+  // },
+  // updated() {
+  //   this.getTaskOwners();
+  // },
 
   watch: {
     'slctd.eventIndx'() {

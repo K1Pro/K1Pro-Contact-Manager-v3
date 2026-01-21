@@ -7,13 +7,14 @@
     @dragenter.prevent
   >
     <b v-if="days[dayIndex] == times.updtngY_m_d_H_i_s_z.slice(0, 10)">
-      {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : ''
-      }}{{ days[dayIndex] == times.updtngY_m_d_H_i_s_z.slice(0, 10) ? ' - Today' : '' }}
+      {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : '' }}
+      <i class="fa-solid fa-cloud-sun"></i>
     </b>
     <span v-else>
       {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : '' }}
     </span>
-    <i v-if="!dsbld" @click="newTask(days[dayIndex])" class="fa-solid fa-square-plus"></i>
+
+    <i v-if="!dsbld" @click="newTask(days[dayIndex])" class="fa-solid fa-square-plus task-grid-day-plus"></i>
   </div>
   <div class="task-grid-day-content" v-if="firstDayY_m_d && calContactTasks">
     <template v-for="calContactTask in calContactTasks">
@@ -52,7 +53,7 @@
               calContactTask.ContactID,
               calContactTask.EventIndex,
               calContactTask.Type,
-              calContactTask.Time
+              calContactTask.Time,
             )
           "
         >
@@ -100,8 +101,8 @@ export default {
               Name: contact.Members[0]?.Name
                 ? contact.Members[0].Name
                 : contact.Members[0]?.First
-                ? contact.Members[0]?.First
-                : '',
+                  ? contact.Members[0]?.First
+                  : '',
               Time: task.Date.split('T')[1],
               Clock:
                 this.sttngs.user.clock == 12
@@ -137,8 +138,8 @@ export default {
               Name: contact.Members[0]?.Name
                 ? contact.Members[0].Name
                 : contact.Members[0]?.First
-                ? contact.Members[0]?.First
-                : '',
+                  ? contact.Members[0]?.First
+                  : '',
               Time: task.Time ? task.Time : '25:00',
               Clock:
                 task.Time && this.sttngs.user.clock == 12
@@ -148,8 +149,8 @@ export default {
                       minute: 'numeric',
                     })
                   : task.Time && this.sttngs.user.clock == 24
-                  ? task.Time
-                  : '25:00',
+                    ? task.Time
+                    : '25:00',
               Type: 'Recurringtasks',
               Status: task.Review >= this.days[this.dayIndex] ? 'compltd' : 'renewal',
               Icon: task.Review >= this.days[this.dayIndex] ? 'fa fa-check' : 'fa fa-repeat',
@@ -239,13 +240,12 @@ export default {
   overflow: hidden;
   background-color: inherit;
 }
-.task-grid-day-title i {
+.task-grid-day-plus {
   padding-right: 5px;
   padding-top: 2px;
   cursor: pointer;
   color: #417cd9;
   float: right;
-  /* font-size: 14px; */
 }
 .task-grid-day-content {
   overflow: hidden;

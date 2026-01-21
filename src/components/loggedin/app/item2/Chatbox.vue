@@ -489,12 +489,13 @@ export default {
   resize: none;
   width: calc(100% - 95px);
   padding: 5px;
-  overflow-y: scroll;
+  overflow-y: auto;
   outline: none;
 }
 .chat-box select {
   float: left;
   width: calc(100% - 95px);
+  background-color: white;
   height: 20px;
   border-top-width: 0px;
   outline: none;
