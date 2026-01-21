@@ -453,9 +453,9 @@ export default {
 }
 .chat-msg-len {
   position: absolute;
-  margin-top: 5px;
+  margin-top: 32px;
   text-align: right;
-  right: 200px;
+  right: 120px;
   background-color: white;
 }
 .chat-box-left {
@@ -487,14 +487,14 @@ export default {
 .chat-box textarea {
   float: left;
   resize: none;
-  width: calc(100% - 170px);
+  width: calc(100% - 95px);
   padding: 5px;
   overflow-y: scroll;
   outline: none;
 }
 .chat-box select {
   float: left;
-  width: calc(100% - 170px);
+  width: calc(100% - 95px);
   height: 20px;
   border-top-width: 0px;
   outline: none;
@@ -505,19 +505,34 @@ export default {
   border-radius: 2px;
   border: 1px solid black;
   height: 100%;
-  width: 75px;
-  padding: 23.5px 32px;
+  width: 45px;
+  padding: 23.5px 17px;
   color: black;
   font-size: 13px;
 }
 .chat-box button {
   display: inline-block;
   height: 100%;
-  width: 75px;
+  width: 45px;
 }
 @media only screen and (min-width: 768px) {
   .chat-box {
     padding: 10px 10px 10px 0px;
+  }
+  .chat-msg-len {
+    right: 200px;
+  }
+  .chat-box-uploaded-files,
+  .chat-box textarea,
+  .chat-box select {
+    width: calc(100% - 170px);
+  }
+  .chat-box button {
+    width: 75px;
+  }
+  .chat-box label {
+    width: 75px;
+    padding: 23.5px 32px;
   }
 }
 </style>

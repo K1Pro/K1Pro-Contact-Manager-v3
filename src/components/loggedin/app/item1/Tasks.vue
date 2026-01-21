@@ -79,7 +79,7 @@
           <span class="tasks-label">Owner:</span>
           <select
             :value="task.Assign"
-            @change="updateTask($event.target.value, task.clmnIndex, 'Assign')"
+            :ref="'taskOwner' + task.clmnIndex"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
             :disabled="
               dsbld ||
@@ -97,7 +97,11 @@
               Created by {{ userList[task.Create].FirstName }}
             </option>
           </select>
-          <input type="checkbox" :checked="task.Assign" />
+          <input
+            type="checkbox"
+            :checked="task.Assign"
+            @change="updateTask($event.target.checked, task.clmnIndex, 'Assign')"
+          />
           <span class="tasks-label">Finished:</span>
           <input
             type="checkbox"
@@ -206,6 +210,7 @@ export default {
       this.taskMemo = this.taskMemo + 1;
     },
     updateTask(event, clmnIndex, key) {
+      console.log(event);
       event = typeof event === 'boolean' ? event : event.trim().replaceAll('<br>', '');
       if (
         (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
@@ -215,7 +220,7 @@ export default {
         cloneCntct[this.clmn][clmnIndex][key] = event;
         cloneCntct[this.clmn][clmnIndex].Update = this.userData.id;
         this.taskMemo = this.taskMemo + 1;
-        this.patchContactInfo({ [key]: event, Update: this.userData.id }, this.clmn, clmnIndex, cloneCntct);
+        // this.patchContactInfo({ [key]: event, Update: this.userData.id }, this.clmn, clmnIndex, cloneCntct);
       }
     },
     deleteTask(clmnIndex) {
@@ -228,6 +233,13 @@ export default {
       this.slctd.eventIndx = null;
       this.taskMemo = this.taskMemo + 1;
     },
+  },
+
+  updated() {
+    // console.log(this.$refs);
+    Object.values(this.$refs).forEach((ownerInput, ownerInputIndx) =>
+      console.log({ [ownerInputIndx]: ownerInput?.[0]?.value }),
+    );
   },
 
   watch: {
