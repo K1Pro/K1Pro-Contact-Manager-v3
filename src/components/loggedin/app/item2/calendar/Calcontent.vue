@@ -6,7 +6,7 @@
     @dragover.prevent
     @dragenter.prevent
   >
-    <b v-if="days[dayIndex] == times.updtngY_m_d_H_i_s_z.slice(0, 10)">
+    <b v-if="days[dayIndex] == updt.updtngY_m_d_H_i_s_z.slice(0, 10)">
       {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : '' }}
       <i class="fa-solid fa-cloud-sun"></i>
     </b>
@@ -36,7 +36,8 @@
           'grid-template-columns': calContactTask.Icon ? 'calc(100% - 20px) 20px' : '100%',
         }"
         v-show="
-          (sttngs.user.calendar.filters.owners == calContactTask.Assign || sttngs.user.calendar.filters.owners == '') &&
+          (calContactTask.Assign?.includes(sttngs.user.calendar.filters.owners?.toString()) ||
+            sttngs.user.calendar.filters.owners == '') &&
           (sttngs.user.calendar.filters.status == calContactTask.Status || sttngs.user.calendar.filters.status == '') &&
           (sttngs.user.calendar.filters.category == calContactTask.Categ || sttngs.user.calendar.filters.category == '')
         "
@@ -44,6 +45,7 @@
         <div
           style="overflow: hidden"
           class="prevent-select"
+          :title="calContactTask.Desc"
           @click="selectContact(calContactTask.ContactID, calContactTask.Type, calContactTask.EventIndex)"
           v-on:dblclick="selectContact(calContactTask.ContactID, 'Contactinfo', null)"
           :draggable="calContactTask.Type == 'Tasks' ? true : false"
@@ -82,7 +84,7 @@ export default {
     'slctd',
     'slctdCntctIndex',
     'sttngs',
-    'times',
+    'updt',
     'wndw',
     'userData',
   ],
@@ -97,6 +99,15 @@ export default {
         contact.Tasks.forEach((task, taskIndex) => {
           calDay = task?.Date?.split('T')[0];
           if (this.days[this.dayIndex] == calDay) {
+            let taskAssign = JSON.parse(JSON.stringify(task.Assign));
+            if (this.sttngs?.entity?.taskGroups && Array.isArray(taskAssign)) {
+              taskAssign.forEach((Assignee) => {
+                if (Object.keys(this.sttngs.entity.taskGroups).includes(Assignee)) {
+                  const assigneeIndx = taskAssign.indexOf(Assignee);
+                  if (assigneeIndx !== -1) taskAssign[assigneeIndx] = this.sttngs.entity.taskGroups[Assignee];
+                }
+              });
+            }
             contactArray[contactIndex + 'Task' + taskIndex] = {
               Name: contact.Members[0]?.Name
                 ? contact.Members[0].Name
@@ -112,9 +123,10 @@ export default {
                       minute: 'numeric',
                     })
                   : task.Date.split('T')[1],
+              Desc: task.Desc ? task.Desc : '',
               Type: 'Tasks',
               Status: task.Status == 1 ? 'compltd' : 'not-compltd',
-              Assign: task.Assign,
+              Assign: Array.isArray(taskAssign) ? taskAssign.flat() : taskAssign,
               Categ: contact.Categ,
               Icon: task.Status == 1 ? 'fa fa-check' : task.Tag != '' ? task.Tag : false,
               ContactID: contact.id,
@@ -134,6 +146,15 @@ export default {
                 task?.Freq == 'Weekly') ||
               (task?.Recur.includes('everyday') && task?.Freq == 'Daily'))
           ) {
+            let recurTaskAssign = JSON.parse(JSON.stringify(task.Assign));
+            if (this.sttngs?.entity?.taskGroups && Array.isArray(recurTaskAssign)) {
+              recurTaskAssign.forEach((Assignee) => {
+                if (Object.keys(this.sttngs.entity.taskGroups).includes(Assignee)) {
+                  const assigneeIndx = recurTaskAssign.indexOf(Assignee);
+                  if (assigneeIndx !== -1) recurTaskAssign[assigneeIndx] = this.sttngs.entity.taskGroups[Assignee];
+                }
+              });
+            }
             contactArray[contactIndex + 'Recur' + taskIndex] = {
               Name: contact.Members[0]?.Name
                 ? contact.Members[0].Name
@@ -151,10 +172,11 @@ export default {
                   : task.Time && this.sttngs.user.clock == 24
                     ? task.Time
                     : '25:00',
+              Desc: task.Desc ? task.Desc : '',
               Type: 'Recurringtasks',
               Status: task.Review >= this.days[this.dayIndex] ? 'compltd' : 'renewal',
               Icon: task.Review >= this.days[this.dayIndex] ? 'fa fa-check' : 'fa fa-repeat',
-              Assign: task.Assign,
+              Assign: Array.isArray(recurTaskAssign) ? recurTaskAssign.flat() : recurTaskAssign,
               Categ: contact.Categ,
               ContactID: contact.id,
               EventIndex: taskIndex,
@@ -174,11 +196,11 @@ export default {
     newTask(slctdY_m_d) {
       const prevTasksLen = this.contacts[this.slctdCntctIndex].Tasks.length;
       const newTask = {
-        Date: slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
+        Date: slctdY_m_d + this.updt.updtngY_m_d_H_i_s_z.slice(10, 16),
         Assign: this.userData.id,
         Create: this.userData.id,
         Update: this.userData.id,
-        Created: this.times.updtngY_m_d_H_i_s_z,
+        Created: this.updt.updtngY_m_d_H_i_s_z,
       };
       const newTasks = [...this.contacts[this.slctdCntctIndex].Tasks, newTask];
       const cloneCntct = this.contacts[this.slctdCntctIndex];

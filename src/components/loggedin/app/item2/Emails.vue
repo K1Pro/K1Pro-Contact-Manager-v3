@@ -65,7 +65,7 @@
 export default {
   name: 'Emails',
 
-  inject: ['contacts', 'slctd', 'slctdCntctIndex', 'sttngs', 'times', 'userData', 'userList', 'showMsg', 'usaDateFrmt'],
+  inject: ['contacts', 'slctd', 'slctdCntctIndex', 'sttngs', 'updt', 'userData', 'userList', 'showMsg', 'usaDateFrmt'],
 
   computed: {
     templateBody() {
@@ -124,11 +124,12 @@ export default {
           this.$refs['emailTemplate'].value == 'null'
             ? ''
             : this.sttngs.entity.emails[this.slctdTemplate].placeholder.toLowerCase();
+        const tow = this.$refs['emailTo'].value;
         let formData = new FormData();
         Object.values(this.$refs['emailAttachment'].files).forEach((file) => {
           formData.append('email_attachment[]', file);
         });
-        formData.append('To', this.$refs['emailTo'].value);
+        formData.append('To', tow);
         formData.append('Subject', this.$refs['emailSubject'].value);
         formData.append('Template', emailTemplate);
         formData.append('Body', this.$refs['emailBody'].innerHTML);
@@ -136,7 +137,7 @@ export default {
         formData.append('CC', this.$refs['CC'].checked);
         try {
           const response = await fetch(
-            app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/emails',
+            app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/emails',
             {
               method: 'POST',
               headers: {
@@ -144,7 +145,7 @@ export default {
                 'Cache-Control': 'no-store',
               },
               body: formData,
-            }
+            },
           );
           const sendEmailResJSON = await response.json();
           if (sendEmailResJSON.success) {
@@ -152,8 +153,8 @@ export default {
             this.showMsg(sendEmailResJSON.messages[0]);
             this.contacts[columnIndex].Email.unshift({
               frm: this.userData.id,
-              dat: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
-              tow: this.$refs['emailTo'].value,
+              dat: this.updt.updtngY_m_d_H_i_s_z.slice(0, 16),
+              tow: tow,
               msg: emailTemplate,
             });
           } else {
@@ -162,7 +163,7 @@ export default {
           }
         } catch (error) {
           this.spinLogin = false;
-          this.showMsg(error.toString());
+          this.showMsg(error?.toString()?.slice(-20));
           console.log(error.toString());
         }
       }

@@ -20,7 +20,7 @@
       <div class="navigation-grid-item4">
         <input
           type="date"
-          :title="times.updtngY_m_d_H_i_s_z.slice(10, 16).replace('T', ' ')"
+          :title="updt.updtngY_m_d_H_i_s_z.slice(10, 16).replace('T', ' ')"
           :value="slctdY_m_d"
           @change="changeDate"
         />
@@ -49,7 +49,7 @@
 export default {
   name: 'Navigation',
 
-  inject: ['days', 'slctd', 'slctdY_m_d', 'times', 'tmpSttngs'],
+  inject: ['days', 'slctd', 'slctdY_m_d', 'updt', 'tmpSttngs'],
 
   methods: {
     changeDate(event) {

@@ -41,8 +41,8 @@
             v-if="
               userRole > 5 ||
               (userRole <= 5 &&
-                recurTask.Assign == userData.id &&
-                times.initialUsrTmstmp + 86400000 > new Date(recurTask?.Created)?.getTime())
+                recurTask.Assign.includes(userData.id.toString()) &&
+                updt.initialUsrTmstmp + 86400000 > new Date(recurTask?.Created)?.getTime())
             "
             class="fa-solid fa-trash"
             @click="deleteRecurTask(recurTask.clmnIndex)"
@@ -56,14 +56,14 @@
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
-                recurTask.Assign != userData.id &&
+                !recurTask.Assign.includes(userData.id.toString()) &&
                 recurTask.Update != userData.id)
             "
             v-on:blur="
               updateRecurTaskFreq(
                 recurTask.clmnIndex,
                 $event.target.value,
-                contacts[slctdCntctIndex][clmn][recurTask.clmnIndex].Freq
+                contacts[slctdCntctIndex][clmn][recurTask.clmnIndex].Freq,
               )
             "
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
@@ -77,7 +77,7 @@
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
-                recurTask.Assign != userData.id &&
+                !recurTask.Assign.includes(userData.id.toString()) &&
                 recurTask.Update != userData.id)
             "
             v-on:blur="updateRecurTask($event.target.value, recurTask.clmnIndex, 'End')"
@@ -92,7 +92,7 @@
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
-                recurTask.Assign != userData.id &&
+                !recurTask.Assign.includes(userData.id.toString()) &&
                 recurTask.Update != userData.id)
             "
             v-on:blur="updateRecurTask($event.target.value, recurTask.clmnIndex, 'Time')"
@@ -106,14 +106,14 @@
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
-                recurTask.Assign != userData.id &&
+                !recurTask.Assign.includes(userData.id.toString()) &&
                 recurTask.Update != userData.id)
             "
             @change="
               updateRecurTaskFreq(
                 recurTask.clmnIndex,
                 contacts[slctdCntctIndex][clmn][recurTask.clmnIndex].Start,
-                $event.target.value
+                $event.target.value,
               )
             "
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
@@ -125,23 +125,68 @@
             <option>Weekly</option>
             <option>Daily</option>
           </select>
-          <span class="recur-tasks-label">Owner:</span>
-          <select
-            :value="recurTask.Assign"
+          <span class="recur-tasks-label">Assigned:</span>
+          <input
+            type="checkbox"
+            :id="'recurTaskOwnrChckBx' + recurTaskIndex"
             :disabled="
               dsbld ||
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
-                recurTask.Assign != userData.id &&
+                !recurTask.Assign.includes(userData.id?.toString()) &&
                 recurTask.Update != userData.id)
             "
-            @change="updateRecurTask($event.target.value, recurTask.clmnIndex, 'Assign')"
+            @change="updateRecurTask($event, recurTask.clmnIndex, 'Assign')"
+          />
+          <select
+            class="recurTaskOwnrSlct"
+            style="width: calc(100% - 120px)"
+            :id="'recurTask' + recurTask.clmnIndex"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
+            :title="
+              Array.isArray(recurTask.Assign)
+                ? recurTask.Assign.map((assignee) =>
+                    sttngs?.entity?.taskGroups?.[assignee]
+                      ? sttngs.entity.taskGroups[assignee].map(
+                          (groupAssignee) => ' ' + userList[groupAssignee]?.FirstName,
+                        )
+                      : ' ' + userList[assignee]?.FirstName,
+                  )
+                : false
+            "
+            @change="getRecurTaskOwners"
           >
-            <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
+            <option disabled v-if="sttngs?.entity?.taskGroups">======Users======</option>
+            <option
+              v-for="(userInfo, userNo) in userList"
+              :value="userNo"
+              :selected="recurTask.Assign[recurTask.Assign.length - 1]?.toString() == userNo?.toString()"
+              :style="{
+                background: recurTask.Assign.includes(userNo?.toString())
+                  ? 'rgba(100, 100, 100, 0.3)'
+                  : 'rgba(100, 100, 100, 0)',
+                fontWeight: recurTask.Assign.includes(userNo?.toString()) ? 'bold' : 'normal',
+              }"
+            >
               {{ userInfo.FirstName }}
             </option>
+            <template v-if="sttngs?.entity?.taskGroups">
+              <option disabled>===User groups===</option>
+              <option
+                v-for="(taskGrpVal, taskGrpKey) in sttngs.entity.taskGroups"
+                :selected="recurTask.Assign[recurTask.Assign.length - 1]?.toString() == taskGrpKey"
+                :style="{
+                  background: recurTask.Assign.includes(taskGrpKey)
+                    ? 'rgba(100, 100, 100, 0.3)'
+                    : 'rgba(100, 100, 100, 0)',
+                  fontWeight: recurTask.Assign.includes(taskGrpKey) ? 'bold' : 'normal',
+                }"
+              >
+                {{ taskGrpKey }}
+              </option>
+            </template>
+            <option disabled>=================</option>
             <option v-if="userList?.[recurTask?.Update]?.FirstName" disabled>
               Updated by {{ userList[recurTask.Update].FirstName }}
             </option>
@@ -156,11 +201,11 @@
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
-                recurTask.Assign != userData.id &&
+                !recurTask.Assign.includes(userData.id.toString()) &&
                 recurTask.Update != userData.id)
             "
             @click="
-              updateRecurTask(times.updtngY_m_d_H_i_s_z.slice(0, 10), recurTask.clmnIndex, 'Review');
+              updateRecurTask(updt.updtngY_m_d_H_i_s_z.slice(0, 10), recurTask.clmnIndex, 'Review');
               recurTaskMemo = recurTaskMemo + 1;
             "
           >
@@ -182,7 +227,7 @@
                 userRole < 4 ||
                 (userRole < 7 &&
                   recurTask.Create != userData.id &&
-                  recurTask.Assign != userData.id &&
+                  !recurTask.Assign.includes(userData.id.toString()) &&
                   recurTask.Update != userData.id)
                   ? 'false'
                   : 'plaintext-only'
@@ -226,7 +271,8 @@ export default {
     'slctdCntctIndex',
     'slctd',
     'slctdY_m_d',
-    'times',
+    'sttngs',
+    'updt',
     'userData',
     'userList',
     'userRole',
@@ -242,12 +288,12 @@ export default {
             },
           ]
         : this.sortAscDesc
-        ? this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
-            return { ...val, clmnIndex: index };
-          }).sort((a, b) => a.Start.localeCompare(b.Start))
-        : this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
-            return { ...val, clmnIndex: index };
-          }).sort((a, b) => b.Start.localeCompare(a.Start));
+          ? this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
+              return { ...val, clmnIndex: index };
+            }).sort((a, b) => a.Start.localeCompare(b.Start))
+          : this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
+              return { ...val, clmnIndex: index };
+            }).sort((a, b) => b.Start.localeCompare(a.Start));
     },
   },
 
@@ -262,10 +308,10 @@ export default {
         Start: this.slctdY_m_d,
         Recur: [this.slctdY_m_d.slice(5, 10)],
         Freq: 'Annually',
-        Assign: this.userData.id,
+        Assign: [this.userData.id.toString()],
         Create: this.userData.id,
         Update: this.userData.id,
-        Created: this.times.updtngY_m_d_H_i_s_z,
+        Created: this.updt.updtngY_m_d_H_i_s_z,
       };
       const newRecurTasks = [...this.contacts[this.slctdCntctIndex].RecurTasks, newRecurTask];
       const cloneCntct = this.contacts[this.slctdCntctIndex];
@@ -275,16 +321,28 @@ export default {
       this.recurTaskMemo = this.recurTaskMemo + 1;
     },
     updateRecurTask(event, clmnIndex, key) {
-      event = typeof event === 'boolean' ? event : event.trim().replaceAll('<br>', '');
+      event = typeof event === 'boolean' || typeof event === 'object' ? event : event.trim().replaceAll('<br>', '');
       if (
         (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
         (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
       ) {
         const cloneCntct = this.contacts[this.slctdCntctIndex];
-        cloneCntct[this.clmn][clmnIndex][key] = event;
+        key == 'Assign'
+          ? event.target.checked
+            ? cloneCntct[this.clmn][clmnIndex][key].push(event.target.nextSibling.value?.toString())
+            : cloneCntct[this.clmn][clmnIndex][key].splice(
+                cloneCntct[this.clmn][clmnIndex][key].indexOf(event.target.nextSibling.value?.toString()),
+                1,
+              )
+          : (cloneCntct[this.clmn][clmnIndex][key] = event);
         cloneCntct[this.clmn][clmnIndex].Update = this.userData.id;
         this.recurTaskMemo = this.recurTaskMemo + 1;
-        this.patchContactInfo({ [key]: event, Update: this.userData.id }, this.clmn, clmnIndex, cloneCntct);
+        this.patchContactInfo(
+          { [key]: cloneCntct[this.clmn][clmnIndex][key], Update: this.userData.id },
+          this.clmn,
+          clmnIndex,
+          cloneCntct,
+        );
       }
     },
     updateRecurTaskFreq(clmnIndex, start, freq) {
@@ -339,8 +397,32 @@ export default {
       this.slctd.eventIndx = null;
       this.recurTaskMemo = this.recurTaskMemo + 1;
     },
+    getRecurTaskOwners() {
+      Array.from(document.getElementsByClassName('recurTaskOwnrSlct')).forEach((el, elIndx) => {
+        if (this.contacts[this.slctdCntctIndex].RecurTasks[el.id.slice(9)].Assign.includes(el.value)) {
+          let recurTaskOwnrChckBx = document.getElementById('recurTaskOwnrChckBx' + elIndx);
+          let recurTaskOwnr = this.contacts[this.slctdCntctIndex].RecurTasks[el.id.slice(9)].Assign;
+          recurTaskOwnrChckBx.checked = true;
+          recurTaskOwnr.length < 2 && recurTaskOwnr.includes(el.value)
+            ? (recurTaskOwnrChckBx.disabled = true)
+            : (recurTaskOwnrChckBx.disabled = false);
+        } else {
+          let recurTaskOwnrChckBx = document.getElementById('recurTaskOwnrChckBx' + elIndx);
+          let recurTaskOwnr = this.contacts[this.slctdCntctIndex].RecurTasks[el.id.slice(9)].Assign;
+          recurTaskOwnrChckBx.checked = false;
+          recurTaskOwnr.length < 2 && recurTaskOwnr.includes(el.value)
+            ? (recurTaskOwnrChckBx.disabled = true)
+            : (recurTaskOwnrChckBx.disabled = false);
+        }
+      });
+    },
   },
-
+  mounted() {
+    this.getRecurTaskOwners();
+  },
+  updated() {
+    this.getRecurTaskOwners();
+  },
   watch: {
     'slctd.eventIndx'() {
       this.recurTaskMemo = this.recurTaskMemo + 1;
@@ -395,7 +477,7 @@ export default {
   padding-bottom: 10px;
   font-size: 14px;
   display: inline-block;
-  width: 60px;
+  width: 65px;
   text-align: right;
 }
 .recur-tasks-body input,
@@ -407,9 +489,10 @@ export default {
   font-size: 14px;
   overflow: hidden;
 }
-/*.recur-tasks-body button {
-    margin: 10px 10px 0px 0px;
-  }*/
+.recur-tasks-body input[type='checkbox'] {
+  height: auto;
+  width: auto;
+}
 .recur-tasks-span {
   border-radius: 1px;
   border: 1px solid lightgray;

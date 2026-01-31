@@ -36,8 +36,8 @@
             v-if="
               userRole > 5 ||
               (userRole <= 5 &&
-                task.Assign == userData.id &&
-                times.initialUsrTmstmp + 86400000 > new Date(task?.Created)?.getTime())
+                task.Assign.includes(userData.id?.toString()) &&
+                updt.initialUsrTmstmp + 86400000 > new Date(task?.Created)?.getTime())
             "
             class="fa-solid fa-trash"
             @click="deleteTask(task.clmnIndex)"
@@ -49,7 +49,10 @@
             :disabled="
               dsbld ||
               userRole < 4 ||
-              (userRole < 7 && task.Create != userData.id && task.Assign != userData.id && task.Update != userData.id)
+              (userRole < 7 &&
+                task.Create != userData.id &&
+                !task.Assign.includes(userData.id?.toString()) &&
+                task.Update != userData.id)
             "
             v-on:blur="updateTask($event.target.value, task.clmnIndex, 'Date')"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
@@ -62,7 +65,10 @@
             :disabled="
               dsbld ||
               userRole < 4 ||
-              (userRole < 7 && task.Create != userData.id && task.Assign != userData.id && task.Update != userData.id)
+              (userRole < 7 &&
+                task.Create != userData.id &&
+                !task.Assign.includes(userData.id?.toString()) &&
+                task.Update != userData.id)
             "
           >
             <option value="">None</option>
@@ -76,29 +82,66 @@
             <option value="fa-solid fa-star">Urgent</option>
             <option value="fa-solid fa-pen">Write</option>
           </select>
-          <span class="tasks-label">Owner:</span>
+          <span class="tasks-label">Assigned:</span>
           <input
-            checked
-            :id="'taskOwnerChckBx' + taskIndex"
             type="checkbox"
-            @change="updateTask($event.target.checked, task.clmnIndex, 'Assign')"
-          />
-          <select
-            class="taskOwners"
-            style="width: calc(100% - 120px)"
-            :value="task.Assign"
-            :id="'task' + task.clmnIndex"
-            :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
+            :id="'taskOwnrChckBx' + taskIndex"
             :disabled="
               dsbld ||
               userRole < 4 ||
-              (userRole < 7 && task.Create != userData.id && task.Assign != userData.id && task.Update != userData.id)
+              (userRole < 7 &&
+                task.Create != userData.id &&
+                !task.Assign.includes(userData.id?.toString()) &&
+                task.Update != userData.id)
+            "
+            @change="updateTask($event, task.clmnIndex, 'Assign')"
+          />
+          <select
+            class="taskOwnrSlct"
+            style="width: calc(100% - 120px)"
+            :id="'task' + task.clmnIndex"
+            :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
+            :title="
+              Array.isArray(task.Assign)
+                ? task.Assign.map((assignee) =>
+                    sttngs?.entity?.taskGroups?.[assignee]
+                      ? sttngs.entity.taskGroups[assignee].map(
+                          (groupAssignee) => ' ' + userList[groupAssignee]?.FirstName,
+                        )
+                      : ' ' + userList[assignee]?.FirstName,
+                  )
+                : false
             "
             @change="getTaskOwners"
           >
-            <option v-for="([userNo, userInfo], userIndex) in Object.entries(userList)" :value="userNo">
+            <option disabled v-if="sttngs?.entity?.taskGroups">======Users======</option>
+            <option
+              v-for="(userInfo, userNo) in userList"
+              :value="userNo"
+              :selected="task.Assign[task.Assign.length - 1]?.toString() == userNo?.toString()"
+              :style="{
+                background: task.Assign.includes(userNo?.toString())
+                  ? 'rgba(100, 100, 100, 0.3)'
+                  : 'rgba(100, 100, 100, 0)',
+                fontWeight: task.Assign.includes(userNo?.toString()) ? 'bold' : 'normal',
+              }"
+            >
               {{ userInfo.FirstName }}
             </option>
+            <template v-if="sttngs?.entity?.taskGroups">
+              <option disabled>===User groups===</option>
+              <option
+                v-for="(taskGrpVal, taskGrpKey) in sttngs.entity.taskGroups"
+                :selected="task.Assign[task.Assign.length - 1]?.toString() == taskGrpKey"
+                :style="{
+                  background: task.Assign.includes(taskGrpKey) ? 'rgba(100, 100, 100, 0.3)' : 'rgba(100, 100, 100, 0)',
+                  fontWeight: task.Assign.includes(taskGrpKey) ? 'bold' : 'normal',
+                }"
+              >
+                {{ taskGrpKey }}
+              </option>
+            </template>
+            <option disabled>=================</option>
             <option v-if="userList?.[task?.Update]?.FirstName" disabled>
               Updated by {{ userList[task.Update].FirstName }}
             </option>
@@ -114,7 +157,10 @@
             :disabled="
               dsbld ||
               userRole < 4 ||
-              (userRole < 7 && task.Create != userData.id && task.Assign != userData.id && task.Update != userData.id)
+              (userRole < 7 &&
+                task.Create != userData.id &&
+                !task.Assign.includes(userData.id?.toString()) &&
+                task.Update != userData.id)
             "
           />
           {{ task?.Status === true || task?.Status == '1' ? 'Yes' : 'No' }}
@@ -124,7 +170,10 @@
               :contenteditable="
                 dsbld ||
                 userRole < 4 ||
-                (userRole < 7 && task.Create != userData.id && task.Assign != userData.id && task.Update != userData.id)
+                (userRole < 7 &&
+                  task.Create != userData.id &&
+                  !task.Assign.includes(userData.id?.toString()) &&
+                  task.Update != userData.id)
                   ? 'false'
                   : 'plaintext-only'
               "
@@ -167,7 +216,8 @@ export default {
     'slctd',
     'slctdCntctIndex',
     'slctdY_m_d',
-    'times',
+    'sttngs',
+    'updt',
     'userData',
     'userList',
     'userRole',
@@ -200,11 +250,11 @@ export default {
     newTask() {
       const prevTasksLen = this.contacts[this.slctdCntctIndex].Tasks.length;
       const newTask = {
-        Date: this.slctdY_m_d + this.times.updtngY_m_d_H_i_s_z.slice(10, 16),
-        Assign: this.userData.id,
+        Date: this.slctdY_m_d + this.updt.updtngY_m_d_H_i_s_z.slice(10, 16),
+        Assign: [this.userData.id.toString()],
         Create: this.userData.id,
         Update: this.userData.id,
-        Created: this.times.updtngY_m_d_H_i_s_z,
+        Created: this.updt.updtngY_m_d_H_i_s_z,
       };
       const newTasks = [...this.contacts[this.slctdCntctIndex].Tasks, newTask];
       const cloneCntct = this.contacts[this.slctdCntctIndex];
@@ -214,17 +264,28 @@ export default {
       this.taskMemo = this.taskMemo + 1;
     },
     updateTask(event, clmnIndex, key) {
-      console.log(event);
-      event = typeof event === 'boolean' ? event : event.trim().replaceAll('<br>', '');
+      event = typeof event === 'boolean' || typeof event === 'object' ? event : event.trim().replaceAll('<br>', '');
       if (
         (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
         (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
       ) {
         const cloneCntct = this.contacts[this.slctdCntctIndex];
-        cloneCntct[this.clmn][clmnIndex][key] = event;
+        key == 'Assign'
+          ? event.target.checked
+            ? cloneCntct[this.clmn][clmnIndex][key].push(event.target.nextSibling.value?.toString())
+            : cloneCntct[this.clmn][clmnIndex][key].splice(
+                cloneCntct[this.clmn][clmnIndex][key].indexOf(event.target.nextSibling.value?.toString()),
+                1,
+              )
+          : (cloneCntct[this.clmn][clmnIndex][key] = event);
         cloneCntct[this.clmn][clmnIndex].Update = this.userData.id;
         this.taskMemo = this.taskMemo + 1;
-        // this.patchContactInfo({ [key]: event, Update: this.userData.id }, this.clmn, clmnIndex, cloneCntct);
+        this.patchContactInfo(
+          { [key]: cloneCntct[this.clmn][clmnIndex][key], Update: this.userData.id },
+          this.clmn,
+          clmnIndex,
+          cloneCntct,
+        );
       }
     },
     deleteTask(clmnIndex) {
@@ -238,21 +299,31 @@ export default {
       this.taskMemo = this.taskMemo + 1;
     },
     getTaskOwners() {
-      Array.from(document.getElementsByClassName('taskOwners')).forEach((el, elIndx) => {
-        this.contacts[this.slctdCntctIndex].Tasks[el.id.slice(4)].Assign.includes(el.value)
-          ? (document.getElementById('taskOwnerChckBx' + elIndx).checked = true)
-          : (document.getElementById('taskOwnerChckBx' + elIndx).checked = false);
+      Array.from(document.getElementsByClassName('taskOwnrSlct')).forEach((el, elIndx) => {
+        if (this.contacts[this.slctdCntctIndex].Tasks[el.id.slice(4)].Assign.includes(el.value)) {
+          let taskOwnrChckBx = document.getElementById('taskOwnrChckBx' + elIndx);
+          let taskOwnr = this.contacts[this.slctdCntctIndex].Tasks[el.id.slice(4)].Assign;
+          taskOwnrChckBx.checked = true;
+          taskOwnr.length < 2 && taskOwnr.includes(el.value)
+            ? (taskOwnrChckBx.disabled = true)
+            : (taskOwnrChckBx.disabled = false);
+        } else {
+          let taskOwnrChckBx = document.getElementById('taskOwnrChckBx' + elIndx);
+          let taskOwnr = this.contacts[this.slctdCntctIndex].Tasks[el.id.slice(4)].Assign;
+          taskOwnrChckBx.checked = false;
+          taskOwnr.length < 2 && taskOwnr.includes(el.value)
+            ? (taskOwnrChckBx.disabled = true)
+            : (taskOwnrChckBx.disabled = false);
+        }
       });
     },
   },
-
-  // mounted() {
-  //   this.getTaskOwners();
-  // },
-  // updated() {
-  //   this.getTaskOwners();
-  // },
-
+  mounted() {
+    this.getTaskOwners();
+  },
+  updated() {
+    this.getTaskOwners();
+  },
   watch: {
     'slctd.eventIndx'() {
       this.taskMemo = this.taskMemo + 1;
@@ -309,7 +380,7 @@ export default {
   padding-bottom: 10px;
   font-size: 14px;
   display: inline-block;
-  width: 60px;
+  width: 65px;
   text-align: right;
 }
 .tasks-body input,

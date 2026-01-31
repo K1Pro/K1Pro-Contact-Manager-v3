@@ -78,14 +78,16 @@ export default {
         tmstmp: new Date(date_Y_m_d_H_i_s_z).getTime(),
         IDs: {},
       },
-      times: {
+      updt: {
+        chatsAmount: null,
+        contactsAmount: null,
         initialUsrTmstmp: date_tmstmp,
         initialBrwsrTmstmp: new Date().getTime(),
-        updtngY_m_d_H_i_s_z: date_Y_m_d_H_i_s_z,
         mstRcntChat: unixEpoch,
         mstRcntMsg: null,
         mstRcntCntctUpdt: unixEpoch,
         mstRcntUpdates: {},
+        updtngY_m_d_H_i_s_z: date_Y_m_d_H_i_s_z,
       },
       updating: 0,
       userData: user_data,
@@ -106,7 +108,7 @@ export default {
       slctdCntctIndex: Vue.computed(() => this.slctdCntctIndex),
       slctdY_m_d: Vue.computed(() => this.slctdY_m_d),
       tbCntntWdth: Vue.computed(() => this.tbCntntWdth),
-      times: Vue.computed(() => this.times),
+      updt: Vue.computed(() => this.updt),
       tmpSttngs: Vue.computed(() => this.tmpSttngs),
       userData: Vue.computed(() => this.userData),
       userList: Vue.computed(() => this.userList),
@@ -125,16 +127,22 @@ export default {
     sideMenuItems() {
       const sideMenuItemsArray = [
         ['fa fa-house-chimney-user', null, 'Contact info', 'Calendar'],
-        ['fa fa-calendar-check', this.contacts[this.slctdCntctIndex]?.Tasks.length, 'Tasks', 'Calendar'],
-        ['fa fa-repeat', this.contacts[this.slctdCntctIndex]?.RecurTasks.length, 'Recurring tasks', 'Calendar'],
-        ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length > 0 ? '1' : null, 'Notes', 'Calendar'],
+        this.contacts?.length > 0
+          ? ['fa fa-calendar-check', this.contacts[this.slctdCntctIndex]?.Tasks.length, 'Tasks', 'Calendar']
+          : false,
+        this.contacts?.length > 0
+          ? ['fa fa-repeat', this.contacts[this.slctdCntctIndex]?.RecurTasks.length, 'Recurring tasks', 'Calendar']
+          : false,
+        this.contacts?.length > 0
+          ? ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length > 0 ? '1' : null, 'Notes', 'Calendar']
+          : false,
         ['fa fa-comment', this.allNewChats, 'Chat', 'Chatbox'],
         ['fa fa-chart-pie', null, 'Reports', 'Reportstable'],
         ['fa fa-sliders', null, 'Settings', 'Calendar'],
         ['fa fa-user-gear', 'post-' + url_path.login, 'Account', '_a_t', access_token, '_s_i', session_id],
         ['fa fa-sign-out', null, 'Log out'],
       ];
-      if (this.sttngs.entity.sidemenu) {
+      if (this.sttngs.entity.sidemenu && this.contacts?.length > 0) {
         this.sttngs.entity.sidemenu.forEach((sidemenu) => {
           const sidemenuCustomItemsArray = [];
           sidemenu.forEach((sidemenuItem, sidemenuItemIndex) => {
@@ -178,8 +186,8 @@ export default {
     newMsgs() {
       let newChats = {};
       let newChatsTotal = 0;
-      if (this.times.mstRcntMsg !== null)
-        this.times.mstRcntMsg.forEach((msg) => {
+      if (this.updt.mstRcntMsg !== null)
+        this.updt.mstRcntMsg.forEach((msg) => {
           this.contacts?.forEach((contact, contactIndx) => {
             contact.Connections.forEach((conn) => {
               if (conn.Phone && conn.Phone.replace(/[^0-9]/g, '') == msg) {
@@ -196,7 +204,7 @@ export default {
                           : '',
                   phone: msg.slice(0, 3) + '-' + msg.slice(3, 6) + '-' + msg.slice(6, 10),
                   smsGroup: conn.Phone,
-                  amnt: this.times.mstRcntMsg.filter((x) => x == msg).length,
+                  amnt: this.updt.mstRcntMsg.filter((x) => x == msg).length,
                 };
               }
             });
@@ -207,23 +215,22 @@ export default {
     allNewChats() {
       return (
         Object.values(this.newChats).reduce((a, b) => a + b, 0) +
-        (this.sttngs.entity.sms.enabled === true && this.times.mstRcntMsg !== null ? this.newMsgs.total : 0)
+        (this.sttngs.entity.sms.enabled === true && this.updt.mstRcntMsg !== null ? this.newMsgs.total : 0)
       );
     },
     todaysEvents() {
       let contactArray = {};
       const todaysDate =
-        new Date(this.times?.initialUsrTmstmp)?.getFullYear() +
+        new Date(this.updt?.initialUsrTmstmp)?.getFullYear() +
         '-' +
-        (new Date(this.times?.initialUsrTmstmp)?.getMonth() + 1)?.toString()?.padStart(2, '0') +
+        (new Date(this.updt?.initialUsrTmstmp)?.getMonth() + 1)?.toString()?.padStart(2, '0') +
         '-' +
-        new Date(this.times?.initialUsrTmstmp)?.getDate()?.toString()?.padStart(2, '0');
+        new Date(this.updt?.initialUsrTmstmp)?.getDate()?.toString()?.padStart(2, '0');
       this.contacts.forEach((contact, contactIndex) => {
         contact.Tasks.forEach((task) => {
           calDay = task?.Date?.split('T')[0];
-          if (todaysDate == calDay && task?.Assign == this.userData.id && task?.Status != 1) {
+          if (todaysDate == calDay && task?.Assign.includes(this.userData.id.toString()) && task?.Status != 1)
             contactArray[task.Date.split('T')[1].slice(0, 5)] = contactIndex;
-          }
         });
       });
       return contactArray;
@@ -258,7 +265,7 @@ export default {
     slctdCntctIndex() {
       const selectdContactIndex = this.contacts.findIndex((contact) => contact.id == this.sttngs.user.slctdCntctID);
       if (selectdContactIndex === -1) {
-        this.sttngs.user.slctdCntctID = this.contacts[this.contacts.length - 1].id;
+        this.sttngs.user.slctdCntctID = this.contacts?.length > 0 ? this.contacts[this.contacts.length - 1].id : 0;
         this.sttngsReq('PATCH', 'user');
       }
       return selectdContactIndex;
@@ -303,11 +310,11 @@ export default {
   },
 
   methods: {
-    async appUpdate() {
+    async getUpdt() {
       const userSlctdCntctID = this.sttngs?.user?.slctdCntctID ? this.sttngs.user.slctdCntctID : null;
       try {
         const response = await fetch(
-          app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z + '/' + userSlctdCntctID + '/update',
+          app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z + '/' + userSlctdCntctID + '/update',
           {
             headers: {
               Authorization: access_token,
@@ -323,25 +330,25 @@ export default {
             this.showMsg('Internet restored');
           }
 
-          (this.times.mstRcntCntctUpdt == unixEpoch || this.times.mstRcntCntctUpdt != resJSON.data.mstRcntCntctUpdt) &&
-            this.getContacts();
-          (this.times.mstRcntChat == unixEpoch || this.times.mstRcntChat != resJSON.data.mstRcntChat) &&
-            this.getChats();
+          (this.contacts === null || this.updt.mstRcntCntctUpdt != resJSON.data.mstRcntCntctUpdt) &&
+            this.getContacts(this.updt.mstRcntCntctUpdt);
+          (this.updt.mstRcntChat == unixEpoch || this.updt.mstRcntChat != resJSON.data.mstRcntChat) &&
+            this.getChats(this.updt.mstRcntChat);
 
           if (
-            this.times.mstRcntMsg !== null &&
-            JSON.stringify(this.times.mstRcntMsg) != JSON.stringify(resJSON.data.mstRcntMsg)
+            this.updt.mstRcntMsg !== null &&
+            JSON.stringify(this.updt.mstRcntMsg) != JSON.stringify(resJSON.data.mstRcntMsg)
           )
-            if (resJSON.data.mstRcntMsg.length > this.times.mstRcntMsg.length) {
+            if (resJSON.data.mstRcntMsg.length > this.updt.mstRcntMsg.length) {
               const newChat = new Notification(
-                'There is ' + (resJSON.data.mstRcntMsg.length - this.times.mstRcntMsg.length) + ' new text message',
+                'There is ' + (resJSON.data.mstRcntMsg.length - this.updt.mstRcntMsg.length) + ' new text message',
               );
             }
 
-          this.times.mstRcntCntctUpdt = resJSON.data.mstRcntCntctUpdt;
-          this.times.mstRcntChat = resJSON.data.mstRcntChat;
-          this.times.mstRcntMsg = resJSON.data.mstRcntMsg;
-          this.times.mstRcntUpdates = resJSON.data.mstRcntUpdate;
+          this.updt.mstRcntCntctUpdt = resJSON.data.mstRcntCntctUpdt;
+          this.updt.mstRcntChat = resJSON.data.mstRcntChat;
+          this.updt.mstRcntMsg = resJSON.data.mstRcntMsg;
+          this.updt.mstRcntUpdates = resJSON.data.mstRcntUpdate;
           this.slctd.IDs = resJSON.data.selected_IDs;
         } else {
           this.$refs.loginMessage.value = resJSON?.messages?.[0] ? resJSON.messages[0] : 'Logged out with an error';
@@ -374,12 +381,12 @@ export default {
       }
     },
 
-    async getContacts() {
+    async getContacts(updtMstRcntCntctUpdt) {
       try {
+        // signal: AbortSignal.timeout(timeout), needs to be above the headers:{}
         const response = await fetch(
-          app_api_url + '/' + this.times.mstRcntCntctUpdt.slice(0, 19).replace(' ', 'T') + '/contacts',
+          app_api_url + '/' + updtMstRcntCntctUpdt.slice(0, 19).replace(' ', 'T') + '/contacts',
           {
-            signal: AbortSignal.timeout(timeout),
             headers: {
               Authorization: access_token,
               'Cache-Control': 'no-store',
@@ -388,28 +395,42 @@ export default {
         );
         const resJSON = await response.json();
         if (resJSON.success) {
-          if (this.contacts === null || this.times.mstRcntCntctUpdt == unixEpoch) {
+          console.log(updtMstRcntCntctUpdt);
+          console.log('response: ' + resJSON.data?.contacts_amount);
+          console.log('amount: ' + this.updt.contactsAmount);
+          console.log('length: ' + this.contacts?.length);
+          console.log(this.updt.contactsAmount > this.contacts?.length);
+
+          if (updtMstRcntCntctUpdt == unixEpoch || this.updt.contactsAmount > this.contacts?.length) {
             this.deletedIDs = resJSON.data.deleted_IDs;
-            this.contacts = resJSON.data.contacts ? resJSON.data.contacts : [];
-            setTimeout(() => {
-              const newChat = new Notification(
-                'Hi ' +
-                  this.userData.FirstName +
-                  ', \n' +
-                  (this.userData.Entity == this.userData.id
-                    ? ''
-                    : 'You are logged in under ' +
-                      this.userData.Entity.slice(0, 1).toUpperCase() +
-                      this.userData.Entity.slice(1) +
-                      '.\n') +
-                  (Object.keys(this.todaysEvents).length > 0
-                    ? 'You have ' +
-                      Object.keys(this.todaysEvents).length +
-                      (Object.keys(this.todaysEvents).length > 1 ? ' tasks' : ' task') +
-                      ' scheduled for today.'
-                    : ''),
-              );
-            }, 1000);
+            if (updtMstRcntCntctUpdt == unixEpoch) {
+              this.contacts = resJSON.data.contacts;
+              setTimeout(() => {
+                const newChat = new Notification(
+                  'Hi ' +
+                    this.userData.FirstName +
+                    ', \n' +
+                    (this.userData.Entity == this.userData.id
+                      ? ''
+                      : 'You are logged in under ' +
+                        this.userData.Entity.slice(0, 1).toUpperCase() +
+                        this.userData.Entity.slice(1) +
+                        '.\n') +
+                    (Object.keys(this.todaysEvents).length > 0
+                      ? 'You have ' +
+                        Object.keys(this.todaysEvents).length +
+                        (Object.keys(this.todaysEvents).length > 1 ? ' tasks' : ' task') +
+                        ' scheduled for today.'
+                      : ''),
+                );
+              }, 1000);
+            } else {
+              const prevContacts = this.contacts;
+              const frstLdCntcts = this.contacts.map((cntct) => cntct.id);
+              const fltrdCntcts = resJSON.data.contacts.filter((cntct) => !frstLdCntcts.includes(cntct.id));
+              this.contacts = [...prevContacts, ...fltrdCntcts].sort((a, b) => a.id - b.id);
+            }
+            this.getContacts(unixEpoch1);
           } else {
             let oldValueActvEl;
             if (resJSON.data.contacts.length > 0) {
@@ -437,7 +458,7 @@ export default {
                     if (oldValueActvEl && !['Contactinfo', 'Tasks', 'Recurringtasks', 'Notes', 'Chat', 'Settings'].includes(this.slctd.sideMenuLnk[0]))
                       setTimeout(() => {document.activeElement[oldValueActvEl[0]] = oldValueActvEl[1];}, 1);
                   } else {
-                    if (contact.id > this.contacts[this.contacts.length - 1].id) {
+                    if (this.contacts?.length === 0 || contact.id > this.contacts[this.contacts.length - 1].id) {
                       const prevContacts = this.contacts;
                       prevContacts.push(contact);
                       this.contacts = prevContacts;
@@ -450,7 +471,6 @@ export default {
                         ' edited this contact on ' +
                         Object.values(contact.Updated)[0]?.replace('T', ' '),
                     );
-
                     this.contacts[this.slctdCntctIndex] = contact;
                     const oldEventIndx = this.slctd.eventIndx !== null ? this.slctd.eventIndx : null;
                     if (['Tasks', 'Recurringtasks'].includes(this.slctd.sideMenuLnk[0])) {
@@ -490,40 +510,43 @@ export default {
               this.deletedIDs = resJSON.data.deleted_IDs;
             }
           }
+          this.updt.contactsAmount = resJSON.data?.contacts_amount;
         }
+        console.log('====================');
       } catch (error) {
-        if (this.contacts === null) {
-          location.assign(url_no_params + '?timeout=' + (Number(timeout) + 4500));
-        } else {
-          this.dsbld = true;
-          this.showMsg('Internet connection issue');
-          console.log(error.toString());
-        }
+        this.dsbld = true;
+        console.log(error?.toString());
+        confirm(
+          'The following error appeared when trying to retrieve contacts: ' +
+            error?.toString()?.slice(-20) +
+            '. Would you like to try again? If not, then the page will try to reload.',
+        ) == true
+          ? this.getContacts(unixEpoch)
+          : location.assign(url_no_params + '?timeout=' + (Number(timeout) + 4500));
       }
     },
 
-    async getChats() {
+    async getChats(updtMstRcntChat) {
       try {
-        const response = await fetch(
-          app_api_url + '/' + this.times.mstRcntChat.slice(0, 19).replace(' ', 'T') + '/chat',
-          {
-            headers: {
-              Authorization: access_token,
-              'Cache-Control': 'no-store',
-            },
+        const response = await fetch(app_api_url + '/' + updtMstRcntChat.slice(0, 19).replace(' ', 'T') + '/chat', {
+          headers: {
+            Authorization: access_token,
+            'Cache-Control': 'no-store',
           },
-        );
+        });
         const resJSON = await response.json();
         if (resJSON.success) {
-          if (this.chats === null || this.times.mstRcntChat == unixEpoch) {
+          if (this.chats === null || [unixEpoch, unixEpoch1].includes(updtMstRcntChat)) {
+            if (updtMstRcntChat == unixEpoch)
+              setTimeout(() => {
+                if (this.allNewChats) {
+                  const newChat = new Notification(
+                    this.allNewChats + ' unread ' + (this.allNewChats > 1 ? 'messages' : 'message') + ' in your chat',
+                  );
+                }
+              }, 2000);
             this.chats = resJSON?.data?.chats ? resJSON.data.chats : [];
-            setTimeout(() => {
-              if (this.allNewChats) {
-                const newChat = new Notification(
-                  this.allNewChats + ' unread ' + (this.allNewChats > 1 ? 'messages' : 'message') + ' in your chat',
-                );
-              }
-            }, 2000);
+            if (resJSON.data.chats_amount != this.updt.chatsAmount) this.getChats(unixEpoch1);
           } else {
             resJSON.data.chats.forEach((chat) => {
               if (!this.chats.find((chatObj) => chatObj.id == chat.id || Number(chatObj.id) == Number(chat.id))) {
@@ -534,6 +557,7 @@ export default {
               }
             });
           }
+          this.updt.chatsAmount = resJSON.data.chats_amount;
         }
       } catch (error) {
         this.showMsg(error.toString());
@@ -555,7 +579,7 @@ export default {
     async patchContactInfo(event, column, columnIndex, newCntctInfo) {
       const slctdCntctIndex = this.contacts.findIndex((contact) => contact.id == newCntctInfo.id);
       if (
-        new Date(new Date(this.times.updtngY_m_d_H_i_s_z.slice(0, 19)) - 300000).getTime() <
+        new Date(new Date(this.updt.updtngY_m_d_H_i_s_z.slice(0, 19)) - 300000).getTime() <
           new Date(Object.values(this.contacts[slctdCntctIndex].Updated)[0]).getTime() &&
         Object.keys(this.contacts[slctdCntctIndex].Updated)[0] != this.userData.id
       )
@@ -566,13 +590,12 @@ export default {
 
       this.contacts[slctdCntctIndex] = newCntctInfo;
       this.contacts[slctdCntctIndex].Updated = {
-        [this.userData.id]: this.times.updtngY_m_d_H_i_s_z,
+        [this.userData.id]: this.updt.updtngY_m_d_H_i_s_z,
       };
       this.updating++;
-      console.log(columnIndex);
       try {
         const response = await fetch(
-          app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z.replace(' ', 'T').trim() + '/contacts',
+          app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z.replace(' ', 'T').trim() + '/contacts',
           {
             method: 'PATCH',
             headers: {
@@ -611,7 +634,7 @@ export default {
         this.contacts[this.slctdCntctIndex][column].splice(columnIndex, 1);
         try {
           const response = await fetch(
-            app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z.replace(' ', 'T').trim() + '/contacts',
+            app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z.replace(' ', 'T').trim() + '/contacts',
             {
               method: 'DELETE',
               headers: {
@@ -644,11 +667,11 @@ export default {
   },
 
   created() {
-    this.appUpdate();
+    this.getUpdt();
     setInterval(() => {
-      const timeDifference = new Date().getTime() - this.times.initialBrwsrTmstmp;
-      this.times.updtngY_m_d_H_i_s_z = new Date(this.times.initialUsrTmstmp + timeDifference).toISOString();
-      this.appUpdate();
+      const timeDifference = new Date().getTime() - this.updt.initialBrwsrTmstmp;
+      this.updt.updtngY_m_d_H_i_s_z = new Date(this.updt.initialUsrTmstmp + timeDifference).toISOString();
+      this.getUpdt();
     }, 5000);
     this.sttngsReq('GET', 'user');
     this.sttngsReq('GET', 'entity');
@@ -663,8 +686,8 @@ export default {
 
     // This is a task reminder
     setInterval(() => {
-      const updtingHour = this.times.updtngY_m_d_H_i_s_z?.split('T')[1].slice(0, 2);
-      const updtingMin = this.times.updtngY_m_d_H_i_s_z?.split('T')[1].slice(3, 5);
+      const updtingHour = this.updt.updtngY_m_d_H_i_s_z?.split('T')[1].slice(0, 2);
+      const updtingMin = this.updt.updtngY_m_d_H_i_s_z?.split('T')[1].slice(3, 5);
       // prettier-ignore
       const updtngH_iLess5Min = new Date(new Date().setHours(updtingHour, updtingMin) - 300000).getHours().toString().padStart(2, '0') + ':' + new Date(new Date().setHours(updtingHour, updtingMin) - 300000).getMinutes().toString().padStart(2, '0');
       const updtngH_i = updtingHour + ':' + updtingMin;

@@ -147,7 +147,7 @@ export default {
     'slctdCntctIndex',
     'sttngs',
     'tbCntntWdth',
-    'times',
+    'updt',
     'userData',
     'usaDateFrmt',
     'userList',
@@ -169,8 +169,8 @@ export default {
             contact.Members[0].Name
               ? contact.Members[0].Name
               : contact.Members[0].First
-              ? contact.Members[0].First
-              : '',
+                ? contact.Members[0].First
+                : '',
             contact.Addresses[0]?.Address_1 ? contact.Addresses[0].Address_1 : '',
             contact.Assets[0] ? Object.values(contact.Assets[0])[0] : '',
             contact.Connections[0] ? Object.values(contact.Connections[0])[0] : '',
@@ -230,8 +230,8 @@ export default {
               contact.Members[0].Name
                 ? contact.Members[0].Name
                 : contact.Members[0].First
-                ? contact.Members[0].First
-                : '',
+                  ? contact.Members[0].First
+                  : '',
               contact.Addresses[0]?.Address_1 ? contact.Addresses[0].Address_1 : '',
               contact.Assets[0] ? Object.values(contact.Assets[0])[0] : '',
               contact.Connections[0] ? Object.values(contact.Connections[0])[0] : '',
@@ -312,8 +312,8 @@ export default {
             this.userList[log.tow]?.FirstName
               ? this.userList[log.tow]?.FirstName
               : log?.tow
-              ? log?.tow?.replaceAll('+1', '')
-              : this.userData?.AppPermissions?.ContactManager?.smsPhone?.replace('+1', ''),
+                ? log?.tow?.replaceAll('+1', '')
+                : this.userData?.AppPermissions?.ContactManager?.smsPhone?.replace('+1', ''),
           ]);
           if (['Emails', 'SMS'].includes(this.slctd.report.name)) {
             tblClmns[tblClmns.length - 1].push(log.msg ? log.msg : null);
@@ -332,8 +332,8 @@ export default {
                 contact?.Members?.[0]?.Name
                   ? contact?.Members?.[0]?.Name
                   : contact?.Members?.[0]?.First
-                  ? contact?.Members?.[0]?.First
-                  : '',
+                    ? contact?.Members?.[0]?.First
+                    : '',
                 this.usaDateFrmt(msg?.dat),
                 this.userList[msg?.frm]?.FirstName ? this.userList[msg?.frm]?.FirstName : msg?.frm?.replace('+1', ''),
                 msg?.tow
@@ -357,7 +357,7 @@ export default {
         // Task stats
         nmbrClmn = null;
         let userID = this.slctd.report.user;
-        let currentDate = new Date(this.times.initialUsrTmstmp);
+        let currentDate = new Date(this.updt.initialUsrTmstmp);
         let decreasingDate;
         let emailCount, callCount, taskCount;
         let emailCallCountArray = [];
@@ -369,17 +369,17 @@ export default {
           taskCount = 0;
           cloneCntcts.forEach((contact) => {
             contact.Email.forEach((email) => {
-              if (email.frm == userID && email.dat.includes(decreasingDate)) {
+              if (email.frm == userID && email?.dat?.includes(decreasingDate)) {
                 emailCount += 1;
               }
             });
             contact.Tel.forEach((tel) => {
-              if (tel.frm == userID && tel.dat.includes(decreasingDate)) {
+              if (tel.frm == userID && tel?.dat?.includes(decreasingDate)) {
                 callCount += 1;
               }
             });
             contact.Tasks.forEach((task) => {
-              if (task?.Date.includes(decreasingDate) && task?.Assign == userID && task?.Status == 1) {
+              if (task?.Date?.includes(decreasingDate) && task?.Assign == userID && task?.Status == 1) {
                 taskCount += 1;
               }
             });

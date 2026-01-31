@@ -137,7 +137,7 @@ export default {
     'showMsg',
     'slctdCntctIndex',
     'tbCntntWdth',
-    'times',
+    'updt',
     'userData',
     'userRole',
   ],
@@ -192,7 +192,7 @@ export default {
             const oldSlctdCntctIndex = this.slctdCntctIndex;
             try {
               const response = await fetch(
-                app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/contacts',
+                app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/contacts',
                 {
                   method: 'DELETE',
                   headers: {
@@ -203,21 +203,21 @@ export default {
                   body: JSON.stringify({
                     ID: this.sttngs.user.slctdCntctID,
                   }),
-                }
+                },
               );
               const resJSON = await response.json();
               if (resJSON.success) {
+                this.updt.contactsAmount--;
                 this.sttngs.user.slctdCntctID =
                   this.contacts[this.contacts.length - 1].id == this.sttngs.user.slctdCntctID
                     ? this.contacts[this.contacts.length - 2].id
                     : this.contacts[this.contacts.length - 1].id;
                 this.sttngsReq('PATCH', 'user');
                 this.contacts.splice(oldSlctdCntctIndex, 1);
-                this.spinLogin = false;
               } else {
-                this.spinLogin = false;
                 this.showMsg('Failed to delete contact');
               }
+              this.spinLogin = false;
             } catch (error) {
               this.spinLogin = false;
               this.showMsg('Failed to delete contact');
@@ -230,7 +230,7 @@ export default {
           console.log(Object.keys(this.sttngs.entity.contactInfo.keys.Members)[0]);
           try {
             const response = await fetch(
-              app_api_url + '/' + this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/contacts',
+              app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/contacts',
               {
                 method: 'POST',
                 headers: {
@@ -241,10 +241,11 @@ export default {
                 body: JSON.stringify({
                   Member: Object.keys(this.sttngs.entity.contactInfo.keys.Members)[0],
                 }),
-              }
+              },
             );
             const resJSON = await response.json();
             if (resJSON.success) {
+              this.updt.contactsAmount++;
               console.log(resJSON);
               const newCntctID = resJSON.data.contact_id;
               const newMember = {
@@ -265,10 +266,10 @@ export default {
                 Categ: '',
                 DNC: 0,
                 Created: {
-                  [this.userData.id]: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
+                  [this.userData.id]: this.updt.updtngY_m_d_H_i_s_z.slice(0, 16),
                 },
                 Updated: {
-                  [this.userData.id]: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
+                  [this.userData.id]: this.updt.updtngY_m_d_H_i_s_z.slice(0, 16),
                 },
                 Assigned: this.userData.id,
                 Log: [],

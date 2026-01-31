@@ -9,7 +9,7 @@
     <div class="chat-body">
       <div
         v-for="([chatGroup, chatGroupMembers], chatGroupIndx) in Object.entries(sttngs.entity.chats).filter(
-          ([key, value]) => value.includes(userData.id)
+          ([key, value]) => value.includes(userData.id),
         )"
         class="chat-groups"
         :class="[
@@ -73,7 +73,7 @@
           </div>
           <div
             v-for="([msgKey, msgVal], msgIndx) in Object.entries(newMsgs?.msgs).filter(
-              ([key, value]) => value.id != sttngs.user.slctdCntctID
+              ([key, value]) => value.id != sttngs.user.slctdCntctID,
             )"
             class="chat-groups"
             :class="['chat' + (msgIndx % 2)]"
@@ -93,13 +93,13 @@
 export default {
   name: 'Chat',
 
-  inject: ['contacts', 'newChats', 'newMsgs', 'sttngsReq', 'sttngs', 'slctd', 'slctdCntctIndex', 'times', 'userData'],
+  inject: ['contacts', 'newChats', 'newMsgs', 'sttngsReq', 'sttngs', 'slctd', 'slctdCntctIndex', 'updt', 'userData'],
 
   methods: {
     slctChatGroup(chatGroup) {
       this.slctd.chatGroup = chatGroup;
       this.slctd.chatType = 'Chat';
-      this.sttngs.user.chats[chatGroup] = this.times.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
+      this.sttngs.user.chats[chatGroup] = this.updt.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
       this.sttngsReq('PATCH', 'user');
     },
     slctSMSGroup(SMSGroup) {
@@ -143,7 +143,7 @@ export default {
 
   computed: {
     connections() {
-      return this.contacts[this.slctdCntctIndex].Connections;
+      return this.contacts?.length > 0 ? this.contacts[this.slctdCntctIndex].Connections : [];
     },
     somePhone() {
       return this.connections.some((cnnctns) => cnnctns.Phone);
@@ -157,7 +157,7 @@ export default {
     newMsgsFltr() {
       return (
         JSON.stringify(
-          Object.entries(this.newMsgs?.msgs)?.filter(([key, value]) => value.id != this.sttngs.user.slctdCntctID)
+          Object.entries(this.newMsgs?.msgs)?.filter(([key, value]) => value.id != this.sttngs.user.slctdCntctID),
         ) != '[]'
       );
     },

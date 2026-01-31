@@ -166,7 +166,7 @@ export default {
     'slctdCntctIndex',
     'sttngs',
     'slctd',
-    'times',
+    'updt',
     'userData',
     'usaDateFrmt',
   ],
@@ -179,12 +179,12 @@ export default {
       uploadedFiles: [],
       secDir: sec_dir,
       strtTime:
-        new Date(this.times.initialUsrTmstmp - 30 * 86400000)?.getFullYear() +
+        new Date(this.updt.initialUsrTmstmp - 30 * 86400000)?.getFullYear() +
         '-' +
-        (new Date(this.times?.initialUsrTmstmp - 30 * 86400000)?.getMonth() + 1)?.toString()?.padStart(2, '0') +
+        (new Date(this.updt?.initialUsrTmstmp - 30 * 86400000)?.getMonth() + 1)?.toString()?.padStart(2, '0') +
         '-' +
-        new Date(this.times?.initialUsrTmstmp - 30 * 86400000)?.getDate()?.toString()?.padStart(2, '0'),
-      endTime: this.times.updtngY_m_d_H_i_s_z.slice(0, 10),
+        new Date(this.updt?.initialUsrTmstmp - 30 * 86400000)?.getDate()?.toString()?.padStart(2, '0'),
+      endTime: this.updt.updtngY_m_d_H_i_s_z.slice(0, 10),
     };
   },
 
@@ -211,15 +211,19 @@ export default {
       return this.slctdChats.length;
     },
     chatBoxTitle() {
-      const firstName =
-        this.contacts[this.slctdCntctIndex].Members[0].First &&
-        this.contacts[this.slctdCntctIndex].Members[0].First != ''
-          ? this.contacts[this.slctdCntctIndex].Members[0].First
-          : '';
-      const name =
-        this.contacts[this.slctdCntctIndex].Members[0].Name && this.contacts[this.slctdCntctIndex].Members[0].Name != ''
-          ? this.contacts[this.slctdCntctIndex].Members[0].Name
-          : '';
+      let firstName, name;
+      if (this.contacts?.length > 0) {
+        firstName =
+          this.contacts[this.slctdCntctIndex].Members[0].First &&
+          this.contacts[this.slctdCntctIndex].Members[0].First != ''
+            ? this.contacts[this.slctdCntctIndex].Members[0].First
+            : '';
+        name =
+          this.contacts[this.slctdCntctIndex].Members[0].Name &&
+          this.contacts[this.slctdCntctIndex].Members[0].Name != ''
+            ? this.contacts[this.slctdCntctIndex].Members[0].Name
+            : '';
+      }
       return (
         this.slctd.chatType +
         ' with ' +
@@ -239,7 +243,7 @@ export default {
     sendChat() {
       if (this.chatBoxMsg.replaceAll('\n', '') != '' || this.uploadedFiles.length > 0) {
         this.spinLogin = true;
-        const dat = this.times.updtngY_m_d_H_i_s_z.slice(0, 19);
+        const dat = this.updt.updtngY_m_d_H_i_s_z.slice(0, 19);
         const frm = this.slctd.chatType == 'SMS' ? this.userData.id.toString() : this.userData.id;
         // prettier-ignore
         const tow = this.slctd.chatType == 'SMS' ? this.slctd.smsGroup.replace(/[^0-9]/g, '') : this.sttngs.entity.chats[this.slctd.chatGroup];
@@ -282,7 +286,7 @@ export default {
         const resJSON = await response.json();
         if (resJSON.success && chatType == 'Chat') {
           console.log(resJSON);
-          this.times.mstRcntChat = dat.slice(0, 19).replace('T', ' ');
+          this.updt.mstRcntChat = dat.slice(0, 19).replace('T', ' ');
           this.sttngs.user.chats[this.slctd.chatGroup] = dat.slice(0, 19).replace('T', ' ');
           this.sttngsReq('PATCH', 'user');
           this.chats.push(resJSON.data);

@@ -84,7 +84,7 @@ export default {
     'sttngs',
     'slctd',
     'slctdCntctIndex',
-    'times',
+    'updt',
     'userData',
     'userRole',
   ],
@@ -117,7 +117,7 @@ export default {
             'tel:' + this.contacts[this.slctdCntctIndex].Connections[connIndex][connType].replace(/\D/g, '');
           const newConn = {
             frm: this.userData.id,
-            dat: this.times.updtngY_m_d_H_i_s_z.slice(0, 16),
+            dat: this.updt.updtngY_m_d_H_i_s_z.slice(0, 16),
             tow: this.contacts[this.slctdCntctIndex].Connections[connIndex][connType].replace(/\D/g, ''),
           };
           const cloneCntct = this.contacts[this.slctdCntctIndex];

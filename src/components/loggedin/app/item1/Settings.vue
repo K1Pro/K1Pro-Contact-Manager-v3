@@ -55,10 +55,10 @@
           disabled
           :value="
             userData.id == userSlctd
-              ? times.updtngY_m_d_H_i_s_z.replace('T', ' ').slice(0, 16)
-              : times.mstRcntUpdates[userSlctd]
-              ? times.mstRcntUpdates[userSlctd].slice(0, 16)
-              : 'Never'
+              ? updt.updtngY_m_d_H_i_s_z.replace('T', ' ').slice(0, 16)
+              : updt.mstRcntUpdates[userSlctd]
+                ? updt.mstRcntUpdates[userSlctd].slice(0, 16)
+                : 'Never'
           "
         />
         <template v-if="userSlctd != ''">
@@ -105,7 +105,7 @@ export default {
     'showMsg',
     'sttngs',
     'slctd',
-    'times',
+    'updt',
     'userData',
     'userList',
     'userRole',
@@ -170,7 +170,7 @@ export default {
         'AppPermissions',
         null,
         event.target.name,
-        this.userSlctd
+        this.userSlctd,
       );
     },
     async patchUserData(event, column, columnIndex, key, ID) {
