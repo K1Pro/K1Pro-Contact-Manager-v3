@@ -4,7 +4,7 @@
       {{ chatBoxTitle }}
       <span><input type="date" v-model="strtTime" /> - <input type="date" v-model="endTime" /></span>
     </div>
-    <div class="chat-box-body">
+    <div class="chat-box-body"">
       <template
         v-if="slctdChatAmount"
         v-for="(chat, chatIndx) in slctdChats?.sort((a, b) => a?.dat.localeCompare(b?.dat))"
@@ -169,10 +169,12 @@ export default {
     'updt',
     'userData',
     'usaDateFrmt',
+    'wndw',
   ],
 
   data() {
     return {
+      chatMounted: false,
       chatBoxMsg: '',
       spinLogin: false,
       uploadingFiles: false,
@@ -349,37 +351,53 @@ export default {
       this.chatBoxMsg = '';
       this.uploadedFiles = [];
       this.spinLogin = false;
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 150);
     },
   },
 
   watch: {
     slctdChatAmount() {
-      setTimeout(() => {
-        this.$refs.bottomChatEl.scrollIntoView();
-      }, 100);
-      this.spinLogin = false;
+      if (this.chatMounted) {
+        setTimeout(() => {
+          this.$refs.bottomChatEl.scrollIntoView();
+        }, 100);
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 150);
+        this.spinLogin = false;
+      }
     },
     'slctd.chatType'() {
-      this.resetChatbox();
+      if (this.chatMounted) this.resetChatbox();
     },
     'slctd.smsGroup'() {
-      this.resetChatbox();
+      if (this.chatMounted) this.resetChatbox();
     },
     'slctd.chatGroup'() {
-      this.resetChatbox();
+      if (this.chatMounted) this.resetChatbox();
     },
   },
 
   mounted() {
-    this.resetChatbox();
+    setTimeout(() => {
+      this.$refs.bottomChatEl.scrollIntoView();
+    }, 5);
+    setTimeout(() => {
+      window.scrollTo({ top: this.wndw.hght });
+      this.chatMounted = true;
+    }, 10);
   },
 };
 </script>
 
 <style>
 .chat-box {
-  padding: 10px 10px 10px 10px;
   font-size: 12px;
+  position: relative;
+  z-index: 3;
+  height: 100%;
 }
 .chat-box a {
   text-decoration: none;
@@ -398,15 +416,18 @@ export default {
 .chat-box-title span {
   position: absolute;
   right: 5px;
+  background-color: lightblue;
+  /* height: 30px; */
+  padding-left: 7.5px;
 }
 .chat-box-title input[type='date'] {
   font-family: 'Helvetica', sans-serif;
   width: 95px;
 }
 .chat-box-body {
+  height: calc(100% - 105px);
   background-color: white;
   width: 100%;
-  height: calc(100vh - 125px);
   font-family: 'Helvetica', sans-serif;
   padding: 5px;
   border: none;
@@ -521,9 +542,6 @@ export default {
   width: 45px;
 }
 @media only screen and (min-width: 768px) {
-  .chat-box {
-    padding: 10px 10px 10px 0px;
-  }
   .chat-msg-len {
     right: 200px;
   }

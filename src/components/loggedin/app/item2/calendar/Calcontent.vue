@@ -1,25 +1,27 @@
 <template>
   <div
-    class="task-grid-day-title"
+    class="cal-title"
     v-if="firstDayY_m_d && calContactTasks"
-    @drop.prevent="dropEvent(days[dayIndex])"
     @dragover.prevent
     @dragenter.prevent
+    @drop.prevent="dropEvent(days[dayIndex])"
   >
-    <b v-if="days[dayIndex] == updt.updtngY_m_d_H_i_s_z.slice(0, 10)">
+    <div v-if="days[dayIndex] == updt.updtngY_m_d_H_i_s_z.slice(0, 10)">
+      <b>
+        {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : '' }}
+        <i class="fa-solid fa-cloud-sun"></i>
+      </b>
+    </div>
+    <div v-else>
       {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : '' }}
-      <i class="fa-solid fa-cloud-sun"></i>
-    </b>
-    <span v-else>
-      {{ firstDayY_m_d ? days[dayIndex].slice(5, 7) + '/' + days[dayIndex].slice(8, 10) : '' }}
-    </span>
+    </div>
 
-    <i v-if="!dsbld" @click="newTask(days[dayIndex])" class="fa-solid fa-square-plus task-grid-day-plus"></i>
+    <i v-if="!dsbld" @click="newTask(days[dayIndex])" class="fa-solid fa-square-plus cal-add"></i>
   </div>
-  <div class="task-grid-day-content" v-if="firstDayY_m_d && calContactTasks">
+  <div class="cal-day" v-if="firstDayY_m_d && calContactTasks">
     <template v-for="calContactTask in calContactTasks">
       <div
-        class="task-grid-container"
+        class="cal-task prevent-select"
         :class="[
           calContactTask.Status,
           {
@@ -32,39 +34,31 @@
               calContactTask.Type == slctd.sideMenuLnk[0],
           },
         ]"
-        :style="{
-          'grid-template-columns': calContactTask.Icon ? 'calc(100% - 20px) 20px' : '100%',
-        }"
         v-show="
           (calContactTask.Assign?.includes(sttngs.user.calendar.filters.owners?.toString()) ||
             sttngs.user.calendar.filters.owners == '') &&
           (sttngs.user.calendar.filters.status == calContactTask.Status || sttngs.user.calendar.filters.status == '') &&
           (sttngs.user.calendar.filters.category == calContactTask.Categ || sttngs.user.calendar.filters.category == '')
         "
+        :title="calContactTask.Desc"
+        :draggable="calContactTask.Type == 'Tasks' ? true : false"
+        v-on:dblclick="selectContact(calContactTask.ContactID, 'Contactinfo', null)"
+        @click="selectContact(calContactTask.ContactID, calContactTask.Type, calContactTask.EventIndex)"
+        @dragstart="
+          dragEvent(
+            $event,
+            calContactTask.ContactID,
+            calContactTask.EventIndex,
+            calContactTask.Type,
+            calContactTask.Time,
+          )
+        "
       >
-        <div
-          style="overflow: hidden"
-          class="prevent-select"
-          :title="calContactTask.Desc"
-          @click="selectContact(calContactTask.ContactID, calContactTask.Type, calContactTask.EventIndex)"
-          v-on:dblclick="selectContact(calContactTask.ContactID, 'Contactinfo', null)"
-          :draggable="calContactTask.Type == 'Tasks' ? true : false"
-          @dragstart="
-            dragEvent(
-              $event,
-              calContactTask.ContactID,
-              calContactTask.EventIndex,
-              calContactTask.Type,
-              calContactTask.Time,
-            )
-          "
-        >
+        <div>
           {{ calContactTask.Time != '25:00' ? calContactTask.Clock.replace(' AM', '').replace(' PM', '') : '' }}
           {{ calContactTask?.Name }}
         </div>
-        <div style="text-align: center" class="prevent-select" v-if="calContactTask.Icon">
-          <i :class="calContactTask.Icon"></i>
-        </div>
+        <i v-if="calContactTask.Icon" :class="calContactTask.Icon"></i>
       </div>
     </template>
   </div>
@@ -72,7 +66,7 @@
 
 <script>
 export default {
-  name: 'Day Content',
+  name: 'Content',
 
   inject: [
     'contacts',
@@ -253,40 +247,58 @@ export default {
 </script>
 
 <style>
-.task-grid-day-title {
-  position: sticky;
-  top: 0;
-  padding-left: 2px;
-  padding-top: 2px;
-  padding-bottom: 2px;
+.cal-title {
+  padding: 2px;
+  height: 25px;
+  display: flex;
   overflow: hidden;
+  word-break: break-all;
   background-color: inherit;
+  border-right: 5px solid #888;
 }
-.task-grid-day-plus {
-  padding-right: 5px;
-  padding-top: 2px;
+.cal-title div,
+.cal-task div {
+  width: 100%;
+}
+.cal-add {
   cursor: pointer;
   color: #417cd9;
-  float: right;
+  font-size: 16px;
 }
-.task-grid-day-content {
-  overflow: hidden;
+.cal-day {
+  height: 100%;
+  overflow-y: scroll;
 }
-.task-grid-container {
+.cal-day::-webkit-scrollbar {
+  width: 5px;
+}
+.cal-day::-webkit-scrollbar-track {
+  background: #888;
+}
+.cal-day::-webkit-scrollbar-thumb {
+  background: #f1f1f1;
+}
+.cal-day::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+.cal-task {
+  display: flex;
+  height: 25px;
   color: white;
-  display: grid;
   cursor: pointer;
+  overflow: hidden;
+  word-break: break-all;
+  padding: 2px 0px 2px 2px;
   border: 1px solid white;
-  padding-left: 2px;
-  padding-top: 2px;
-  padding-bottom: 2px;
 }
-.task-grid-container:hover:not(.activeTask) {
+.cal-task i {
+  margin: 5px;
+  width: 10px;
+  font-size: 10px;
+}
+.cal-task:hover:not(.activeTask) {
   background-color: #db66ff;
   background-image: linear-gradient(125deg, #db66ff 0 25%, #af51cc 95% 100%);
-}
-.task-grid-container i {
-  font-size: 10px;
 }
 .compltd {
   background-color: #52a375;

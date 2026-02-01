@@ -1,42 +1,41 @@
 <template>
-  <div class="calendar-body">
-    <div :class="'calendar-body-grid-container' + tmpSttngs.user.calendar.filters.days">
-      <template v-for="(day, dayIndex) in days">
+  <div class="cal-grid">
+    <template v-for="(day, dayIndex) in days">
+      <div
+        v-if="(dayIndex + 1) % 7 && (dayIndex + 2) % 7"
+        class="day"
+        :class="{ activeDay: days[dayIndex] == slctdY_m_d }"
+        :style="calItem"
+        @click="changeDate(days[dayIndex], dayIndex)"
+      >
+        <calcontent :dayIndex="dayIndex"></calcontent>
+      </div>
+
+      <div v-if="(dayIndex + 1) % 7 === 0" :style="calItem">
         <div
-          v-if="(dayIndex + 1) % 7 && (dayIndex + 2) % 7"
-          class="calendar-body-grid-item day"
+          class="day saturday"
+          :class="{ activeDay: days[dayIndex - 1] == slctdY_m_d }"
+          @click="changeDate(days[dayIndex - 1], dayIndex - 1)"
+        >
+          <calcontent :dayIndex="dayIndex - 1"></calcontent>
+        </div>
+        <div
+          class="day sunday"
           :class="{ activeDay: days[dayIndex] == slctdY_m_d }"
           @click="changeDate(days[dayIndex], dayIndex)"
         >
           <calcontent :dayIndex="dayIndex"></calcontent>
         </div>
-
-        <div v-if="(dayIndex + 1) % 7 === 0" class="calendar-body-grid-item">
-          <div
-            class="day saturday"
-            :class="{ activeDay: days[dayIndex - 1] == slctdY_m_d }"
-            @click="changeDate(days[dayIndex - 1], dayIndex - 1)"
-          >
-            <calcontent :dayIndex="dayIndex - 1"></calcontent>
-          </div>
-          <div
-            class="day sunday"
-            :class="{ activeDay: days[dayIndex] == slctdY_m_d }"
-            @click="changeDate(days[dayIndex], dayIndex)"
-          >
-            <calcontent :dayIndex="dayIndex"></calcontent>
-          </div>
-        </div>
-      </template>
-    </div>
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Calendar body',
+  name: 'Grid',
 
-  inject: ['days', 'slctd', 'slctdY_m_d', 'tmpSttngs'],
+  inject: ['days', 'slctd', 'slctdY_m_d'],
 
   methods: {
     changeDate(slctdY_m_d, slctdDayIndex) {
@@ -44,62 +43,30 @@ export default {
       this.slctd.dayIndex = slctdDayIndex;
     },
   },
+
+  computed: {
+    calItem() {
+      return {
+        height: this.days.length > 7 ? 100 / (this.days.length / 7) + '%' : '100%',
+        flex: this.days.length >= 7 ? '0 0 16.6666%' : '0 0 ' + 100 / this.days.length + '%',
+      };
+    },
+  },
 };
 </script>
 
 <style>
-.Calendar body {
-}
-.calendar-body-grid-container0 {
-  display: grid;
-  grid-template-columns: 100%;
-}
-.calendar-body-grid-container1 {
-  display: grid;
-  grid-template-columns: 33.33% 33.34% 33.33%;
-}
-.calendar-body-grid-container2,
-.calendar-body-grid-container3,
-.calendar-body-grid-container4,
-.calendar-body-grid-container5 {
-  display: grid;
-  grid-template-columns: 16.67% 16.67% 16.67% 16.67% 16.66% 16.66%;
-}
-.calendar-body-grid-container0,
-.calendar-body-grid-container1,
-.calendar-body-grid-container2 {
-  grid-template-rows: calc(100vh - 60px);
-}
-.calendar-body-grid-container3 {
-  grid-template-rows: calc(50vh - 30px) calc(50vh - 30px);
-}
-.calendar-body-grid-container4 {
-  grid-template-rows: calc(33.33vh - 20px) calc(33.33vh - 20px) calc(33.33vh - 20px);
-}
-.calendar-body-grid-container5 {
-  grid-template-rows: calc(25vh - 15px) calc(25vh - 15px) calc(25vh - 15px) calc(25vh - 15px);
+.cal-grid {
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
 }
 .day {
-  border: solid #999999;
-  border-width: 2px;
+  display: flex;
   cursor: pointer;
-  overflow: hidden scroll;
-  white-space: nowrap;
+  flex-direction: column;
+  border: 2px solid #999999;
   background-image: linear-gradient(125deg, #ffffff 0 25%, #cccccc 95% 100%);
-}
-.day::-webkit-scrollbar {
-  width: 5px;
-}
-.day::-webkit-scrollbar-track {
-  background: #888;
-}
-
-.day::-webkit-scrollbar-thumb {
-  background: #f1f1f1;
-}
-
-.day::-webkit-scrollbar-thumb:hover {
-  background: #555;
 }
 .day:hover:not(.activeDay) {
   background-color: #ebccff;
@@ -107,7 +74,7 @@ export default {
 }
 .saturday {
   height: 50%;
-  border-bottom: solid black 1px;
+  border-bottom: 1px solid black;
 }
 .sunday {
   height: 50%;

@@ -1,9 +1,9 @@
 <template>
-  <div class="calendar-container">
-    <div class="calendar-container-item1">
+  <div class="cal-cntnr">
+    <div class="cal-cntnr-item1">
       <calnav></calnav>
     </div>
-    <div class="calendar-container-item2">
+    <div class="cal-cntnr-item2">
       <calgrid></calgrid>
     </div>
   </div>
@@ -16,25 +16,16 @@ export default {
 </script>
 
 <style>
-.calendar-container {
-  padding: 10px 10px 10px 10px;
+.cal-cntnr {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
-.calendar-container-item1 {
-  /* background-color: red; */
+.cal-cntnr-item1 {
   height: 40px;
 }
-.calendar-container-item2 {
+.cal-cntnr-item2 {
+  height: calc(100% - 40px);
   background-color: white;
-  height: calc(100vh - 60px);
-}
-.calendar-container-item3 {
-  /* background-color: blue; */
-  padding-top: 10px;
-  height: 50px;
-}
-@media only screen and (min-width: 768px) {
-  .calendar-container {
-    padding: 10px 10px 10px 0px;
-  }
 }
 </style>

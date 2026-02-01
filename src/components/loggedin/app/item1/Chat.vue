@@ -213,7 +213,7 @@ export default {
   height: 29px;
   padding: 5px;
   cursor: pointer;
-  overflow: visible;
+  overflow: hidden;
   white-space: nowrap;
   user-select: none;
 }

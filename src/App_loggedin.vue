@@ -1,7 +1,10 @@
 <template>
   <snackbar :msg @deleteMsg="msg = null"></snackbar>
   <template v-if="contacts != null && sttngs.user != null && sttngs.entity != null">
-    <div class="app-grid-container" :style="appGridContainer">
+    <div
+      class="app-grid-container"
+      :style="[appGridContainer, { gridTemplateRows: wndw.wdth >= 768 ? '100vh' : wndw.hght + 'px auto' }]"
+    >
       <div class="app-grid-item1">
         <sidemenu
           :sideMenuItems
@@ -27,6 +30,10 @@
       <div class="app-grid-item2">
         <component :is="slctd.sideMenuLnk[1]"></component>
       </div>
+    </div>
+    <div class="scroll-btns" v-if="wndw.wdth < 768">
+      <i class="fa-solid fa-circle-arrow-up" @click="scrollTop"></i
+      ><i class="fa-solid fa-circle-arrow-down" @click="scrollBottom"></i>
     </div>
   </template>
   <template v-else>
@@ -451,7 +458,7 @@ export default {
                           : false;
                 if (contact.id != this.sttngs.user.slctdCntctID) {
                   // this checks if other contacts have been modified
-                  const slctdCntctIndx = this.contacts.findIndex((slctdCntct) => slctdCntct.id == contact.id);
+                  const slctdCntctIndx = this.contacts?.findIndex((slctdCntct) => slctdCntct.id == contact.id);
                   if (slctdCntctIndx !== -1) {
                     this.contacts[slctdCntctIndx] = contact;
                     // prettier-ignore
@@ -503,7 +510,7 @@ export default {
             }
             if (JSON.stringify(this.deletedIDs) != JSON.stringify(resJSON.data.deleted_IDs)) {
               resJSON.data.deleted_IDs.forEach((deleted_ID) => {
-                const cntctIDtoBeDeleted = this.contacts.findIndex((slctdCntct) => slctdCntct.id == deleted_ID);
+                const cntctIDtoBeDeleted = this.contacts?.findIndex((slctdCntct) => slctdCntct.id == deleted_ID);
                 if (cntctIDtoBeDeleted == this.slctdCntctIndex) this.showMsg('Other user deleted this contact');
                 if (cntctIDtoBeDeleted !== -1) this.contacts.splice(cntctIDtoBeDeleted, 1);
               });
@@ -664,6 +671,12 @@ export default {
         }
       }
     },
+    scrollTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    scrollBottom() {
+      window.scrollTo({ top: this.wndw.hght, behavior: 'smooth' });
+    },
   },
 
   created() {
@@ -714,7 +727,6 @@ export default {
 .app-grid-container {
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: 100vh auto; /* auto */
   grid-row-gap: 10px;
   background-color: #c6c6c6;
   /* word-break: break-all; */
@@ -723,10 +735,10 @@ export default {
   min-height: 100vh;
   order: 3;
   overflow-y: hidden;
-  background: -webkit-linear-gradient(left, #f1f1f1 49px, #999999 49px);
-  background: -moz-linear-gradient(left, #f1f1f1 49px, #999999 49px);
-  background: -ms-linear-gradient(left, #f1f1f1 49px, #999999 49px);
-  background: linear-gradient(left, #f1f1f1 49px, #999999 49px);
+  background: -webkit-linear-gradient(left, #f1f1f1 49px, lightgray 50px, #999999 50px);
+  background: -moz-linear-gradient(left, #f1f1f1 49px, lightgray 50px, #999999 50px);
+  background: -ms-linear-gradient(left, #f1f1f1 49px, lightgray 50px, #999999 50px);
+  background: linear-gradient(left, #f1f1f1 49px, lightgray 50px, #999999 50px);
 }
 .app-grid-item1-panel {
   padding: 0px 10px 0px 65px;
@@ -739,7 +751,8 @@ export default {
 .app-grid-item2 {
   order: 1;
   background-color: #999999;
-  overflow-y: hidden;
+  overflow: hidden;
+  padding: 10px 10px 10px 10px;
 }
 input:not([type='checkbox']):disabled {
   color: black;
@@ -753,11 +766,20 @@ select:disabled {
 button:disabled {
   color: black;
 }
+.scroll-btns {
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  width: 10px;
+  z-index: 2;
+}
+.scroll-btns i {
+  opacity: 0.5;
+}
+.scroll-btns i:hover {
+  opacity: 1;
+}
 @media only screen and (min-width: 768px) {
-  .app-grid-container {
-    /* grid-template-columns: calc(50% - 5px) 10px calc(50% - 5px); this is in computed now*/
-    grid-template-rows: 100vh;
-  }
   .app-grid-item1 {
     min-height: auto;
     order: 1;
@@ -774,6 +796,7 @@ button:disabled {
 
   .app-grid-item2 {
     order: 3;
+    padding: 10px 10px 10px 0px;
   }
 }
 </style>

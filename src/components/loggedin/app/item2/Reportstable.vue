@@ -444,40 +444,38 @@ export default {
 
 <style>
 .reports-table {
-  text-align: left;
-  background-color: white;
-  width: calc(100% - 10px);
-  height: calc(100vh - 20px);
-  margin: 10px 0px 0px 10px;
-  font-size: 12px;
+  height: 100%;
   padding: 0px;
-  overflow: scroll scroll;
+  font-size: 12px;
+  text-align: left;
   user-select: none;
+  overflow: scroll scroll;
+  background-color: white;
 }
 .reports-table i {
   z-index: 1;
+  height: 30px;
+  cursor: pointer;
   color: #417cd9;
   position: absolute;
   top: calc(100vh + 20px);
-  height: 30px;
   padding: 10px 5px 0px 5px;
-  cursor: pointer;
 }
 .reports-table table {
+  width: 100%;
   border: 0px;
   border-collapse: collapse;
-  width: 100%;
 }
 .reports-table thead {
   height: 30px;
 }
 .reports-table th {
-  position: sticky;
   top: 0;
-  background-color: #6c757d;
-  padding: 5px;
   margin: 0px;
+  padding: 5px;
   color: white;
+  position: sticky;
+  background-color: #6c757d;
 }
 .reports-table td {
   padding: 5px;
@@ -510,13 +508,7 @@ tr:hover {
 .cellHover {
   cursor: pointer;
 }
-/* .cellHover:hover {
-  text-decoration: underline;
-} */
 @media only screen and (min-width: 768px) {
-  .reports-table {
-    margin: 10px 0px 0px 0px;
-  }
   .reports-table i {
     top: 10px;
     padding: 10px 5px 0px 20px;
