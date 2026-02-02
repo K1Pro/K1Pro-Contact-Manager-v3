@@ -1,6 +1,6 @@
 <template>
   <snackbar :msg @deleteMsg="msg = null"></snackbar>
-  <template v-if="contacts != null && sttngs.user != null && sttngs.entity != null">
+  <template v-if="contacts !== null && sttngs.user !== null && sttngs.entity !== null">
     <div
       class="app-grid-container"
       :style="[appGridContainer, { gridTemplateRows: wndw.wdth >= 768 ? '100vh' : wndw.hght + 'px auto' }]"
@@ -149,7 +149,7 @@ export default {
         ['fa fa-user-gear', 'post-' + url_path.login, 'Account', '_a_t', access_token, '_s_i', session_id],
         ['fa fa-sign-out', null, 'Log out'],
       ];
-      if (this.sttngs.entity.sidemenu && this.contacts?.length > 0) {
+      if (this.sttngs.entity?.sidemenu && this.contacts?.length > 0) {
         this.sttngs.entity.sidemenu.forEach((sidemenu) => {
           const sidemenuCustomItemsArray = [];
           sidemenu.forEach((sidemenuItem, sidemenuItemIndex) => {
@@ -173,10 +173,10 @@ export default {
     newChats() {
       let newChats = {};
       if (this.sttngs.user?.chats && this.chats !== null) {
-        Object.entries(this.sttngs.user.chats).forEach(([chatGroupName, mstRcntChatTime], chatIndex) => {
+        Object.entries(this.sttngs.user?.chats).forEach(([chatGroupName, mstRcntChatTime], chatIndex) => {
           this.chats.forEach((chat) => {
             if (
-              JSON.stringify(chat.tow) === JSON.stringify(this.sttngs.entity.chats[chatGroupName]) &&
+              JSON.stringify(chat.tow) === JSON.stringify(this.sttngs.entity?.chats?.[chatGroupName]) &&
               chat.dat > mstRcntChatTime
             ) {
               if (!newChats[chatGroupName]) {
@@ -222,7 +222,7 @@ export default {
     allNewChats() {
       return (
         Object.values(this.newChats).reduce((a, b) => a + b, 0) +
-        (this.sttngs.entity.sms.enabled === true && this.updt.mstRcntMsg !== null ? this.newMsgs.total : 0)
+        (this.sttngs.entity?.sms?.enabled === true && this.updt.mstRcntMsg !== null ? this.newMsgs.total : 0)
       );
     },
     todaysEvents() {
@@ -243,7 +243,7 @@ export default {
       return contactArray;
     },
     userList() {
-      return { ...this.sttngs.entity.activeUserList, ...this.sttngs.entity.userList };
+      return { ...this.sttngs.entity?.activeUserList, ...this.sttngs.entity?.userList };
     },
     userRole() {
       return this.roles.findIndex((role) => role === user_data.AppPermissions[app_name].role);
@@ -273,7 +273,7 @@ export default {
       const selectdContactIndex = this.contacts.findIndex((contact) => contact.id == this.sttngs.user.slctdCntctID);
       if (selectdContactIndex === -1) {
         this.sttngs.user.slctdCntctID = this.contacts?.length > 0 ? this.contacts[this.contacts.length - 1].id : 0;
-        this.sttngsReq('PATCH', 'user');
+        this.sttngsDBReq('PATCH', 'user');
       }
       return selectdContactIndex;
     },
@@ -337,7 +337,8 @@ export default {
             this.showMsg('Internet restored');
           }
 
-          (this.contacts === null || this.updt.mstRcntCntctUpdt != resJSON.data.mstRcntCntctUpdt) &&
+          ((this.contacts === null && this.updt.mstRcntCntctUpdt == unixEpoch) ||
+            this.updt.mstRcntCntctUpdt != resJSON.data.mstRcntCntctUpdt) &&
             this.getContacts(this.updt.mstRcntCntctUpdt);
           (this.updt.mstRcntChat == unixEpoch || this.updt.mstRcntChat != resJSON.data.mstRcntChat) &&
             this.getChats(this.updt.mstRcntChat);
@@ -402,15 +403,9 @@ export default {
         );
         const resJSON = await response.json();
         if (resJSON.success) {
-          console.log(updtMstRcntCntctUpdt);
-          console.log('response: ' + resJSON.data?.contacts_amount);
-          console.log('amount: ' + this.updt.contactsAmount);
-          console.log('length: ' + this.contacts?.length);
-          console.log(this.updt.contactsAmount > this.contacts?.length);
-
           if (updtMstRcntCntctUpdt == unixEpoch || this.updt.contactsAmount > this.contacts?.length) {
             this.deletedIDs = resJSON.data.deleted_IDs;
-            if (updtMstRcntCntctUpdt == unixEpoch) {
+            if (updtMstRcntCntctUpdt == unixEpoch && this.contacts === null) {
               this.contacts = resJSON.data.contacts;
               setTimeout(() => {
                 const newChat = new Notification(
@@ -439,24 +434,23 @@ export default {
             }
             this.getContacts(unixEpoch1);
           } else {
-            let oldValueActvEl;
-            if (resJSON.data.contacts.length > 0) {
-              resJSON.data.contacts.forEach((contact) => {
-                oldValueActvEl = false;
-                if (
-                  ['SPAN', 'TEXTAREA', 'INPUT'].includes(document.activeElement.tagName) &&
-                  document.activeElement.readOnly !== true &&
-                  document.activeElement.disabled !== true
-                )
-                  oldValueActvEl =
-                    document.activeElement.tagName == 'SPAN'
-                      ? ['innerHTML', document.activeElement.innerHTML]
-                      : document.activeElement.tagName == 'TEXTAREA'
+            if (resJSON.data.contacts.length > 0 && this.contacts !== null && Array.isArray(this.contacts)) {
+              let oldValueActvEl = false;
+              if (
+                ['SPAN', 'TEXTAREA', 'INPUT'].includes(document.activeElement.tagName) &&
+                document.activeElement.readOnly !== true &&
+                document.activeElement.disabled !== true
+              )
+                oldValueActvEl =
+                  document.activeElement.tagName == 'SPAN'
+                    ? ['innerHTML', document.activeElement.innerHTML]
+                    : document.activeElement.tagName == 'TEXTAREA'
+                      ? ['value', document.activeElement.value]
+                      : document.activeElement.tagName == 'INPUT'
                         ? ['value', document.activeElement.value]
-                        : document.activeElement.tagName == 'INPUT'
-                          ? ['value', document.activeElement.value]
-                          : false;
-                if (contact.id != this.sttngs.user.slctdCntctID) {
+                        : false;
+              resJSON.data.contacts.forEach((contact) => {
+                if (contact.id != this.sttngs.user?.slctdCntctID) {
                   // this checks if other contacts have been modified
                   const slctdCntctIndx = this.contacts?.findIndex((slctdCntct) => slctdCntct.id == contact.id);
                   if (slctdCntctIndx !== -1) {
@@ -473,11 +467,12 @@ export default {
                   }
                 } else {
                   if (this.userData.id != Object.keys(contact.Updated)[0]) {
-                    this.showMsg(
-                      this.sttngs.entity.activeUserList[Object.keys(contact.Updated)[0]].FirstName +
-                        ' edited this contact on ' +
-                        Object.values(contact.Updated)[0]?.replace('T', ' '),
-                    );
+                    if (this.sttngs.entity?.activeUserList)
+                      this.showMsg(
+                        this.sttngs.entity.activeUserList[Object.keys(contact.Updated)[0]].FirstName +
+                          ' edited this contact on ' +
+                          Object.values(contact.Updated)[0]?.replace('T', ' '),
+                      );
                     this.contacts[this.slctdCntctIndex] = contact;
                     const oldEventIndx = this.slctd.eventIndx !== null ? this.slctd.eventIndx : null;
                     if (['Tasks', 'Recurringtasks'].includes(this.slctd.sideMenuLnk[0])) {
@@ -507,29 +502,31 @@ export default {
                   }
                 }
               });
-            }
-            if (JSON.stringify(this.deletedIDs) != JSON.stringify(resJSON.data.deleted_IDs)) {
-              resJSON.data.deleted_IDs.forEach((deleted_ID) => {
-                const cntctIDtoBeDeleted = this.contacts?.findIndex((slctdCntct) => slctdCntct.id == deleted_ID);
-                if (cntctIDtoBeDeleted == this.slctdCntctIndex) this.showMsg('Other user deleted this contact');
-                if (cntctIDtoBeDeleted !== -1) this.contacts.splice(cntctIDtoBeDeleted, 1);
-              });
-              this.deletedIDs = resJSON.data.deleted_IDs;
+              if (JSON.stringify(this.deletedIDs) != JSON.stringify(resJSON.data.deleted_IDs)) {
+                resJSON.data.deleted_IDs.forEach((deleted_ID) => {
+                  const cntctIDtoBeDeleted = this.contacts?.findIndex((slctdCntct) => slctdCntct.id == deleted_ID);
+                  if (cntctIDtoBeDeleted == this.slctdCntctIndex) this.showMsg('Other user deleted this contact');
+                  if (cntctIDtoBeDeleted !== -1) this.contacts.splice(cntctIDtoBeDeleted, 1);
+                });
+                this.deletedIDs = resJSON.data.deleted_IDs;
+              }
             }
           }
           this.updt.contactsAmount = resJSON.data?.contacts_amount;
+          if (updtMstRcntCntctUpdt == unixEpoch1) {
+            this.sttngsReq('GET', 'user');
+            this.sttngsReq('GET', 'entity');
+          }
+        } else {
+          this.contacts === null ? this.getContacts(unixEpoch) : this.getContacts(updtMstRcntCntctUpdt);
         }
-        console.log('====================');
       } catch (error) {
-        this.dsbld = true;
-        console.log(error?.toString());
-        confirm(
-          'The following error appeared when trying to retrieve contacts: ' +
-            error?.toString()?.slice(-20) +
-            '. Would you like to try again? If not, then the page will try to reload.',
-        ) == true
-          ? this.getContacts(unixEpoch)
-          : location.assign(url_no_params + '?timeout=' + (Number(timeout) + 4500));
+        this.showMsg(error?.toString().slice(-50));
+        error?.toString() && error.toString().toLowerCase().includes('failed to fetch')
+          ? window.location.reload()
+          : this.contacts === null
+            ? this.getContacts(unixEpoch)
+            : this.getContacts(updtMstRcntCntctUpdt);
       }
     },
 
@@ -558,9 +555,11 @@ export default {
             resJSON.data.chats.forEach((chat) => {
               if (!this.chats.find((chatObj) => chatObj.id == chat.id || Number(chatObj.id) == Number(chat.id))) {
                 this.chats.push(chat);
-                const newChat = new Notification(
-                  this.sttngs.entity.activeUserList[chat.frm].FirstName + ': ' + chat.msg,
-                );
+                if (this.sttngs.entity?.activeUserList) {
+                  const newChat = new Notification(
+                    this.sttngs.entity.activeUserList[chat.frm].FirstName + ': ' + chat.msg,
+                  );
+                }
               }
             });
           }
@@ -586,6 +585,7 @@ export default {
     async patchContactInfo(event, column, columnIndex, newCntctInfo) {
       const slctdCntctIndex = this.contacts.findIndex((contact) => contact.id == newCntctInfo.id);
       if (
+        this.sttngs.entity?.activeUserList &&
         new Date(new Date(this.updt.updtngY_m_d_H_i_s_z.slice(0, 19)) - 300000).getTime() <
           new Date(Object.values(this.contacts[slctdCntctIndex].Updated)[0]).getTime() &&
         Object.keys(this.contacts[slctdCntctIndex].Updated)[0] != this.userData.id
@@ -686,8 +686,8 @@ export default {
       this.updt.updtngY_m_d_H_i_s_z = new Date(this.updt.initialUsrTmstmp + timeDifference).toISOString();
       this.getUpdt();
     }, 5000);
-    this.sttngsReq('GET', 'user');
-    this.sttngsReq('GET', 'entity');
+    this.sttngsDBReq('GET', 'user');
+    this.sttngsDBReq('GET', 'entity');
 
     // This notifies how many chats there are
     setInterval(() => {
@@ -729,7 +729,6 @@ export default {
   grid-template-columns: 100%;
   grid-row-gap: 10px;
   background-color: #c6c6c6;
-  /* word-break: break-all; */
 }
 .app-grid-item1 {
   min-height: 100vh;

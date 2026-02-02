@@ -161,7 +161,7 @@ export default {
     'chats',
     'contacts',
     'dsbld',
-    'sttngsReq',
+    'sttngsDBReq',
     'showMsg',
     'slctdCntctIndex',
     'sttngs',
@@ -290,7 +290,7 @@ export default {
           console.log(resJSON);
           this.updt.mstRcntChat = dat.slice(0, 19).replace('T', ' ');
           this.sttngs.user.chats[this.slctd.chatGroup] = dat.slice(0, 19).replace('T', ' ');
-          this.sttngsReq('PATCH', 'user');
+          this.sttngsDBReq('PATCH', 'user');
           this.chats.push(resJSON.data);
         }
         if (!resJSON.success) {

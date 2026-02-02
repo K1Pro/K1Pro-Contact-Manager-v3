@@ -132,7 +132,7 @@ export default {
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',
-    'sttngsReq',
+    'sttngsDBReq',
     'sttngs',
     'showMsg',
     'slctdCntctIndex',
@@ -212,7 +212,7 @@ export default {
                   this.contacts[this.contacts.length - 1].id == this.sttngs.user.slctdCntctID
                     ? this.contacts[this.contacts.length - 2].id
                     : this.contacts[this.contacts.length - 1].id;
-                this.sttngsReq('PATCH', 'user');
+                this.sttngsDBReq('PATCH', 'user');
                 this.contacts.splice(oldSlctdCntctIndex, 1);
               } else {
                 this.showMsg('Failed to delete contact');
@@ -282,7 +282,7 @@ export default {
               const cloneCntcts = this.contacts;
               this.$emit('contacts', [...cloneCntcts, newMember]);
               this.sttngs.user.slctdCntctID = newCntctID;
-              this.sttngsReq('PATCH', 'user');
+              this.sttngsDBReq('PATCH', 'user');
               this.spinLogin = false;
             } else {
               this.spinLogin = false;

@@ -70,6 +70,7 @@ export default {
 .nav i:hover,
 .nav button:hover {
   color: Gray;
+  cursor: pointer;
 }
 .fast-rewind i:first-child {
   margin-right: -3px;

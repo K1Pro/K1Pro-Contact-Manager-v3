@@ -100,7 +100,7 @@ export default {
 
   inject: [
     'daysRangeArr',
-    'sttngsReq',
+    'sttngsDBReq',
     'roles',
     'showMsg',
     'sttngs',
@@ -126,23 +126,23 @@ export default {
     daysRangeChange(event) {
       this.sttngs.user.calendar.filters.days = event.target.value;
       this.slctd.dayIndex = null;
-      this.sttngsReq('PATCH', 'user');
+      this.sttngsDBReq('PATCH', 'user');
     },
     ownersChange(event) {
       this.sttngs.user.calendar.filters.owners = event.target.value;
-      this.sttngsReq('PATCH', 'user');
+      this.sttngsDBReq('PATCH', 'user');
     },
     statusChange(event) {
       this.sttngs.user.calendar.filters.status = event.target.value;
-      this.sttngsReq('PATCH', 'user');
+      this.sttngsDBReq('PATCH', 'user');
     },
     categoryChange(event) {
       this.sttngs.user.calendar.filters.category = event.target.value;
-      this.sttngsReq('PATCH', 'user');
+      this.sttngsDBReq('PATCH', 'user');
     },
     clockChange(event) {
       this.sttngs.user.clock = event.target.value;
-      this.sttngsReq('PATCH', 'user');
+      this.sttngsDBReq('PATCH', 'user');
     },
     notificationsChange() {
       Notification.requestPermission().then((result) => {

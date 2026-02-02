@@ -74,7 +74,7 @@ export default {
     'dsbld',
     'firstDayTmstmp',
     'patchContactInfo',
-    'sttngsReq',
+    'sttngsDBReq',
     'slctd',
     'slctdCntctIndex',
     'sttngs',
@@ -207,7 +207,7 @@ export default {
       this.slctd.eventIndx = eventIndex;
       this.slctd.sideMenuLnk = [sidemenuLink, 'Calendar'];
       this.sttngs.user.slctdCntctID = ContactID;
-      this.sttngsReq('PATCH', 'user');
+      this.sttngsDBReq('PATCH', 'user');
       if (this.wndw.wdth < 768) {
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
       }
@@ -225,7 +225,7 @@ export default {
       const key = 'Date';
 
       this.sttngs.user.slctdCntctID = ContactID;
-      this.sttngsReq('PATCH', 'user');
+      this.sttngsDBReq('PATCH', 'user');
 
       if (
         (eventDateTime != this.contacts[slctdCntctIndex][clmn][clmnIndex][key] && eventDateTime != '') ||

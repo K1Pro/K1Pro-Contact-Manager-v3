@@ -93,14 +93,14 @@
 export default {
   name: 'Chat',
 
-  inject: ['contacts', 'newChats', 'newMsgs', 'sttngsReq', 'sttngs', 'slctd', 'slctdCntctIndex', 'updt', 'userData'],
+  inject: ['contacts', 'newChats', 'newMsgs', 'sttngsDBReq', 'sttngs', 'slctd', 'slctdCntctIndex', 'updt', 'userData'],
 
   methods: {
     slctChatGroup(chatGroup) {
       this.slctd.chatGroup = chatGroup;
       this.slctd.chatType = 'Chat';
       this.sttngs.user.chats[chatGroup] = this.updt.updtngY_m_d_H_i_s_z.slice(0, 19).replace('T', ' ');
-      this.sttngsReq('PATCH', 'user');
+      this.sttngsDBReq('PATCH', 'user');
     },
     slctSMSGroup(SMSGroup) {
       this.dltMsg([SMSGroup?.replace(/[^0-9]/g, '')]);
@@ -112,7 +112,7 @@ export default {
       this.slctd.smsGroup = msgVal.smsGroup;
       this.slctd.chatType = 'SMS';
       this.sttngs.user.slctdCntctID = msgVal.id;
-      this.sttngsReq('PATCH', 'user');
+      this.sttngsDBReq('PATCH', 'user');
     },
     dltAllMsgs(cnnctns) {
       let cnnctnsArr = [];

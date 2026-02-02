@@ -48,7 +48,7 @@
 export default {
   name: 'Search Bar',
 
-  inject: ['contacts', 'sttngsReq', 'sttngs', 'userData'],
+  inject: ['contacts', 'sttngsDBReq', 'sttngs', 'userData'],
 
   computed: {
     searchArray() {
@@ -120,7 +120,7 @@ export default {
       this.search = '';
       this.$refs.searchDropdown.size = 0;
       this.sttngs.user.slctdCntctID = this.contacts[event.target.value].id;
-      this.sttngsReq('PATCH', 'user');
+      this.sttngsDBReq('PATCH', 'user');
     },
 
     onWindowClick() {
