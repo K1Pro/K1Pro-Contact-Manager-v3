@@ -174,7 +174,6 @@ export default {
 
 <style>
 .emails {
-  padding: 10px 10px 10px 10px;
   font-size: 12px;
 }
 .emails-title {
@@ -247,11 +246,5 @@ export default {
   color: grey;
   height: calc(100vh - 330px);
   overflow: hidden hidden;
-}
-
-@media only screen and (min-width: 768px) {
-  .emails {
-    padding: 10px 10px 10px 0px;
-  }
 }
 </style>

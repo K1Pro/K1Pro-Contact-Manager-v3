@@ -228,17 +228,21 @@ export default {
       return this.slctd.eventIndx !== null
         ? [
             {
-              ...this.contacts[this.slctdCntctIndex].Tasks[this.slctd.eventIndx],
+              ...this.contacts[this.slctdCntctIndex][this.clmn][this.slctd.eventIndx],
               clmnIndex: this.slctd.eventIndx,
             },
           ]
         : this.sortAscDesc
-          ? this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
-              return { ...val, clmnIndex: index };
-            }).sort((a, b) => a.Date.localeCompare(b.Date))
-          : this.contacts[this.slctdCntctIndex].Tasks.map((val, index) => {
-              return { ...val, clmnIndex: index };
-            }).sort((a, b) => b.Date.localeCompare(a.Date));
+          ? this.contacts[this.slctdCntctIndex][this.clmn]
+              .map((val, index) => {
+                return { ...val, clmnIndex: index };
+              })
+              .sort((a, b) => a?.Date?.localeCompare(b?.Date))
+          : this.contacts[this.slctdCntctIndex][this.clmn]
+              .map((val, index) => {
+                return { ...val, clmnIndex: index };
+              })
+              .sort((a, b) => b?.Date?.localeCompare(a?.Date));
     },
   },
 
@@ -300,16 +304,16 @@ export default {
     },
     getTaskOwners() {
       Array.from(document.getElementsByClassName('taskOwnrSlct')).forEach((el, elIndx) => {
-        if (this.contacts[this.slctdCntctIndex].Tasks[el.id.slice(4)].Assign.includes(el.value)) {
+        if (this.contacts[this.slctdCntctIndex][this.clmn][el.id.slice(4)].Assign.includes(el.value)) {
           let taskOwnrChckBx = document.getElementById('taskOwnrChckBx' + elIndx);
-          let taskOwnr = this.contacts[this.slctdCntctIndex].Tasks[el.id.slice(4)].Assign;
+          let taskOwnr = this.contacts[this.slctdCntctIndex][this.clmn][el.id.slice(4)].Assign;
           taskOwnrChckBx.checked = true;
           taskOwnr.length < 2 && taskOwnr.includes(el.value)
             ? (taskOwnrChckBx.disabled = true)
             : (taskOwnrChckBx.disabled = false);
         } else {
           let taskOwnrChckBx = document.getElementById('taskOwnrChckBx' + elIndx);
-          let taskOwnr = this.contacts[this.slctdCntctIndex].Tasks[el.id.slice(4)].Assign;
+          let taskOwnr = this.contacts[this.slctdCntctIndex][this.clmn][el.id.slice(4)].Assign;
           taskOwnrChckBx.checked = false;
           taskOwnr.length < 2 && taskOwnr.includes(el.value)
             ? (taskOwnrChckBx.disabled = true)

@@ -290,10 +290,10 @@ export default {
         : this.sortAscDesc
           ? this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
               return { ...val, clmnIndex: index };
-            }).sort((a, b) => a.Start.localeCompare(b.Start))
+            }).sort((a, b) => a?.Start?.localeCompare(b?.Start))
           : this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
               return { ...val, clmnIndex: index };
-            }).sort((a, b) => b.Start.localeCompare(a.Start));
+            }).sort((a, b) => b?.Start?.localeCompare(a?.Start));
     },
   },
 

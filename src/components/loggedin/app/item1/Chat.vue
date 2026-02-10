@@ -205,6 +205,7 @@ export default {
 .chat-body {
   background-color: white;
   height: calc(100vh - 50px);
+  overflow-x: hidden;
 }
 .chat-groups {
   position: relative;
@@ -213,7 +214,6 @@ export default {
   height: 29px;
   padding: 5px;
   cursor: pointer;
-  overflow: hidden;
   white-space: nowrap;
   user-select: none;
 }

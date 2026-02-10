@@ -329,6 +329,7 @@ export default {
             if (msg?.dat && msg?.frm)
               tblClmns.push([
                 contact.id,
+                msg?.dat,
                 contact?.Members?.[0]?.Name
                   ? contact?.Members?.[0]?.Name
                   : contact?.Members?.[0]?.First
@@ -344,13 +345,13 @@ export default {
           });
         });
         tblClmns
-          .sort((a, b) => b[2].localeCompare(a[2]))
+          .sort((a, b) => b[1].localeCompare(a[1]))
           .map((cntct, cntctIndx) => {
             const nmbrClmnArray = [];
             nmbrClmnArray.push(cntctIndx + 1);
             nmbrClmnArray.push(cntct[0]);
             nmbrClmn.push(nmbrClmnArray);
-            cntct.splice(0, 1);
+            cntct.splice(0, 2);
           });
         tblHdrs = ['#', 'Contact', 'Date', 'From', 'To', 'Description'];
       } else if (this.slctd.report.name == 'Task stats') {

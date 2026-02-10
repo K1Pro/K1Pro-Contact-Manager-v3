@@ -4,7 +4,7 @@
       {{ chatBoxTitle }}
       <span><input type="date" v-model="strtTime" /> - <input type="date" v-model="endTime" /></span>
     </div>
-    <div class="chat-box-body"">
+    <div class="chat-box-body">
       <template
         v-if="slctdChatAmount"
         v-for="(chat, chatIndx) in slctdChats?.sort((a, b) => a?.dat.localeCompare(b?.dat))"
@@ -287,7 +287,6 @@ export default {
         );
         const resJSON = await response.json();
         if (resJSON.success && chatType == 'Chat') {
-          console.log(resJSON);
           this.updt.mstRcntChat = dat.slice(0, 19).replace('T', ' ');
           this.sttngs.user.chats[this.slctd.chatGroup] = dat.slice(0, 19).replace('T', ' ');
           this.sttngsDBReq('PATCH', 'user');

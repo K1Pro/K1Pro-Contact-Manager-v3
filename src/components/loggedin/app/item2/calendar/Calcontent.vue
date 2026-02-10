@@ -191,7 +191,7 @@ export default {
       const prevTasksLen = this.contacts[this.slctdCntctIndex].Tasks.length;
       const newTask = {
         Date: slctdY_m_d + this.updt.updtngY_m_d_H_i_s_z.slice(10, 16),
-        Assign: this.userData.id,
+        Assign: [this.userData.id.toString()],
         Create: this.userData.id,
         Update: this.userData.id,
         Created: this.updt.updtngY_m_d_H_i_s_z,
@@ -200,17 +200,17 @@ export default {
       const cloneCntct = this.contacts[this.slctdCntctIndex];
       cloneCntct.Tasks = newTasks;
       this.slctd.eventIndx = this.contacts[this.slctdCntctIndex].Tasks.length - 1;
+      this.slctd.sideMenuLnk = ['Tasks', 'Calendar'];
       this.patchContactInfo(newTask, 'Tasks', prevTasksLen, cloneCntct);
       this.selectContact(this.sttngs.user.slctdCntctID, 'Tasks', prevTasksLen);
+      if (this.wndw.wdth < 768) window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
     },
     selectContact(ContactID, sidemenuLink, eventIndex) {
       this.slctd.eventIndx = eventIndex;
       this.slctd.sideMenuLnk = [sidemenuLink, 'Calendar'];
       this.sttngs.user.slctdCntctID = ContactID;
       this.sttngsDBReq('PATCH', 'user');
-      if (this.wndw.wdth < 768) {
-        window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
-      }
+      if (this.wndw.wdth < 768) window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
     },
     dragEvent(event, contactID, eventIndex, eventType, eventTime) {
       event.dataTransfer.setData('array', [contactID, eventIndex, eventType, eventTime]);
