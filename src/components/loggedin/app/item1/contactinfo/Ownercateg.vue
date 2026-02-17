@@ -58,11 +58,11 @@ export default {
 
   methods: {
     updateOwnerCateg(event, clmn) {
+      const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       event = typeof event === 'boolean' ? event : event.trim();
-      if (event != this.contacts[this.slctdCntctIndex][clmn] && event != '') {
-        const cloneCntct = this.contacts[this.slctdCntctIndex];
-        cloneCntct[clmn] = event;
-        this.patchContactInfo(event, clmn, null, cloneCntct);
+      if (event != oldCntct[clmn] && event != '') {
+        this.contacts[this.slctdCntctIndex][clmn] = event;
+        this.patchContactInfo(event, clmn, null, oldCntct, this.slctdCntctIndex);
       }
     },
   },

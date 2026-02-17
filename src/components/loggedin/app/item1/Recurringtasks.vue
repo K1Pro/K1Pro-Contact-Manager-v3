@@ -303,7 +303,7 @@ export default {
 
   methods: {
     newRecurTask() {
-      const prevRecurTasksLen = this.contacts[this.slctdCntctIndex].RecurTasks.length;
+      const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       const newRecurTask = {
         Start: this.slctdY_m_d,
         Recur: [this.slctdY_m_d.slice(5, 10)],
@@ -313,43 +313,36 @@ export default {
         Update: this.userData.id,
         Created: this.updt.updtngY_m_d_H_i_s_z,
       };
-      const newRecurTasks = [...this.contacts[this.slctdCntctIndex].RecurTasks, newRecurTask];
-      const cloneCntct = this.contacts[this.slctdCntctIndex];
-      cloneCntct.RecurTasks = newRecurTasks;
-      this.slctd.eventIndx = this.contacts[this.slctdCntctIndex].RecurTasks.length - 1;
-      this.patchContactInfo(newRecurTask, this.clmn, prevRecurTasksLen, cloneCntct);
+      this.contacts[this.slctdCntctIndex][this.clmn] = [
+        ...this.contacts[this.slctdCntctIndex][this.clmn],
+        newRecurTask,
+      ];
+      this.slctd.eventIndx = oldCntct[this.clmn].length;
       this.recurTaskMemo = this.recurTaskMemo + 1;
+      this.patchContactInfo(newRecurTask, this.clmn, oldCntct[this.clmn].length, oldCntct, this.slctdCntctIndex);
     },
     updateRecurTask(event, clmnIndex, key) {
+      const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       event = typeof event === 'boolean' || typeof event === 'object' ? event : event.trim().replaceAll('<br>', '');
       if (
-        (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
-        (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
+        (event != oldCntct[this.clmn][clmnIndex][key] && event != '') ||
+        (event == '' && oldCntct[this.clmn][clmnIndex][key])
       ) {
-        const cloneCntct = this.contacts[this.slctdCntctIndex];
+        // prettier-ignore
         key == 'Assign'
           ? event.target.checked
-            ? cloneCntct[this.clmn][clmnIndex][key].push(event.target.nextSibling.value?.toString())
-            : cloneCntct[this.clmn][clmnIndex][key].splice(
-                cloneCntct[this.clmn][clmnIndex][key].indexOf(event.target.nextSibling.value?.toString()),
-                1,
-              )
-          : (cloneCntct[this.clmn][clmnIndex][key] = event);
-        cloneCntct[this.clmn][clmnIndex].Update = this.userData.id;
+            ? this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].push(event.target.nextSibling.value?.toString(),)
+            : this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].splice(this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].indexOf(event.target.nextSibling.value?.toString(),), 1, )
+          : (this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event);
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
         this.recurTaskMemo = this.recurTaskMemo + 1;
-        this.patchContactInfo(
-          { [key]: cloneCntct[this.clmn][clmnIndex][key], Update: this.userData.id },
-          this.clmn,
-          clmnIndex,
-          cloneCntct,
-        );
+        // prettier-ignore
+        this.patchContactInfo({ [key]: this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key], Update: this.userData.id }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
       }
     },
     updateRecurTaskFreq(clmnIndex, start, freq) {
-      if (
-        start != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Start ||
-        freq != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Freq
-      ) {
+      const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
+      if (start != oldCntct[this.clmn][clmnIndex].Start || freq != oldCntct[this.clmn][clmnIndex].Freq) {
         let recur;
         if (freq == 'Annually') {
           recur = [start.slice(5, 10) != '02-29' ? start.slice(5, 10) : '02-28'];
@@ -377,14 +370,13 @@ export default {
           recur = 'everyday';
         }
 
-        const cloneCntct = this.contacts[this.slctdCntctIndex];
-        cloneCntct[this.clmn][clmnIndex].Start = start;
-        cloneCntct[this.clmn][clmnIndex].Recur = recur;
-        cloneCntct[this.clmn][clmnIndex].Freq = freq;
-        cloneCntct[this.clmn][clmnIndex].Update = this.userData.id;
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Start = start;
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Recur = recur;
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Freq = freq;
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
         this.recurTaskMemo = this.recurTaskMemo + 1;
         // prettier-ignore
-        this.patchContactInfo({ Start: start, Freq: freq, Recur: recur, Update: this.userData.id }, this.clmn, clmnIndex, cloneCntct);
+        this.patchContactInfo({ Start: start, Freq: freq, Recur: recur, Update: this.userData.id }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
       }
     },
     deleteRecurTask(clmnIndex) {
@@ -398,19 +390,19 @@ export default {
       this.recurTaskMemo = this.recurTaskMemo + 1;
     },
     getRecurTaskOwners() {
-      Array.from(document.getElementsByClassName('recurTaskOwnrSlct')).forEach((el, elIndx) => {
-        if (this.contacts[this.slctdCntctIndex].RecurTasks[el.id.slice(9)].Assign.includes(el.value)) {
+      Array.from(document.getElementsByClassName('recurTaskOwnrSlct'))?.forEach((el, elIndx) => {
+        if (this.contacts[this.slctdCntctIndex].RecurTasks[el.id.slice(9)].Assign?.includes(el.value)) {
           let recurTaskOwnrChckBx = document.getElementById('recurTaskOwnrChckBx' + elIndx);
           let recurTaskOwnr = this.contacts[this.slctdCntctIndex].RecurTasks[el.id.slice(9)].Assign;
           recurTaskOwnrChckBx.checked = true;
-          recurTaskOwnr.length < 2 && recurTaskOwnr.includes(el.value)
+          recurTaskOwnr.length < 2 && recurTaskOwnr?.includes(el.value)
             ? (recurTaskOwnrChckBx.disabled = true)
             : (recurTaskOwnrChckBx.disabled = false);
         } else {
           let recurTaskOwnrChckBx = document.getElementById('recurTaskOwnrChckBx' + elIndx);
           let recurTaskOwnr = this.contacts[this.slctdCntctIndex].RecurTasks[el.id.slice(9)].Assign;
           recurTaskOwnrChckBx.checked = false;
-          recurTaskOwnr.length < 2 && recurTaskOwnr.includes(el.value)
+          recurTaskOwnr.length < 2 && recurTaskOwnr?.includes(el.value)
             ? (recurTaskOwnrChckBx.disabled = true)
             : (recurTaskOwnrChckBx.disabled = false);
         }

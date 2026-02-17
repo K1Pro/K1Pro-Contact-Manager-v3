@@ -113,6 +113,7 @@ export default {
       }
       if (checkDNC) {
         if (connType == 'Phone') {
+          const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
           window.location.href =
             'tel:' + this.contacts[this.slctdCntctIndex].Connections[connIndex][connType].replace(/\D/g, '');
           const newConn = {
@@ -120,9 +121,8 @@ export default {
             dat: this.updt.updtngY_m_d_H_i_s_z.slice(0, 16),
             tow: this.contacts[this.slctdCntctIndex].Connections[connIndex][connType].replace(/\D/g, ''),
           };
-          const cloneCntct = this.contacts[this.slctdCntctIndex];
-          cloneCntct.Tel.unshift(newConn);
-          this.patchContactInfo(newConn, 'Tel', this.contacts[this.slctdCntctIndex].Tel.length - 1, cloneCntct);
+          this.contacts[this.slctdCntctIndex].Tel.unshift(newConn);
+          this.patchContactInfo(newConn, 'Tel', oldCntct.Tel.length, oldCntct, this.slctdCntctIndex);
         }
         if (connType == 'Email') {
           this.slctd.sideMenuLnk = ['Contactinfo', 'Emails'];
@@ -131,21 +131,21 @@ export default {
       }
     },
     updateConnection(event, clmnIndex, key) {
+      const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       event = typeof event === 'boolean' ? event : event.trim();
       if (
-        (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
-        (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
+        (event != oldCntct[this.clmn][clmnIndex][key] && event != '') ||
+        (event == '' && oldCntct[this.clmn][clmnIndex][key])
       ) {
-        const cloneCntct = this.contacts[this.slctdCntctIndex];
-        cloneCntct[this.clmn][clmnIndex][key] = event;
-        this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, cloneCntct);
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
+        this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
       }
     },
     updateDNC(event, clmn) {
+      const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       event = typeof event === 'boolean' ? event : event.trim();
-      const cloneCntct = this.contacts[this.slctdCntctIndex];
-      cloneCntct[clmn] = event;
-      this.patchContactInfo(event, clmn, null, cloneCntct);
+      this.contacts[this.slctdCntctIndex][clmn] = event;
+      this.patchContactInfo(event, clmn, null, oldCntct, this.slctdCntctIndex);
     },
   },
 };

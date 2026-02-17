@@ -76,14 +76,14 @@ export default {
 
   methods: {
     updateCred(event, clmnIndex, key) {
+      const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       event = typeof event === 'boolean' ? event : event.trim();
       if (
-        (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
-        (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
+        (event != oldCntct[this.clmn][clmnIndex][key] && event != '') ||
+        (event == '' && oldCntct[this.clmn][clmnIndex][key])
       ) {
-        const cloneCntct = this.contacts[this.slctdCntctIndex];
-        cloneCntct[this.clmn][clmnIndex][key] = event;
-        this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, cloneCntct);
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
+        this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
       }
     },
     toggleCred(credIndex) {

@@ -125,14 +125,11 @@
 export default {
   name: 'Members',
 
-  emits: ['contacts'],
-
   inject: [
     'contacts',
     'deleteContactInfo',
     'dsbld',
     'patchContactInfo',
-    'sttngsDBReq',
     'sttngs',
     'showMsg',
     'slctdCntctIndex',
@@ -171,19 +168,22 @@ export default {
       if (event.srcElement.selectedIndex != 0) {
         const InfoGroup = event.target.value.split('_')[0];
         if (!['newContact', 'deleteContact'].includes(InfoGroup)) {
+          const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
           const InfoKey = event.target.value.split('_')[1];
           event.srcElement.selectedIndex = 0;
           const clmnIndex = this.contacts[this.slctdCntctIndex][InfoGroup].length;
           if (InfoGroup == 'Members' || InfoGroup == 'Addresses') {
-            const cloneCntcts = [...this.contacts[this.slctdCntctIndex][InfoGroup], { Type: InfoKey }];
-            const cloneCntct = this.contacts[this.slctdCntctIndex];
-            cloneCntct[InfoGroup] = cloneCntcts;
-            this.patchContactInfo({ Type: InfoKey }, InfoGroup, clmnIndex, cloneCntct);
+            this.contacts[this.slctdCntctIndex][InfoGroup] = [
+              ...this.contacts[this.slctdCntctIndex][InfoGroup],
+              { Type: InfoKey },
+            ];
+            this.patchContactInfo({ Type: InfoKey }, InfoGroup, clmnIndex, oldCntct, this.slctdCntctIndex);
           } else {
-            const cloneCntcts = [...this.contacts[this.slctdCntctIndex][InfoGroup], { [InfoKey]: '' }];
-            const cloneCntct = this.contacts[this.slctdCntctIndex];
-            cloneCntct[InfoGroup] = cloneCntcts;
-            this.patchContactInfo({ [InfoKey]: '' }, InfoGroup, clmnIndex, cloneCntct);
+            this.contacts[this.slctdCntctIndex][InfoGroup] = [
+              ...this.contacts[this.slctdCntctIndex][InfoGroup],
+              { [InfoKey]: '' },
+            ];
+            this.patchContactInfo({ [InfoKey]: '' }, InfoGroup, clmnIndex, oldCntct, this.slctdCntctIndex);
           }
         } else if (InfoGroup == 'deleteContact') {
           event.srcElement.selectedIndex = 0;
@@ -212,7 +212,6 @@ export default {
                   this.contacts[this.contacts.length - 1].id == this.sttngs.user.slctdCntctID
                     ? this.contacts[this.contacts.length - 2].id
                     : this.contacts[this.contacts.length - 1].id;
-                this.sttngsDBReq('PATCH', 'user');
                 this.contacts.splice(oldSlctdCntctIndex, 1);
               } else {
                 this.showMsg('Failed to delete contact');
@@ -279,10 +278,8 @@ export default {
                 Custom4: '',
                 Custom5: '',
               };
-              const cloneCntcts = this.contacts;
-              this.$emit('contacts', [...cloneCntcts, newMember]);
+              this.contacts.push(newMember);
               this.sttngs.user.slctdCntctID = newCntctID;
-              this.sttngsDBReq('PATCH', 'user');
               this.spinLogin = false;
             } else {
               this.spinLogin = false;
@@ -297,14 +294,14 @@ export default {
       }
     },
     updateMember(event, clmnIndex, key) {
+      const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       event = typeof event === 'boolean' ? event : event.trim();
       if (
-        (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
-        (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
+        (event != oldCntct[this.clmn][clmnIndex][key] && event != '') ||
+        (event == '' && oldCntct[this.clmn][clmnIndex][key])
       ) {
-        const cloneCntct = this.contacts[this.slctdCntctIndex];
-        cloneCntct[this.clmn][clmnIndex][key] = event;
-        this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, cloneCntct);
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
+        this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
       }
     },
   },

@@ -98,19 +98,7 @@
 export default {
   name: 'Settings',
 
-  inject: [
-    'daysRangeArr',
-    'sttngsDBReq',
-    'roles',
-    'showMsg',
-    'sttngs',
-    'slctd',
-    'updt',
-    'userData',
-    'userList',
-    'userRole',
-    'wndw',
-  ],
+  inject: ['daysRangeArr', 'roles', 'showMsg', 'sttngs', 'slctd', 'updt', 'userData', 'userList', 'userRole', 'wndw'],
 
   data() {
     return { userSlctd: this.userData.id };
@@ -126,23 +114,18 @@ export default {
     daysRangeChange(event) {
       this.sttngs.user.calendar.filters.days = event.target.value;
       this.slctd.dayIndex = null;
-      this.sttngsDBReq('PATCH', 'user');
     },
     ownersChange(event) {
       this.sttngs.user.calendar.filters.owners = event.target.value;
-      this.sttngsDBReq('PATCH', 'user');
     },
     statusChange(event) {
       this.sttngs.user.calendar.filters.status = event.target.value;
-      this.sttngsDBReq('PATCH', 'user');
     },
     categoryChange(event) {
       this.sttngs.user.calendar.filters.category = event.target.value;
-      this.sttngsDBReq('PATCH', 'user');
     },
     clockChange(event) {
       this.sttngs.user.clock = event.target.value;
-      this.sttngsDBReq('PATCH', 'user');
     },
     notificationsChange() {
       Notification.requestPermission().then((result) => {

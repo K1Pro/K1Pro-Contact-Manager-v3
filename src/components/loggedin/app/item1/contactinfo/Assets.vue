@@ -86,10 +86,10 @@ export default {
 
   methods: {
     updateAsset(event, clmnIndex, key) {
+      const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       event = typeof event === 'boolean' ? event : event.trim();
-      const cloneCntct = this.contacts[this.slctdCntctIndex];
-      cloneCntct[this.clmn][clmnIndex][key] = event;
-      this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, cloneCntct);
+      this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
+      this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
     },
   },
 };

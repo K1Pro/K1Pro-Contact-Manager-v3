@@ -252,7 +252,7 @@ export default {
 
   methods: {
     newTask() {
-      const prevTasksLen = this.contacts[this.slctdCntctIndex].Tasks.length;
+      const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       const newTask = {
         Date: this.slctdY_m_d + this.updt.updtngY_m_d_H_i_s_z.slice(10, 16),
         Assign: [this.userData.id.toString()],
@@ -260,36 +260,28 @@ export default {
         Update: this.userData.id,
         Created: this.updt.updtngY_m_d_H_i_s_z,
       };
-      const newTasks = [...this.contacts[this.slctdCntctIndex].Tasks, newTask];
-      const cloneCntct = this.contacts[this.slctdCntctIndex];
-      cloneCntct.Tasks = newTasks;
-      this.slctd.eventIndx = this.contacts[this.slctdCntctIndex].Tasks.length - 1;
-      this.patchContactInfo(newTask, this.clmn, prevTasksLen, cloneCntct);
+      this.contacts[this.slctdCntctIndex][this.clmn] = [...this.contacts[this.slctdCntctIndex][this.clmn], newTask];
+      this.slctd.eventIndx = oldCntct[this.clmn].length;
       this.taskMemo = this.taskMemo + 1;
+      this.patchContactInfo(newTask, this.clmn, oldCntct[this.clmn].length, oldCntct, this.slctdCntctIndex);
     },
     updateTask(event, clmnIndex, key) {
+      const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       event = typeof event === 'boolean' || typeof event === 'object' ? event : event.trim().replaceAll('<br>', '');
       if (
-        (event != this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] && event != '') ||
-        (event == '' && this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key])
+        (event != oldCntct[this.clmn][clmnIndex][key] && event != '') ||
+        (event == '' && oldCntct[this.clmn][clmnIndex][key])
       ) {
-        const cloneCntct = this.contacts[this.slctdCntctIndex];
+        // prettier-ignore
         key == 'Assign'
           ? event.target.checked
-            ? cloneCntct[this.clmn][clmnIndex][key].push(event.target.nextSibling.value?.toString())
-            : cloneCntct[this.clmn][clmnIndex][key].splice(
-                cloneCntct[this.clmn][clmnIndex][key].indexOf(event.target.nextSibling.value?.toString()),
-                1,
-              )
-          : (cloneCntct[this.clmn][clmnIndex][key] = event);
-        cloneCntct[this.clmn][clmnIndex].Update = this.userData.id;
+            ? this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].push(event.target.nextSibling.value?.toString(),)
+            : this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].splice(this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].indexOf(event.target.nextSibling.value?.toString(),), 1,)
+          : (this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event);
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
         this.taskMemo = this.taskMemo + 1;
-        this.patchContactInfo(
-          { [key]: cloneCntct[this.clmn][clmnIndex][key], Update: this.userData.id },
-          this.clmn,
-          clmnIndex,
-          cloneCntct,
-        );
+        // prettier-ignore
+        this.patchContactInfo({ [key]: this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key], Update: this.userData.id }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
       }
     },
     deleteTask(clmnIndex) {

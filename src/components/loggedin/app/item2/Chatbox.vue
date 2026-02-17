@@ -5,19 +5,24 @@
       <span><input type="date" v-model="strtTime" /> - <input type="date" v-model="endTime" /></span>
     </div>
     <div class="chat-box-body">
+      <div v-if="slctdChats1[0]" class="chat-box-body-time">
+        <div
+          class="chat-box-body-timedate"
+          style="width: 150px; border: 1px solid rgb(190, 190, 190); background-color: rgb(190, 190, 190)"
+        >
+          {{ slctdChats1[0] }} older {{ slctdChats1[0] === 1 ? 'message' : 'messages' }}
+        </div>
+      </div>
+
       <template
         v-if="slctdChatAmount"
-        v-for="(chat, chatIndx) in slctdChats?.sort((a, b) => a?.dat.localeCompare(b?.dat))"
+        v-for="(chat, chatIndx) in slctdChats1[1]?.sort((a, b) => a?.dat.localeCompare(b?.dat))"
       >
-        <div
-          v-if="
-            (Date.parse(strtTime).toString().slice(0, 5) <= Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
-              Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) <= Date.parse(endTime).toString().slice(0, 5)) ||
-            (Date.parse(strtTime).toString().slice(0, 5) >= Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
-              Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) >= Date.parse(endTime).toString().slice(0, 5))
-          "
-        >
-          <div v-if="chat.dat.slice(5, 10) != slctdChats?.[chatIndx - 1]?.dat?.slice(5, 10)" class="chat-box-body-time">
+        <div>
+          <div
+            v-if="chat.dat.slice(5, 10) != slctdChats1[1]?.[chatIndx - 1]?.dat?.slice(5, 10)"
+            class="chat-box-body-time"
+          >
             <div class="chat-box-body-timedate">{{ this.usaDateFrmt(chat.dat).slice(0, 10) }}</div>
           </div>
 
@@ -92,6 +97,15 @@
         </tbody>
       </table>
 
+      <div v-if="slctdChats1[2]" class="chat-box-body-time">
+        <div
+          class="chat-box-body-timedate"
+          style="width: 150px; border: 1px solid rgb(190, 190, 190); background-color: rgb(190, 190, 190)"
+        >
+          {{ slctdChats1[2] }} newer {{ slctdChats1[2] === 1 ? 'message' : 'messages' }}
+        </div>
+      </div>
+
       <div ref="bottomChatEl"></div>
     </div>
 
@@ -161,7 +175,6 @@ export default {
     'chats',
     'contacts',
     'dsbld',
-    'sttngsDBReq',
     'showMsg',
     'slctdCntctIndex',
     'sttngs',
@@ -194,23 +207,95 @@ export default {
     chatFldr() {
       return this.sttngs.entity.sms.enabled === true && this.slctd.chatType == 'SMS' ? '/msg/' : '/chat/';
     },
-    slctdChats() {
-      return this.sttngs.entity.sms.enabled === true && this.slctd.chatType == 'SMS'
-        ? this.contacts[this.slctdCntctIndex].Msg?.filter((msgInfo) => {
-            return (
-              (msgInfo.frm &&
-                msgInfo?.frm?.replace(/[^0-9]/g, '')?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, ''))) ||
-              (msgInfo.tow &&
-                msgInfo?.tow?.replace(/[^0-9]/g, '')?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, '')))
-            );
-          })
-        : this.chats?.filter(
-            (chat) => JSON.stringify(chat.tow) === JSON.stringify(this.sttngs.entity.chats[this.slctd.chatGroup]),
-          );
+    // slctdChats() {
+    //   return this.sttngs.entity.sms.enabled === true && this.slctd.chatType == 'SMS'
+    //     ? this.contacts[this.slctdCntctIndex].Msg?.filter((msgInfo) => {
+    //         return (
+    //           (msgInfo.frm &&
+    //             msgInfo?.frm?.replace(/[^0-9]/g, '')?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, ''))) ||
+    //           (msgInfo.tow &&
+    //             msgInfo?.tow?.replace(/[^0-9]/g, '')?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, '')))
+    //         );
+    //       })
+    //     : this.chats?.filter(
+    //         (chat) => JSON.stringify(chat.tow) === JSON.stringify(this.sttngs.entity.chats[this.slctd.chatGroup]),
+    //       );
+    // },
+    slctdChats1() {
+      let firstAmnt = 0;
+      let slctdChats1Arr = [];
+      let scndAmnt = 0;
+      if (this.sttngs.entity.sms.enabled === true && this.slctd.chatType == 'SMS') {
+        this.contacts[this.slctdCntctIndex].Msg?.forEach((msgInfo) => {
+          if (
+            (msgInfo.frm &&
+              msgInfo?.frm?.replace(/[^0-9]/g, '')?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, ''))) ||
+            (msgInfo.tow && msgInfo?.tow?.replace(/[^0-9]/g, '')?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, '')))
+          ) {
+            if (
+              (Date.parse(this.strtTime).toString().slice(0, 5) <=
+                Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) &&
+                Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) <=
+                  Date.parse(this.endTime).toString().slice(0, 5)) ||
+              (Date.parse(this.strtTime).toString().slice(0, 5) >=
+                Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) &&
+                Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) >=
+                  Date.parse(this.endTime).toString().slice(0, 5))
+            ) {
+              slctdChats1Arr.push(msgInfo);
+            } else if (
+              Date.parse(this.strtTime).toString().slice(0, 5) >
+                Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) &&
+              Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) <
+                Date.parse(this.endTime).toString().slice(0, 5)
+            ) {
+              firstAmnt++;
+            } else if (
+              Date.parse(this.strtTime).toString().slice(0, 5) <
+                Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) &&
+              Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) >
+                Date.parse(this.endTime).toString().slice(0, 5)
+            ) {
+              scndAmnt++;
+            }
+          }
+        });
+      } else {
+        this.chats?.forEach((chat) => {
+          if (JSON.stringify(chat.tow) === JSON.stringify(this.sttngs.entity.chats[this.slctd.chatGroup])) {
+            if (
+              (Date.parse(this.strtTime).toString().slice(0, 5) <=
+                Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
+                Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) <=
+                  Date.parse(this.endTime).toString().slice(0, 5)) ||
+              (Date.parse(this.strtTime).toString().slice(0, 5) >=
+                Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
+                Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) >=
+                  Date.parse(this.endTime).toString().slice(0, 5))
+            ) {
+              slctdChats1Arr.push(chat);
+            } else if (
+              Date.parse(this.strtTime).toString().slice(0, 5) >
+                Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
+              Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) < Date.parse(this.endTime).toString().slice(0, 5)
+            ) {
+              firstAmnt++;
+            } else if (
+              Date.parse(this.strtTime).toString().slice(0, 5) <
+                Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
+              Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) > Date.parse(this.endTime).toString().slice(0, 5)
+            ) {
+              scndAmnt++;
+            }
+          }
+        });
+      }
+
+      return [firstAmnt, slctdChats1Arr, scndAmnt];
     },
 
     slctdChatAmount() {
-      return this.slctdChats.length;
+      return this.slctdChats1[1].length;
     },
     chatBoxTitle() {
       let firstName, name;
@@ -289,7 +374,6 @@ export default {
         if (resJSON.success && chatType == 'Chat') {
           this.updt.mstRcntChat = dat.slice(0, 19).replace('T', ' ');
           this.sttngs.user.chats[this.slctd.chatGroup] = dat.slice(0, 19).replace('T', ' ');
-          this.sttngsDBReq('PATCH', 'user');
           this.chats.push(resJSON.data);
         }
         if (!resJSON.success) {

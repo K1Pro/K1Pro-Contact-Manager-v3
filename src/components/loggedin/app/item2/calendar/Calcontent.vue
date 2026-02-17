@@ -74,7 +74,6 @@ export default {
     'dsbld',
     'firstDayTmstmp',
     'patchContactInfo',
-    'sttngsDBReq',
     'slctd',
     'slctdCntctIndex',
     'sttngs',
@@ -188,7 +187,7 @@ export default {
 
   methods: {
     newTask(slctdY_m_d) {
-      const prevTasksLen = this.contacts[this.slctdCntctIndex].Tasks.length;
+      const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       const newTask = {
         Date: slctdY_m_d + this.updt.updtngY_m_d_H_i_s_z.slice(10, 16),
         Assign: [this.userData.id.toString()],
@@ -196,20 +195,17 @@ export default {
         Update: this.userData.id,
         Created: this.updt.updtngY_m_d_H_i_s_z,
       };
-      const newTasks = [...this.contacts[this.slctdCntctIndex].Tasks, newTask];
-      const cloneCntct = this.contacts[this.slctdCntctIndex];
-      cloneCntct.Tasks = newTasks;
-      this.slctd.eventIndx = this.contacts[this.slctdCntctIndex].Tasks.length - 1;
+      this.contacts[this.slctdCntctIndex].Tasks = [...this.contacts[this.slctdCntctIndex].Tasks, newTask];
+      this.slctd.eventIndx = oldCntct.Tasks.length;
       this.slctd.sideMenuLnk = ['Tasks', 'Calendar'];
-      this.patchContactInfo(newTask, 'Tasks', prevTasksLen, cloneCntct);
-      this.selectContact(this.sttngs.user.slctdCntctID, 'Tasks', prevTasksLen);
+      this.patchContactInfo(newTask, 'Tasks', oldCntct.Tasks.length, oldCntct, this.slctdCntctIndex);
+      this.selectContact(this.sttngs.user.slctdCntctID, 'Tasks', oldCntct.Tasks.length);
       if (this.wndw.wdth < 768) window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
     },
     selectContact(ContactID, sidemenuLink, eventIndex) {
       this.slctd.eventIndx = eventIndex;
       this.slctd.sideMenuLnk = [sidemenuLink, 'Calendar'];
       this.sttngs.user.slctdCntctID = ContactID;
-      this.sttngsDBReq('PATCH', 'user');
       if (this.wndw.wdth < 768) window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
     },
     dragEvent(event, contactID, eventIndex, eventType, eventTime) {
@@ -218,28 +214,25 @@ export default {
     dropEvent(newDate) {
       const eventInfo = event.dataTransfer.getData('array').split(',');
       const slctdCntctIndex = this.contacts.findIndex((contact) => contact.id == eventInfo[0]);
+      const oldCntct = JSON.parse(JSON.stringify(this.contacts[slctdCntctIndex]));
       const ContactID = eventInfo[0];
       const clmnIndex = eventInfo[1];
       const clmn = eventInfo[2];
       const eventDateTime = newDate + 'T' + eventInfo[3];
       const key = 'Date';
-
       this.sttngs.user.slctdCntctID = ContactID;
-      this.sttngsDBReq('PATCH', 'user');
-
       if (
-        (eventDateTime != this.contacts[slctdCntctIndex][clmn][clmnIndex][key] && eventDateTime != '') ||
-        (eventDateTime == '' && this.contacts[slctdCntctIndex][clmn][clmnIndex][key])
+        (eventDateTime != oldCntct[clmn][clmnIndex][key] && eventDateTime != '') ||
+        (eventDateTime == '' && oldCntct[clmn][clmnIndex][key])
       ) {
-        const cloneCntct = this.contacts[slctdCntctIndex];
-        cloneCntct[clmn][clmnIndex][key] = eventDateTime;
-        cloneCntct[clmn][clmnIndex].Update = this.userData.id;
+        this.contacts[slctdCntctIndex][clmn][clmnIndex][key] = eventDateTime;
+        this.contacts[slctdCntctIndex][clmn][clmnIndex].Update = this.userData.id;
         if (this.slctd.sideMenuLnk[0] == 'Tasks') {
           this.slctd.eventIndx = null;
           this.slctd.eventIndx = clmnIndex;
         }
         // this.taskMemo = this.taskMemo + 1;
-        this.patchContactInfo({ [key]: eventDateTime }, clmn, clmnIndex, cloneCntct);
+        this.patchContactInfo({ [key]: eventDateTime }, clmn, clmnIndex, oldCntct, slctdCntctIndex);
       }
     },
   },

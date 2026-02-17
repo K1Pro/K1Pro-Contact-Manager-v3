@@ -29,14 +29,11 @@ export default {
 
   methods: {
     updateNotes(event) {
+      const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       event = typeof event === 'boolean' ? event : event.trim();
-      if (
-        (event != this.contacts[this.slctdCntctIndex][this.clmn] && event != '') ||
-        (event == '' && this.contacts[this.slctdCntctIndex][this.clmn])
-      ) {
-        const cloneCntct = this.contacts[this.slctdCntctIndex];
-        cloneCntct[this.clmn] = event;
-        this.patchContactInfo(event, this.clmn, null, cloneCntct);
+      if ((event != oldCntct[this.clmn] && event != '') || (event == '' && oldCntct[this.clmn])) {
+        this.contacts[this.slctdCntctIndex][this.clmn] = event;
+        this.patchContactInfo(event, this.clmn, null, oldCntct, this.slctdCntctIndex);
       }
     },
   },

@@ -12,11 +12,7 @@
           :wndw
           @sideMenuSlctdLnk="(el) => ((slctd.eventIndx = null), (slctd.sideMenuLnk = el))"
         ></sidemenu>
-        <component
-          class="app-grid-item1-panel"
-          :is="slctd.sideMenuLnk[0]"
-          @contacts="(el) => (contacts = el)"
-        ></component>
+        <component class="app-grid-item1-panel" :is="slctd.sideMenuLnk[0]"></component>
       </div>
 
       <div
@@ -52,7 +48,7 @@
 export default {
   name: 'App',
 
-  mixins: [appGridResizerMixin, snackbarMixin, settingsMixin, wndwWdthHghtMixin],
+  mixins: [appGridResizerMixin, settingsMixin, snackbarMixin, wndwWdthHghtMixin],
 
   data() {
     return {
@@ -271,7 +267,6 @@ export default {
       const selectdContactIndex = this.contacts?.findIndex((contact) => contact.id == this.sttngs.user.slctdCntctID);
       if (selectdContactIndex === -1) {
         this.sttngs.user.slctdCntctID = this.contacts?.length > 0 ? this.contacts[this.contacts.length - 1].id : 0;
-        this.sttngsDBReq('PATCH', 'user');
       }
       return selectdContactIndex;
     },
@@ -404,10 +399,9 @@ export default {
               }, 1000);
             } else {
               this.updt.mstRcntCntctUpdt = resJSON?.data?.mstRcntCntctUpdt;
-              const prevContacts = this.contacts;
               const frstLdCntcts = this.contacts?.map((cntct) => cntct.id);
               const fltrdCntcts = resJSON?.data?.contacts?.filter((cntct) => !frstLdCntcts?.includes(cntct.id));
-              this.contacts = [...prevContacts, ...fltrdCntcts]; //.sort((a, b) => a.id - b.id);
+              this.contacts.push(...fltrdCntcts);
               this.sttngsReq('GET', 'user');
               this.sttngsReq('GET', 'entity');
             }
@@ -415,7 +409,7 @@ export default {
             resJSON?.data?.contacts?.forEach((contact) => {
               if (contact.id == this.sttngs.user?.slctdCntctID) {
                 if (this.userData.id != Object.keys(contact.Updated)[0]) {
-                  this.contacts[this.slctdCntctIndex] = contact;
+                  this.contacts.splice(this.slctdCntctIndex, 1, contact);
                   const oldEventIndx = this.slctd.eventIndx !== null ? this.slctd.eventIndx : null;
                   if (['Tasks', 'Recurringtasks']?.includes(this.slctd.sideMenuLnk[0])) {
                     if (oldEventIndx !== null) {
@@ -441,14 +435,12 @@ export default {
               } else {
                 const slctdCntctIndx = this.contacts?.findIndex((slctdCntct) => slctdCntct.id == contact.id);
                 if (slctdCntctIndx !== -1) {
-                  this.contacts[slctdCntctIndx] = contact;
+                  this.contacts.splice(slctdCntctIndx, 1, contact);
                   // prettier-ignore
                   if (this.curEl.Tp && !['Contactinfo', 'Tasks', 'Recurringtasks', 'Notes', 'Chat', 'Settings']?.includes(this.slctd.sideMenuLnk[0]))
                       setTimeout(() => { document.activeElement[this.curEl.Tp] = this.curEl.Txt; }, 1);
                 } else {
-                  const prevContacts = this.contacts;
-                  prevContacts.push(contact);
-                  this.contacts = prevContacts;
+                  this.contacts.push(contact);
                 }
               }
             });
@@ -517,40 +509,40 @@ export default {
       return newDateString;
     },
 
-    async patchContactInfo(event, column, columnIndex, newCntctInfo) {
-      const slctdCntctIndex = this.contacts?.findIndex((contact) => contact.id == newCntctInfo.id);
-      this.contacts[slctdCntctIndex] = newCntctInfo;
+    async patchContactInfo(event, column, columnIndex, oldCntctInfo, slctdCntctIndex) {
+      const updtngY_m_d_H_i_s_z = this.updt.updtngY_m_d_H_i_s_z;
       this.contacts[slctdCntctIndex].Updated = {
-        [this.userData.id]: this.updt.updtngY_m_d_H_i_s_z,
+        [this.userData.id]: updtngY_m_d_H_i_s_z,
       };
       try {
-        const response = await fetch(
-          app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z.replace(' ', 'T').trim() + '/contacts',
-          {
-            method: 'PATCH',
-            headers: {
-              Authorization: access_token,
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-store',
-            },
-            body: JSON.stringify({
-              ID: newCntctInfo.id,
-              Column: column,
-              ColumnIndex: columnIndex,
-              NewData: event,
-            }),
+        const response = await fetch(app_api_url + '/' + updtngY_m_d_H_i_s_z.replace(' ', 'T').trim() + '/contacts', {
+          method: 'PATCH',
+          headers: {
+            Authorization: access_token,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
           },
-        );
+          body: JSON.stringify({
+            ID: oldCntctInfo.id,
+            Column: column,
+            ColumnIndex: columnIndex,
+            NewData: event,
+          }),
+        });
         const resJSON = await response.json();
-        if (resJSON.success) {
-          console.log(resJSON);
-        } else {
-          console.log(resJSON);
-          this.showMsg('Update error');
+        if (!resJSON.success) {
+          slctdCntctIndex = this.contacts?.findIndex((contact) => contact.id == oldCntctInfo.id);
+          // prettier-ignore
+          confirm('Error' + (resJSON?.messages?.[0] ? ': ' + resJSON.messages[0] : '') + '. Would you like to try again? If not, your most recent change will be lost.',) == true
+            ? this.patchContactInfo(event, column, columnIndex, oldCntctInfo, slctdCntctIndex)
+            : (this.contacts[slctdCntctIndex] = oldCntctInfo);
         }
       } catch (error) {
-        console.log(error.toString());
-        this.showMsg(error.toString());
+        slctdCntctIndex = this.contacts?.findIndex((contact) => contact.id == oldCntctInfo.id);
+        // prettier-ignore
+        confirm('Error' + (error?.toString() ? ': ' + error.toString() : '') + '. Would you like to try again? If not, your most recent change will be lost.',) == true
+          ? this.patchContactInfo(event, column, columnIndex, oldCntctInfo, slctdCntctIndex)
+          : (this.contacts[slctdCntctIndex] = oldCntctInfo);
       }
     },
 
@@ -614,8 +606,6 @@ export default {
       this.updt.updtngY_m_d_H_i_s_z = new Date(this.updt.initialUsrTmstmp + timeDifference).toISOString();
       this.getUpdt();
     }, 5000);
-    this.sttngsDBReq('GET', 'user');
-    this.sttngsDBReq('GET', 'entity');
     document.body.addEventListener('keyup', this.getCurEl);
     document.body.addEventListener('click', this.getCurEl);
 
@@ -649,6 +639,11 @@ export default {
         const newChat = new Notification('Task past due (' + this.contacts[this.todaysEvents[updtngH_iLess5Min]]?.Members?.[0]?.Name + ')');
       }
     }, 60000);
+  },
+
+  updated() {
+    if (this.curEl.Tp && ['SPAN', 'TEXTAREA', 'INPUT'].includes(document.activeElement.tagName))
+      document.activeElement[this.curEl.Tp] = this.curEl.Txt;
   },
 
   watch: {
