@@ -5,104 +5,88 @@
       <span><input type="date" v-model="strtTime" /> - <input type="date" v-model="endTime" /></span>
     </div>
     <div class="chat-box-body">
-      <div v-if="slctdChats1[0]" class="chat-box-body-time">
-        <div
-          class="chat-box-body-timedate"
-          style="width: 150px; border: 1px solid rgb(190, 190, 190); background-color: rgb(190, 190, 190)"
-        >
-          {{ slctdChats1[0] }} older {{ slctdChats1[0] === 1 ? 'message' : 'messages' }}
+      <div v-if="slctdChats.olderChtAmnt" class="chat-box-header">
+        <div @click="strtTime = slctdChats.oldestStrtTime" style="cursor: pointer">
+          {{ slctdChats.olderChtAmnt }} older {{ slctdChats.olderChtAmnt === 1 ? 'message' : 'messages' }}
         </div>
       </div>
 
-      <template
-        v-if="slctdChatAmount"
-        v-for="(chat, chatIndx) in slctdChats1[1]?.sort((a, b) => a?.dat.localeCompare(b?.dat))"
-      >
-        <div>
-          <div
-            v-if="chat.dat.slice(5, 10) != slctdChats1[1]?.[chatIndx - 1]?.dat?.slice(5, 10)"
-            class="chat-box-body-time"
-          >
-            <div class="chat-box-body-timedate">{{ this.usaDateFrmt(chat.dat).slice(0, 10) }}</div>
-          </div>
+      <div v-if="slctdChatAmount" v-for="(chat, chatIndx) in slctdChats.arr">
+        <div v-if="chat.dat.slice(5, 10) != slctdChats.arr?.[chatIndx - 1]?.dat?.slice(5, 10)" class="chat-box-header">
+          <div>{{ this.usaDateFrmt(chat.dat).slice(0, 10) }}</div>
+        </div>
 
+        <div
+          class="chat-box-msg"
+          :title="
+            (sttngs.entity.activeUserList[chat.frm]
+              ? sttngs.entity.activeUserList[chat.frm].FirstName
+              : contacts[slctdCntctIndex].Members[0].Name) +
+            ' sent this on ' +
+            this.usaDateFrmt(chat.dat) +
+            ' ' +
+            chat.dat.slice(11, 16)
+          "
+          :style="{
+            justifyContent: chat.frm == userData.id ? 'flex-end' : 'flex-start',
+          }"
+        >
           <div
-            class="chat-box-msg"
-            :title="
-              (sttngs.entity.activeUserList[chat.frm]
-                ? sttngs.entity.activeUserList[chat.frm].FirstName
-                : contacts[slctdCntctIndex].Members[0].Name) +
-              ' sent this on ' +
-              this.usaDateFrmt(chat.dat) +
-              ' ' +
-              chat.dat.slice(11, 16)
-            "
             :style="{
-              justifyContent: chat.frm == userData.id ? 'flex-end' : 'flex-start',
+              backgroundColor: sttngs?.entity?.msgColors?.[chat?.frm]
+                ? sttngs.entity.msgColors[chat.frm]
+                : chat?.frm == userData.id
+                  ? '#F08784'
+                  : '#A1FB8E',
             }"
+            :class="chat.frm == userData.id ? 'chat-box-right' : 'chat-box-left'"
+            class="chat-box-msg-cntnr"
           >
-            <div
-              :style="{
-                backgroundColor: sttngs?.entity?.msgColors?.[chat?.frm]
-                  ? sttngs.entity.msgColors[chat.frm]
-                  : chat?.frm == userData.id
-                    ? '#F08784'
-                    : '#A1FB8E',
-              }"
-              :class="chat.frm == userData.id ? 'chat-box-right' : 'chat-box-left'"
-              class="chat-box-msg-cntnr"
+            <a
+              v-if="chat.tp.includes('image')"
+              :href="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg"
+              target="_blank"
             >
+              <img :src="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg" alt="pic" />
+            </a>
+            <template v-if="!chat.tp.includes('image')">
+              <i v-if="chat.err || chat?.err == ''" class="fa-solid fa-circle-exclamation" :title="chat.err"></i>
+              <template v-if="chat.tp == 'msg'">
+                <template v-if="chat.msg.includes('https://bundle-insurance.com/secure-link/')">
+                  <a :href="chat.msg.split(' - ')[0]" target="_blank">{{ chat.msg.split(' - ')[0] }}</a> -
+                  {{ chat.msg.split(' - ')[1] }}
+                </template>
+                <div v-else style="word-break: break-word" v-html="chat.msg"></div>
+              </template>
               <a
-                v-if="chat.tp.includes('image')"
+                v-else
                 :href="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg"
                 target="_blank"
+                >{{ chat.msg.split('/')[chat.msg.split('/').length - 1] }}</a
               >
-                <img :src="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg" alt="pic" />
-              </a>
-              <template v-if="!chat.tp.includes('image')">
-                <i v-if="chat.err || chat?.err == ''" class="fa-solid fa-circle-exclamation" :title="chat.err"></i>
-                <template v-if="chat.tp == 'msg'">
-                  <template v-if="chat.msg.includes('https://bundle-insurance.com/secure-link/')">
-                    <a :href="chat.msg.split(' - ')[0]" target="_blank">{{ chat.msg.split(' - ')[0] }}</a> -
-                    {{ chat.msg.split(' - ')[1] }}
-                  </template>
-                  <div v-else style="word-break: break-word" v-html="chat.msg"></div>
-                </template>
-                <a
-                  v-else
-                  :href="'src/assets/images/' + userData.Entity + '/' + secDir + chatFldr + chat.msg"
-                  target="_blank"
-                  >{{ chat.msg.split('/')[chat.msg.split('/').length - 1] }}</a
-                >
-              </template>
-              <div class="chat-box-msg-date">
-                {{
-                  sttngs.entity.activeUserList?.[chat.frm]?.FirstName
-                    ? sttngs.entity.activeUserList?.[chat.frm]?.FirstName
-                    : contacts[slctdCntctIndex].Members[0].First
-                      ? contacts[slctdCntctIndex].Members[0].First + ' ' + contacts[slctdCntctIndex].Members[0].Name
-                      : contacts[slctdCntctIndex].Members[0].Name
-                }}
-                - {{ chat.dat.slice(11, 16) }}
-              </div>
+            </template>
+            <div class="chat-box-msg-date">
+              {{
+                sttngs.entity.activeUserList?.[chat.frm]?.FirstName
+                  ? sttngs.entity.activeUserList?.[chat.frm]?.FirstName
+                  : contacts[slctdCntctIndex].Members[0].First
+                    ? contacts[slctdCntctIndex].Members[0].First + ' ' + contacts[slctdCntctIndex].Members[0].Name
+                    : contacts[slctdCntctIndex].Members[0].Name
+              }}
+              - {{ chat.dat.slice(11, 16) }}
             </div>
           </div>
         </div>
-      </template>
-      <table v-else>
-        <tbody>
-          <tr>
-            <td><div class="chat-box-no-msg">No messages</div></td>
-          </tr>
-        </tbody>
-      </table>
+      </div>
+      <div v-else>
+        <div class="chat-box-header">
+          <div>{{ slctdChats.olderChtAmnt || slctdChats.newerChtAmnt ? '0 current messages' : 'No messages' }}</div>
+        </div>
+      </div>
 
-      <div v-if="slctdChats1[2]" class="chat-box-body-time">
-        <div
-          class="chat-box-body-timedate"
-          style="width: 150px; border: 1px solid rgb(190, 190, 190); background-color: rgb(190, 190, 190)"
-        >
-          {{ slctdChats1[2] }} newer {{ slctdChats1[2] === 1 ? 'message' : 'messages' }}
+      <div v-if="slctdChats.newerChtAmnt" class="chat-box-header">
+        <div @click="endTime = slctdChats.newestEndTime" style="cursor: pointer">
+          {{ slctdChats.newerChtAmnt }} newer {{ slctdChats.newerChtAmnt === 1 ? 'message' : 'messages' }}
         </div>
       </div>
 
@@ -207,95 +191,64 @@ export default {
     chatFldr() {
       return this.sttngs.entity.sms.enabled === true && this.slctd.chatType == 'SMS' ? '/msg/' : '/chat/';
     },
-    // slctdChats() {
-    //   return this.sttngs.entity.sms.enabled === true && this.slctd.chatType == 'SMS'
-    //     ? this.contacts[this.slctdCntctIndex].Msg?.filter((msgInfo) => {
-    //         return (
-    //           (msgInfo.frm &&
-    //             msgInfo?.frm?.replace(/[^0-9]/g, '')?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, ''))) ||
-    //           (msgInfo.tow &&
-    //             msgInfo?.tow?.replace(/[^0-9]/g, '')?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, '')))
-    //         );
-    //       })
-    //     : this.chats?.filter(
-    //         (chat) => JSON.stringify(chat.tow) === JSON.stringify(this.sttngs.entity.chats[this.slctd.chatGroup]),
-    //       );
-    // },
-    slctdChats1() {
-      let firstAmnt = 0;
-      let slctdChats1Arr = [];
-      let scndAmnt = 0;
-      if (this.sttngs.entity.sms.enabled === true && this.slctd.chatType == 'SMS') {
-        this.contacts[this.slctdCntctIndex].Msg?.forEach((msgInfo) => {
+
+    slctdChats() {
+      let olderChtAmnt = 0;
+      let slctdChtsArr = [];
+      let newerChtAmnt = 0;
+      let oldestStrtTime = this.strtTime;
+      let newestEndTime = this.endTime;
+      const slctdChats =
+        this.sttngs.entity.sms.enabled === true && this.slctd.chatType == 'SMS'
+          ? ['SMS', this.contacts[this.slctdCntctIndex].Msg]
+          : ['Chats', this.chats];
+
+      slctdChats?.[1]?.forEach((chat) => {
+        if (
+          (slctdChats[0] == 'SMS' &&
+            ((chat.frm && chat?.frm?.replace(/[^0-9]/g, '')?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, ''))) ||
+              (chat.tow && chat?.tow?.replace(/[^0-9]/g, '')?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, ''))))) ||
+          (slctdChats[0] == 'Chats' &&
+            JSON.stringify(chat.tow) === JSON.stringify(this.sttngs.entity.chats[this.slctd.chatGroup]))
+        ) {
           if (
-            (msgInfo.frm &&
-              msgInfo?.frm?.replace(/[^0-9]/g, '')?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, ''))) ||
-            (msgInfo.tow && msgInfo?.tow?.replace(/[^0-9]/g, '')?.includes(this.slctd.smsGroup.replace(/[^0-9]/g, '')))
+            (Date.parse(this.strtTime).toString().slice(0, 5) <=
+              Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
+              Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) <=
+                Date.parse(this.endTime).toString().slice(0, 5)) ||
+            (Date.parse(this.strtTime).toString().slice(0, 5) >=
+              Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
+              Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) >=
+                Date.parse(this.endTime).toString().slice(0, 5))
           ) {
-            if (
-              (Date.parse(this.strtTime).toString().slice(0, 5) <=
-                Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) &&
-                Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) <=
-                  Date.parse(this.endTime).toString().slice(0, 5)) ||
-              (Date.parse(this.strtTime).toString().slice(0, 5) >=
-                Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) &&
-                Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) >=
-                  Date.parse(this.endTime).toString().slice(0, 5))
-            ) {
-              slctdChats1Arr.push(msgInfo);
-            } else if (
-              Date.parse(this.strtTime).toString().slice(0, 5) >
-                Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) &&
-              Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) <
-                Date.parse(this.endTime).toString().slice(0, 5)
-            ) {
-              firstAmnt++;
-            } else if (
-              Date.parse(this.strtTime).toString().slice(0, 5) <
-                Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) &&
-              Date.parse(msgInfo.dat.slice(0, 10)).toString().slice(0, 5) >
-                Date.parse(this.endTime).toString().slice(0, 5)
-            ) {
-              scndAmnt++;
-            }
+            slctdChtsArr.push(chat);
+          } else if (
+            Date.parse(this.strtTime).toString().slice(0, 5) >
+              Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
+            Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) < Date.parse(this.endTime).toString().slice(0, 5)
+          ) {
+            if (oldestStrtTime > chat.dat.slice(0, 10)) oldestStrtTime = chat.dat.slice(0, 10);
+            olderChtAmnt++;
+          } else if (
+            Date.parse(this.strtTime).toString().slice(0, 5) <
+              Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
+            Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) > Date.parse(this.endTime).toString().slice(0, 5)
+          ) {
+            if (newestEndTime < chat.dat.slice(0, 10)) newestEndTime = chat.dat.slice(0, 10);
+            newerChtAmnt++;
           }
-        });
-      } else {
-        this.chats?.forEach((chat) => {
-          if (JSON.stringify(chat.tow) === JSON.stringify(this.sttngs.entity.chats[this.slctd.chatGroup])) {
-            if (
-              (Date.parse(this.strtTime).toString().slice(0, 5) <=
-                Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
-                Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) <=
-                  Date.parse(this.endTime).toString().slice(0, 5)) ||
-              (Date.parse(this.strtTime).toString().slice(0, 5) >=
-                Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
-                Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) >=
-                  Date.parse(this.endTime).toString().slice(0, 5))
-            ) {
-              slctdChats1Arr.push(chat);
-            } else if (
-              Date.parse(this.strtTime).toString().slice(0, 5) >
-                Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
-              Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) < Date.parse(this.endTime).toString().slice(0, 5)
-            ) {
-              firstAmnt++;
-            } else if (
-              Date.parse(this.strtTime).toString().slice(0, 5) <
-                Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) &&
-              Date.parse(chat.dat.slice(0, 10)).toString().slice(0, 5) > Date.parse(this.endTime).toString().slice(0, 5)
-            ) {
-              scndAmnt++;
-            }
-          }
-        });
-      }
-
-      return [firstAmnt, slctdChats1Arr, scndAmnt];
+        }
+      });
+      return {
+        oldestStrtTime: oldestStrtTime,
+        olderChtAmnt: olderChtAmnt,
+        arr: slctdChtsArr?.sort((a, b) => a?.dat.localeCompare(b?.dat)),
+        newerChtAmnt: newerChtAmnt,
+        newestEndTime: newestEndTime,
+      };
     },
-
     slctdChatAmount() {
-      return this.slctdChats1[1].length;
+      return this.slctdChats.arr.length;
     },
     chatBoxTitle() {
       let firstName, name;
@@ -516,34 +469,17 @@ export default {
   border: none;
   overflow: hidden scroll;
 }
-.chat-box table {
-  height: 100%;
-  width: 100%;
-}
-.chat-box td {
-  text-align: center;
-  vertical-align: middle;
-}
-.chat-box-no-msg {
-  padding: 5px;
-  border: 1px solid rgb(176, 176, 176);
-  background-color: rgb(176, 176, 176);
-  color: white;
-  border-radius: 10px;
-  margin-left: calc(50% - 50px);
-  margin-right: calc(50% - 50px);
-}
-.chat-box-body-time {
+.chat-box-header {
   text-align: center;
 }
-.chat-box-body-timedate {
+.chat-box-header div {
   margin: 10px auto;
   padding: 5px;
-  border: 1px solid rgb(110, 110, 110);
-  background-color: rgb(110, 110, 110);
+  border: 1px solid rgb(130, 130, 130);
+  background-color: rgb(130, 130, 130);
   color: white;
   border-radius: 10px;
-  width: 75px;
+  width: 175px;
 }
 .chat-box-msg {
   display: flex;
