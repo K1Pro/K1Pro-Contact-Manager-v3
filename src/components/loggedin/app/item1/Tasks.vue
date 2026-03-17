@@ -267,7 +267,10 @@ export default {
     },
     updateTask(event, clmnIndex, key) {
       const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
-      event = typeof event === 'boolean' || typeof event === 'object' ? event : event.trim().replaceAll('<br>', '');
+      event =
+        typeof event === 'boolean' || typeof event === 'object'
+          ? event
+          : event.replace(/ +(?= )/g, '').replaceAll('<br>', '');
       if (
         (event != oldCntct[this.clmn][clmnIndex][key] && event != '') ||
         (event == '' && oldCntct[this.clmn][clmnIndex][key])
@@ -286,7 +289,13 @@ export default {
     },
     deleteTask(clmnIndex) {
       if (confirm('Are you sure you would like to delete this?') == true) {
-        this.deleteContactInfo(this.clmn, clmnIndex, true);
+        this.deleteContactInfo(
+          this.clmn,
+          clmnIndex,
+          JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex])),
+          this.slctdCntctIndex,
+          true,
+        );
         this.showAllTasks();
       }
     },

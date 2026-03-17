@@ -51,7 +51,14 @@
           <button
             v-if="!dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
             class="conn-delete-icon"
-            @click="deleteContactInfo('Connections', conn.RealIndex)"
+            @click="
+              deleteContactInfo(
+                'Connections',
+                conn.RealIndex,
+                JSON.parse(JSON.stringify(contacts[slctdCntctIndex])),
+                slctdCntctIndex,
+              )
+            "
             :disabled="dsbld"
           >
             <i class="fa-solid fa-trash"></i>
@@ -106,7 +113,7 @@ export default {
   },
 
   methods: {
-    async connect(connIndex, connType) {
+    connect(connIndex, connType) {
       let checkDNC = true;
       if (this.contacts[this.slctdCntctIndex].DNC === true) {
         checkDNC = confirm('Contact is listed as "Do not contact", proceed?') ? true : false;
@@ -132,14 +139,14 @@ export default {
     },
     updateConnection(event, clmnIndex, key) {
       const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
-      event = typeof event === 'boolean' ? event : event.trim();
+      event = typeof event === 'boolean' ? event : event.trim().replace(/ +(?= )/g, '');
+      this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
+      this.$forceUpdate();
       if (
         (event != oldCntct[this.clmn][clmnIndex][key] && event != '') ||
         (event == '' && oldCntct[this.clmn][clmnIndex][key])
-      ) {
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
+      )
         this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
-      }
     },
     updateDNC(event, clmn) {
       const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));

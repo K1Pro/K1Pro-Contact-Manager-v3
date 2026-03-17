@@ -115,11 +115,10 @@ export default {
   },
 
   methods: {
-    async sendEmail() {
+    sendEmail() {
       const confirmSendEmail = 'Are you sure you would like to send this?';
       if (confirm(confirmSendEmail) == true) {
         this.spinLogin = true;
-        const columnIndex = this.slctdCntctIndex;
         const emailTemplate =
           this.$refs['emailTemplate'].value == 'null'
             ? ''
@@ -135,37 +134,39 @@ export default {
         formData.append('Body', this.$refs['emailBody'].innerHTML);
         formData.append('id', this.contacts[this.slctdCntctIndex].id);
         formData.append('CC', this.$refs['CC'].checked);
-        try {
-          const response = await fetch(
-            app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/emails',
-            {
-              method: 'POST',
-              headers: {
-                Authorization: access_token,
-                'Cache-Control': 'no-store',
-              },
-              body: formData,
+        this.postEmail(JSON.parse(JSON.stringify(this.sttngs.user.slctdCntctID)), formData);
+      }
+    },
+    async postEmail(slctdCntctID, formData) {
+      try {
+        const response = await fetch(
+          app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/emails',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: access_token,
+              'Cache-Control': 'no-store',
             },
-          );
-          const sendEmailResJSON = await response.json();
-          if (sendEmailResJSON.success) {
-            this.spinLogin = false;
-            this.showMsg(sendEmailResJSON.messages[0]);
-            this.contacts[columnIndex].Email.unshift({
-              frm: this.userData.id,
-              dat: this.updt.updtngY_m_d_H_i_s_z.slice(0, 16),
-              tow: tow,
-              msg: emailTemplate,
-            });
-          } else {
-            this.spinLogin = false;
-            this.showMsg('Email error');
-          }
-        } catch (error) {
+            body: formData,
+          },
+        );
+        const resJSON = await response.json();
+        if (resJSON.success) {
           this.spinLogin = false;
-          this.showMsg(error?.toString()?.slice(-20));
-          console.log(error.toString());
+          this.showMsg(resJSON?.messages?.[0] ? resJSON.messages[0] : 'Email error');
+          const slctdCntctIndex = this.contacts.findIndex((contact) => contact.id == slctdCntctID);
+          this.contacts[slctdCntctIndex].Email.unshift(resJSON.data);
+        } else {
+          // prettier-ignore
+          confirm('Error' + (resJSON?.messages?.[0] ? ': ' + resJSON.messages[0] : '') + '. Would you like to try again? If not, your email will not be sent.',) == true
+            ? this.postEmail(slctdCntctID, formData)
+            : this.spinLogin = false;
         }
+      } catch (error) {
+        // prettier-ignore
+        confirm('Error' + (error?.toString() ? ': ' + error.toString() : '') + '. Would you like to try again? If not, your email will not be sent.',) == true
+          ? this.postEmail(slctdCntctID, formData)
+          : this.spinLogin = false;
       }
     },
   },

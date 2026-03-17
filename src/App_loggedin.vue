@@ -358,7 +358,6 @@ export default {
             'Cache-Control': 'no-store',
           },
         });
-        const resJSON = await response.json();
         this.$refs.loginMessage.value = msg ? msg : 'Logged out with an error';
         this.$refs.deleteLogin.submit();
       } catch (error) {
@@ -546,9 +545,9 @@ export default {
       }
     },
 
-    async deleteContactInfo(clmn, clmnIndex, prevConfirm) {
+    async deleteContactInfo(clmn, clmnIndex, oldCntctInfo, slctdCntctIndex, prevConfirm) {
       if (prevConfirm || confirm('Are you sure you would like to delete this?') == true) {
-        this.contacts[this.slctdCntctIndex][clmn].splice(clmnIndex, 1);
+        this.contacts[slctdCntctIndex][clmn].splice(clmnIndex, 1);
         try {
           const response = await fetch(
             app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z.replace(' ', 'T').trim() + '/contacts',
@@ -560,19 +559,26 @@ export default {
                 'Cache-Control': 'no-store',
               },
               body: JSON.stringify({
-                ID: this.sttngs.user.slctdCntctID,
+                ID: oldCntctInfo.id,
                 Column: clmn,
                 ColumnIndex: clmnIndex,
               }),
             },
           );
           const resJSON = await response.json();
-          if (resJSON.success) {
-          } else {
-            this.showMsg('Delete error');
+          if (!resJSON.success) {
+            slctdCntctIndex = this.contacts?.findIndex((contact) => contact.id == oldCntctInfo.id);
+            // prettier-ignore
+            confirm('Error' + (resJSON?.messages?.[0] ? ': ' + resJSON.messages[0] : '') + '. Would you like to try again? If not, your most recent change will be lost.',) == true
+            ? this.deleteContactInfo(clmn, clmnIndex, oldCntctInfo, slctdCntctIndex, true)
+            : (this.contacts[slctdCntctIndex] = oldCntctInfo);
           }
         } catch (error) {
-          this.showMsg(error.toString());
+          slctdCntctIndex = this.contacts?.findIndex((contact) => contact.id == oldCntctInfo.id);
+          // prettier-ignore
+          confirm('Error' + (error?.toString() ? ': ' + error.toString() : '') + '. Would you like to try again? If not, your most recent change will be lost.',) == true
+          ? this.deleteContactInfo(clmn, clmnIndex, oldCntctInfo, slctdCntctIndex, true)
+          : (this.contacts[slctdCntctIndex] = oldCntctInfo);
         }
       }
     },

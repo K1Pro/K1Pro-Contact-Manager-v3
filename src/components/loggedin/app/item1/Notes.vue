@@ -30,11 +30,11 @@ export default {
   methods: {
     updateNotes(event) {
       const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
-      event = typeof event === 'boolean' ? event : event.trim();
-      if ((event != oldCntct[this.clmn] && event != '') || (event == '' && oldCntct[this.clmn])) {
-        this.contacts[this.slctdCntctIndex][this.clmn] = event;
+      event = typeof event === 'boolean' ? event : event.replace(/ +(?= )/g, '');
+      this.contacts[this.slctdCntctIndex][this.clmn] = event;
+      this.$forceUpdate();
+      if ((event != oldCntct[this.clmn] && event != '') || (event == '' && oldCntct[this.clmn]))
         this.patchContactInfo(event, this.clmn, null, oldCntct, this.slctdCntctIndex);
-      }
     },
   },
 };

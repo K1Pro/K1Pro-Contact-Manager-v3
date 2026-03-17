@@ -26,7 +26,14 @@
               v-if="!dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
               class="asset-button"
               :disabled="dsbld"
-              @click="deleteContactInfo('Assets', assetIndex)"
+              @click="
+                deleteContactInfo(
+                  'Assets',
+                  assetIndex,
+                  JSON.parse(JSON.stringify(contacts[slctdCntctIndex])),
+                  slctdCntctIndex,
+                )
+              "
             >
               <i class="fa-solid fa-trash"></i>
             </button>
@@ -51,7 +58,14 @@
               v-if="!dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
               class="asset-button"
               :disabled="dsbld"
-              @click="deleteContactInfo('Assets', assetIndex)"
+              @click="
+                deleteContactInfo(
+                  'Assets',
+                  assetIndex,
+                  JSON.parse(JSON.stringify(contacts[slctdCntctIndex])),
+                  slctdCntctIndex,
+                )
+              "
             >
               <i class="fa-solid fa-trash"></i>
             </button>
@@ -87,8 +101,9 @@ export default {
   methods: {
     updateAsset(event, clmnIndex, key) {
       const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
-      event = typeof event === 'boolean' ? event : event.trim();
+      event = typeof event === 'boolean' ? event : event.replace(/ +(?= )/g, '');
       this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
+      this.$forceUpdate();
       this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
     },
   },

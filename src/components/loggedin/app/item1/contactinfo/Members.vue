@@ -57,7 +57,14 @@
           <button
             v-if="!dsbld && memberIndex !== 0 && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
             class="member-button"
-            @click="deleteContactInfo('Members', memberIndex)"
+            @click="
+              deleteContactInfo(
+                'Members',
+                memberIndex,
+                JSON.parse(JSON.stringify(contacts[slctdCntctIndex])),
+                slctdCntctIndex,
+              )
+            "
           >
             <i class="fa-solid fa-trash"></i>
           </button>
@@ -164,7 +171,7 @@ export default {
   },
 
   methods: {
-    async addContactInfo(event) {
+    addContactInfo(event) {
       if (event.srcElement.selectedIndex != 0) {
         const InfoGroup = event.target.value.split('_')[0];
         if (!['newContact', 'deleteContact'].includes(InfoGroup)) {
@@ -189,120 +196,101 @@ export default {
           event.srcElement.selectedIndex = 0;
           if (confirm('Are you sure you would like to delete this?') == true) {
             this.spinLogin = true;
-            const oldSlctdCntctIndex = this.slctdCntctIndex;
-            try {
-              const response = await fetch(
-                app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/contacts',
-                {
-                  method: 'DELETE',
-                  headers: {
-                    Authorization: access_token,
-                    'Content-Type': 'application/json',
-                    'Cache-Control': 'no-store',
-                  },
-                  body: JSON.stringify({
-                    ID: this.sttngs.user.slctdCntctID,
-                  }),
-                },
-              );
-              const resJSON = await response.json();
-              if (resJSON.success) {
-                this.updt.contactsAmount--;
-                this.sttngs.user.slctdCntctID =
-                  this.contacts[this.contacts.length - 1].id == this.sttngs.user.slctdCntctID
-                    ? this.contacts[this.contacts.length - 2].id
-                    : this.contacts[this.contacts.length - 1].id;
-                this.contacts.splice(oldSlctdCntctIndex, 1);
-              } else {
-                this.showMsg('Failed to delete contact');
-              }
-              this.spinLogin = false;
-            } catch (error) {
-              this.spinLogin = false;
-              this.showMsg('Failed to delete contact');
-              console.log(error.toString());
-            }
+            this.deleteContact(JSON.parse(JSON.stringify(this.sttngs.user.slctdCntctID)));
           }
         } else if (InfoGroup == 'newContact') {
           event.srcElement.selectedIndex = 0;
           this.spinLogin = true;
-          console.log(Object.keys(this.sttngs.entity.contactInfo.keys.Members)[0]);
-          try {
-            const response = await fetch(
-              app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/contacts',
-              {
-                method: 'POST',
-                headers: {
-                  Authorization: access_token,
-                  'Content-Type': 'application/json',
-                  'Cache-Control': 'no-store',
-                },
-                body: JSON.stringify({
-                  Member: Object.keys(this.sttngs.entity.contactInfo.keys.Members)[0],
-                }),
-              },
-            );
-            const resJSON = await response.json();
-            if (resJSON.success) {
-              this.updt.contactsAmount++;
-              console.log(resJSON);
-              const newCntctID = resJSON.data.contact_id;
-              const newMember = {
-                id: newCntctID,
-                Members: [
-                  {
-                    Type: Object.keys(this.sttngs.entity.contactInfo.keys.Members)[0],
-                    Name: '',
-                  },
-                ],
-                Addresses: [],
-                Assets: [],
-                Connections: [],
-                Credentials: [],
-                Tasks: [],
-                RecurTasks: [],
-                Notes: '',
-                Categ: '',
-                DNC: 0,
-                Created: {
-                  [this.userData.id]: this.updt.updtngY_m_d_H_i_s_z.slice(0, 16),
-                },
-                Updated: {
-                  [this.userData.id]: this.updt.updtngY_m_d_H_i_s_z.slice(0, 16),
-                },
-                Assigned: this.userData.id,
-                Log: [],
-                Custom1: [],
-                Custom2: '',
-                Custom3: '',
-                Custom4: '',
-                Custom5: '',
-              };
-              this.contacts.push(newMember);
-              this.sttngs.user.slctdCntctID = newCntctID;
-              this.spinLogin = false;
-            } else {
-              this.spinLogin = false;
-              this.showMsg('Failed to create new contact');
-            }
-          } catch (error) {
-            this.spinLogin = false;
-            this.showMsg('Failed to create new contact');
-            console.log(error.toString());
-          }
+          this.postContact();
         }
+      }
+    },
+    async postContact() {
+      try {
+        const response = await fetch(
+          app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/contacts',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: access_token,
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store',
+            },
+          },
+        );
+        const resJSON = await response.json();
+        if (resJSON.success) {
+          this.contacts.push(resJSON.data.contact);
+          this.sttngs.user.slctdCntctID = resJSON.data.contact.id;
+          this.spinLogin = false;
+        } else {
+          // prettier-ignore
+          confirm('Error' + (resJSON?.messages?.[0] ? ': ' + resJSON.messages[0] : '') + '. Would you like to try again? If not, no new contact will be created.',) == true
+            ? this.postContact()
+            : this.spinLogin = false;
+        }
+      } catch (error) {
+        // prettier-ignore
+        confirm('Error' + (error?.toString() ? ': ' + error.toString() : '') + '. Would you like to try again? If not, contact will not be created.',) == true
+          ? this.postContact()
+          : this.spinLogin = false;
+      }
+    },
+    async deleteContact(slctdCntctID) {
+      if (this.contacts.findIndex((contact) => contact.id == slctdCntctID) !== -1) {
+        try {
+          const response = await fetch(
+            app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z.slice(0, 19).replace(' ', 'T') + '/contacts',
+            {
+              method: 'DELETE',
+              headers: {
+                Authorization: access_token,
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-store',
+              },
+              body: JSON.stringify({
+                ID: slctdCntctID,
+              }),
+            },
+          );
+          const resJSON = await response.json();
+          if (resJSON.success) {
+            this.sttngs.user.slctdCntctID =
+              this.contacts[this.contacts.length - 1].id == slctdCntctID
+                ? this.contacts[this.contacts.length - 2].id
+                : this.contacts[this.contacts.length - 1].id;
+            const slctdCntctIndex = this.contacts.findIndex((contact) => contact.id == slctdCntctID);
+            if (slctdCntctIndex !== -1) this.contacts.splice(slctdCntctIndex, 1);
+            this.spinLogin = false;
+          } else {
+            // prettier-ignore
+            confirm('Error' + (resJSON?.messages?.[0] ? ': ' + resJSON.messages[0] : '') + '. Would you like to try again? If not, contact will not be deleted.',) == true
+              ? this.postContact(slctdCntctID)
+              : this.spinLogin = false;
+          }
+        } catch (error) {
+          // prettier-ignore
+          confirm('Error' + (error?.toString() ? ': ' + error.toString() : '') + '. Would you like to try again? If not, contact will not be deleted.',) == true
+            ? this.postContact(slctdCntctID)
+            : this.spinLogin = false;
+        }
+      } else {
+        this.sttngs.user.slctdCntctID =
+          this.contacts[this.contacts.length - 1].id == slctdCntctID
+            ? this.contacts[this.contacts.length - 2].id
+            : this.contacts[this.contacts.length - 1].id;
       }
     },
     updateMember(event, clmnIndex, key) {
       const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
-      event = typeof event === 'boolean' ? event : event.trim();
+      event = typeof event === 'boolean' ? event : event.replace(/ +(?= )/g, '');
+      this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
+      this.$forceUpdate();
       if (
         (event != oldCntct[this.clmn][clmnIndex][key] && event != '') ||
         (event == '' && oldCntct[this.clmn][clmnIndex][key])
-      ) {
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
+      )
         this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
-      }
     },
   },
 };

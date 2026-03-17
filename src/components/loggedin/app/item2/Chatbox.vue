@@ -52,7 +52,7 @@
             <template v-if="!chat.tp.includes('image')">
               <i v-if="chat.err || chat?.err == ''" class="fa-solid fa-circle-exclamation" :title="chat.err"></i>
               <template v-if="chat.tp == 'msg'">
-                <template v-if="chat.msg.includes('https://bundle-insurance.com/secure-link/')">
+                <template v-if="chat.msg.includes('/secure-link/')">
                   <a :href="chat.msg.split(' - ')[0]" target="_blank">{{ chat.msg.split(' - ')[0] }}</a> -
                   {{ chat.msg.split(' - ')[1] }}
                 </template>
@@ -331,12 +331,15 @@ export default {
         }
         if (!resJSON.success) {
           this.spinLogin = false;
-          this.showMsg('Message not sent');
+          // prettier-ignore
+          if (confirm('Error' + (resJSON?.messages?.[0] ? ': ' + resJSON.messages[0] : '') + '. Would you like to try again? If not, your most recent '+ chatType.toLowerCase()+' will not be sent.',) == true)
+            this.postChat(dat, chatBody, chatType);
         }
       } catch (error) {
         this.spinLogin = false;
-        this.showMsg('Message not sent');
-        console.log(error.toString());
+        // prettier-ignore
+        if (confirm('Error' + (error?.toString() ? ': ' + error.toString() : '') + '. Would you like to try again? If not, your most recent '+ chatType.toLowerCase()+' will not be sent.',) == true)
+          this.postChat(dat, chatBody, chatType);
       }
     },
 
@@ -362,15 +365,22 @@ export default {
             this.uploadedFiles.push(file);
           });
         } else {
-          this.showMsg('Upload error');
+          // prettier-ignore
+          if (confirm('Error' + (resJSON?.messages?.[0] ? ': ' + resJSON.messages[0] : '') + '. Would you like to try again? If not, your most recent ' + chatType.toLowerCase() + ' will not be sent.',) == true) {
+            this.uploadFile(event);
+          } else {
+            this.uploadingFiles = false;
+            this.uploadedFiles = [];
+          }
+        }
+      } catch (error) {
+        // prettier-ignore
+        if (confirm('Error' + (error?.toString() ? ': ' + error.toString() : '') + '. Would you like to try again? If not, your most recent ' + chatType.toLowerCase() + ' will not be sent.',) == true) {
+          this.uploadFile(event);
+        } else {
           this.uploadingFiles = false;
           this.uploadedFiles = [];
         }
-      } catch (error) {
-        this.uploadingFiles = false;
-        this.uploadedFiles = [];
-        this.showMsg(error.toString());
-        console.log(error.toString());
       }
     },
     changeSMSTemplate(event) {

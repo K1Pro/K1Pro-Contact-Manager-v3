@@ -174,8 +174,13 @@ export default {
           }),
         });
         const resJSON = await response.json();
+        // prettier-ignore
+        if (!resJSON.success && confirm('Error' + (resJSON?.messages?.[0] ? ': ' + resJSON.messages[0] : '') + '. Would you like to try again? If not, your most recent change will be lost.',) == true)
+            this.patchUserData(event, column, columnIndex, key, ID);
       } catch (error) {
-        console.log(error.toString());
+        // prettier-ignore
+        if (confirm('Error' + (error?.toString() ? ': ' + error.toString() : '') + '. Would you like to try again? If not, your most recent change will be lost.',) == true)
+          this.patchUserData(event, column, columnIndex, key, ID);
       }
     },
   },

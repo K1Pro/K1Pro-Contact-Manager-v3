@@ -20,7 +20,14 @@
         <button
           v-if="!dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
           class="address-button"
-          @click="deleteContactInfo('Addresses', addressIndex)"
+          @click="
+            deleteContactInfo(
+              'Addresses',
+              addressIndex,
+              JSON.parse(JSON.stringify(contacts[slctdCntctIndex])),
+              slctdCntctIndex,
+            )
+          "
         >
           <i class="fa-solid fa-trash"></i>
         </button>
@@ -96,14 +103,14 @@ export default {
   methods: {
     updateAddress(event, clmnIndex, key) {
       const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
-      event = typeof event === 'boolean' ? event : event.trim();
+      event = typeof event === 'boolean' ? event : event.replace(/ +(?= )/g, '');
+      this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
+      this.$forceUpdate();
       if (
         (event != oldCntct[this.clmn][clmnIndex][key] && event != '') ||
         (event == '' && oldCntct[this.clmn][clmnIndex][key])
-      ) {
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
+      )
         this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
-      }
     },
   },
 };
