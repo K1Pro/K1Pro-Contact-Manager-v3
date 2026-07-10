@@ -48,6 +48,8 @@
             :value="task.Date"
             :disabled="
               dsbld ||
+              task?.Status === true ||
+              task?.Status == '1' ||
               userRole < 4 ||
               (userRole < 7 &&
                 task.Create != userData.id &&
@@ -64,6 +66,8 @@
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
             :disabled="
               dsbld ||
+              task?.Status === true ||
+              task?.Status == '1' ||
               userRole < 4 ||
               (userRole < 7 &&
                 task.Create != userData.id &&
@@ -88,6 +92,8 @@
             :id="'taskOwnrChckBx' + taskIndex"
             :disabled="
               dsbld ||
+              task?.Status === true ||
+              task?.Status == '1' ||
               userRole < 4 ||
               (userRole < 7 &&
                 task.Create != userData.id &&
@@ -101,6 +107,16 @@
             style="width: calc(100% - 120px)"
             :id="'task' + task.clmnIndex"
             :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
+            :disabled="
+              dsbld ||
+              task?.Status === true ||
+              task?.Status == '1' ||
+              userRole < 4 ||
+              (userRole < 7 &&
+                task.Create != userData.id &&
+                !task.Assign.includes(userData.id?.toString()) &&
+                task.Update != userData.id)
+            "
             :title="
               Array.isArray(task.Assign)
                 ? task.Assign.map((assignee) =>
@@ -169,6 +185,8 @@
               spellcheck="false"
               :contenteditable="
                 dsbld ||
+                task?.Status === true ||
+                task?.Status == '1' ||
                 userRole < 4 ||
                 (userRole < 7 &&
                   task.Create != userData.id &&
@@ -302,6 +320,7 @@ export default {
       this.slctd.taskMemo = this.slctd.taskMemo + 1;
     },
     getTaskOwners() {
+      // need to still disable checkbox when task is completed
       Array.from(document.getElementsByClassName('taskOwnrSlct')).forEach((el, elIndx) => {
         if (this.contacts[this.slctdCntctIndex][this.clmn][el.id.slice(4)].Assign.includes(el.value)) {
           let taskOwnrChckBx = document.getElementById('taskOwnrChckBx' + elIndx);
