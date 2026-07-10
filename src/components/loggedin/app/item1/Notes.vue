@@ -8,9 +8,10 @@
       </div>
       <textarea
         placeholder="Notes"
-        :value="contacts[slctdCntctIndex].Notes"
-        @change="updateNotes($event.target.value)"
         :disabled="dsbld"
+        :value="contacts[slctdCntctIndex].Notes"
+        :class="'slctd-cntct-id-' + sttngs.user.slctdCntctID"
+        @change="updateNotes($event.target.value)"
       ></textarea>
     </template>
     <template v-else>Create a contact first</template>
@@ -21,7 +22,7 @@
 export default {
   name: 'Notes',
 
-  inject: ['contacts', 'dsbld', 'patchContactInfo', 'slctdCntctIndex'],
+  inject: ['contacts', 'dsbld', 'patchContactInfo', 'slctdCntctIndex', 'sttngs'],
 
   data() {
     return { clmn: 'Notes' };

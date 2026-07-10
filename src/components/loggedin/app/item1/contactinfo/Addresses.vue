@@ -7,8 +7,9 @@
           <select
             v-if="userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id"
             style="border: none; background-color: transparent"
-            :value="address.Type"
             :disabled="dsbld"
+            :value="address.Type"
+            :class="'slctd-cntct-id-' + sttngs.user.slctdCntctID"
             @change="updateAddress($event.target.value, addressIndex, 'Type')"
           >
             <option v-for="address in Object.keys(sttngs.entity.contactInfo.keys.Addresses)" :value="address">
@@ -41,9 +42,10 @@
         >
           <select
             v-if="addressInputs.value == 'State'"
-            :disabled="dsbld || (userRole < 6 && contacts[slctdCntctIndex].Assigned != userData.id)"
-            :value="address[addressInputs.value]"
             style="background-color: #ffffff; opacity: 1"
+            :value="address[addressInputs.value]"
+            :class="'slctd-cntct-id-' + sttngs.user.slctdCntctID"
+            :disabled="dsbld || (userRole < 6 && contacts[slctdCntctIndex].Assigned != userData.id)"
             @change="updateAddress($event.target.value, addressIndex, addressInputs.value)"
           >
             <option value="" disabled selected>State</option>
@@ -53,12 +55,13 @@
           </select>
           <input
             v-else
-            :type="addressInputs.type"
-            :placeholder="addressInputs.placeholder"
-            :value="address[addressInputs.value]"
-            :disabled="dsbld"
-            :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
             style="background-color: white"
+            :disabled="dsbld"
+            :type="addressInputs.type"
+            :value="address[addressInputs.value]"
+            :placeholder="addressInputs.placeholder"
+            :class="'slctd-cntct-id-' + sttngs.user.slctdCntctID"
+            :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
             @change="updateAddress($event.target.value, addressIndex, addressInputs.value)"
           />
         </div>

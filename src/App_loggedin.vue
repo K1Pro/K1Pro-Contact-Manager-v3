@@ -54,7 +54,7 @@ export default {
     return {
       chats: null,
       contacts: null,
-      curEl: { Txt: '', Tp: null },
+      tempContacts: [],
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       deletedIDs: [],
       dsbld: false,
@@ -76,9 +76,11 @@ export default {
         chatType: 'Chat',
         dayIndex: null,
         eventIndx: null,
+        actvEl: false,
         report: null,
         sideMenuLnk: ['Contactinfo', 'Calendar'],
         smsGroup: null,
+        taskMemo: 0,
         tmstmp: new Date(date_Y_m_d_H_i_s_z).getTime(),
         IDs: {},
       },
@@ -89,6 +91,7 @@ export default {
         mstRcntMsg: null,
         mstRcntCntctUpdt: unixEpoch,
         mstRcntUpdates: {},
+        pause: {},
         updtngY_m_d_H_i_s_z: date_Y_m_d_H_i_s_z,
       },
       userData: user_data,
@@ -311,6 +314,12 @@ export default {
 
   methods: {
     async getUpdt() {
+      if (Object.keys(this.updt.pause).length > 0)
+        Object.entries(this.updt.pause).forEach(([pauseKey, pauseVal]) => {
+          new Date(this.updt.updtngY_m_d_H_i_s_z)?.getTime() - pauseVal > 30000 && delete this.updt.pause[pauseKey];
+        });
+      if (Object.keys(this.updt.pause).length > 0) console.log(JSON.stringify(this.updt.pause));
+
       const userSlctdCntctID = this.sttngs?.user?.slctdCntctID ? this.sttngs.user.slctdCntctID : null;
       try {
         // prettier-ignore
@@ -323,7 +332,7 @@ export default {
             (this.updt.mstRcntCntctUpdt != resJSON.data.mstRcntCntctUpdt ||
               JSON.stringify(this.updt.mstRcntMsg) != JSON.stringify(resJSON.data.mstRcntMsg))
           )
-            this.getContacts(this.updt.mstRcntCntctUpdt);
+            this.getContacts(this.updt.mstRcntCntctUpdt?.slice(0, 19)?.replace(' ', 'T'));
           if (this.updt.mstRcntChat && this.updt.mstRcntChat != resJSON.data.mstRcntChat)
             this.getChats(this.updt.mstRcntChat);
           this.updt.mstRcntUpdates = resJSON.data.mstRcntUpdate;
@@ -367,16 +376,15 @@ export default {
     },
 
     async getContacts(updtMstRcntCntctUpdt) {
-      this.updt.mstRcntCntctUpdt = null;
       try {
         // prettier-ignore
-        const response = await fetch( app_api_url + '/' + updtMstRcntCntctUpdt.slice(0, 19).replace(' ', 'T') + '/contacts', { headers: { Authorization: access_token, }, }, );
+        const response = await fetch( app_api_url + '/' + updtMstRcntCntctUpdt +  '/contacts', { headers: { Authorization: access_token, }, }, );
         const resJSON = await response.json();
         if (resJSON.success) {
           if ([unixEpoch, unixEpoch1].includes(updtMstRcntCntctUpdt)) {
             if (updtMstRcntCntctUpdt == unixEpoch) {
               this.contacts = resJSON?.data?.contacts ? resJSON.data.contacts : [];
-              this.getContacts(unixEpoch1);
+              this.getContacts(unixEpoch1?.slice(0, 19)?.replace(' ', 'T'));
               setTimeout(() => {
                 const newChat = new Notification(
                   'Hi ' +
@@ -400,47 +408,80 @@ export default {
               this.updt.mstRcntCntctUpdt = resJSON?.data?.mstRcntCntctUpdt;
               const frstLdCntcts = this.contacts?.map((cntct) => cntct.id);
               const fltrdCntcts = resJSON?.data?.contacts?.filter((cntct) => !frstLdCntcts?.includes(cntct.id));
-              this.contacts.push(...fltrdCntcts);
-              this.sttngsReq('GET', 'user');
-              this.sttngsReq('GET', 'entity');
+              if (this.slctd.actvEl) {
+                this.tempContacts.push(...fltrdCntcts);
+              } else {
+                this.contacts.push(...fltrdCntcts);
+                this.sttngsReq('GET', 'user');
+                this.sttngsReq('GET', 'entity');
+              }
             }
           } else {
-            resJSON?.data?.contacts?.forEach((contact) => {
-              if (contact.id == this.sttngs.user?.slctdCntctID) {
-                if (this.userData.id != Object.keys(contact.Updated)[0]) {
-                  this.contacts.splice(this.slctdCntctIndex, 1, contact);
-                  const oldEventIndx = this.slctd.eventIndx !== null ? this.slctd.eventIndx : null;
-                  if (['Tasks', 'Recurringtasks']?.includes(this.slctd.sideMenuLnk[0])) {
-                    if (oldEventIndx !== null) {
-                      this.slctd.eventIndx = null;
-                      // prettier-ignore
-                      setTimeout(() => { this.slctd.eventIndx = oldEventIndx; }, 1);
-                    } else {
-                      this.slctd.eventIndx = 0;
-                      // prettier-ignore
-                      setTimeout(() => { this.slctd.eventIndx = null; }, 1);
-                    }
-                  }
-                  // prettier-ignore
-                  if (this.curEl.Tp && !['Chat']?.includes(this.slctd.sideMenuLnk[0]))
-                      setTimeout(() => { document.activeElement[this.curEl.Tp] = this.curEl.Txt; }, 2);
+            resJSON?.data?.contacts?.forEach((resCntct, resCntctIndx) => {
+              const appCntctIndx = this.contacts?.findIndex((appCntct) => appCntct.id == resCntct.id);
+              if (appCntctIndx !== -1) {
+                if (
+                  Object.keys(this.updt.pause).includes(resCntct.id?.toString()) ||
+                  this.userData.id == Object.keys(resCntct.Updated)[0] ||
+                  Object.values(this.contacts[appCntctIndx].Updated)[0] >= Object.values(resCntct.Updated)[0]
+                ) {
+                  const tempResCntct = resCntct;
+                  delete tempResCntct.Updated;
+                  delete tempResCntct.Log;
+                  const tempAppCntct = JSON.parse(JSON.stringify(this.contacts[appCntctIndx]));
+                  delete tempAppCntct.Updated;
+                  delete tempAppCntct.Log;
+                  if (
+                    JSON.stringify(tempResCntct).split('').sort().join('') !=
+                      JSON.stringify(tempAppCntct).split('').sort().join('') &&
+                    !Object.keys(this.updt.pause).includes(resCntct.id?.toString())
+                  )
+                    this.getContacts(resCntct.id.toString());
+
+                  this.contacts[appCntctIndx].Email = resCntct.Email;
+                  this.contacts[appCntctIndx].Tel = resCntct.Tel;
+                  this.contacts[appCntctIndx].Msg = resCntct.Msg;
+                  this.contacts[appCntctIndx].Fax = resCntct.Fax;
+                  this.contacts[appCntctIndx].Log = resCntct.Log;
                 } else {
-                  this.contacts[this.slctdCntctIndex].Email = contact.Email;
-                  this.contacts[this.slctdCntctIndex].Tel = contact.Tel;
-                  this.contacts[this.slctdCntctIndex].Msg = contact.Msg;
-                  this.contacts[this.slctdCntctIndex].Fax = contact.Fax;
-                  this.contacts[this.slctdCntctIndex].Log = contact.Log;
+                  let curElTxt = null;
+                  if (this.slctd.actvEl)
+                    curElTxt =
+                      document.activeElement.tagName == 'SPAN'
+                        ? document.activeElement.innerHTML
+                        : document.activeElement.value;
+                  this.contacts.splice(appCntctIndx, 1, resCntct);
+                  if (['Tasks', 'Recurringtasks']?.includes(this.slctd.sideMenuLnk[0]))
+                    setTimeout(() => {
+                      this.slctd.taskMemo = this.slctd.taskMemo + 1;
+                    }, 1);
+
+                  if (curElTxt !== null && !['Chat']?.includes(this.slctd.sideMenuLnk[0]))
+                    setTimeout(() => {
+                      if (
+                        curElTxt !=
+                          document.activeElement[document.activeElement.tagName == 'SPAN' ? 'innerHTML' : 'value'] &&
+                        confirm(
+                          this.sttngs.entity.activeUserList[Object.keys(resCntct.Updated)[0]].FirstName +
+                            ' modified the same input on ' +
+                            this.usaDateFrmt(Object.values(resCntct.Updated)[0]) +
+                            '. \r\n\r\nClick OK to save your version:\r\n' +
+                            curElTxt +
+                            '\r\n\r\nClick CANCEL to apply ' +
+                            this.sttngs.entity.activeUserList[Object.keys(resCntct.Updated)[0]].FirstName +
+                            "'s version:\r\n" +
+                            document.activeElement[document.activeElement.tagName == 'SPAN' ? 'innerHTML' : 'value'],
+                        ) == true
+                      ) {
+                        document.activeElement[document.activeElement.tagName == 'SPAN' ? 'innerHTML' : 'value'] =
+                          curElTxt;
+                        let changeEvent = new Event('change');
+                        document.activeElement.dispatchEvent(changeEvent);
+                      }
+                    }, 2);
                 }
               } else {
-                const slctdCntctIndx = this.contacts?.findIndex((slctdCntct) => slctdCntct.id == contact.id);
-                if (slctdCntctIndx !== -1) {
-                  this.contacts.splice(slctdCntctIndx, 1, contact);
-                  // prettier-ignore
-                  if (this.curEl.Tp && !['Contactinfo', 'Tasks', 'Recurringtasks', 'Notes', 'Chat', 'Settings']?.includes(this.slctd.sideMenuLnk[0]))
-                      setTimeout(() => { document.activeElement[this.curEl.Tp] = this.curEl.Txt; }, 1);
-                } else {
-                  this.contacts.push(contact);
-                }
+                this.contacts.push(resCntct);
               }
             });
             if (JSON.stringify(this.deletedIDs) != JSON.stringify(resJSON.data.deleted_IDs)) {
@@ -451,16 +492,17 @@ export default {
               });
               this.deletedIDs = resJSON.data?.deleted_IDs;
             }
-            this.updt.mstRcntCntctUpdt = resJSON?.data?.mstRcntCntctUpdt;
+            if (updtMstRcntCntctUpdt.includes('T') && Object.keys(this.updt.pause).length === 0)
+              this.updt.mstRcntCntctUpdt = resJSON?.data?.mstRcntCntctUpdt;
           }
           this.updt.mstRcntMsg = resJSON?.data?.mstRcntMsg;
         } else {
           console.log(resJSON);
-          this.updt.mstRcntCntctUpdt = updtMstRcntCntctUpdt;
+          if (updtMstRcntCntctUpdt.includes('T')) this.updt.mstRcntCntctUpdt = updtMstRcntCntctUpdt;
         }
       } catch (error) {
         console.log(error?.toString());
-        this.updt.mstRcntCntctUpdt = updtMstRcntCntctUpdt;
+        if (updtMstRcntCntctUpdt.includes('T')) this.updt.mstRcntCntctUpdt = updtMstRcntCntctUpdt;
       }
     },
 
@@ -509,9 +551,10 @@ export default {
     },
 
     async patchContactInfo(event, column, columnIndex, oldCntctInfo, slctdCntctIndex) {
-      const updtngY_m_d_H_i_s_z = this.updt.updtngY_m_d_H_i_s_z;
+      const updtngY_m_d_H_i_s_z = JSON.parse(JSON.stringify(this.updt.updtngY_m_d_H_i_s_z));
+      this.updt.pause[oldCntctInfo.id.toString()] = new Date(updtngY_m_d_H_i_s_z)?.getTime();
       this.contacts[slctdCntctIndex].Updated = {
-        [this.userData.id]: updtngY_m_d_H_i_s_z,
+        [this.userData.id]: updtngY_m_d_H_i_s_z.split('.')[0],
       };
       try {
         const response = await fetch(app_api_url + '/' + updtngY_m_d_H_i_s_z.replace(' ', 'T').trim() + '/contacts', {
@@ -529,12 +572,34 @@ export default {
           }),
         });
         const resJSON = await response.json();
-        if (!resJSON.success) {
+        if (resJSON) {
           slctdCntctIndex = this.contacts?.findIndex((contact) => contact.id == oldCntctInfo.id);
-          // prettier-ignore
-          confirm('Error' + (resJSON?.messages?.[0] ? ': ' + resJSON.messages[0] : '') + '. Would you like to try again? If not, your most recent change will be lost.',) == true
+          if (resJSON.success) {
+            if (
+              this.contacts?.[slctdCntctIndex]?.[column]?.[columnIndex] !== undefined &&
+              typeof event === 'object' &&
+              resJSON?.data?.contact?.[0]?.[column]?.[columnIndex] !== undefined &&
+              typeof resJSON.data.contact[0][column][columnIndex] === 'object'
+            ) {
+              Object.entries(this.contacts[slctdCntctIndex][column][columnIndex]).forEach(([key, val]) => {
+                if (resJSON?.data?.contact?.[0]?.[column]?.[columnIndex]?.[key] === undefined) {
+                  delete this.contacts[slctdCntctIndex][column][columnIndex][key];
+                } else if (val !== resJSON.data.contact[0][column][columnIndex][key]) {
+                  this.contacts[slctdCntctIndex][column][columnIndex][key] =
+                    resJSON.data.contact[0][column][columnIndex][key];
+                }
+              });
+              Object.entries(resJSON.data.contact[0][column][columnIndex]).forEach(([key, val]) => {
+                if (val !== this.contacts?.[slctdCntctIndex]?.[column]?.[columnIndex]?.[key])
+                  this.contacts[slctdCntctIndex][column][columnIndex][key] = val;
+              });
+            }
+          } else {
+            // prettier-ignore
+            confirm('Error' + (resJSON?.messages?.[0] ? ': ' + resJSON.messages[0] : '') + '. Would you like to try again? If not, your most recent change will be lost.',) == true
             ? this.patchContactInfo(event, column, columnIndex, oldCntctInfo, slctdCntctIndex)
             : (this.contacts[slctdCntctIndex] = oldCntctInfo);
+          }
         }
       } catch (error) {
         slctdCntctIndex = this.contacts?.findIndex((contact) => contact.id == oldCntctInfo.id);
@@ -547,24 +612,26 @@ export default {
 
     async deleteContactInfo(clmn, clmnIndex, oldCntctInfo, slctdCntctIndex, prevConfirm) {
       if (prevConfirm || confirm('Are you sure you would like to delete this?') == true) {
+        const updtngY_m_d_H_i_s_z = JSON.parse(JSON.stringify(this.updt.updtngY_m_d_H_i_s_z));
+        this.updt.pause[oldCntctInfo.id.toString()] = new Date(updtngY_m_d_H_i_s_z)?.getTime();
         this.contacts[slctdCntctIndex][clmn].splice(clmnIndex, 1);
+        this.contacts[slctdCntctIndex].Updated = {
+          [this.userData.id]: updtngY_m_d_H_i_s_z.split('.')[0],
+        };
         try {
-          const response = await fetch(
-            app_api_url + '/' + this.updt.updtngY_m_d_H_i_s_z.replace(' ', 'T').trim() + '/contacts',
-            {
-              method: 'DELETE',
-              headers: {
-                Authorization: access_token,
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-store',
-              },
-              body: JSON.stringify({
-                ID: oldCntctInfo.id,
-                Column: clmn,
-                ColumnIndex: clmnIndex,
-              }),
+          const response = await fetch(app_api_url + '/' + updtngY_m_d_H_i_s_z.replace(' ', 'T').trim() + '/contacts', {
+            method: 'DELETE',
+            headers: {
+              Authorization: access_token,
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store',
             },
-          );
+            body: JSON.stringify({
+              ID: oldCntctInfo.id,
+              Column: clmn,
+              ColumnIndex: clmnIndex,
+            }),
+          });
           const resJSON = await response.json();
           if (!resJSON.success) {
             slctdCntctIndex = this.contacts?.findIndex((contact) => contact.id == oldCntctInfo.id);
@@ -589,18 +656,33 @@ export default {
       window.scrollTo({ top: this.wndw.hght, behavior: 'smooth' });
     },
 
-    getCurEl() {
-      const curEl =
-        document.activeElement.tagName == 'SPAN'
-          ? ['innerHTML', document.activeElement.innerHTML]
-          : document.activeElement.tagName == 'TEXTAREA'
-            ? ['value', document.activeElement.value]
-            : document.activeElement.tagName == 'INPUT'
-              ? ['value', document.activeElement.value]
-              : [null, ''];
-      if (curEl) {
-        this.curEl.Txt = curEl[1];
-        this.curEl.Tp = curEl[0];
+    getActiveEl() {
+      this.slctd.actvEl =
+        document.activeElement.tagName == 'SPAN' ||
+        document.activeElement.tagName == 'TEXTAREA' ||
+        document.activeElement.tagName == 'SELECT' ||
+        document.activeElement.tagName == 'INPUT'
+          ? true
+          : false;
+
+      if (this.slctd.actvEl) {
+        if (document.activeElement?.className?.includes('slctd-cntct-id-')) {
+          document.activeElement.className.split(' ').forEach((className) => {
+            if (className.includes('slctd-cntct-id-')) {
+              this.updt.pause[className.split('-')[className.split('-').length - 1]] = new Date(
+                this.updt.updtngY_m_d_H_i_s_z,
+              )?.getTime();
+            }
+          });
+        } else if (['Tasks', 'Recurringtasks'].includes(this.slctd.sideMenuLnk[0])) {
+          this.updt.pause[this.sttngs.user.slctdCntctID] = new Date(this.updt.updtngY_m_d_H_i_s_z)?.getTime();
+        }
+      }
+      if (!this.slctd.actvEl && this.tempContacts.length > 0) {
+        this.contacts.push(...this.tempContacts);
+        this.sttngsReq('GET', 'user');
+        this.sttngsReq('GET', 'entity');
+        this.tempContacts = [];
       }
     },
   },
@@ -612,8 +694,8 @@ export default {
       this.updt.updtngY_m_d_H_i_s_z = new Date(this.updt.initialUsrTmstmp + timeDifference).toISOString();
       this.getUpdt();
     }, 5000);
-    document.body.addEventListener('keyup', this.getCurEl);
-    document.body.addEventListener('click', this.getCurEl);
+    document.body.addEventListener('keyup', this.getActiveEl);
+    document.body.addEventListener('click', this.getActiveEl);
 
     // This notifies how many chats there are
     setInterval(() => {
@@ -645,11 +727,6 @@ export default {
         const newChat = new Notification('Task past due (' + this.contacts[this.todaysEvents[updtngH_iLess5Min]]?.Members?.[0]?.Name + ')');
       }
     }, 60000);
-  },
-
-  updated() {
-    if (this.curEl.Tp && ['SPAN', 'TEXTAREA', 'INPUT'].includes(document.activeElement.tagName))
-      document.activeElement[this.curEl.Tp] = this.curEl.Txt;
   },
 
   watch: {

@@ -13,7 +13,7 @@
               v-if="slctd.eventIndx === null"
               @click="
                 sortAscDesc = !sortAscDesc;
-                recurTaskMemo = recurTaskMemo + 1;
+                slctd.taskMemo = slctd.taskMemo + 1;
               "
             >
               <template v-if="RecurTasks.length > 1">
@@ -30,7 +30,7 @@
         </div>
       </div>
 
-      <template v-for="(recurTask, recurTaskIndex) in RecurTasks" v-memo="[recurTaskMemo]">
+      <template v-for="(recurTask, recurTaskIndex) in RecurTasks" v-memo="[slctd.taskMemo]">
         <div
           class="recur-tasks-body"
           :style="{
@@ -206,7 +206,7 @@
             "
             @click="
               updateRecurTask(updt.updtngY_m_d_H_i_s_z.slice(0, 10), recurTask.clmnIndex, 'Review');
-              recurTaskMemo = recurTaskMemo + 1;
+              slctd.taskMemo = slctd.taskMemo + 1;
             "
           >
             {{
@@ -232,7 +232,7 @@
                   ? 'false'
                   : 'plaintext-only'
               "
-              v-on:blur="updateRecurTask($event.target.innerHTML, recurTask.clmnIndex, 'Desc')"
+              v-on:blur="updateRecurTask($event, recurTask.clmnIndex, 'Desc')"
               >{{ recurTask.Desc }}</span
             >
           </div>
@@ -298,7 +298,7 @@ export default {
   },
 
   data() {
-    return { clmn: 'RecurTasks', sortAscDesc: false, recurTaskMemo: 0 };
+    return { clmn: 'RecurTasks', sortAscDesc: false };
   },
 
   methods: {
@@ -318,15 +318,13 @@ export default {
         newRecurTask,
       ];
       this.slctd.eventIndx = oldCntct[this.clmn].length;
-      this.recurTaskMemo = this.recurTaskMemo + 1;
+      this.slctd.taskMemo = this.slctd.taskMemo + 1;
       this.patchContactInfo(newRecurTask, this.clmn, oldCntct[this.clmn].length, oldCntct, this.slctdCntctIndex);
     },
     updateRecurTask(event, clmnIndex, key) {
+      if (key == 'Desc') event.target.innerHTML = event.target.innerHTML.replace(/ +(?= )/g, '').replaceAll('<br>', '');
       const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
-      event =
-        typeof event === 'boolean' || typeof event === 'object'
-          ? event
-          : event.replace(/ +(?= )/g, '').replaceAll('<br>', '');
+      event = key != 'Desc' ? event : event.target.innerHTML.replace(/ +(?= )/g, '').replaceAll('<br>', '');
       if (
         (event != oldCntct[this.clmn][clmnIndex][key] && event != '') ||
         (event == '' && oldCntct[this.clmn][clmnIndex][key])
@@ -337,8 +335,8 @@ export default {
             ? this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].push(event.target.nextSibling.value?.toString(),)
             : this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].splice(this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].indexOf(event.target.nextSibling.value?.toString(),), 1, )
           : (this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event);
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
-        this.recurTaskMemo = this.recurTaskMemo + 1;
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id.toString();
+        this.slctd.taskMemo = this.slctd.taskMemo + 1;
         // prettier-ignore
         this.patchContactInfo({ [key]: this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key], Update: this.userData.id }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
       }
@@ -377,7 +375,7 @@ export default {
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Recur = recur;
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Freq = freq;
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
-        this.recurTaskMemo = this.recurTaskMemo + 1;
+        this.slctd.taskMemo = this.slctd.taskMemo + 1;
         // prettier-ignore
         this.patchContactInfo({ Start: start, Freq: freq, Recur: recur, Update: this.userData.id }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
       }
@@ -396,7 +394,7 @@ export default {
     },
     showAllRecurTasks() {
       this.slctd.eventIndx = null;
-      this.recurTaskMemo = this.recurTaskMemo + 1;
+      this.slctd.taskMemo = this.slctd.taskMemo + 1;
     },
     getRecurTaskOwners() {
       Array.from(document.getElementsByClassName('recurTaskOwnrSlct'))?.forEach((el, elIndx) => {
@@ -426,10 +424,10 @@ export default {
   },
   watch: {
     'slctd.eventIndx'() {
-      this.recurTaskMemo = this.recurTaskMemo + 1;
+      this.slctd.taskMemo = this.slctd.taskMemo + 1;
     },
     slctdCntctIndex() {
-      this.recurTaskMemo = this.recurTaskMemo + 1;
+      this.slctd.taskMemo = this.slctd.taskMemo + 1;
     },
   },
 };

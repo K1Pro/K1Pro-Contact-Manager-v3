@@ -6,12 +6,11 @@
           <div v-if="assetInputs.icon" style="position: relative">
             <i class="asset-icon" :class="assetInputs.icon"></i>
             <input
-              :placeholder="assetInputs.placeholder"
-              :type="assetInputs.type"
+              style="background-color: #ffffff; opacity: 1"
               :value="assetInfo"
-              :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
-              :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
-              @change="updateAsset($event.target.value, assetIndex, assetType)"
+              :type="assetInputs.type"
+              :placeholder="assetInputs.placeholder"
+              :class="'slctd-cntct-id-' + sttngs.user.slctdCntctID"
               :style="{
                 'border-bottom':
                   assetIndex !== contacts[slctdCntctIndex].Assets.length - 1 ? '2px solid lightgray' : '0',
@@ -20,7 +19,9 @@
                     ? 'calc(100% - 30px)'
                     : '100%',
               }"
-              style="background-color: #ffffff; opacity: 1"
+              :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+              :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+              @change="updateAsset($event.target.value, assetIndex, assetType)"
             />
             <button
               v-if="!dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"
@@ -40,19 +41,20 @@
           </div>
           <div v-else>
             <input
-              :placeholder="assetInputs.placeholder"
-              :type="assetInputs.type"
+              style="background-color: #ffffff; opacity: 1"
               :value="assetInfo"
-              :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
-              :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
-              @change="updateAsset($event.target.value, assetIndex, assetType)"
+              :type="assetInputs.type"
+              :placeholder="assetInputs.placeholder"
+              :class="'slctd-cntct-id-' + sttngs.user.slctdCntctID"
               :style="{
                 width:
                   !dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)
                     ? 'calc(100% - 30px)'
                     : '100%',
               }"
-              style="background-color: #ffffff; opacity: 1"
+              :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+              :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
+              @change="updateAsset($event.target.value, assetIndex, assetType)"
             />
             <button
               v-if="!dsbld && (userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id)"

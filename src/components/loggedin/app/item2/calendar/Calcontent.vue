@@ -191,8 +191,8 @@ export default {
       const newTask = {
         Date: slctdY_m_d + this.updt.updtngY_m_d_H_i_s_z.slice(10, 16),
         Assign: [this.userData.id.toString()],
-        Create: this.userData.id,
-        Update: this.userData.id,
+        Create: this.userData.id.toString(),
+        Update: this.userData.id.toString(),
         Created: this.updt.updtngY_m_d_H_i_s_z,
       };
       this.contacts[this.slctdCntctIndex].Tasks = [...this.contacts[this.slctdCntctIndex].Tasks, newTask];

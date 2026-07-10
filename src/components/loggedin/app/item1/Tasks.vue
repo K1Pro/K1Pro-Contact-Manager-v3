@@ -13,7 +13,7 @@
               v-if="slctd.eventIndx === null"
               @click="
                 sortAscDesc = !sortAscDesc;
-                taskMemo = taskMemo + 1;
+                slctd.taskMemo = slctd.taskMemo + 1;
               "
             >
               <template v-if="Tasks.length > 1">
@@ -30,7 +30,7 @@
         </div>
       </div>
 
-      <template v-for="(task, taskIndex) in Tasks" v-memo="[taskMemo]">
+      <template v-for="(task, taskIndex) in Tasks" v-memo="[slctd.taskMemo]">
         <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }">
           <i
             v-if="
@@ -177,7 +177,7 @@
                   ? 'false'
                   : 'plaintext-only'
               "
-              v-on:blur="updateTask($event.target.innerHTML, task.clmnIndex, 'Desc')"
+              v-on:blur="updateTask($event, task.clmnIndex, 'Desc')"
               >{{ task?.Desc }}</span
             >
           </div>
@@ -247,7 +247,7 @@ export default {
   },
 
   data() {
-    return { clmn: 'Tasks', sortAscDesc: false, taskMemo: 0 };
+    return { clmn: 'Tasks', sortAscDesc: false };
   },
 
   methods: {
@@ -256,21 +256,19 @@ export default {
       const newTask = {
         Date: this.slctdY_m_d + this.updt.updtngY_m_d_H_i_s_z.slice(10, 16),
         Assign: [this.userData.id.toString()],
-        Create: this.userData.id,
-        Update: this.userData.id,
+        Create: this.userData.id.toString(),
+        Update: this.userData.id.toString(),
         Created: this.updt.updtngY_m_d_H_i_s_z,
       };
       this.contacts[this.slctdCntctIndex][this.clmn] = [...this.contacts[this.slctdCntctIndex][this.clmn], newTask];
       this.slctd.eventIndx = oldCntct[this.clmn].length;
-      this.taskMemo = this.taskMemo + 1;
+      this.slctd.taskMemo = this.slctd.taskMemo + 1;
       this.patchContactInfo(newTask, this.clmn, oldCntct[this.clmn].length, oldCntct, this.slctdCntctIndex);
     },
     updateTask(event, clmnIndex, key) {
+      if (key == 'Desc') event.target.innerHTML = event.target.innerHTML.replace(/ +(?= )/g, '').replaceAll('<br>', '');
       const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
-      event =
-        typeof event === 'boolean' || typeof event === 'object'
-          ? event
-          : event.replace(/ +(?= )/g, '').replaceAll('<br>', '');
+      event = key != 'Desc' ? event : event.target.innerHTML.replace(/ +(?= )/g, '').replaceAll('<br>', '');
       if (
         (event != oldCntct[this.clmn][clmnIndex][key] && event != '') ||
         (event == '' && oldCntct[this.clmn][clmnIndex][key])
@@ -281,8 +279,8 @@ export default {
             ? this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].push(event.target.nextSibling.value?.toString(),)
             : this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].splice(this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].indexOf(event.target.nextSibling.value?.toString(),), 1,)
           : (this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event);
-        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
-        this.taskMemo = this.taskMemo + 1;
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id.toString(); // check how this gets recorded into the database, check the update object 3 lines below
+        this.slctd.taskMemo = this.slctd.taskMemo + 1;
         // prettier-ignore
         this.patchContactInfo({ [key]: this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key], Update: this.userData.id }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
       }
@@ -301,7 +299,7 @@ export default {
     },
     showAllTasks() {
       this.slctd.eventIndx = null;
-      this.taskMemo = this.taskMemo + 1;
+      this.slctd.taskMemo = this.slctd.taskMemo + 1;
     },
     getTaskOwners() {
       Array.from(document.getElementsByClassName('taskOwnrSlct')).forEach((el, elIndx) => {
@@ -331,10 +329,10 @@ export default {
   },
   watch: {
     'slctd.eventIndx'() {
-      this.taskMemo = this.taskMemo + 1;
+      this.slctd.taskMemo = this.slctd.taskMemo + 1;
     },
     slctdCntctIndex() {
-      this.taskMemo = this.taskMemo + 1;
+      this.slctd.taskMemo = this.slctd.taskMemo + 1;
     },
   },
 };

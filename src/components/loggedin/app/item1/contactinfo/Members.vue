@@ -8,8 +8,9 @@
             <select
               v-if="userRole > 5 || contacts[slctdCntctIndex].Assigned == userData.id"
               style="border: none; background-color: transparent"
-              :value="member.Type"
               :disabled="dsbld"
+              :value="member.Type"
+              :class="'slctd-cntct-id-' + sttngs.user.slctdCntctID"
               @change="updateMember($event.target.value, memberIndex, 'Type')"
             >
               <option v-for="member in Object.keys(sttngs.entity.contactInfo.keys.Members)" :value="member">
@@ -77,13 +78,14 @@
             :style="{ flex: '1 0 ' + memberInputsWidth + 'px' }"
           >
             <input
-              :type="memberInputs.type"
-              :placeholder="memberInputs.placeholder"
-              :value="member[memberInputs.value]"
+              style="background-color: white"
               :disabled="dsbld"
+              :type="memberInputs.type"
+              :value="member[memberInputs.value]"
+              :placeholder="memberInputs.placeholder"
+              :class="'slctd-cntct-id-' + sttngs.user.slctdCntctID"
               :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
               v-on:blur="updateMember($event.target.value, memberIndex, memberInputs.value)"
-              style="background-color: white"
             />
           </div>
         </div>

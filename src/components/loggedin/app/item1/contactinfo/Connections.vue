@@ -32,8 +32,11 @@
             <i class="fa-solid fa-comment-sms"></i>
           </button>
           <input
+            style="background-color: #ffffff; opacity: 1"
+            :value="connInfo"
             :type="connInputs.type"
             :placeholder="connInputs.placeholder"
+            :class="'slctd-cntct-id-' + sttngs.user.slctdCntctID"
             :style="{
               'border-bottom':
                 connIndex !== contacts[slctdCntctIndex].Connections.length - 1 ? '2px solid lightgray' : '0',
@@ -42,8 +45,6 @@
                   ? 'calc(100% - ' + (connInputs.sms ? '90px' : '60px') + ')'
                   : 'calc(100% - ' + (connInputs.sms ? '60px' : '30px') + ')',
             }"
-            style="background-color: #ffffff; opacity: 1"
-            :value="connInfo"
             :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
             :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
             @change="updateConnection($event.target.value, conn.RealIndex, connType)"

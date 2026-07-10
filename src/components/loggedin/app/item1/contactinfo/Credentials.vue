@@ -8,10 +8,11 @@
               <i class="cred-icon" :class="credInputs.icon"></i>
               <input
                 autocomplete="new-password"
-                :placeholder="credInputs.placeholder"
-                :type="credInputType"
                 :value="credInfo"
+                :type="credInputType"
                 :ref="'credInput' + credIndex"
+                :placeholder="credInputs.placeholder"
+                :class="'slctd-cntct-id-' + sttngs.user.slctdCntctID"
                 :disabled="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
                 :readonly="dsbld || userRole < 4 || (userRole < 7 && contacts[slctdCntctIndex].Assigned != userData.id)"
                 @change="updateCred($event.target.value, credIndex, credType)"
