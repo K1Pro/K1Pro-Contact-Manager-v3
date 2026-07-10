@@ -322,6 +322,19 @@ export default {
       this.patchContactInfo(newRecurTask, this.clmn, oldCntct[this.clmn].length, oldCntct, this.slctdCntctIndex);
     },
     updateRecurTask(event, clmnIndex, key) {
+      if (
+        key == 'Review' &&
+        (this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Recur.includes(this.slctdY_m_d.slice(5, 10)) ||
+          this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Recur == this.slctdY_m_d.slice(8, 10) ||
+          this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Recur ==
+            new Date(this.slctdY_m_d + 'T00:00:00').getDay().toString() ||
+          this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Freq == 'Daily') &&
+        this.slctdY_m_d > this.updt.updtngY_m_d_H_i_s_z.slice(0, 10) &&
+        this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Review != this.slctdY_m_d &&
+        confirm('Confirm that you are finishing this recurring task with a date in the future: ' + this.slctdY_m_d) ==
+          true
+      )
+        event = this.slctdY_m_d;
       if (key == 'Desc') event.target.innerHTML = event.target.innerHTML.replace(/ +(?= )/g, '').replaceAll('<br>', '');
       const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       event = key != 'Desc' ? event : event.target.innerHTML.replace(/ +(?= )/g, '').replaceAll('<br>', '');
