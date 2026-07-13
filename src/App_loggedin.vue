@@ -3,7 +3,7 @@
   <template v-if="contacts !== null && sttngs.user !== null && sttngs.entity !== null">
     <div
       class="app-grid-container"
-      :style="[appGridContainer, { gridTemplateRows: wndw.wdth >= 768 ? '100vh' : wndw.hght + 'px auto' }]"
+      :style="[appGridContainer, { gridTemplateRows: wndw.wdth >= 768 ? wndw.hght + 'px' : wndw.hght + 'px auto' }]"
     >
       <div class="app-grid-item1">
         <sidemenu
