@@ -53,6 +53,7 @@
             :value="recurTask.Start"
             :disabled="
               dsbld ||
+              updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End ||
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
@@ -89,6 +90,7 @@
             :value="recurTask.Time"
             :disabled="
               dsbld ||
+              updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End ||
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
@@ -103,6 +105,7 @@
             :value="recurTask.Freq"
             :disabled="
               dsbld ||
+              updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End ||
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
@@ -131,6 +134,7 @@
             :id="'recurTaskOwnrChckBx' + recurTaskIndex"
             :disabled="
               dsbld ||
+              updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End ||
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
@@ -143,6 +147,7 @@
             class="recurTaskOwnrSlct"
             style="width: calc(100% - 120px)"
             :id="'recurTask' + recurTask.clmnIndex"
+            :disabled="updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End"
             :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
             :title="
               Array.isArray(recurTask.Assign)
@@ -198,6 +203,7 @@
           <button
             :disabled="
               dsbld ||
+              updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End ||
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
@@ -224,6 +230,7 @@
               spellcheck="false"
               :contenteditable="
                 dsbld ||
+                updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End ||
                 userRole < 4 ||
                 (userRole < 7 &&
                   recurTask.Create != userData.id &&
