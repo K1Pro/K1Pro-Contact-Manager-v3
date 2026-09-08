@@ -1,42 +1,45 @@
 <template>
   <div class="recur-tasks">
     <template v-if="contacts?.[slctdCntctIndex]?.RecurTasks">
-      <div class="recur-tasks-title">
-        <div class="recur-tasks-title-grid-container">
-          <div class="recur-tasks-title-grid-item1">
-            Recurring tasks for
-            {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
-            {{ contacts[slctdCntctIndex].Members[0]?.Name }}
-          </div>
-          <div class="tasks-title-grid-item2">
-            <button
-              v-if="slctd.eventIndx === null"
-              @click="
-                sortAscDesc = !sortAscDesc;
-                slctd.taskMemo = slctd.taskMemo + 1;
-              "
-            >
-              <template v-if="RecurTasks.length > 1">
-                <i v-if="sortAscDesc" class="fa-solid fa-arrow-down-wide-short"></i>
-                <i v-else class="fa-solid fa-arrow-up-wide-short"></i>
-              </template>
-            </button>
-          </div>
-          <div class="recur-tasks-title-grid-item3">
-            <button @click="newRecurTask">
-              <i class="fa-solid fa-square-plus"></i>
-            </button>
-          </div>
-        </div>
+      <div
+        class="recur-tasks-title"
+        :style="{
+          gridTemplateColumns:
+            slctd.eventIndx === null && RecurTasksFltrd[0].length > 0 && RecurTasksFltrd[2].length > 0
+              ? RecurTasksFltrd[mode].length > 1
+                ? 'calc(100% - 67.5px) 22.5px 22.5px 22.5px'
+                : 'calc(100% - 45px) 22.5px 22.5px'
+              : slctd.eventIndx === null && RecurTasksFltrd[mode].length > 1
+                ? 'calc(100% - 45px) 22.5px 22.5px'
+                : 'calc(100% - 22.5px) 22.5px',
+        }"
+      >
+        <div :title="'Recurring tasks for ' + slctd.cntct.fllNm">Recurring tasks for {{ slctd.cntct.fllNm }}</div>
+
+        <button v-if="slctd.eventIndx === null && RecurTasks.length > 1" @click="sortAscDesc = !sortAscDesc">
+          <i v-if="sortAscDesc" class="fa-solid fa-arrow-down-wide-short"></i>
+          <i v-else class="fa-solid fa-arrow-up-wide-short"></i>
+        </button>
+
+        <button
+          v-if="
+            slctd.eventIndx === null &&
+            RecurTasks.length !== 0 &&
+            RecurTasksFltrd[0].length > 0 &&
+            RecurTasksFltrd[2].length > 0
+          "
+          @click="chngMode"
+        >
+          <i style="font-size: 19px; margin-top: 1px" :class="'fa-solid fa-battery-' + plcy[mode]"></i>
+        </button>
+
+        <button @click="newRecurTask" :disabled="dsbld">
+          <i class="fa-solid fa-square-plus"></i>
+        </button>
       </div>
 
-      <template v-for="(recurTask, recurTaskIndex) in RecurTasks" v-memo="[slctd.taskMemo]">
-        <div
-          class="recur-tasks-body"
-          :style="{
-            'background-color': recurTaskIndex % 2 ? 'lightblue' : 'white',
-          }"
-        >
+      <template v-for="(recurTask, recurTaskIndex) in RecurTasks">
+        <div class="recur-tasks-body">
           <i
             v-if="
               userRole > 5 ||
@@ -53,7 +56,7 @@
             :value="recurTask.Start"
             :disabled="
               dsbld ||
-              updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End ||
+              (updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End && recurTask.End != '') ||
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
@@ -67,7 +70,6 @@
                 contacts[slctdCntctIndex][clmn][recurTask.clmnIndex].Freq,
               )
             "
-            :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="recur-tasks-label">End:</span>
           <input
@@ -82,7 +84,6 @@
                 recurTask.Update != userData.id)
             "
             v-on:blur="updateRecurTask($event.target.value, recurTask.clmnIndex, 'End')"
-            :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="recur-tasks-label">Time:</span>
           <input
@@ -90,7 +91,7 @@
             :value="recurTask.Time"
             :disabled="
               dsbld ||
-              updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End ||
+              (updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End && recurTask.End != '') ||
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
@@ -98,14 +99,13 @@
                 recurTask.Update != userData.id)
             "
             v-on:blur="updateRecurTask($event.target.value, recurTask.clmnIndex, 'Time')"
-            :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="recur-tasks-label">Recur:</span>
           <select
             :value="recurTask.Freq"
             :disabled="
               dsbld ||
-              updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End ||
+              (updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End && recurTask.End != '') ||
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
@@ -119,7 +119,6 @@
                 $event.target.value,
               )
             "
-            :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
           >
             <option>Annually</option>
             <option>Semiannually</option>
@@ -134,7 +133,7 @@
             :id="'recurTaskOwnrChckBx' + recurTaskIndex"
             :disabled="
               dsbld ||
-              updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End ||
+              (updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End && recurTask.End != '') ||
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
@@ -147,8 +146,7 @@
             class="recurTaskOwnrSlct"
             style="width: calc(100% - 120px)"
             :id="'recurTask' + recurTask.clmnIndex"
-            :disabled="updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End"
-            :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']"
+            :disabled="updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End && recurTask.End != ''"
             :title="
               Array.isArray(recurTask.Assign)
                 ? recurTask.Assign.map((assignee) =>
@@ -203,17 +201,14 @@
           <button
             :disabled="
               dsbld ||
-              updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End ||
+              (updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End && recurTask.End != '') ||
               userRole < 4 ||
               (userRole < 7 &&
                 recurTask.Create != userData.id &&
                 !recurTask.Assign.includes(userData.id.toString()) &&
                 recurTask.Update != userData.id)
             "
-            @click="
-              updateRecurTask(updt.updtngY_m_d_H_i_s_z.slice(0, 10), recurTask.clmnIndex, 'Review');
-              slctd.taskMemo = slctd.taskMemo + 1;
-            "
+            @click="updateRecurTask(updt.updtngY_m_d_H_i_s_z.slice(0, 10), recurTask.clmnIndex, 'Review')"
           >
             {{
               recurTask.Review
@@ -225,12 +220,12 @@
                 : 'Click here'
             }}
           </button>
-          <div class="recur-tasks-span" :class="[recurTaskIndex % 2 ? 'even-task' : 'odd-task']">
+          <div>
             <span
               spellcheck="false"
               :contenteditable="
                 dsbld ||
-                updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End ||
+                (updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End && recurTask.End != '') ||
                 userRole < 4 ||
                 (userRole < 7 &&
                   recurTask.Create != userData.id &&
@@ -246,20 +241,33 @@
         </div>
       </template>
       <div
-        v-if="slctd.eventIndx !== null && contacts[slctdCntctIndex].RecurTasks.length > 1"
+        v-if="slctd.eventIndx !== null && RecurTasksFltrd[1].length > 1"
         class="recur-tasks-body"
-        style="background-color: lightblue; text-align: right"
+        style="text-align: right"
       >
         <div>
           <b @click="showAllRecurTasks()"
-            >Show {{ contacts[slctdCntctIndex].RecurTasks.length - 1 }} more
-            {{ contacts[slctdCntctIndex].RecurTasks.length - 1 > 1 ? 'tasks' : 'task' }}
+            >Show {{ RecurTasksFltrd[1].length - 1 }} more task{{ RecurTasksFltrd[1].length - 1 > 1 ? 's' : '' }}
           </b>
         </div>
       </div>
 
-      <div v-if="RecurTasks.length === 0" class="recur-tasks-body" style="background-color: white">
-        <div>No recurring tasks</div>
+      <div v-if="RecurTasks.length === 0" class="recur-tasks-body">No recurring tasks</div>
+
+      <div
+        v-if="
+          slctd.eventIndx === null &&
+          RecurTasksFltrd[1].length > 1 &&
+          ((mode === 0 && RecurTasksFltrd[2].length > 0) || (mode === 2 && RecurTasksFltrd[0].length > 0))
+        "
+        style="padding: 10px; text-align: right"
+      >
+        <b v-if="mode === 0" @click="mode = 2"
+          >{{ RecurTasksFltrd[2].length }} active recurring task{{ RecurTasksFltrd[2].length > 1 ? 's' : '' }}</b
+        >
+        <b v-else @click="mode = 0"
+          >{{ RecurTasksFltrd[0].length }} inactive recurring task{{ RecurTasksFltrd[0].length > 1 ? 's' : '' }}</b
+        >
       </div>
     </template>
     <template v-else>Create a contact first</template>
@@ -290,25 +298,46 @@ export default {
       return this.slctd.eventIndx !== null
         ? [
             {
-              ...this.contacts[this.slctdCntctIndex].RecurTasks[this.slctd.eventIndx],
+              ...this.contacts[this.slctdCntctIndex][this.clmn][this.slctd.eventIndx],
               clmnIndex: this.slctd.eventIndx,
             },
           ]
         : this.sortAscDesc
-          ? this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
-              return { ...val, clmnIndex: index };
-            }).sort((a, b) => a?.Start?.localeCompare(b?.Start))
-          : this.contacts[this.slctdCntctIndex].RecurTasks.map((val, index) => {
-              return { ...val, clmnIndex: index };
-            }).sort((a, b) => b?.Start?.localeCompare(a?.Start));
+          ? this.RecurTasksFltrd[this.mode].sort((a, b) => a?.Start?.localeCompare(b?.Start))
+          : this.RecurTasksFltrd[this.mode].sort((a, b) => b?.Start?.localeCompare(a?.Start));
+    },
+    RecurTasksFltrd() {
+      return [
+        this.contacts[this.slctdCntctIndex][this.clmn]
+          .map((val, index) => {
+            return { ...val, clmnIndex: index };
+          })
+          .filter((tsk) => this.updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= tsk.End),
+        this.contacts[this.slctdCntctIndex][this.clmn].map((val, index) => {
+          return { ...val, clmnIndex: index };
+        }),
+        this.contacts[this.slctdCntctIndex][this.clmn]
+          .map((val, index) => {
+            return { ...val, clmnIndex: index };
+          })
+          .filter((tsk) => this.updt.updtngY_m_d_H_i_s_z.slice(0, 10) <= tsk.End || tsk.End === undefined),
+      ];
     },
   },
 
   data() {
-    return { clmn: 'RecurTasks', sortAscDesc: false };
+    return {
+      clmn: 'RecurTasks',
+      mode: 2,
+      plcy: ['empty', 'half', 'full'],
+      sortAscDesc: false,
+    };
   },
 
   methods: {
+    chngMode() {
+      this.mode = this.mode === 2 ? 0 : this.mode + 1;
+    },
     newRecurTask() {
       const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       const newRecurTask = {
@@ -325,7 +354,6 @@ export default {
         newRecurTask,
       ];
       this.slctd.eventIndx = oldCntct[this.clmn].length;
-      this.slctd.taskMemo = this.slctd.taskMemo + 1;
       this.patchContactInfo(newRecurTask, this.clmn, oldCntct[this.clmn].length, oldCntct, this.slctdCntctIndex);
     },
     updateRecurTask(event, clmnIndex, key) {
@@ -356,7 +384,6 @@ export default {
             : this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].splice(this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].indexOf(event.target.nextSibling.value?.toString(),), 1, )
           : (this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event);
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id.toString();
-        this.slctd.taskMemo = this.slctd.taskMemo + 1;
         // prettier-ignore
         this.patchContactInfo({ [key]: this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key], Update: this.userData.id }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
       }
@@ -395,7 +422,6 @@ export default {
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Recur = recur;
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Freq = freq;
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id;
-        this.slctd.taskMemo = this.slctd.taskMemo + 1;
         // prettier-ignore
         this.patchContactInfo({ Start: start, Freq: freq, Recur: recur, Update: this.userData.id }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
       }
@@ -414,20 +440,20 @@ export default {
     },
     showAllRecurTasks() {
       this.slctd.eventIndx = null;
-      this.slctd.taskMemo = this.slctd.taskMemo + 1;
+      this.mode = 1;
     },
     getRecurTaskOwners() {
       Array.from(document.getElementsByClassName('recurTaskOwnrSlct'))?.forEach((el, elIndx) => {
-        if (this.contacts[this.slctdCntctIndex].RecurTasks[el.id.slice(9)].Assign?.includes(el.value)) {
+        if (this.contacts[this.slctdCntctIndex].RecurTasks?.[el.id.slice(9)]?.Assign?.includes(el.value)) {
           let recurTaskOwnrChckBx = document.getElementById('recurTaskOwnrChckBx' + elIndx);
-          let recurTaskOwnr = this.contacts[this.slctdCntctIndex].RecurTasks[el.id.slice(9)].Assign;
+          let recurTaskOwnr = this.contacts[this.slctdCntctIndex].RecurTasks?.[el.id.slice(9)]?.Assign;
           recurTaskOwnrChckBx.checked = true;
           recurTaskOwnr.length < 2 && recurTaskOwnr?.includes(el.value)
             ? (recurTaskOwnrChckBx.disabled = true)
             : (recurTaskOwnrChckBx.disabled = false);
         } else {
           let recurTaskOwnrChckBx = document.getElementById('recurTaskOwnrChckBx' + elIndx);
-          let recurTaskOwnr = this.contacts[this.slctdCntctIndex].RecurTasks[el.id.slice(9)].Assign;
+          let recurTaskOwnr = this.contacts[this.slctdCntctIndex].RecurTasks?.[el.id.slice(9)]?.Assign;
           recurTaskOwnrChckBx.checked = false;
           recurTaskOwnr.length < 2 && recurTaskOwnr?.includes(el.value)
             ? (recurTaskOwnrChckBx.disabled = true)
@@ -443,43 +469,50 @@ export default {
     this.getRecurTaskOwners();
   },
   watch: {
-    'slctd.eventIndx'() {
-      this.slctd.taskMemo = this.slctd.taskMemo + 1;
-    },
     slctdCntctIndex() {
-      this.slctd.taskMemo = this.slctd.taskMemo + 1;
+      this.mode = 2;
     },
   },
 };
 </script>
 
 <style>
+.recur-tasks div:nth-child(odd) {
+  background-color: lightblue;
+}
+.recur-tasks div:nth-child(even) {
+  background-color: white;
+}
+.recur-tasks div:nth-child(odd) select,
+.recur-tasks div:nth-child(odd) input,
+.recur-tasks div:nth-child(odd) span[contenteditable] {
+  background-color: lightblue;
+  border: 1px solid gray;
+}
+.recur-tasks div:nth-child(even) select,
+.recur-tasks div:nth-child(even) input,
+.recur-tasks div:nth-child(even) span[contenteditable] {
+  background-color: white;
+  border: 1px solid lightgray;
+}
 .recur-tasks-title {
   font-weight: bold;
   padding: 5px;
-  background-color: lightblue;
   color: black;
-}
-.recur-tasks-title-grid-container {
   display: grid;
-  grid-template-columns: calc(100% - 52.5px) 30px 22.5px;
 }
-.recur-tasks-title-grid-item1 {
+.recur-tasks-title div {
   height: 20px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.recur-tasks-title-grid-item2 button,
-.recur-tasks-title-grid-item3 button {
+.recur-tasks-title button {
   background-color: transparent;
   border: 0px;
+  padding: 0px;
   cursor: pointer;
   color: #417cd9;
-}
-.recur-tasks-title-grid-item2 button:hover,
-.recur-tasks-title-grid-item3 button:hover {
-  color: #db66ff;
 }
 .recur-tasks-body {
   padding: 10px;
@@ -512,24 +545,22 @@ export default {
   height: auto;
   width: auto;
 }
-.recur-tasks-span {
+.recur-tasks-body span[contenteditable] {
   border-radius: 1px;
   border: 1px solid lightgray;
   padding: 5px;
   word-break: break-word;
   font-size: 14px;
-}
-.recur-tasks-span span[contenteditable] {
   min-height: 32px;
   display: block; /* not sure if this is needed */
 }
-.recur-tasks-span span[contenteditable]:empty::before {
+.recur-tasks-body span[contenteditable]:empty::before {
   min-height: 32px;
   content: 'Enter task description';
   display: inline-block;
   color: grey;
 }
-.recur-tasks-span span[contenteditable]:empty:focus::before {
+.recur-tasks-body span[contenteditable]:empty:focus::before {
   content: 'Start typing';
   color: grey;
 }
@@ -538,13 +569,5 @@ export default {
 }
 .recur-tasks b {
   cursor: pointer;
-}
-.odd-task {
-  background-color: white;
-  border: 1px solid lightgray;
-}
-.even-task {
-  background-color: lightblue;
-  border: 1px solid gray;
 }
 </style>

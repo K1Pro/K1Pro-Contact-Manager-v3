@@ -231,7 +231,6 @@ export default {
           this.slctd.eventIndx = null;
           this.slctd.eventIndx = clmnIndex;
         }
-        // this.taskMemo = this.taskMemo + 1;
         this.patchContactInfo({ [key]: eventDateTime }, clmn, clmnIndex, oldCntct, slctdCntctIndex);
       }
     },

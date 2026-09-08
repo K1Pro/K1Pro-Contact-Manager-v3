@@ -1,37 +1,40 @@
 <template>
   <div class="tasks">
     <template v-if="contacts?.[slctdCntctIndex]?.Tasks">
-      <div class="tasks-title">
-        <div class="tasks-title-grid-container">
-          <div class="tasks-title-grid-item1">
-            Tasks for
-            {{ contacts[slctdCntctIndex].Members[0].First ? contacts[slctdCntctIndex].Members[0].First : '' }}
-            {{ contacts[slctdCntctIndex].Members[0]?.Name }}
-          </div>
-          <div class="tasks-title-grid-item2">
-            <button
-              v-if="slctd.eventIndx === null"
-              @click="
-                sortAscDesc = !sortAscDesc;
-                slctd.taskMemo = slctd.taskMemo + 1;
-              "
-            >
-              <template v-if="Tasks.length > 1">
-                <i v-if="sortAscDesc" class="fa-solid fa-arrow-down-wide-short"></i>
-                <i v-else class="fa-solid fa-arrow-up-wide-short"></i>
-              </template>
-            </button>
-          </div>
-          <div class="tasks-title-grid-item3">
-            <button @click="newTask" :disabled="dsbld">
-              <i class="fa-solid fa-square-plus"></i>
-            </button>
-          </div>
-        </div>
+      <div
+        class="tasks-title"
+        :style="{
+          gridTemplateColumns:
+            slctd.eventIndx === null && TasksFltrd[0].length > 0 && TasksFltrd[2].length > 0
+              ? TasksFltrd[mode].length > 1
+                ? 'calc(100% - 67.5px) 22.5px 22.5px 22.5px'
+                : 'calc(100% - 45px) 22.5px 22.5px'
+              : slctd.eventIndx === null && TasksFltrd[mode].length > 1
+                ? 'calc(100% - 45px) 22.5px 22.5px'
+                : 'calc(100% - 22.5px) 22.5px',
+        }"
+      >
+        <div :title="'Tasks for ' + slctd.cntct.fllNm">Tasks for {{ slctd.cntct.fllNm }}</div>
+
+        <button v-if="slctd.eventIndx === null && Tasks.length > 1" @click="sortAscDesc = !sortAscDesc">
+          <i v-if="sortAscDesc" class="fa-solid fa-arrow-down-wide-short"></i>
+          <i v-else class="fa-solid fa-arrow-up-wide-short"></i>
+        </button>
+
+        <button
+          v-if="slctd.eventIndx === null && Tasks.length !== 0 && TasksFltrd[0].length > 0 && TasksFltrd[2].length > 0"
+          @click="chngMode"
+        >
+          <i style="font-size: 19px; margin-top: 1px" :class="'fa-solid fa-battery-' + plcy[mode]"></i>
+        </button>
+
+        <button @click="newTask" :disabled="dsbld">
+          <i class="fa-solid fa-square-plus"></i>
+        </button>
       </div>
 
-      <template v-for="(task, taskIndex) in Tasks" v-memo="[slctd.taskMemo]">
-        <div class="tasks-body" :style="{ 'background-color': taskIndex % 2 ? 'lightblue' : 'white' }">
+      <template v-for="(task, taskIndex) in Tasks">
+        <div class="tasks-body">
           <i
             v-if="
               userRole > 5 ||
@@ -57,13 +60,11 @@
                 task.Update != userData.id)
             "
             v-on:blur="updateTask($event.target.value, task.clmnIndex, 'Date')"
-            :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
           />
           <span class="tasks-label">Tag:</span>
           <select
             :value="task.Tag"
             @change="updateTask($event.target.value, task.clmnIndex, 'Tag')"
-            :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
             :disabled="
               dsbld ||
               task?.Status === true ||
@@ -106,7 +107,6 @@
             class="taskOwnrSlct"
             style="width: calc(100% - 120px)"
             :id="'task' + task.clmnIndex"
-            :class="[taskIndex % 2 ? 'even-task' : 'odd-task']"
             :disabled="
               dsbld ||
               task?.Status === true ||
@@ -180,7 +180,7 @@
             "
           />
           {{ task?.Status === true || task?.Status == '1' ? 'Yes' : 'No' }}
-          <div class="tasks-span" :class="[taskIndex % 2 ? 'even-task' : 'odd-task']">
+          <div>
             <span
               spellcheck="false"
               :contenteditable="
@@ -204,18 +204,31 @@
       <div
         v-if="slctd.eventIndx !== null && contacts[slctdCntctIndex].Tasks.length > 1"
         class="tasks-body"
-        style="background-color: lightblue; text-align: right"
+        style="text-align: right"
       >
         <div>
           <b @click="showAllTasks()"
-            >Show {{ contacts[slctdCntctIndex].Tasks.length - 1 }} more
-            {{ contacts[slctdCntctIndex].Tasks.length - 1 > 1 ? 'tasks' : 'task' }}
+            >Show {{ TasksFltrd[1].length - 1 }} more task{{ TasksFltrd[1].length - 1 > 1 ? 's' : '' }}
           </b>
         </div>
       </div>
 
-      <div v-if="Tasks.length === 0" class="tasks-body" style="background-color: white">
-        <div>No tasks</div>
+      <div v-if="Tasks.length === 0" class="tasks-body">No tasks</div>
+
+      <div
+        v-if="
+          slctd.eventIndx === null &&
+          TasksFltrd[1].length > 1 &&
+          ((mode === 0 && TasksFltrd[2].length > 0) || (mode === 2 && TasksFltrd[0].length > 0))
+        "
+        style="padding: 10px; text-align: right"
+      >
+        <b v-if="mode === 0" @click="mode = 2"
+          >{{ TasksFltrd[2].length }} unfinished task{{ TasksFltrd[2].length > 1 ? 's' : '' }}</b
+        >
+        <b v-else @click="mode = 0"
+          >{{ TasksFltrd[0].length }} finished task{{ TasksFltrd[0].length > 1 ? 's' : '' }}</b
+        >
       </div>
     </template>
     <template v-else>Create a contact first</template>
@@ -251,24 +264,36 @@ export default {
             },
           ]
         : this.sortAscDesc
-          ? this.contacts[this.slctdCntctIndex][this.clmn]
-              .map((val, index) => {
-                return { ...val, clmnIndex: index };
-              })
-              .sort((a, b) => a?.Date?.localeCompare(b?.Date))
-          : this.contacts[this.slctdCntctIndex][this.clmn]
-              .map((val, index) => {
-                return { ...val, clmnIndex: index };
-              })
-              .sort((a, b) => b?.Date?.localeCompare(a?.Date));
+          ? this.TasksFltrd[this.mode].sort((a, b) => a?.Date?.localeCompare(b?.Date))
+          : this.TasksFltrd[this.mode].sort((a, b) => b?.Date?.localeCompare(a?.Date));
+    },
+    TasksFltrd() {
+      return [
+        this.contacts[this.slctdCntctIndex][this.clmn]
+          .map((val, index) => {
+            return { ...val, clmnIndex: index };
+          })
+          .filter((tsk) => tsk?.Status === true || tsk?.Status == '1'),
+        this.contacts[this.slctdCntctIndex][this.clmn].map((val, index) => {
+          return { ...val, clmnIndex: index };
+        }),
+        this.contacts[this.slctdCntctIndex][this.clmn]
+          .map((val, index) => {
+            return { ...val, clmnIndex: index };
+          })
+          .filter((tsk) => tsk?.Status === false || tsk?.Status == '' || tsk?.Status === undefined),
+      ];
     },
   },
 
   data() {
-    return { clmn: 'Tasks', sortAscDesc: false };
+    return { clmn: 'Tasks', mode: 2, plcy: ['empty', 'half', 'full'], sortAscDesc: false };
   },
 
   methods: {
+    chngMode() {
+      this.mode = this.mode === 2 ? 0 : this.mode + 1;
+    },
     newTask() {
       const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       const newTask = {
@@ -280,7 +305,6 @@ export default {
       };
       this.contacts[this.slctdCntctIndex][this.clmn] = [...this.contacts[this.slctdCntctIndex][this.clmn], newTask];
       this.slctd.eventIndx = oldCntct[this.clmn].length;
-      this.slctd.taskMemo = this.slctd.taskMemo + 1;
       this.patchContactInfo(newTask, this.clmn, oldCntct[this.clmn].length, oldCntct, this.slctdCntctIndex);
     },
     updateTask(event, clmnIndex, key) {
@@ -298,7 +322,6 @@ export default {
             : this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].splice(this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key].indexOf(event.target.nextSibling.value?.toString(),), 1,)
           : (this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event);
         this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex].Update = this.userData.id.toString(); // check how this gets recorded into the database, check the update object 3 lines below
-        this.slctd.taskMemo = this.slctd.taskMemo + 1;
         // prettier-ignore
         this.patchContactInfo({ [key]: this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key], Update: this.userData.id }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
       }
@@ -317,7 +340,7 @@ export default {
     },
     showAllTasks() {
       this.slctd.eventIndx = null;
-      this.slctd.taskMemo = this.slctd.taskMemo + 1;
+      this.mode = 1;
     },
     getTaskOwners() {
       // need to still disable checkbox when task is completed
@@ -347,45 +370,50 @@ export default {
     this.getTaskOwners();
   },
   watch: {
-    'slctd.eventIndx'() {
-      this.slctd.taskMemo = this.slctd.taskMemo + 1;
-    },
     slctdCntctIndex() {
-      this.slctd.taskMemo = this.slctd.taskMemo + 1;
+      this.mode = 2;
     },
   },
 };
 </script>
 
 <style>
-.tasks {
+.tasks div:nth-child(odd) {
+  background-color: lightblue;
+}
+.tasks div:nth-child(even) {
+  background-color: white;
+}
+.tasks div:nth-child(odd) select,
+.tasks div:nth-child(odd) input,
+.tasks div:nth-child(odd) span[contenteditable] {
+  background-color: lightblue;
+  border: 1px solid gray;
+}
+.tasks div:nth-child(even) select,
+.tasks div:nth-child(even) input,
+.tasks div:nth-child(even) span[contenteditable] {
+  background-color: white;
+  border: 1px solid lightgray;
 }
 .tasks-title {
   font-weight: bold;
   padding: 5px;
-  background-color: lightblue;
   color: black;
-}
-.tasks-title-grid-container {
   display: grid;
-  grid-template-columns: calc(100% - 52.5px) 30px 22.5px;
 }
-.tasks-title-grid-item1 {
+.tasks-title div {
   height: 20px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.tasks-title-grid-item2 button,
-.tasks-title-grid-item3 button {
+.tasks-title button {
   background-color: transparent;
   border: 0px;
+  padding: 0px;
   cursor: pointer;
   color: #417cd9;
-}
-.tasks-title-grid-item2 button:hover,
-.tasks-title-grid-item3 button:hover {
-  color: #db66ff;
 }
 .tasks-body {
   padding: 10px;
@@ -406,34 +434,34 @@ export default {
   text-align: right;
 }
 .tasks-body input,
-.tasks-body select {
+.tasks-body select,
+.tasks-body button {
   width: calc(100% - 100px);
   height: 20px;
   font-family: 'Helvetica', sans-serif;
   font-size: 14px;
+  overflow: hidden;
 }
 .tasks-body input[type='checkbox'] {
   height: auto;
   width: auto;
 }
-.tasks-span {
+.tasks span[contenteditable] {
   border-radius: 1px;
   border: 1px solid lightgray;
   padding: 5px;
   word-break: break-word;
   font-size: 14px;
-}
-.tasks-span span[contenteditable] {
   min-height: 32px;
   display: block; /* not sure if this is needed */
 }
-.tasks-span span[contenteditable]:empty::before {
+.tasks span[contenteditable]:empty::before {
   min-height: 32px;
   content: 'Enter task description';
   display: inline-block;
   color: grey;
 }
-.tasks-span span[contenteditable]:empty:focus::before {
+.tasks span[contenteditable]:empty:focus::before {
   content: 'Start typing';
   color: grey;
 }
@@ -442,13 +470,5 @@ export default {
 }
 .tasks b {
   cursor: pointer;
-}
-.odd-task {
-  background-color: white;
-  border: 1px solid lightgray;
-}
-.even-task {
-  background-color: lightblue;
-  border: 1px solid gray;
 }
 </style>

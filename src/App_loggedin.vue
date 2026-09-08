@@ -74,13 +74,15 @@ export default {
       slctd: {
         chatGroup: null,
         chatType: 'Chat',
+        cntct: {
+          fllNm: '',
+        },
         dayIndex: null,
         eventIndx: null,
         actvEl: false,
         report: null,
         sideMenuLnk: ['Contactinfo', 'Calendar'],
         smsGroup: null,
-        taskMemo: 0,
         tmstmp: new Date(date_Y_m_d_H_i_s_z).getTime(),
         IDs: {},
       },
@@ -132,10 +134,24 @@ export default {
       const sideMenuItemsArray = [
         ['fa fa-house-chimney-user', null, 'Contact info', 'Calendar'],
         this.contacts?.length > 0
-          ? ['fa fa-calendar-check', this.contacts[this.slctdCntctIndex]?.Tasks.length, 'Tasks', 'Calendar']
+          ? [
+              'fa fa-calendar-check',
+              this.contacts[this.slctdCntctIndex]?.Tasks?.filter(
+                (tsk) => tsk?.Status === false || tsk?.Status == '' || tsk?.Status === undefined,
+              ).length,
+              'Tasks',
+              'Calendar',
+            ]
           : false,
         this.contacts?.length > 0
-          ? ['fa fa-repeat', this.contacts[this.slctdCntctIndex]?.RecurTasks.length, 'Recurring tasks', 'Calendar']
+          ? [
+              'fa fa-repeat',
+              this.contacts[this.slctdCntctIndex]?.RecurTasks?.filter(
+                (tsk) => this.updt.updtngY_m_d_H_i_s_z.slice(0, 10) <= tsk.End || tsk.End === undefined,
+              ).length,
+              'Recurring tasks',
+              'Calendar',
+            ]
           : false,
         this.contacts?.length > 0
           ? ['fa fa-file-pen', this.contacts[this.slctdCntctIndex]?.Notes.length > 0 ? '1' : null, 'Notes', 'Calendar']
@@ -384,6 +400,7 @@ export default {
           if ([unixEpoch, unixEpoch1].includes(updtMstRcntCntctUpdt)) {
             if (updtMstRcntCntctUpdt == unixEpoch) {
               this.contacts = resJSON?.data?.contacts ? resJSON.data.contacts : [];
+              this.cntctWtch('fllNm');
               this.getContacts(unixEpoch1?.slice(0, 19)?.replace(' ', 'T'));
               setTimeout(() => {
                 const newChat = new Notification(
@@ -451,10 +468,6 @@ export default {
                         ? document.activeElement.innerHTML
                         : document.activeElement.value;
                   this.contacts.splice(appCntctIndx, 1, resCntct);
-                  if (['Tasks', 'Recurringtasks']?.includes(this.slctd.sideMenuLnk[0]))
-                    setTimeout(() => {
-                      this.slctd.taskMemo = this.slctd.taskMemo + 1;
-                    }, 1);
 
                   if (curElTxt !== null && !['Chat']?.includes(this.slctd.sideMenuLnk[0]))
                     setTimeout(() => {
@@ -685,6 +698,22 @@ export default {
         this.tempContacts = [];
       }
     },
+    cntctWtch(type) {
+      if ((type = 'fllNm')) {
+        if (this.contacts !== null)
+          this.slctd.cntct.fllNm =
+            (this?.contacts?.[this?.slctdCntctIndex]?.Members?.[0]?.First
+              ? this.contacts[this.slctdCntctIndex].Members[0].First
+              : '') +
+            (this?.contacts?.[this?.slctdCntctIndex]?.Members?.[0]?.First &&
+            this?.contacts?.[this?.slctdCntctIndex]?.Members?.[0]?.Name
+              ? ' '
+              : '') +
+            (this?.contacts?.[this?.slctdCntctIndex]?.Members?.[0]?.Name
+              ? this.contacts[this.slctdCntctIndex].Members[0]?.Name
+              : '');
+      }
+    },
   },
 
   created() {
@@ -736,6 +765,9 @@ export default {
           newChatAmnt + ' unread ' + (newChatAmnt > 1 ? 'messages' : 'message') + ' in your chat',
         );
       }
+    },
+    'sttngs.user.slctdCntctID'() {
+      this.cntctWtch('fllNm');
     },
   },
 };
