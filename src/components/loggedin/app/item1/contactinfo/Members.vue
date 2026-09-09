@@ -286,7 +286,9 @@ export default {
     updateMember(event, clmnIndex, key) {
       const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       event = typeof event === 'boolean' ? event : event.replace(/ +(?= )/g, '');
-      this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
+      event == ''
+        ? delete this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key]
+        : (this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event);
       this.$forceUpdate();
       if (
         (event != oldCntct[this.clmn][clmnIndex][key] && event != '') ||

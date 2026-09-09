@@ -88,6 +88,8 @@
           <select>
             <option selected>GMT-5 (Central)</option>
           </select>
+          <hr />
+          <div class="settings-body-label">Errors:</div>
         </template>
       </template>
     </div>

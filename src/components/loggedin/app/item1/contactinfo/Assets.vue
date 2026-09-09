@@ -104,7 +104,9 @@ export default {
     updateAsset(event, clmnIndex, key) {
       const oldCntct = JSON.parse(JSON.stringify(this.contacts[this.slctdCntctIndex]));
       event = typeof event === 'boolean' ? event : event.replace(/ +(?= )/g, '');
-      this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event;
+      event == ''
+        ? delete this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key]
+        : (this.contacts[this.slctdCntctIndex][this.clmn][clmnIndex][key] = event);
       this.$forceUpdate();
       this.patchContactInfo({ [key]: event }, this.clmn, clmnIndex, oldCntct, this.slctdCntctIndex);
     },

@@ -218,7 +218,7 @@
       <div
         v-if="
           slctd.eventIndx === null &&
-          TasksFltrd[1].length > 1 &&
+          TasksFltrd[1].length > 0 &&
           ((mode === 0 && TasksFltrd[2].length > 0) || (mode === 2 && TasksFltrd[0].length > 0))
         "
         style="padding: 10px; text-align: right"
