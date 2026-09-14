@@ -53,7 +53,7 @@
           <span class="recur-tasks-label">Start:</span>
           <input
             type="date"
-            :value="recurTask.Start"
+            v-model.lazy="recurTask.Start"
             :disabled="
               dsbld ||
               (updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End && recurTask.End != '') ||
@@ -74,7 +74,7 @@
           <span class="recur-tasks-label">End:</span>
           <input
             type="date"
-            :value="recurTask.End"
+            v-model.lazy="recurTask.End"
             :disabled="
               dsbld ||
               userRole < 4 ||
@@ -88,7 +88,7 @@
           <span class="recur-tasks-label">Time:</span>
           <input
             type="time"
-            :value="recurTask.Time"
+            v-model.lazy="recurTask.Time"
             :disabled="
               dsbld ||
               (updt.updtngY_m_d_H_i_s_z.slice(0, 10) >= recurTask.End && recurTask.End != '') ||

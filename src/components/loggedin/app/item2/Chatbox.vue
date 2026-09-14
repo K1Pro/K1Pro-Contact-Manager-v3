@@ -134,7 +134,9 @@
         {{ Math.ceil(chatBoxMsg.length / 160) }} / {{ chatBoxMsg.length }}
       </div>
 
-      <button v-if="uploadingFiles" disabled><i class="spin fa-sharp fa-solid fa-circle-notch"></i></button>
+      <button v-if="dsbld || spinLogin || uploadingFiles" disabled>
+        <i class="spin fa-sharp fa-solid fa-circle-notch"></i>
+      </button>
       <template v-else>
         <label for="chat-upload-btn"><i class="fa-solid fa-paperclip"></i></label>
         <input type="file" id="chat-upload-btn" hidden @change="uploadFile($event)" multiple />

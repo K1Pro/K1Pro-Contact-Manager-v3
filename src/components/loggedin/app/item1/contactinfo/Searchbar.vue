@@ -55,7 +55,8 @@ export default {
       let searchResultArray = [];
       if (this.search.length > 2) {
         this.contactInfoStringArray.forEach((contact, contactIndex) => {
-          if (contact.includes(this.search.trim().toLowerCase().replaceAll('-', ''))) {
+          // prettier-ignore
+          if (contact.includes(this.search.trim().toLowerCase().replaceAll(' ', '').replaceAll('(', '').replaceAll(')', '').replaceAll('-', '').replaceAll('!', '').replaceAll('.', '').replaceAll('+', '').replaceAll('_', ''),)) {
             this.contacts[contactIndex].Members.forEach((member) => {
               let fullName;
               if (member.First && !member?.Name) fullName = member.First;
@@ -79,25 +80,29 @@ export default {
           if (member.First && !member?.Name) fullName = member.First;
           if (member?.Name && !member.First) fullName = member?.Name;
           if (member.First && member?.Name) fullName = member.First + ' ' + member?.Name;
-          stringArray[contactIndex] += ((fullName ? fullName : '') + ' ').toLowerCase();
+          // prettier-ignore
+          stringArray[contactIndex] += ((fullName ? fullName : '') + ' ').toLowerCase().replaceAll(' ', '').replaceAll('(', '').replaceAll(')', '').replaceAll('-', '').replaceAll('!', '').replaceAll('.', '').replaceAll('+', '').replaceAll('_', '');
         });
-
         contact.Addresses.forEach((addres) => {
           Object.entries(addres).forEach(([addresKey, addresValue]) => {
-            if (addresKey != 'Type') stringArray[contactIndex] += (addresValue + ' ').toLowerCase();
+            // prettier-ignore
+            if (addresKey != 'Type')
+              stringArray[contactIndex] += (addresValue + ' ').toLowerCase().replaceAll(' ', '').replaceAll('(', '').replaceAll(')', '').replaceAll('-', '').replaceAll('!', '').replaceAll('.', '').replaceAll('+', '').replaceAll('_', '');
           });
         });
 
         contact.Connections.forEach((connection) => {
           Object.values(connection).forEach((connectionValue) => {
-            stringArray[contactIndex] += (connectionValue + ' ').toLowerCase().replaceAll('-', '');
+            // prettier-ignore
+            stringArray[contactIndex] += (connectionValue + ' ').toLowerCase().replaceAll(' ', '').replaceAll('(', '').replaceAll(')', '').replaceAll('-', '').replaceAll('!', '').replaceAll('.', '').replaceAll('+', '').replaceAll('_', '');
           });
         });
 
         contact.Custom1.forEach((custom1) => {
           Object.entries(custom1).forEach(([custom1Key, custom1Value]) => {
+            // prettier-ignore
             if (custom1Key == 'No' && this.userData.Entity == 'bundle-insurance')
-              stringArray[contactIndex] += (custom1Value + ' ').toLowerCase().replaceAll('-', '');
+              stringArray[contactIndex] += (custom1Value + ' ').toLowerCase().replaceAll(' ', '').replaceAll('(', '').replaceAll(')', '').replaceAll('-', '').replaceAll('!', '').replaceAll('.', '').replaceAll('+', '').replaceAll('_', '');
           });
         });
       });

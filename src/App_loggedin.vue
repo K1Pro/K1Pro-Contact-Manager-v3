@@ -58,6 +58,7 @@ export default {
       daysRangeArr: [1, 3, 7, 14, 21, 28],
       deletedIDs: [],
       dsbld: false,
+      errors: [],
       roles: [
         'inactive',
         'guest',
@@ -107,6 +108,7 @@ export default {
       contacts: Vue.computed(() => this.contacts),
       days: Vue.computed(() => this.days),
       dsbld: Vue.computed(() => this.dsbld),
+      errors: Vue.computed(() => this.errors),
       firstDayTmstmp: Vue.computed(() => this.firstDayTmstmp),
       newChats: Vue.computed(() => this.newChats),
       newMsgs: Vue.computed(() => this.newMsgs),
@@ -368,8 +370,14 @@ export default {
           )
             this.deleteLogin(resJSON.messages[0]);
           console.log(resJSON?.messages?.[0] ? resJSON.messages[0] : 'Update error');
+          this.errors.push(
+            this.updt.updtngY_m_d_H_i_s_z +
+              ' - getUpdt - ' +
+              (resJSON?.messages?.[0] ? resJSON.messages[0] : 'Update error'),
+          );
         }
       } catch (error) {
+        this.errors.push(this.updt.updtngY_m_d_H_i_s_z + ' - getUpdt - ' + error?.toString());
         console.log(error?.toString());
       }
     },
@@ -511,10 +519,12 @@ export default {
           this.updt.mstRcntMsg = resJSON?.data?.mstRcntMsg;
         } else {
           console.log(resJSON);
+          this.errors.push(this.updt.updtngY_m_d_H_i_s_z + ' - getContacts - ');
           if (updtMstRcntCntctUpdt.includes('T')) this.updt.mstRcntCntctUpdt = updtMstRcntCntctUpdt;
         }
       } catch (error) {
         console.log(error?.toString());
+        this.errors.push(this.updt.updtngY_m_d_H_i_s_z + ' - getContacts - ' + error?.toString());
         if (updtMstRcntCntctUpdt.includes('T')) this.updt.mstRcntCntctUpdt = updtMstRcntCntctUpdt;
       }
     },
@@ -544,10 +554,12 @@ export default {
           this.updt.mstRcntChat = resJSON?.data?.mstRcntChat;
         } else {
           console.log(resJSON);
+          this.errors.push(this.updt.updtngY_m_d_H_i_s_z + ' - getChats - ');
           this.updt.mstRcntChat = updtMstRcntChat;
         }
       } catch (error) {
         console.log(error.toString());
+        this.errors.push(this.updt.updtngY_m_d_H_i_s_z + ' - getChats - ' + error?.toString());
         this.updt.mstRcntChat = updtMstRcntChat;
       }
     },
@@ -608,6 +620,7 @@ export default {
               });
             }
           } else {
+            this.errors.push(this.updt.updtngY_m_d_H_i_s_z + ' - patchContactInfo - ');
             // prettier-ignore
             confirm('Error' + (resJSON?.messages?.[0] ? ': ' + resJSON.messages[0] : '') + '. Would you like to try again? If not, your most recent change will be lost.',) == true
             ? this.patchContactInfo(event, column, columnIndex, oldCntctInfo, slctdCntctIndex)
@@ -616,6 +629,7 @@ export default {
         }
       } catch (error) {
         slctdCntctIndex = this.contacts?.findIndex((contact) => contact.id == oldCntctInfo.id);
+        this.errors.push(this.updt.updtngY_m_d_H_i_s_z + ' - patchContactInfo - ' + error?.toString());
         // prettier-ignore
         confirm('Error' + (error?.toString() ? ': ' + error.toString() : '') + '. Would you like to try again? If not, your most recent change will be lost.',) == true
           ? this.patchContactInfo(event, column, columnIndex, oldCntctInfo, slctdCntctIndex)
@@ -648,6 +662,7 @@ export default {
           const resJSON = await response.json();
           if (!resJSON.success) {
             slctdCntctIndex = this.contacts?.findIndex((contact) => contact.id == oldCntctInfo.id);
+            this.errors.push(this.updt.updtngY_m_d_H_i_s_z + ' - deleteContactInfo - ');
             // prettier-ignore
             confirm('Error' + (resJSON?.messages?.[0] ? ': ' + resJSON.messages[0] : '') + '. Would you like to try again? If not, your most recent change will be lost.',) == true
             ? this.deleteContactInfo(clmn, clmnIndex, oldCntctInfo, slctdCntctIndex, true)
@@ -655,6 +670,7 @@ export default {
           }
         } catch (error) {
           slctdCntctIndex = this.contacts?.findIndex((contact) => contact.id == oldCntctInfo.id);
+          this.errors.push(this.updt.updtngY_m_d_H_i_s_z + ' - deleteContactInfo - ' + error?.toString());
           // prettier-ignore
           confirm('Error' + (error?.toString() ? ': ' + error.toString() : '') + '. Would you like to try again? If not, your most recent change will be lost.',) == true
           ? this.deleteContactInfo(clmn, clmnIndex, oldCntctInfo, slctdCntctIndex, true)

@@ -90,6 +90,9 @@
           </select>
           <hr />
           <div class="settings-body-label">Errors:</div>
+          <select>
+            <option v-for="error in errors">{{ error }}</option>
+          </select>
         </template>
       </template>
     </div>
@@ -100,7 +103,19 @@
 export default {
   name: 'Settings',
 
-  inject: ['daysRangeArr', 'roles', 'showMsg', 'sttngs', 'slctd', 'updt', 'userData', 'userList', 'userRole', 'wndw'],
+  inject: [
+    'daysRangeArr',
+    'errors',
+    'roles',
+    'showMsg',
+    'sttngs',
+    'slctd',
+    'updt',
+    'userData',
+    'userList',
+    'userRole',
+    'wndw',
+  ],
 
   data() {
     return { userSlctd: this.userData.id };
